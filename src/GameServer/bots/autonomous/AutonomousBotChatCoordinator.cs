@@ -16,6 +16,16 @@ public static class AutonomousBotChatCoordinator
     private static readonly Dictionary<ushort, long> LastLocalAmbient = new();
     private static readonly Dictionary<eRealm, long> LastFactionPlayerResponse = new();
     private static readonly Dictionary<ushort, long> LastLocalPlayerResponse = new();
+    private static readonly Dictionary<int, long> LastPrivateReply = new();
+    private const int PrivateReplyCooldownMs = 3_000;
+
+    /// <summary>The private channels a player can use to talk to one personality bot.</summary>
+    public enum ePrivateChannel
+    {
+        Tell,
+        Whisper,
+        Group,
+    }
 
     private static readonly string[] FactionOpeners =
     [
@@ -108,6 +118,81 @@ public static class AutonomousBotChatCoordinator
             LastLocalPlayerResponse[player.CurrentRegionID] = GameLoop.GameLoopTime;
         }
         SchedulePlayerReplies(player, message, false);
+    }
+
+    /// <summary>
+    /// The online personality bot a /send names, by full name or personality name
+    /// ("Kobaldjovi", "Persoper"), in the sender's realm; null when none matches.
+    /// </summary>
+    public static GameBot FindPersonalityBot(string typedName, eRealm realm)
+    {
+        if (string.IsNullOrWhiteSpace(typedName))
+            return null;
+        return AutonomousBotRegistry.Snapshot().Where(Eligible)
+            .Concat(PersonalityCompanions())
+            .FirstOrDefault(bot => bot.Realm == realm && BotPersonalities.For(bot) is { } personality &&
+                IsPersonalityName(bot.Name, personality.Name, typedName));
+    }
+
+    /// <summary>True when what a player typed names this bot: its full name or its personality name.</summary>
+    public static bool IsPersonalityName(string botName, string personalityName, string typedName) =>
+        !string.IsNullOrWhiteSpace(typedName) &&
+        (string.Equals(typedName.Trim(), botName, StringComparison.OrdinalIgnoreCase) ||
+         string.Equals(typedName.Trim(), personalityName, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>A player's group message: one personality bot in the group answers, the one named if any.</summary>
+    public static void OnPlayerGroupChat(GamePlayer player, string message)
+    {
+        if (player?.Group == null || string.IsNullOrWhiteSpace(message))
+            return;
+        GameBot[] members = player.Group.GetMembersInTheGroup().OfType<GameBot>()
+            .Where(bot => BotPersonalities.For(bot) != null)
+            .ToArray();
+        if (members.Length == 0)
+            return;
+        GameBot[] mentioned = members.Where(bot => IsMentioned(message, bot)).ToArray();
+        GameBot[] pool = mentioned.Length > 0 ? mentioned : members;
+        OnPlayerPrivateChat(player, pool[Random.Shared.Next(pool.Length)], message, ePrivateChannel.Group);
+    }
+
+    /// <summary>
+    /// A tell, whisper or group line to one personality bot: it answers on the same
+    /// channel in its own voice. Plain bots stay silent. Returns false when nothing is sent.
+    /// </summary>
+    public static bool OnPlayerPrivateChat(GamePlayer player, GameBot bot, string message, ePrivateChannel channel)
+    {
+        BotPersonality personality = BotPersonalities.For(bot);
+        if (player == null || personality == null || string.IsNullOrWhiteSpace(message))
+            return false;
+        lock (Sync)
+        {
+            if (LastPrivateReply.TryGetValue(bot.ObjectID, out long last) && GameLoop.GameLoopTime - last < PrivateReplyCooldownMs)
+                return false;
+            LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
+        }
+
+        string reply = AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
+            ? knowledge
+            : personality.Reply(AutonomousChatIntentModel.Predict(message), player.Name, PersoperProperties.TONE_DOWN, Random.Shared);
+        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
+        {
+            if (player.ObjectState != GameObject.eObjectState.Active)
+                return;
+            switch (channel)
+            {
+                case ePrivateChannel.Tell:
+                    ChatUtil.SendSendMessage(player.Client, "Social.ReceiveMessage.Private.Sends", bot.Name, reply);
+                    break;
+                case ePrivateChannel.Whisper:
+                    bot.Whisper(player, reply);
+                    break;
+                case ePrivateChannel.Group:
+                    if (bot.Group != null && bot.Group == player.Group)
+                        bot.Group.SendMessageToGroupMembers(bot, reply, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+                    break;
+            }
+        });
+        return true;
     }
 
     public static bool TryAdvertiseExchangeItem(GameBot seller, string exactItemName)

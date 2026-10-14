@@ -51,6 +51,7 @@ namespace DOL.GS.Commands
 				}
 
 				client.Player.Group.SendMessageToGroupMembers(client.Player, msg, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+				AutonomousBotChatCoordinator.OnPlayerGroupChat(client.Player, msg.Trim());
 			}
 			else
 			{

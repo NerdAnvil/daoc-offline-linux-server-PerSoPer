@@ -57,7 +57,7 @@ and `/raid` drive it. It's removed when disbanded or when the owner quits.
 |---|---|---|
 | `/spawn [class]` | Player | Companion class menu, or create a companion of that class |
 | `/persoper` | Player | Summon Persoper, the one server-wide personality companion (your realm's healer). Her surname and look are kept in `persoper_state`; settings `persoper_tone_down` and `persoper_surname_change_percent` (`daoc-admin options set ...`). Code: `bots/persoper/`, `commands/playercommands/PersoperCommand.cs` |
-| `bots create --personality kobaldjovi` | Admin | Add Kobaldjovi, the Singer: a fixed Midgard Kobold Skald world bot whose ambient chat is mostly songs. Code: `bots/persoper/KobaldjoviIdentity.cs`. Both personalities answer chat with their own lines (`bots/persoper/BotPersonality.cs`); summoned Persoper also answers nearby `/say` and faction chat |
+| `bots create --personality kobaldjovi` | Admin | Add Kobaldjovi, the Singer: a fixed Midgard Kobold Skald world bot whose ambient chat is mostly songs. Code: `bots/persoper/KobaldjoviIdentity.cs`. Both personalities answer chat with their own lines (`bots/persoper/BotPersonality.cs`); summoned Persoper also answers nearby `/say` and faction chat. Both answer `/send`, `/whisper` and `/g` (group) on the same channel |
 | `/classes` | Player | Your realm's Classic + SI classes and their party roles |
 | `/aggressive`, `/defensive` | Player | Companions assist you (default), or wait for enemies to approach |
 | `/pull` | Player | Party bots and their pets engage your target |

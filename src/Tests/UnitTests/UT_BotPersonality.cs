@@ -47,6 +47,19 @@ public class UT_BotPersonality
         }
     }
 
+    [TestCase("Persoper Healsalot", "Persoper", "persoper", true)]
+    [TestCase("Persoper Healsalot", "Persoper", "Persoper Healsalot", true)]
+    [TestCase("Persoper Healsalot", "Persoper", " PERSOPER ", true)]
+    [TestCase("Kobaldjovi", "Kobaldjovi", "kobaldjovi", true)]
+    [TestCase("Kobaldjovi", "Kobaldjovi", "Kobald", false)]
+    [TestCase("Persoper Healsalot", "Persoper", "Healsalot", false)]
+    [TestCase("Kobaldjovi", "Kobaldjovi", "", false)]
+    [TestCase("Kobaldjovi", "Kobaldjovi", null, false)]
+    public void TellName_MatchesFullOrPersonalityName(string botName, string personalityName, string typed, bool expected)
+    {
+        Assert.That(AutonomousBotChatCoordinator.IsPersonalityName(botName, personalityName, typed), Is.EqualTo(expected));
+    }
+
     [Test]
     public void Personalities_HaveDistinctNames()
     {

@@ -55,7 +55,13 @@ namespace DOL.GS.Commands
 				return;
 			}
 
-			client.Player.Whisper(obj, string.Join(" ", args, 1, args.Length - 1));
+			string text = string.Join(" ", args, 1, args.Length - 1);
+			if (client.Player.Whisper(obj, text) && obj is GameBot bot && BotPersonalities.For(bot) != null)
+			{
+				// Personality bots answer whispers; show the player what they whispered, as for players.
+				client.Out.SendMessage("You whisper, \"" + text + "\" to " + bot.GetName(0, false), eChatType.CT_Say, eChatLoc.CL_ChatWindow);
+				AutonomousBotChatCoordinator.OnPlayerPrivateChat(client.Player, bot, text, AutonomousBotChatCoordinator.ePrivateChannel.Whisper);
+			}
 		}
 	}
 }

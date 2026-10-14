@@ -36,6 +36,17 @@ namespace DOL.GS.Commands
 
             if (targetPlayer == null)
             {
+                // Personality bots (Persoper, Kobaldjovi) are not players but still take tells.
+                GameBot personalityBot = AutonomousBotChatCoordinator.FindPersonalityBot(targetName, client.Player.Realm);
+                if (personalityBot != null)
+                {
+                    // Message: You send, "{0}" to {1}.
+                    ChatUtil.SendSendMessage(client, "Social.SendMessage.Private.YouSendTo", message, personalityBot.Name);
+                    AutonomousBotChatCoordinator.OnPlayerPrivateChat(client.Player, personalityBot, message,
+                        AutonomousBotChatCoordinator.ePrivateChannel.Tell);
+                    return;
+                }
+
                 // Message: "{0} is not in the game, or is a member of another realm."
                 ChatUtil.SendSystemMessage(client, "Social.SendMessage.Err.OfflineOtherRealm", nameToDisplay);
                 return;
