@@ -59,12 +59,14 @@ namespace DOL.GS.Admin
             return result.OrderBy(b => b.Realm).ThenBy(b => b.Name, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        public static BotCreateResult Create(string realmSpec, int count, int level, string className)
+        public static BotCreateResult Create(string realmSpec, int count, int level, string className, string personality = null)
         {
             if (count is < 1 or > 100)
                 throw new AdminException(AdminErrorCodes.Invalid, "Create 1 to 100 bots per realm at a time.");
             if (level is not (1 or 50))
                 throw new AdminException(AdminErrorCodes.Invalid, "Bots start at level 1 or level 50.");
+            if (personality != null)
+                return CreatePersonality(personality, level);
 
             eRealm[] realms = realmSpec.Equals("all", StringComparison.OrdinalIgnoreCase) ? Realms : [ParseRealm(realmSpec)];
             eCharacterClass? characterClass = className == null ? null : ParseClass(className, realms);
@@ -99,6 +101,30 @@ namespace DOL.GS.Admin
             AutonomousPopulationController.RequestRefresh();
             Log.Info($"Admin created {names.Count} level-{level} bot(s): {string.Join(", ", names)}");
             return new BotCreateResult(names, enabled);
+        }
+
+        /// <summary>Adds one fixed personality bot (only Kobaldjovi so far) to the roster.</summary>
+        private static BotCreateResult CreatePersonality(string personality, int level)
+        {
+            if (!personality.Equals(KobaldjoviIdentity.Name, StringComparison.OrdinalIgnoreCase))
+                throw new AdminException(AdminErrorCodes.Invalid, $"Unknown personality '{personality}'. Known: {KobaldjoviIdentity.Name}.");
+
+            AutonomousBotIdentityGenerator.Identity identity = KobaldjoviIdentity.CreateIdentity();
+            lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
+            {
+                bool exists = DOLDB<OfflineWorldBotRecord>.SelectAllObjects()
+                    .Any(r => r.Name.Equals(identity.Name, StringComparison.OrdinalIgnoreCase));
+                if (exists)
+                    throw new AdminException(AdminErrorCodes.Refused,
+                        $"{identity.Name} already exists. Remove him first with: bots delete {identity.Name}");
+                AddRecord(identity, level);
+            }
+
+            WriteProperty("population_enabled", "true");
+            AutonomousPopulationProperties.POPULATION_ENABLED = true;
+            AutonomousPopulationController.RequestRefresh();
+            Log.Info($"Admin created personality bot {identity.Name} at level {level}");
+            return new BotCreateResult([identity.Name], true);
         }
 
         private static void AddRecord(AutonomousBotIdentityGenerator.Identity identity, int level)

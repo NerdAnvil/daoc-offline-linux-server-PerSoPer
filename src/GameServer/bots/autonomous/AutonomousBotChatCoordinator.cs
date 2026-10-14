@@ -66,13 +66,18 @@ public static class AutonomousBotChatCoordinator
             }
         }
 
-        string opening = BuildAmbientOpening(starter, context, faction);
+        // Kobaldjovi mostly sings; nobody answers a song with small talk.
+        bool isSong = false;
+        string opening = KobaldjoviIdentity.Is(starter)
+            ? KobaldjoviIdentity.AmbientLine(Random.Shared, out isSong)
+            : BuildAmbientOpening(starter, context, faction);
         if (faction)
             BroadcastFaction(starter.Name, starter.Realm, opening);
         else if (!starter.Say(opening))
             return false;
 
-        ScheduleBotReplies(starter, opening, faction, false);
+        if (!isSong)
+            ScheduleBotReplies(starter, opening, faction, false);
         return true;
     }
 

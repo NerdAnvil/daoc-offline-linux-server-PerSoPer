@@ -34,6 +34,14 @@ namespace DOL.Tests.Unit
             Assert.That(request.GetString("class"), Is.EqualTo("Druid"));
         }
 
+        [Test]
+        public void BotsCreateParsesPersonality()
+        {
+            AdminRequest request = Parse("bots create --personality kobaldjovi --level 50");
+            Assert.That(request.GetString("personality"), Is.EqualTo("kobaldjovi"));
+            Assert.That(request.GetInt("level"), Is.EqualTo(50));
+        }
+
         [TestCase("bots create --count 0")]
         [TestCase("bots create --count 101")]
         [TestCase("bots create --realm atlantis")]

@@ -43,6 +43,17 @@ new surname when summoned. The default is 5.
 See the current values with `./daoc-admin options`. The same commands can be typed into the
 server console without `./daoc-admin`.
 
+## Kobaldjovi, the Singer
+
+The second personality: a Midgard Kobold Skald who lives in the world as a normal gamebot (not
+a summon). When it's his turn to chat, he usually sings. Add him at level 1 or 50, and remove
+him like any other bot:
+
+```bash
+./daoc-admin bots create --personality kobaldjovi --level 1
+./daoc-admin bots delete Kobaldjovi
+```
+
 ---
 
 # DAoC Server

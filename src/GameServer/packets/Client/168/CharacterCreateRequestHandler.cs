@@ -392,9 +392,9 @@ namespace DOL.GS.PacketHandler.Client.v168
         {
             DbAccount account = client.Account;
 
-            // The client's name checks can be skipped, so enforce Persoper's
-            // reserved name here as well.
-            if (PersoperIdentity.IsReservedName(pdata.CharName))
+            // The client's name checks can be skipped, so enforce the reserved
+            // personality names here as well.
+            if (PersoperIdentity.IsReservedName(pdata.CharName) || KobaldjoviIdentity.IsReservedName(pdata.CharName))
             {
                 if (log.IsWarnEnabled)
                     log.Warn($"{account.Name} tried to create a character with the reserved name '{pdata.CharName}'");

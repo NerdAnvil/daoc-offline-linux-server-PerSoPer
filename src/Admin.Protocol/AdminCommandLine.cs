@@ -19,6 +19,7 @@ public static class AdminCommandLine
           server stop                     save and stop the server
           bots list [--realm alb|mid|hib] [--online]
           bots create [--realm alb|mid|hib|all] [--count N] [--level 1|50] [--class NAME]
+          bots create --personality kobaldjovi [--level 1|50]   add a personality bot
           bots delete <name|id>
           bots delete-all --yes
           population                      show population settings
@@ -117,13 +118,15 @@ public static class AdminCommandLine
 
     private static AdminRequest BotsCreate(List<string> rest)
     {
-        var options = Options(rest, flags: [], values: ["--realm", "--count", "--level", "--class"]);
+        var options = Options(rest, flags: [], values: ["--realm", "--count", "--level", "--class", "--personality"]);
         var request = Request(AdminOps.BotsCreate,
             ("realm", NormalizeRealm(options.GetValueOrDefault("--realm") ?? "all")),
             ("count", ParseInt(options.GetValueOrDefault("--count") ?? "1", 1, 100, "--count")),
             ("level", ParseInt(options.GetValueOrDefault("--level") ?? "1", 1, 50, "--level")));
         if (options.TryGetValue("--class", out string? className))
             request.Args["class"] = className;
+        if (options.TryGetValue("--personality", out string? personality))
+            request.Args["personality"] = personality;
         return request;
     }
 
