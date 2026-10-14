@@ -75,7 +75,11 @@ namespace DOL.GS
 			{
 				if (string.IsNullOrEmpty(match))
 					return true;
-				
+
+				// Persoper is a unique server personality; no one else may use her name.
+				if (PersoperIdentity.IsReservedName(match))
+					return true;
+
 				return BadNamesContains.Any(pattern => match.IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0)
 					|| BadNamesRegex.Any(pattern => pattern.IsMatch(match));
 			}

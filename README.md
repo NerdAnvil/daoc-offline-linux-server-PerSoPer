@@ -1,3 +1,50 @@
+# PerSoPer: Persistent Social Personalities
+
+My goal with the PerSoPer project is to recapture some of the social side that DAoC had in its
+heyday, back when `/alliance`, `/guild` and `/zone` would scroll with banter and reactions. I
+don't know how many bots can be simulated well, but I would love to see a dozen or so adding
+some life to the in-game experience.
+
+**Where it starts:** a proof of concept with a single unique companion, **Persoper**, who can
+interact (in a limited way) and react to in-game events. Today she's summoned with
+`/persoper`, fights with the existing bot AI, and remembers who she is between summons.
+
+**Where it's going** (goals, not built yet):
+- natural conversation, memory of the players she meets, and relationships;
+- optional replies from a locally hosted AI model, while the existing game AI keeps handling
+  combat;
+- expanding the code to many autonomous bots with different personality types: the hardcore
+  player, the casual, the min/maxer, male and female, the joker, the loner, and the Leeroy
+  Jenkins every server had before Leeroy was a thing.
+
+Built on the Linux DAoC server below; all credit for the server and bots to its authors.
+
+## Persoper's settings
+
+Run these from your server folder (the one with `daoc-admin`). Changes apply at once and are
+saved; they take effect the next time she's summoned.
+
+**Tone** (`persoper_tone_down`): off by default, when she mixes clean and cheeky lines.
+
+```bash
+./daoc-admin options set persoper_tone_down on     # clean surnames and greetings only
+./daoc-admin options set persoper_tone_down off    # back to normal (cheeky allowed)
+```
+
+**Surname changes** (`persoper_surname_change_percent`): the chance, 0 to 100, that she picks a
+new surname when summoned. The default is 5.
+
+```bash
+./daoc-admin options set persoper_surname_change_percent 5     # default: rarely
+./daoc-admin options set persoper_surname_change_percent 0     # never change her surname
+./daoc-admin options set persoper_surname_change_percent 100   # new surname every summon
+```
+
+See the current values with `./daoc-admin options`. The same commands can be typed into the
+server console without `./daoc-admin`.
+
+---
+
 # DAoC Server
 
 A Linux-first, server-only DAoC server with autonomous and companion bots, based on a pinned

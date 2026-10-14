@@ -29,3 +29,6 @@ src/Pathing/Detour/build/
 src/build/
 dist/
 .cache/
+
+# Claude Code per-project settings (local only)
+.claude/

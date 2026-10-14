@@ -178,7 +178,7 @@ namespace DOL.GS
                                    bridges[random.Next(bridges.Length)] +
                                    parts.Ends[random.Next(parts.Ends.Length)];
                 candidate = Normalize(candidate);
-                if (reservedNames == null || reservedNames.Add(candidate))
+                if (!PersoperIdentity.IsReservedName(candidate) && (reservedNames == null || reservedNames.Add(candidate)))
                     return candidate;
             }
 
@@ -190,7 +190,7 @@ namespace DOL.GS
             foreach (string end in parts.Ends)
             {
                 string candidate = Normalize(start + middle + bridge + end);
-                if (reservedNames == null || reservedNames.Add(candidate))
+                if (!PersoperIdentity.IsReservedName(candidate) && (reservedNames == null || reservedNames.Add(candidate)))
                     return candidate;
             }
 

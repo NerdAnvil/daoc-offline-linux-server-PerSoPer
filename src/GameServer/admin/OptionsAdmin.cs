@@ -31,6 +31,8 @@ namespace DOL.GS.Admin
             "baf_companion_bots_count",
             "rvr_siege_staged_assault",
             "rvr_siege_defense_ratio",
+            "persoper_tone_down",
+            "persoper_surname_change_percent",
         ];
 
         private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
@@ -122,6 +124,11 @@ namespace DOL.GS.Admin
                     return double.TryParse(value, NumberStyles.Float, Invariant, out double number) && number is >= 0 and <= 1
                         ? number
                         : throw new AdminException(AdminErrorCodes.Invalid, $"{key} must be a number from 0 to 1 (for example 0.5).");
+                case int:
+                    // Whole-number options are percentages.
+                    return int.TryParse(value, NumberStyles.Integer, Invariant, out int percent) && percent is >= 0 and <= 100
+                        ? percent
+                        : throw new AdminException(AdminErrorCodes.Invalid, $"{key} must be a whole number from 0 to 100.");
                 default:
                     throw new AdminException(AdminErrorCodes.Failed, $"{key} has a type daoc-admin cannot set.");
             }

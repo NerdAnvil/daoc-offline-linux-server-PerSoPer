@@ -214,15 +214,38 @@ namespace DOL.GS.Commands
                     .Any(entry => entry.CharacterClass == characterClass))
                 return;
 
-            if (player.Group != null && player.Group.MemberCount >= player.Group.MaximumMemberCount)
-            {
-                client.Out.SendMessage("Your group is full.", eChatType.CT_System, eChatLoc.CL_SystemWindow);
-                return;
-            }
-
             eGender gender = Random.Shared.Next(2) == 0 ? eGender.Male : eGender.Female;
             AutonomousBotIdentityGenerator.Identity identity =
                 AutonomousBotIdentityGenerator.GenerateForClass(player.Realm, gender, characterClass);
+            GameBot helper = AddHelperToGroup(client, characterClass, identity.Name, identity.Race, identity.Gender);
+            if (helper == null)
+                return;
+
+            client.Out.SendMessage(
+                $"{helper.Name}, level {helper.Level} {characterClass}, joined fully equipped: armor/accessories level {Math.Max(1, helper.Level - 10)}–{helper.Level}, weapons/offhand level {Math.Max(1, helper.Level - 2)}–{helper.Level}. " +
+                "This helper takes no loot, is never saved, and vanishes when removed from the group.",
+                eChatType.CT_System, eChatLoc.CL_SystemWindow);
+        }
+
+        /// <summary>
+        /// Creates a same-level temporary helper next to the player and adds it
+        /// to the player's group. Reports any failure to the player and returns
+        /// null. <paramref name="beforeEnterWorld"/> runs after equipping and
+        /// before the helper is first shown, so appearance changes are sent once.
+        /// </summary>
+        internal static GameBot AddHelperToGroup(GameClient client, eCharacterClass characterClass, string name,
+            eRace race, eGender gender, Action<GameBot> beforeEnterWorld = null)
+        {
+            GamePlayer player = client?.Player;
+            if (player == null)
+                return null;
+
+            if (player.Group != null && player.Group.MemberCount >= player.Group.MaximumMemberCount)
+            {
+                client.Out.SendMessage("Your group is full.", eChatType.CT_System, eChatLoc.CL_SystemWindow);
+                return null;
+            }
+
             byte gearLevel = player.Level == 50 ? (byte)50 :
                 (byte)Random.Shared.Next(Math.Max(1, player.Level - 10), player.Level + 1);
             GameBot helper;
@@ -232,9 +255,9 @@ namespace DOL.GS.Commands
                 helper = new GameBot(
                     player,
                     (byte)characterClass,
-                    identity.Name,
-                    (byte)identity.Race,
-                    (byte)identity.Gender,
+                    name,
+                    (byte)race,
+                    (byte)gender,
                     temporaryGroupHelper: true,
                     equipmentLevel: gearLevel);
             }
@@ -242,8 +265,10 @@ namespace DOL.GS.Commands
             {
                 client.Out.SendMessage($"Could not create the {characterClass} helper: {exception.Message}",
                     eChatType.CT_System, eChatLoc.CL_SystemWindow);
-                return;
+                return null;
             }
+
+            beforeEnterWorld?.Invoke(helper);
 
             double angle = Random.Shared.NextDouble() * Math.PI * 2;
             int distance = Random.Shared.Next(110, 221);
@@ -268,7 +293,7 @@ namespace DOL.GS.Commands
                 helper.Delete();
                 client.Out.SendMessage("The temporary helper could not enter this region.",
                     eChatType.CT_System, eChatLoc.CL_SystemWindow);
-                return;
+                return null;
             }
 
             if (player.Group == null)
@@ -283,7 +308,7 @@ namespace DOL.GS.Commands
                 helper.Delete();
                 client.Out.SendMessage("The temporary helper could not join your group.",
                     eChatType.CT_System, eChatLoc.CL_SystemWindow);
-                return;
+                return null;
             }
 
             helper.EnterPlayerLedGroup(player);
@@ -291,10 +316,7 @@ namespace DOL.GS.Commands
             if (helper.Brain is BotBrain brain)
                 brain.FSM.SetCurrentState(eFSMStateType.FOLLOW);
 
-            client.Out.SendMessage(
-                $"{helper.Name}, level {helper.Level} {characterClass}, joined fully equipped: armor/accessories level {Math.Max(1, helper.Level - 10)}–{helper.Level}, weapons/offhand level {Math.Max(1, helper.Level - 2)}–{helper.Level}. " +
-                "This helper takes no loot, is never saved, and vanishes when removed from the group.",
-                eChatType.CT_System, eChatLoc.CL_SystemWindow);
+            return helper;
         }
     }
 

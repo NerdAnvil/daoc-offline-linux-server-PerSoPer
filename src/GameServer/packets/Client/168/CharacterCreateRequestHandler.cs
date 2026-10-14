@@ -391,6 +391,17 @@ namespace DOL.GS.PacketHandler.Client.v168
         private bool CreateCharacter(CreationCharacterData pdata, GameClient client, int accountSlot)
         {
             DbAccount account = client.Account;
+
+            // The client's name checks can be skipped, so enforce Persoper's
+            // reserved name here as well.
+            if (PersoperIdentity.IsReservedName(pdata.CharName))
+            {
+                if (log.IsWarnEnabled)
+                    log.Warn($"{account.Name} tried to create a character with the reserved name '{pdata.CharName}'");
+
+                return true;
+            }
+
             var ch = new DbCoreCharacter
             {
                 AccountName = account.Name,
