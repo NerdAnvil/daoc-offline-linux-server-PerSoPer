@@ -262,14 +262,17 @@ public static class AutonomousBotChatCoordinator
     {
         bool hasKnowledge = AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge);
         eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
-        GameBot[] eligible = AutonomousBotRegistry.Snapshot()
-            .Where(Eligible)
+        // Personality companions (Persoper) are not world bots but still answer players.
+        GameBot[] eligible = AutonomousBotRegistry.Snapshot().Where(Eligible)
+            .Concat(PersonalityCompanions())
             .Where(bot => bot.Realm == player.Realm)
             .Where(bot => faction || bot.CurrentRegion == player.CurrentRegion && bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE))
-            .OrderByDescending(bot => Relevance(bot, message))
+            .Distinct()
+            .OrderByDescending(bot => BotPersonalities.For(bot) != null)
+            .ThenByDescending(bot => Relevance(bot, message))
             .ThenBy(_ => Random.Shared.Next())
             .ToArray();
-        GameBot[] mentioned = eligible.Where(bot => ContainsMention(message, bot.Name)).ToArray();
+        GameBot[] mentioned = eligible.Where(bot => IsMentioned(message, bot)).ToArray();
         bool directed = mentioned.Length > 0;
         if (directed)
             eligible = mentioned;
@@ -281,11 +284,14 @@ public static class AutonomousBotChatCoordinator
         for (int index = 0; index < count; index++)
         {
             GameBot responder = eligible[index];
+            BotPersonality personality = BotPersonalities.For(responder);
             string response = hasKnowledge
                 ? knowledge
-                : directed
-                    ? GenerateDirectedReply(message)
-                    : faction ? GenerateFactionReply(message) : GenerateLocalReply(responder, message);
+                : personality != null
+                    ? personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)
+                    : directed
+                        ? GenerateDirectedReply(message)
+                        : faction ? GenerateFactionReply(message) : GenerateLocalReply(responder, message);
             if (!TryAddDistinctResponse(scheduledResponses, response, out response))
                 continue;
             Schedule(responder, 1_300 + scheduledIndex++ * 1_800 + Random.Shared.Next(1_200), () =>
@@ -313,7 +319,10 @@ public static class AutonomousBotChatCoordinator
         for (int index = 0; index < count; index++)
         {
             GameBot responder = eligible[index];
-            string response = hasKnowledge ? knowledge : faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
+            BotPersonality personality = BotPersonalities.For(responder);
+            string response = hasKnowledge ? knowledge
+                : personality != null ? personality.Reply(AutonomousChatIntentModel.Predict(opening), starter.Name, PersoperProperties.TONE_DOWN, Random.Shared)
+                : faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
             if (!TryAddDistinctResponse(scheduledResponses, response, out response))
                 continue;
             Schedule(responder, 1_700 + scheduledCount++ * 2_100 + Random.Shared.Next(1_300), () =>
@@ -344,7 +353,7 @@ public static class AutonomousBotChatCoordinator
     {
         _ = new ECSGameTimer(speaker, timer =>
         {
-            if (Eligible(speaker) && !speaker.InCombat && !speaker.IsCasting)
+            if ((Eligible(speaker) || IsPersonalityCompanion(speaker)) && !speaker.InCombat && !speaker.IsCasting)
                 action();
             return 0;
         }, delay);
@@ -355,6 +364,19 @@ public static class AutonomousBotChatCoordinator
         normalized = response?.Trim() ?? string.Empty;
         return scheduled != null && normalized.Length > 0 && scheduled.Add(normalized);
     }
+
+    private static bool IsMentioned(string message, GameBot bot) =>
+        ContainsMention(message, bot.Name) || BotPersonalities.For(bot) is { } personality && ContainsMention(message, personality.Name);
+
+    private static IEnumerable<GameBot> PersonalityCompanions()
+    {
+        GameBot persoper = DOL.GS.Commands.PersoperCommandHandler.Active;
+        return persoper != null && IsPersonalityCompanion(persoper) ? [persoper] : [];
+    }
+
+    private static bool IsPersonalityCompanion(GameBot bot) =>
+        bot is { IsTemporaryGroupHelper: true, IsAlive: true, ObjectState: GameObject.eObjectState.Active, InCombat: false, IsCasting: false } &&
+        BotPersonalities.For(bot) != null;
 
     private static bool Eligible(GameBot bot) => bot?.IsAutonomousWorldBot == true && !bot.IsTemporaryGroupHelper &&
         bot.IsAlive && bot.ObjectState == GameObject.eObjectState.Active && !bot.InCombat && !bot.IsCasting &&

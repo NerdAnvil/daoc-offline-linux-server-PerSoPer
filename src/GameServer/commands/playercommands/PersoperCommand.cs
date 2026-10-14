@@ -28,6 +28,9 @@ namespace DOL.GS.Commands
 
         private static GameBot _active;
 
+        /// <summary>Persoper's body while she is summoned and in the world, else null.</summary>
+        public static GameBot Active => _active is { ObjectState: GameObject.eObjectState.Active } bot ? bot : null;
+
         public void OnCommand(GameClient client, string[] args)
         {
             GamePlayer player = client?.Player;

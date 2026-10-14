@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DOL.GS;
 
@@ -49,6 +50,86 @@ public static class KobaldjoviIdentity
         "If you hear singing in the hills, that's me. If it's bad singing, also me.",
         "I take requests. I ignore most of them, but I take them.",
     ];
+
+    // {0} is whoever spoke to him.
+    public static readonly BotPersonality Personality = new()
+    {
+        Name = Name,
+        Matches = Is,
+        Replies = new Dictionary<eAutonomousChatIntent, string[]>
+        {
+            [eAutonomousChatIntent.Greeting] =
+            [
+                "{0}! ~ Hello, hello, it's good to see you ~ ...sorry, it just comes out.",
+                "Hail, {0}! Got a request? I do ballads, metal and very loud whale noises.",
+                "Well met, {0}. You look like someone who appreciates a power ballad.",
+            ],
+            [eAutonomousChatIntent.Banter] =
+            [
+                "Ha! {0}, that's going in a song. You won't like the rhyme.",
+                "Funny, {0}. Not as funny as my comedy album, but close.",
+                "{0}, you're wasted on adventuring. Ever thought of joining a band?",
+            ],
+            [eAutonomousChatIntent.Abuse] =
+            [
+                "Harsh, {0}. I've had worse reviews. Mostly from my mother.",
+                "Easy there, {0}. Save that energy for a death metal chorus.",
+                "~ Sticks and stones may break my bones, but haters make great B-sides ~",
+            ],
+            [eAutonomousChatIntent.Grouping] =
+            [
+                "A group, {0}? I bring speed songs and a deep catalogue. Mostly the songs.",
+                "I'll join, {0}, but I get to pick the travel music.",
+                "Every band needs a Skald, {0}. Every group too.",
+            ],
+            [eAutonomousChatIntent.Grinding] =
+            [
+                "Grinding is just a song with a lot of verses, {0}.",
+                "I hum while I hunt, {0}. The monsters hate it. Keeps them off balance.",
+            ],
+            [eAutonomousChatIntent.Travel] =
+            [
+                "Road trip, {0}? I've got a whole mixtape for the walk.",
+                "Wherever it is, {0}, it's closer with a speed song. Allegedly.",
+            ],
+            [eAutonomousChatIntent.Dungeon] =
+            [
+                "Dungeons have great echo, {0}. Terrible audiences though.",
+                "Dark, damp, full of screaming? Sounds like my first gig, {0}.",
+            ],
+            [eAutonomousChatIntent.RvR] =
+            [
+                "The frontier, {0}! Nothing says romance like a keep siege at sunset.",
+                "I'll sing the battle hymn, {0}. You do the actual battling.",
+            ],
+            [eAutonomousChatIntent.Trading] =
+            [
+                "I'd trade, {0}, but all I own is a lute and a stack of comics. Not selling the comics.",
+                "Any old books for sale, {0}? I'm halfway through a saga and it's getting good.",
+            ],
+            [eAutonomousChatIntent.Help] =
+            [
+                "Help? Sure, {0}. Step one: hum something. Step two: improvise.",
+                "I'm no trainer, {0}, but I know a song about it.",
+            ],
+            [eAutonomousChatIntent.Farewell] =
+            [
+                "~ Fare thee well, {0}, the road is long, and I will write you a song ~",
+                "Bye, {0}! Come back for the encore.",
+            ],
+            [eAutonomousChatIntent.IgnoreOutOfWorld] =
+            [
+                "No idea what that means, {0}. Is it a new music style?",
+                "Sounds like something from the far side of the world, {0}. Can I sing it?",
+            ],
+        },
+        FallbackReplies =
+        [
+            "Hm, {0}, that's got a rhythm to it. Mind if I use it?",
+            "Interesting, {0}. Reminds me of a comic I read once.",
+            "{0}, I'll be honest, I was humming. Say that again?",
+        ],
+    };
 
     /// <summary>True when a character or bot name would impersonate Kobaldjovi.</summary>
     public static bool IsReservedName(string name) =>

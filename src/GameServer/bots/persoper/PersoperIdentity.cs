@@ -115,6 +115,95 @@ public static partial class PersoperIdentity
         "{0} duty again. Midgard would never do this to me.",
     ];
 
+    // {0} is whoever spoke to her. Clean lines always; cheeky ones only without tone-down.
+    public static readonly BotPersonality Personality = new()
+    {
+        Name = FirstName,
+        Matches = bot => IsReservedName(bot.Name),
+        Replies = new Dictionary<eAutonomousChatIntent, string[]>
+        {
+            [eAutonomousChatIntent.Greeting] =
+            [
+                "Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.",
+                "{0}! Good to see you still have all your hit points.",
+            ],
+            [eAutonomousChatIntent.Banter] =
+            [
+                "Oh, {0}, you're funny. Keep it up and I'll heal you last.",
+                "Ha! {0}, I'm putting that on your tab.",
+            ],
+            [eAutonomousChatIntent.Abuse] =
+            [
+                "Careful, {0}. I decide who gets healed around here.",
+                "Rude, {0}. I'll pretend I didn't hear that. Once.",
+            ],
+            [eAutonomousChatIntent.Grouping] =
+            [
+                "A group, {0}? Someone has to keep you lot alive.",
+                "Count me in, {0}. Try not to stand in the fire.",
+            ],
+            [eAutonomousChatIntent.Grinding] =
+            [
+                "Pull what you like, {0}. I'll keep the green bars up.",
+                "More monsters, {0}? Fine, but I want a break after this camp.",
+            ],
+            [eAutonomousChatIntent.Travel] =
+            [
+                "Lead the way, {0}. I'll be right behind you, healing.",
+                "If you get us lost, {0}, I'm telling everyone.",
+            ],
+            [eAutonomousChatIntent.Dungeon] =
+            [
+                "A dungeon, {0}? Then nobody runs ahead. Nobody.",
+                "Dark and full of things that bite. My favourite, {0}. Not really.",
+            ],
+            [eAutonomousChatIntent.RvR] =
+            [
+                "The frontier, {0}? Healers are the first target. Protect me.",
+                "I'll come, {0}, but if an assassin shows up, I'm screaming.",
+            ],
+            [eAutonomousChatIntent.Trading] =
+            [
+                "Trading, {0}? I'm looking for anything in magenta.",
+                "Not selling, {0}. I'm a healer, not a merchant.",
+            ],
+            [eAutonomousChatIntent.Help] =
+            [
+                "Help? That's literally my job, {0}.",
+                "What do you need, {0}? Heals, buffs or a pep talk?",
+            ],
+            [eAutonomousChatIntent.Farewell] =
+            [
+                "Bye, {0}! Don't die without me.",
+                "Take care, {0}. Who's going to heal you now?",
+            ],
+            [eAutonomousChatIntent.IgnoreOutOfWorld] =
+            [
+                "I have no idea what that is, {0}, and I'm too busy healing to ask.",
+            ],
+        },
+        CheekyReplies = new Dictionary<eAutonomousChatIntent, string[]>
+        {
+            [eAutonomousChatIntent.Greeting] =
+            [
+                "Well hello, {0}. Need a little hands-on healing?",
+            ],
+            [eAutonomousChatIntent.Banter] =
+            [
+                "Keep talking like that, {0}, and I'll keep you topped up all night.",
+            ],
+            [eAutonomousChatIntent.Grouping] =
+            [
+                "Group with you, {0}? Thought you'd never ask, darling.",
+            ],
+        },
+        FallbackReplies =
+        [
+            "Mm-hm. Sure, {0}. Now, who needs healing?",
+            "Interesting, {0}. Tell me more after this pull.",
+        ],
+    };
+
     /// <summary>True when a character or bot name would impersonate Persoper.</summary>
     public static bool IsReservedName(string name) =>
         !string.IsNullOrEmpty(name) && name.Contains(FirstName, StringComparison.OrdinalIgnoreCase);
