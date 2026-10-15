@@ -210,9 +210,11 @@ public static class AutonomousBotChatCoordinator
             LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
         }
 
-        string reply = AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
-            ? knowledge
-            : personality.Reply(AutonomousChatIntentModel.Predict(message), player.Name, PersoperProperties.TONE_DOWN, Random.Shared);
+        eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
+        string reply = PersoperSpecialReply(bot, player, message, intent, true)
+            ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
+                ? knowledge
+                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)));
         Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
         {
             if (player.ObjectState != GameObject.eObjectState.Active)
@@ -409,10 +411,12 @@ public static class AutonomousBotChatCoordinator
         {
             GameBot responder = eligible[index];
             BotPersonality personality = BotPersonalities.For(responder);
-            string response = hasKnowledge
+            string response = personality != null && PersoperSpecialReply(responder, player, message, intent, IsMentioned(message, responder)) is { } special
+                ? special
+                : hasKnowledge
                 ? knowledge
                 : personality != null
-                    ? personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)
+                    ? MoodTinted(responder, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared))
                     : directed
                         ? GenerateDirectedReply(message)
                         : faction ? GenerateFactionReply(message) : GenerateLocalReply(responder, message);
@@ -487,6 +491,44 @@ public static class AutonomousBotChatCoordinator
     {
         normalized = response?.Trim() ?? string.Empty;
         return scheduled != null && normalized.Length > 0 && scheduled.Add(normalized);
+    }
+
+    /// <summary>
+    /// Persoper only: counts the message toward her memory of this player (once they have met),
+    /// and answers "what's your spec?" or "what do you remember?". Null means reply as usual.
+    /// </summary>
+    private static string PersoperSpecialReply(GameBot bot, GamePlayer player, string message, eAutonomousChatIntent intent, bool askedHer)
+    {
+        if (BotPersonalities.For(bot) != PersoperIdentity.Personality || player == null)
+            return null;
+        PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
+        // Spec and memory questions count only when meant for her (named, or a tell/whisper/group line).
+        string special = !askedHer ? null
+            : PersoperMemory.AsksMemory(message)
+            ? PersoperMemory.Recall(memory, player.Name, DateTime.UtcNow)
+            : PersoperMemory.AsksSpec(message)
+                ? PersoperMemory.SpecAnnouncement(bot.BotSpec?.SpecType ?? eSpecType.None, eSpecType.None, player.Name, Random.Shared)
+                : null;
+        // Only players who have summoned her are remembered.
+        if (!PersoperMemory.IsNew(memory))
+        {
+            PersoperMemory.RecordChat(memory, intent, message);
+            PersoperMemoryStore.Save(memory);
+        }
+        return special;
+    }
+
+    /// <summary>Persoper's mood toward this player sometimes colours her reply.</summary>
+    private static string MoodTinted(GameBot bot, GamePlayer player, string reply)
+    {
+        if (BotPersonalities.For(bot) != PersoperIdentity.Personality || player == null || Random.Shared.Next(3) != 0)
+            return reply;
+        return PersoperMemory.MoodOf(PersoperMemoryStore.Load(player)) switch
+        {
+            PersoperMemory.eMood.Cool => "Hmph. " + reply,
+            PersoperMemory.eMood.Warm => reply + " *smiles*",
+            _ => reply,
+        };
     }
 
     private static bool IsMentioned(string message, GameBot bot) =>

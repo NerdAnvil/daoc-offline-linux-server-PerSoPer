@@ -101,6 +101,18 @@ namespace DOL.GS.Commands
             if (grumble != null)
                 persoper.Say(grumble);
 
+            // Her memory of this player, then her build (mentioning last time's).
+            PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
+            string remembered = PersoperMemory.RememberedLine(memory, player.Name, DateTime.UtcNow, random);
+            if (remembered != null)
+                persoper.Say(remembered);
+            eSpecType spec = persoper.BotSpec?.SpecType ?? eSpecType.None;
+            string specLine = PersoperMemory.SpecAnnouncement(spec, (eSpecType)(memory?.LastSpec ?? (int)eSpecType.None), player.Name, random);
+            if (specLine != null)
+                persoper.Say(specLine);
+            PersoperMemory.RecordSummon(memory, player.Name, spec, player.CurrentZone?.Description, DateTime.UtcNow);
+            PersoperMemoryStore.Save(memory);
+
             DisplayMessage(client,
                 $"{persoper.Name}, level {persoper.Level} {characterClass}, joined your group. " +
                 "Like other companions she takes no loot and her gear is not saved, but she remembers who she is.");
