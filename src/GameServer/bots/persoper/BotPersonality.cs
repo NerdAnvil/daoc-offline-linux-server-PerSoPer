@@ -12,6 +12,8 @@ namespace DOL.GS;
 public sealed class BotPersonality
 {
     public required string Name { get; init; }
+    /// <summary>Stable lowercase id used in saved memories ("persoper", "kobaldjovi").</summary>
+    public required string Key { get; init; }
     public required Func<GameBot, bool> Matches { get; init; }
     public required IReadOnlyDictionary<eAutonomousChatIntent, string[]> Replies { get; init; }
     public required string[] FallbackReplies { get; init; }
@@ -22,6 +24,15 @@ public sealed class BotPersonality
     /// <summary>Extra lines mixed in only when tone-down is off.</summary>
     public IReadOnlyDictionary<eAutonomousChatIntent, string[]> CheekyReplies { get; init; }
 
+    /// <summary>How it talks about players it remembers. Null: it remembers no one.</summary>
+    public MemoryVoice Memory { get; init; }
+
+    /// <summary>How it describes its build. Null: it never mentions one.</summary>
+    public BuildVoice Build { get; init; }
+
+    /// <summary>How much irritation it takes and how it reacts. Null: nothing annoys it.</summary>
+    public PatienceProfile Patience { get; init; }
+
     public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random)
     {
         random ??= Random.Shared;
@@ -30,6 +41,67 @@ public sealed class BotPersonality
             lines = cheeky;
         return string.Format(lines[random.Next(lines.Length)], string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
+}
+
+/// <summary>
+/// Remembered lines by mood. Templates: {0} player name, {1} how many times as a word
+/// ("third"), {2} time away ("3 days"), {3} the last rude thing they said. A template
+/// that needs {2} or {3} is skipped when there is nothing to fill it with.
+/// </summary>
+public sealed class MemoryVoice
+{
+    public required string[] Warm { get; init; }
+    public required string[] Cool { get; init; }
+    public required string[] Neutral { get; init; }
+    /// <summary>"Do you remember me?" from someone it has not met; {0} player.</summary>
+    public required string JustMet { get; init; }
+    /// <summary>{0} how long ago they met, {1} player, {2} "4 times", {3} where, {4} build, {5} mood.</summary>
+    public required string Recall { get; init; }
+    /// <summary>Recall's place sentence; {0} zone.</summary>
+    public required string RecallWhere { get; init; }
+    /// <summary>Recall's build sentence; {0} build phrase.</summary>
+    public required string RecallBuild { get; init; }
+    public required string WarmMood { get; init; }
+    /// <summary>{0} how many rude messages ("3 times").</summary>
+    public required string CoolMood { get; init; }
+    public required string NeutralMood { get; init; }
+    /// <summary>Sometimes put before a reply to a player it dislikes.</summary>
+    public required string CoolTint { get; init; }
+    /// <summary>Sometimes put after a reply to a player it likes.</summary>
+    public required string WarmTint { get; init; }
+}
+
+/// <summary>How a personality talks about its build (spec).</summary>
+public sealed class BuildVoice
+{
+    /// <summary>The build in a few plain words, or null for builds it does not describe.</summary>
+    public required Func<eSpecType, string> Phrase { get; init; }
+    /// <summary>What it says about a build; {0} player.</summary>
+    public required Func<eSpecType, string[]> Lines { get; init; }
+    /// <summary>Said instead, sometimes, when the build changed: {0} this build, {1} last build, {2} player.</summary>
+    public required string ComparedToLast { get; init; }
+}
+
+/// <summary>A personality's patience: when it warns, when it quits, what it says.</summary>
+public sealed class PatienceProfile
+{
+    public required int WarnAt { get; init; }
+    public required int LastWarnAt { get; init; }
+    public required int QuitAt { get; init; }
+    public required TimeSpan CalmDown { get; init; }
+    /// <summary>Whether the player dying while grouped with it counts as an irritation.</summary>
+    public required bool CountsDeaths { get; init; }
+    /// <summary>Mild lines per irritation; {0} player.</summary>
+    public required IReadOnlyDictionary<PersonalityAnnoyance.eIrritation, string[]> Grumbles { get; init; }
+    public required string[] Warnings { get; init; }
+    public required string[] LastWarnings { get; init; }
+    public required string[] Quits { get; init; }
+    /// <summary>Shown when called while it sulks; {0} player, {1} time left ("7 minutes").</summary>
+    public required string[] SulkRefusals { get; init; }
+    /// <summary>World bots only: the tell it sends when its sulk ends and it heads back; {0} player.</summary>
+    public string[] MakeUps { get; init; }
+    /// <summary>World bots only: the tell when it can't rejoin by itself (not leader, group full); {0} player.</summary>
+    public string[] MakeUpInvites { get; init; }
 }
 
 /// <summary>All known personalities; a bot has at most one.</summary>

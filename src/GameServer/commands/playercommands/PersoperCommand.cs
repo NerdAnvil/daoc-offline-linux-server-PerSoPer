@@ -53,14 +53,12 @@ namespace DOL.GS.Commands
             }
 
             // After a rage-quit she sulks and will not come for this player.
-            PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
-            TimeSpan sulkLeft = PersoperAnnoyance.SulkLeft(memory?.SulkUntilUtc, DateTime.UtcNow);
+            TimeSpan sulkLeft = PersonalityAnnoyance.SulkLeft(PersoperIdentity.Personality, player);
             if (sulkLeft > TimeSpan.Zero)
             {
-                DisplayMessage(client, PersoperAnnoyance.SulkRefusal(player.Name, sulkLeft, Random.Shared));
+                DisplayMessage(client, PersonalityAnnoyance.SulkRefusal(PersoperIdentity.Personality.Patience, player.Name, sulkLeft, Random.Shared));
                 return;
             }
-            bool quickResummon = PersoperAnnoyance.IsQuickResummon(memory?.LastSeenUtc, DateTime.UtcNow);
 
             eCharacterClass characterClass = PersoperIdentity.HealerClassFor(player.Realm);
             PersoperStateRecord state = PersoperStateStore.Load();
@@ -112,22 +110,15 @@ namespace DOL.GS.Commands
                 persoper.Say(grumble);
 
             // Her memory of this player, then her build (mentioning last time's).
-            string remembered = PersoperMemory.RememberedLine(memory, player.Name, DateTime.UtcNow, random);
-            if (remembered != null)
-                persoper.Say(remembered);
-            eSpecType spec = persoper.BotSpec?.SpecType ?? eSpecType.None;
-            string specLine = PersoperMemory.SpecAnnouncement(spec, (eSpecType)(memory?.LastSpec ?? (int)eSpecType.None), player.Name, random);
-            if (specLine != null)
-                persoper.Say(specLine);
-            PersoperMemory.RecordSummon(memory, player.Name, spec, player.CurrentZone?.Description, DateTime.UtcNow);
-            PersoperMemoryStore.Save(memory);
+            bool quickResummon = PersonalityMeetings.Greet(persoper, player, random);
+
             DisplayMessage(client,
                 $"{persoper.Name}, level {persoper.Level} {characterClass}, joined your group. " +
                 "Like other companions she takes no loot and her gear is not saved, but she remembers who she is.");
 
             // Called again right after the last time: that tries her patience (and may end this summon).
             if (quickResummon)
-                PersoperAnnoyance.Irritate(player, persoper, PersoperAnnoyance.eIrritation.QuickResummon);
+                PersonalityAnnoyance.Irritate(player, persoper, PersonalityAnnoyance.eIrritation.QuickRecall);
         }
 
         private static void ApplyLook(GameBot persoper)

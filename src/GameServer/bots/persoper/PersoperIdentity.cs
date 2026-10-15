@@ -119,7 +119,84 @@ public static partial class PersoperIdentity
     public static readonly BotPersonality Personality = new()
     {
         Name = FirstName,
+        Key = "persoper",
         Matches = bot => IsReservedName(bot.Name),
+        Memory = new MemoryVoice
+        {
+            Warm =
+            [
+                "Always happy to see you, {0}.",
+                "That's the {1} time you've called me, {0}. I'm counting. Fondly.",
+                "{2} without me, {0}? I missed you. A little.",
+            ],
+            Cool =
+            [
+                "Oh. You again, {0}.",
+                "Last time you said \"{3}\". I remember, {0}.",
+                "{2} of peace, and now you're back, {0}. Not that I was counting.",
+            ],
+            Neutral =
+            [
+                "Back again, {0}.",
+                "That's the {1} summon, {0}. I'm keeping track.",
+                "Haven't seen you in {2}, {0}. Did you find another healer?",
+            ],
+            JustMet = "Remember you? We've only just met, {0}.",
+            Recall = "We met {0} ago, {1}, and you've called me {2}.{3}{4} {5}",
+            RecallWhere = " Last time we were in {0}.",
+            RecallBuild = " I went {0}.",
+            WarmMood = "You're one of the nice ones.",
+            CoolMood = "You've been rude to me {0}. I keep score.",
+            NeutralMood = "You're alright, mostly.",
+            CoolTint = "Hmph.",
+            WarmTint = "*smiles*",
+        },
+        Build = new BuildVoice
+        {
+            Phrase = spec => spec switch
+            {
+                eSpecType.MendHealer or eSpecType.RejuvCleric or eSpecType.RegrowthDruid => "heal-heavy",
+                eSpecType.AugHealer or eSpecType.EnhanceCleric or eSpecType.NurtureDruid => "buffs",
+                eSpecType.PacHealer => "crowd control",
+                eSpecType.SmiteCleric => "smiting",
+                eSpecType.NatureDruid => "nature and pets",
+                _ => null,
+            },
+            Lines = spec => spec switch
+            {
+                eSpecType.PacHealer => ["I'm feeling crowd control today. Things will sleep.", "Crowd control build. If it moves, it naps."],
+                eSpecType.SmiteCleric => ["Smiting today. Holy fire first, healing when I feel like it.", "I'm specced to smite. Point me at something."],
+                eSpecType.NatureDruid => ["Nature build today. I brought a friend with teeth.", "Nature and pets today. Be nice to my pet."],
+                eSpecType.AugHealer or eSpecType.EnhanceCleric or eSpecType.NurtureDruid =>
+                    ["Buffs today. You'll feel fabulous, {0}.", "I'm a buff bot today. You're welcome in advance."],
+                _ => ["Heal-heavy today, so stay behind me, {0}.", "Full healer build. Try to need me less than last time."],
+            },
+            ComparedToLast = "{0} this time. I was {1} last time and you still nearly died, {2}.",
+        },
+        Patience = new PatienceProfile
+        {
+            WarnAt = 3,
+            LastWarnAt = 4,
+            QuitAt = 5,
+            CalmDown = TimeSpan.FromMinutes(5),
+            CountsDeaths = true,
+            Grumbles = new Dictionary<PersonalityAnnoyance.eIrritation, string[]>
+            {
+                [PersonalityAnnoyance.eIrritation.QuickRecall] = ["Again? I just got here.", "Make up your mind, {0}."],
+                [PersonalityAnnoyance.eIrritation.Rude] = ["Charming, {0}.", "Noted. And remembered."],
+                [PersonalityAnnoyance.eIrritation.EmoteSpam] = ["Stop that, {0}.", "Yes, yes, I see you. Stop."],
+                [PersonalityAnnoyance.eIrritation.Death] = ["Dead again, {0}?", "I can only heal the living, {0}."],
+            },
+            Warnings = ["Careful, {0}. I'm this close to leaving.", "I'm getting annoyed, {0}.", "Keep this up and you'll be healing yourself."],
+            LastWarnings = ["One more and I'm gone, {0}.", "Last warning, {0}. I mean it."],
+            Quits = ["That's it, {0}. I'm out. Heal yourself!", "Enough! Find another healer, {0}.", "I quit. Don't call me, {0}. I'll call you."],
+            SulkRefusals =
+            [
+                "Persoper is still sulking. Try again in {1}.",
+                "\"Not talking to you, {0}.\" Persoper is sulking for another {1}.",
+                "\"Hmph.\" Persoper won't come for another {1}.",
+            ],
+        },
         Replies = new Dictionary<eAutonomousChatIntent, string[]>
         {
             [eAutonomousChatIntent.Greeting] =

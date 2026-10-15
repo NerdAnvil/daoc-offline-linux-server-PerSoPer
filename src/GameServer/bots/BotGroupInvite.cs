@@ -1,13 +1,24 @@
+using System;
+
 namespace DOL.GS;
 
 public static class BotGroupInvite
 {
-    public static bool TryInvite(GamePlayer player, GameBot bot)
+    /// <param name="countQuickRecall">False when the bot rejoins by itself (making up), so it is not a re-invite.</param>
+    public static bool TryInvite(GamePlayer player, GameBot bot, bool countQuickRecall = true)
     {
         if (player == null || bot == null || player.Realm != bot.Realm)
         {
             if (player != null)
                 ChatUtil.SendSystemMessage(player, "Only a bot of your realm will accept the invitation.");
+            return false;
+        }
+
+        // A personality bot that quit on this player sulks and turns the invite down.
+        if (BotPersonalities.For(bot) is { Patience: { } patience } personality &&
+            PersonalityAnnoyance.SulkLeft(personality, player) is var sulk && sulk > TimeSpan.Zero)
+        {
+            ChatUtil.SendSystemMessage(player, PersonalityAnnoyance.SulkRefusal(patience, player.Name, sulk, Random.Shared));
             return false;
         }
 
@@ -48,6 +59,11 @@ public static class BotGroupInvite
 
         bot.PathTo(player, bot.MaxSpeed);
         ChatUtil.SendSystemMessage(player, $"{bot.Name} joins your group and starts moving to you.");
+
+        // Personality bots greet people they remember and name their build; a quick
+        // re-invite tries their patience (and may send them straight back out).
+        if (PersonalityMeetings.Greet(bot, player, Random.Shared) && countQuickRecall)
+            PersonalityAnnoyance.Irritate(player, bot, PersonalityAnnoyance.eIrritation.QuickRecall);
         return true;
     }
 }

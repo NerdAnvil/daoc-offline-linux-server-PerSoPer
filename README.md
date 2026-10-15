@@ -42,13 +42,15 @@ new surname when summoned. The default is 5.
 ```
 
 **Patience** (`persoper_annoyance`, `persoper_rage_quit`, `persoper_sulk_minutes`): repeat
-irritations within a few minutes (quick re-summons, rudeness, emote spam, dying while she heals
-you) make her grumble, then warn you. On the fifth she rage-quits, leaves your group and refuses
-to come back for a while.
+irritations within a few minutes (quick re-summons or re-invites, rudeness, emote spam, and for
+Persoper dying while she heals you) make a personality bot grumble, then warn you. Persoper
+rage-quits on the fifth and despawns; Kobaldjovi is chill, lasts until the seventh, then storms
+out of your group to write a breakup song. Either refuses you for a while afterwards; when
+Kobaldjovi's sulk ends he sends you a make-up tell and walks back to rejoin your group.
 
 ```bash
-./daoc-admin options set persoper_annoyance off      # she ignores irritations entirely
-./daoc-admin options set persoper_rage_quit off      # she warns, but never leaves
+./daoc-admin options set persoper_annoyance off      # they ignore irritations entirely
+./daoc-admin options set persoper_rage_quit off      # they warn, but never leave
 ./daoc-admin options set persoper_sulk_minutes 10    # default; 0 to 100 minutes, 0 = no sulk
 ```
 

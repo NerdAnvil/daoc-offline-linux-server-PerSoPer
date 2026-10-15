@@ -211,7 +211,7 @@ public static class AutonomousBotChatCoordinator
         }
 
         eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
-        string reply = PersoperSpecialReply(bot, player, message, intent, true)
+        string reply = PersonalitySpecialReply(bot, player, message, intent, true)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
                 : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)));
@@ -411,7 +411,7 @@ public static class AutonomousBotChatCoordinator
         {
             GameBot responder = eligible[index];
             BotPersonality personality = BotPersonalities.For(responder);
-            string response = personality != null && PersoperSpecialReply(responder, player, message, intent, IsMentioned(message, responder)) is { } special
+            string response = personality != null && PersonalitySpecialReply(responder, player, message, intent, IsMentioned(message, responder)) is { } special
                 ? special
                 : hasKnowledge
                 ? knowledge
@@ -494,43 +494,41 @@ public static class AutonomousBotChatCoordinator
     }
 
     /// <summary>
-    /// Persoper only: counts the message toward her memory of this player (once they have met),
-    /// and answers "what's your spec?" or "what do you remember?". Null means reply as usual.
+    /// Any personality with a memory: counts the message toward what it remembers of this
+    /// player (once they have met), answers "what's your spec?" or "what do you remember?",
+    /// and lets rudeness try its patience. Null means reply as usual.
     /// </summary>
-    private static string PersoperSpecialReply(GameBot bot, GamePlayer player, string message, eAutonomousChatIntent intent, bool askedHer)
+    private static string PersonalitySpecialReply(GameBot bot, GamePlayer player, string message, eAutonomousChatIntent intent, bool askedIt)
     {
-        if (BotPersonalities.For(bot) != PersoperIdentity.Personality || player == null)
+        BotPersonality personality = BotPersonalities.For(bot);
+        if (personality?.Memory == null || player == null)
             return null;
-        PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
-        // Spec and memory questions count only when meant for her (named, or a tell/whisper/group line).
-        string special = !askedHer ? null
-            : PersoperMemory.AsksMemory(message)
-            ? PersoperMemory.Recall(memory, player.Name, DateTime.UtcNow)
-            : PersoperMemory.AsksSpec(message)
-                ? PersoperMemory.SpecAnnouncement(bot.BotSpec?.SpecType ?? eSpecType.None, eSpecType.None, player.Name, Random.Shared)
+        PersonalityMemoryRecord memory = PersonalityMemoryStore.Load(personality, player);
+        // Spec and memory questions count only when meant for it (named, or a tell/whisper/group line).
+        string special = !askedIt ? null
+            : PersonalityMemory.AsksMemory(message)
+            ? PersonalityMemory.Recall(personality, memory, player.Name, DateTime.UtcNow)
+            : PersonalityMemory.AsksSpec(message)
+                ? PersonalityMemory.SpecAnnouncement(personality, bot.BotSpec?.SpecType ?? eSpecType.None, eSpecType.None, player.Name, Random.Shared)
                 : null;
-        // Only players who have summoned her are remembered.
-        if (!PersoperMemory.IsNew(memory))
+        // Only players it has met (summoned it, or grouped with it) are remembered.
+        if (!PersonalityMemory.IsNew(memory))
         {
-            PersoperMemory.RecordChat(memory, intent, message);
-            PersoperMemoryStore.Save(memory);
+            PersonalityMemory.RecordChat(memory, intent, message);
+            PersonalityMemoryStore.Save(memory);
         }
-        if (intent == eAutonomousChatIntent.Abuse && askedHer)
-            PersoperAnnoyance.Irritate(player, bot, PersoperAnnoyance.eIrritation.Rude);
+        if (intent == eAutonomousChatIntent.Abuse && askedIt)
+            PersonalityAnnoyance.Irritate(player, bot, PersonalityAnnoyance.eIrritation.Rude);
         return special;
     }
 
-    /// <summary>Persoper's mood toward this player sometimes colours her reply.</summary>
+    /// <summary>A personality's mood toward this player sometimes colours its reply.</summary>
     private static string MoodTinted(GameBot bot, GamePlayer player, string reply)
     {
-        if (BotPersonalities.For(bot) != PersoperIdentity.Personality || player == null || Random.Shared.Next(3) != 0)
+        BotPersonality personality = BotPersonalities.For(bot);
+        if (personality?.Memory == null || player == null)
             return reply;
-        return PersoperMemory.MoodOf(PersoperMemoryStore.Load(player)) switch
-        {
-            PersoperMemory.eMood.Cool => "Hmph. " + reply,
-            PersoperMemory.eMood.Warm => reply + " *smiles*",
-            _ => reply,
-        };
+        return PersonalityMemory.Tint(personality, PersonalityMemoryStore.Load(personality, player), reply, Random.Shared);
     }
 
     private static bool IsMentioned(string message, GameBot bot) =>
