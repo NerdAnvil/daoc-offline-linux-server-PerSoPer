@@ -25,7 +25,7 @@ behaviour, dungeons, battlegrounds, keeps and frontier, and later chat.
 
 | Folder | What |
 |---|---|
-| `~/Dev/vscode/daoc-offline-linux-server-bots/` | **This repo** (clone of github.com/catastrophic-impact/daoc-offline-linux-server-bots). All work happens here. |
+| `~/Dev/vscode/daoc-offline-linux-server-bots/` | **This repo**: github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer, a fork of github.com/catastrophic-impact/daoc-offline-linux-server-bots. All work happens here. |
 | `~/boxes/daoc-server-box-home/` | The build box's home: `.dotnet/` (SDK), caches. No source. Put test server folders here (e.g. `test/daoc-server`). |
 
 Upstream is https://github.com/shadowofze/OfflineDAoC (see `UPSTREAM.md`); clone it to a scratch
@@ -42,7 +42,7 @@ folder when you need to compare or pull. Its release zips hold the world DB and 
   box commands
   `flatpak-spawn --host distrobox enter daoc-server-box -- bash -lc '...'`. The sandbox `/tmp` is
   private; put shared files under the box home.
-- **No git identity is set globally;** the repo has a local one (catastrophic-impact noreply).
+- **No git identity is set globally;** the repo has a local one (the owner's GitHub noreply).
 - **Common commands** (inside the box, from the repo root):
   - Build and test: `cd src && ~/.dotnet/dotnet build DaocServer.sln -c Release && ~/.dotnet/dotnet test Tests/Tests.csproj -c Release --no-build`
   - Full release: `tools/build-release.sh`. About 3 minutes; creates `dist/daoc-server`.

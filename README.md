@@ -17,7 +17,8 @@ interact (in a limited way) and react to in-game events. Today she's summoned wi
   player, the casual, the min/maxer, male and female, the joker, the loner, and the Leeroy
   Jenkins every server had before Leeroy was a thing.
 
-Built on the Linux DAoC server below; all credit for the server and bots to its authors.
+Built on [catastrophic-impact's Linux DAoC server](https://github.com/catastrophic-impact/daoc-offline-linux-server-bots)
+(described below); all credit for the server and bots to its authors.
 
 ## Persoper's settings
 
@@ -88,8 +89,8 @@ Everything else is in the source, including the world and the navmeshes (`world/
 ### 1. Get the source
 
 ```bash
-git clone https://github.com/catastrophic-impact/daoc-offline-linux-server-bots.git
-cd daoc-offline-linux-server-bots
+git clone https://github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer.git
+cd daoc-offline-linux-server-PerSoPer
 ```
 
 Or download it as a ZIP from GitHub (**Code → Download ZIP**) and unpack it.
