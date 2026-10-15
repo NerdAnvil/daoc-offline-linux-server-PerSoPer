@@ -41,7 +41,8 @@ namespace DOL.GS.Admin
                         request.GetInt("count") ?? 1,
                         request.GetInt("level") ?? 1,
                         request.GetString("class"),
-                        request.GetString("personality")),
+                        request.GetString("personality"),
+                        request.GetString("personalityType")),
                     AdminOps.BotsDelete => BotRosterAdmin.Delete(Required(request, "bot")),
                     AdminOps.BotsDeleteAll => request.GetBool("confirm") == true
                         ? BotRosterAdmin.DeleteAll()

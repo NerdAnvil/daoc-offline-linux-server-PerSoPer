@@ -35,6 +35,14 @@ namespace DOL.Tests.Unit
         }
 
         [Test]
+        public void BotsCreateParsesPersonalityType()
+        {
+            AdminRequest request = Parse("bots create --realm mid --count 10 --personality-type mixed");
+            Assert.That(request.GetString("personalityType"), Is.EqualTo("mixed"));
+            Assert.That(request.GetInt("count"), Is.EqualTo(10));
+        }
+
+        [Test]
         public void BotsCreateParsesPersonality()
         {
             AdminRequest request = Parse("bots create --personality kobaldjovi --level 50");

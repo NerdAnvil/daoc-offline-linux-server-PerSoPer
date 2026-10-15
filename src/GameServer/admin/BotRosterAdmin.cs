@@ -59,7 +59,8 @@ namespace DOL.GS.Admin
             return result.OrderBy(b => b.Realm).ThenBy(b => b.Name, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        public static BotCreateResult Create(string realmSpec, int count, int level, string className, string personality = null)
+        public static BotCreateResult Create(string realmSpec, int count, int level, string className, string personality = null,
+            string personalityType = null)
         {
             if (count is < 1 or > 100)
                 throw new AdminException(AdminErrorCodes.Invalid, "Create 1 to 100 bots per realm at a time.");
@@ -67,6 +68,11 @@ namespace DOL.GS.Admin
                 throw new AdminException(AdminErrorCodes.Invalid, "Bots start at level 1 or level 50.");
             if (personality != null)
                 return CreatePersonality(personality, level);
+
+            string typeKey = null;
+            if (personalityType != null && (typeKey = PersonalityTypes.Normalise(personalityType)) == null)
+                throw new AdminException(AdminErrorCodes.Invalid,
+                    $"Unknown personality type '{personalityType}'. Known: {string.Join(", ", PersonalityTypes.Keys)}, {PersonalityTypes.Mixed}.");
 
             eRealm[] realms = realmSpec.Equals("all", StringComparison.OrdinalIgnoreCase) ? Realms : [ParseRealm(realmSpec)];
             eCharacterClass? characterClass = className == null ? null : ParseClass(className, realms);
@@ -88,8 +94,16 @@ namespace DOL.GS.Admin
                         AutonomousBotIdentityGenerator.Identity identity = characterClass == null
                             ? AutonomousBotIdentityGenerator.Generate(realm, gender, reserved)
                             : AutonomousBotIdentityGenerator.GenerateForClass(realm, gender, characterClass.Value, reserved);
-                        AddRecord(identity, level);
-                        names.Add(identity.Name);
+                        OfflineWorldBotRecord added = AddRecord(identity, level);
+                        if (typeKey != null)
+                        {
+                            // A personality type for a generated bot (stored in our own table).
+                            string picked = PersonalityTypes.Pick(typeKey, Random.Shared);
+                            PersonalityTypes.Assign(added.BotId, picked);
+                            names.Add($"{identity.Name} ({picked})");
+                        }
+                        else
+                            names.Add(identity.Name);
                     }
                 }
             }
@@ -127,7 +141,7 @@ namespace DOL.GS.Admin
             return new BotCreateResult([identity.Name], true);
         }
 
-        private static void AddRecord(AutonomousBotIdentityGenerator.Identity identity, int level)
+        private static OfflineWorldBotRecord AddRecord(AutonomousBotIdentityGenerator.Identity identity, int level)
         {
             string now = DateTime.UtcNow.ToString("O");
             var record = new OfflineWorldBotRecord
@@ -177,6 +191,7 @@ namespace DOL.GS.Admin
                 throw new AdminException(AdminErrorCodes.Failed, $"Could not save bot {identity.Name}.");
             if (level == 50)
                 AddLevel50Gear(record);
+            return record;
         }
 
         private static void AddLevel50Gear(OfflineWorldBotRecord record)

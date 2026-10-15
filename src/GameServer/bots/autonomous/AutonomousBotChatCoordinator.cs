@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using DOL.GS.PacketHandler;
 
 namespace DOL.GS;
@@ -247,6 +248,27 @@ public static class AutonomousBotChatCoordinator
         }
     }
 
+    /// <summary>
+    /// A personality-type bot speaks one of its own lines, in faction chat or nearby, when
+    /// someone can hear it; nearby bots may answer (in their own voices if they have one).
+    /// Paced by PersonalityChatter, outside the plain bots' shared chat slots.
+    /// </summary>
+    public static bool SpeakAsPersonality(GameBot bot, string line, bool faction)
+    {
+        if (!Eligible(bot) || string.IsNullOrWhiteSpace(line))
+            return false;
+        if (faction)
+        {
+            if (!HasFactionAudience(bot.Realm))
+                return false;
+            BroadcastFaction(bot.Name, bot.Realm, line);
+        }
+        else if (!HasLocalAudience(bot) || !bot.Say(line))
+            return false;
+        ScheduleBotReplies(bot, line, faction, false);
+        return true;
+    }
+
     /// <summary>True when a message names this bot (full name, or its personality's name).</summary>
     public static bool IsMentionedPublic(string message, GameBot bot) => IsMentioned(message, bot);
 
@@ -458,6 +480,8 @@ public static class AutonomousBotChatCoordinator
         int count = hasKnowledge ? Math.Min(1, eligible.Length) : RollResponseCount(eligible.Length);
         HashSet<string> scheduledResponses = new(StringComparer.OrdinalIgnoreCase);
         int scheduledCount = 0;
+        // Replies are dropped when the responder is busy by then; count the ones actually said.
+        int delivered = 0;
         for (int index = 0; index < count; index++)
         {
             GameBot responder = eligible[index];
@@ -470,19 +494,27 @@ public static class AutonomousBotChatCoordinator
             Schedule(responder, 1_700 + scheduledCount++ * 2_100 + Random.Shared.Next(1_300), () =>
             {
                 if (faction && HasFactionAudience(responder.Realm))
+                {
                     BroadcastFaction(responder.Name, responder.Realm, response);
-                else if (!faction && HasLocalAudience(responder))
-                    responder.Say(response);
+                    Interlocked.Increment(ref delivered);
+                }
+                else if (!faction && HasLocalAudience(responder) && responder.Say(response))
+                    Interlocked.Increment(ref delivered);
             });
         }
 
         // A short optional closing line makes this read like a conversation,
         // while the channel cooldown prevents it from becoming a chat loop.
-        if (!fromPlayer && !hasKnowledge && scheduledCount > 0 && Random.Shared.NextDouble() < 0.28)
+        // Only after someone actually answered (else the starter seems to answer itself),
+        // and not for personality bots, whose plain closing line would be out of character.
+        if (!fromPlayer && !hasKnowledge && scheduledCount > 0 && BotPersonalities.For(starter) == null &&
+            Random.Shared.NextDouble() < 0.28)
         {
             string closing = faction ? "Fair enough. Safe travels." : "Understood. I will keep at it.";
             Schedule(starter, 5_500 + scheduledCount * 1_500, () =>
             {
+                if (Volatile.Read(ref delivered) == 0)
+                    return;
                 if (faction && HasFactionAudience(starter.Realm))
                     BroadcastFaction(starter.Name, starter.Realm, closing);
                 else if (!faction && HasLocalAudience(starter))

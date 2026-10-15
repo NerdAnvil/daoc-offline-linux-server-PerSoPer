@@ -20,6 +20,9 @@ public static class PersoperProperties
     [ServerProperty("persoper", "persoper_rage_quit", "When annoyed enough, a personality bot quits on you and sulks (Persoper despawns, Kobaldjovi storms out). Off: they only warn.", true)]
     public static bool RAGE_QUIT;
 
+    [ServerProperty("persoper", "persoper_chatter_percent", "How chatty personality-type bots are, 0-100: 0 = silent, 50 = calm, 100 = lively (default).", 100)]
+    public static int CHATTER_PERCENT;
+
     [ServerProperty("persoper", "persoper_sulk_minutes", "Minutes a personality bot refuses you after quitting on you (0 = no sulk).", 10)]
     public static int SULK_MINUTES;
 }

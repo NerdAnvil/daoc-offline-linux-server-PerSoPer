@@ -65,6 +65,17 @@ Without a size she picks one from the target's health. Panic ("HELP!", "ACK!", "
 me now") gets her fastest big heal straight away. Pestering her for heals at full health tries
 her patience.
 
+## Personality types
+
+Give generated bots a personality type: **hardcore**, **casual**, **minmaxer**, **joker**,
+**loner** or **leeroy** (or **mixed** for a random one each). They chat in faction and nearby in
+their own voice, remember you, have their own patience, and answer each other.
+
+```bash
+./daoc-admin bots create --realm mid --count 10 --personality-type mixed
+./daoc-admin options set persoper_chatter_percent 100   # default; 0 = silent, 50 = calm
+```
+
 ## Kobaldjovi, the Singer
 
 The second personality: a Midgard Kobold Skald who lives in the world as a normal gamebot (not

@@ -9,7 +9,7 @@ namespace DOL.GS;
 /// have no personality and keep the generic replies.
 /// Reply lines use {0} for the name of whoever spoke to it.
 /// </summary>
-public sealed class BotPersonality
+public sealed record BotPersonality
 {
     public required string Name { get; init; }
     /// <summary>Stable lowercase id used in saved memories ("persoper", "kobaldjovi").</summary>
@@ -35,6 +35,15 @@ public sealed class BotPersonality
 
     /// <summary>How much irritation it takes and how it reacts. Null: nothing annoys it.</summary>
     public PatienceProfile Patience { get; init; }
+
+    /// <summary>Lines it starts conversations with (personality types). Null: none of its own.</summary>
+    public string[] Ambient { get; init; }
+
+    /// <summary>How often it speaks up, 0-100 (personality types; Loner low, Joker high).</summary>
+    public int Chattiness { get; init; }
+
+    /// <summary>The personality type this is a copy of ("joker"), or null for a unique personality.</summary>
+    public string TypeKey { get; init; }
 
     public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random)
     {
@@ -121,6 +130,7 @@ public static class BotPersonalities
             if (personality.Matches(bot))
                 return personality;
         }
-        return null;
+        // A generated world bot given a personality type (Joker, Loner...).
+        return bot.IsAutonomousWorldBot ? PersonalityTypes.InstanceFor(bot) : null;
     }
 }
