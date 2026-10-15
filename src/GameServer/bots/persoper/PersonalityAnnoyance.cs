@@ -22,6 +22,8 @@ public static class PersonalityAnnoyance
         Rude,
         EmoteSpam,
         Death,
+        /// <summary>Asking for heals again and again at full health.</summary>
+        HealSpam,
     }
 
     public enum eReaction

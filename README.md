@@ -57,6 +57,14 @@ Kobaldjovi's sulk ends he sends you a make-up tell and walks back to rejoin your
 See the current values with `./daoc-admin options`. The same commands can be typed into the
 server console without `./daoc-admin`.
 
+## Asking for heals
+
+Ask Persoper (or a healer companion in your group) for a heal in group chat, a tell, a whisper,
+or `/say` with her name: "small heal", "medium heal", "big heal", "heal Bob", "heal the tank".
+Without a size she picks one from the target's health. Panic ("HELP!", "ACK!", "ON ME!", "heal
+me now") gets her fastest big heal straight away. Pestering her for heals at full health tries
+her patience.
+
 ## Kobaldjovi, the Singer
 
 The second personality: a Midgard Kobold Skald who lives in the world as a normal gamebot (not

@@ -30,6 +30,9 @@ public sealed class BotPersonality
     /// <summary>How it describes its build. Null: it never mentions one.</summary>
     public BuildVoice Build { get; init; }
 
+    /// <summary>What it says when asked for a heal. Null: the neutral healer lines.</summary>
+    public HealVoice Heals { get; init; }
+
     /// <summary>How much irritation it takes and how it reacts. Null: nothing annoys it.</summary>
     public PatienceProfile Patience { get; init; }
 

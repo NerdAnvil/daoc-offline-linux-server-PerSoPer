@@ -173,6 +173,21 @@ public static partial class PersoperIdentity
             },
             ComparedToLast = "{0} this time. I was {1} last time and you still nearly died, {2}.",
         },
+        Heals = new HealVoice
+        {
+            Small = ["Little top-up for {0}.", "Small heal, coming up.", "There. Not a scratch on you, {0}."],
+            Medium = ["Healing you, {0}.", "Hold still, {0}.", "One proper heal, as ordered."],
+            Big = ["Big heal on {0}!", "Full power, {0}. Try not to waste it.", "There, {0}. Good as new."],
+            Panic = ["Hold on, {0}!", "I've got you, {0}!", "Not on my watch!"],
+            Approaching = ["Coming, {0}! Stay where I can reach you.", "Wait for me, {0}, you're too far!"],
+            NoPower = ["I'm out of power, darling. Give me a moment!", "Empty, {0}. Pray, or run."],
+            Cooldown = ["My heals are recharging, {0}. Survive for a bit.", "Give me a second, my good heal is on cooldown."],
+            CantCast = ["I can't cast right now, {0}!", "Not now, I'm a little tied up!"],
+            Busy = ["Already healing, {0}. One thing at a time.", "Patience, {0}, there's a heal on the way."],
+            NoHeal = ["I don't have a heal for that, {0}."],
+            OutOfReach = ["I can't reach {0} from here.", "Too far, {0}. Come back to me."],
+            UnknownTarget = ["Heal who? I don't know a {0}.", "Who's {0}? Not in our group, darling."],
+        },
         Patience = new PatienceProfile
         {
             WarnAt = 3,
@@ -186,6 +201,7 @@ public static partial class PersoperIdentity
                 [PersonalityAnnoyance.eIrritation.Rude] = ["Charming, {0}.", "Noted. And remembered."],
                 [PersonalityAnnoyance.eIrritation.EmoteSpam] = ["Stop that, {0}.", "Yes, yes, I see you. Stop."],
                 [PersonalityAnnoyance.eIrritation.Death] = ["Dead again, {0}?", "I can only heal the living, {0}."],
+                [PersonalityAnnoyance.eIrritation.HealSpam] = ["You're at full health, {0}. I checked. Twice.", "Stop asking, {0}. You're fine."],
             },
             Warnings = ["Careful, {0}. I'm this close to leaving.", "I'm getting annoyed, {0}.", "Keep this up and you'll be healing yourself."],
             LastWarnings = ["One more and I'm gone, {0}.", "Last warning, {0}. I mean it."],

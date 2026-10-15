@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
+using System.Linq;
 using DOL.GS.PacketHandler;
 
 namespace DOL.GS.Commands
@@ -56,9 +57,11 @@ namespace DOL.GS.Commands
 			}
 
 			string text = string.Join(" ", args, 1, args.Length - 1);
-			if (client.Player.Whisper(obj, text) && obj is GameBot bot && BotPersonalities.For(bot) != null)
+			if (client.Player.Whisper(obj, text) && obj is GameBot bot &&
+				(BotPersonalities.For(bot) != null || PersonalityHeals.Healers(client.Player).Contains(bot)))
 			{
-				// Personality bots answer whispers; show the player what they whispered, as for players.
+				// Personality bots answer whispers, and healer companions take heal requests;
+				// show the player what they whispered, as for players.
 				client.Out.SendMessage("You whisper, \"" + text + "\" to " + bot.GetName(0, false), eChatType.CT_Say, eChatLoc.CL_ChatWindow);
 				AutonomousBotChatCoordinator.OnPlayerPrivateChat(client.Player, bot, text, AutonomousBotChatCoordinator.ePrivateChannel.Whisper);
 			}

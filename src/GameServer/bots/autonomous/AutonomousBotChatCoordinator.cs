@@ -148,6 +148,9 @@ public static class AutonomousBotChatCoordinator
     {
         if (player == null || string.IsNullOrWhiteSpace(message) || player.CurrentRegion == null)
             return;
+        // /say heal requests reach healers in the player's own group only.
+        if (PersonalityHeals.TryHandle(player, message, null, null))
+            return;
         if (AutonomousChatIntentModel.Predict(message) == eAutonomousChatIntent.IgnoreOutOfWorld)
             return;
         lock (Sync)
@@ -184,6 +187,8 @@ public static class AutonomousBotChatCoordinator
     {
         if (player?.Group == null || string.IsNullOrWhiteSpace(message))
             return;
+        if (PersonalityHeals.TryHandle(player, message, null, ePrivateChannel.Group))
+            return;
         GameBot[] members = player.Group.GetMembersInTheGroup().OfType<GameBot>()
             .Where(bot => BotPersonalities.For(bot) != null)
             .ToArray();
@@ -200,6 +205,9 @@ public static class AutonomousBotChatCoordinator
     /// </summary>
     public static bool OnPlayerPrivateChat(GamePlayer player, GameBot bot, string message, ePrivateChannel channel)
     {
+        // A heal request to a healer is answered by casting, not by chat.
+        if (PersonalityHeals.TryHandle(player, message, bot, channel))
+            return true;
         BotPersonality personality = BotPersonalities.For(bot);
         if (player == null || personality == null || string.IsNullOrWhiteSpace(message))
             return false;
@@ -215,26 +223,32 @@ public static class AutonomousBotChatCoordinator
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
                 : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)));
-        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
-        {
-            if (player.ObjectState != GameObject.eObjectState.Active)
-                return;
-            switch (channel)
-            {
-                case ePrivateChannel.Tell:
-                    ChatUtil.SendSendMessage(player.Client, "Social.ReceiveMessage.Private.Sends", bot.Name, reply);
-                    break;
-                case ePrivateChannel.Whisper:
-                    bot.Whisper(player, reply);
-                    break;
-                case ePrivateChannel.Group:
-                    if (bot.Group != null && bot.Group == player.Group)
-                        bot.Group.SendMessageToGroupMembers(bot, reply, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
-                    break;
-            }
-        });
+        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reply));
         return true;
     }
+
+    /// <summary>Sends a bot's line to a player on a private channel: a tell, a whisper or group chat.</summary>
+    public static void Deliver(GameBot bot, GamePlayer player, ePrivateChannel channel, string line)
+    {
+        if (player?.ObjectState != GameObject.eObjectState.Active || string.IsNullOrEmpty(line))
+            return;
+        switch (channel)
+        {
+            case ePrivateChannel.Tell:
+                ChatUtil.SendSendMessage(player.Client, "Social.ReceiveMessage.Private.Sends", bot.Name, line);
+                break;
+            case ePrivateChannel.Whisper:
+                bot.Whisper(player, line);
+                break;
+            case ePrivateChannel.Group:
+                if (bot.Group != null && bot.Group == player.Group)
+                    bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+                break;
+        }
+    }
+
+    /// <summary>True when a message names this bot (full name, or its personality's name).</summary>
+    public static bool IsMentionedPublic(string message, GameBot bot) => IsMentioned(message, bot);
 
     public static bool TryAdvertiseExchangeItem(GameBot seller, string exactItemName)
     {
