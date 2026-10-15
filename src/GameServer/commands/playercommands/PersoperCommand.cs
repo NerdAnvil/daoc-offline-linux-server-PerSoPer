@@ -52,6 +52,16 @@ namespace DOL.GS.Commands
                 return;
             }
 
+            // After a rage-quit she sulks and will not come for this player.
+            PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
+            TimeSpan sulkLeft = PersoperAnnoyance.SulkLeft(memory?.SulkUntilUtc, DateTime.UtcNow);
+            if (sulkLeft > TimeSpan.Zero)
+            {
+                DisplayMessage(client, PersoperAnnoyance.SulkRefusal(player.Name, sulkLeft, Random.Shared));
+                return;
+            }
+            bool quickResummon = PersoperAnnoyance.IsQuickResummon(memory?.LastSeenUtc, DateTime.UtcNow);
+
             eCharacterClass characterClass = PersoperIdentity.HealerClassFor(player.Realm);
             PersoperStateRecord state = PersoperStateStore.Load();
             Random random = Random.Shared;
@@ -102,7 +112,6 @@ namespace DOL.GS.Commands
                 persoper.Say(grumble);
 
             // Her memory of this player, then her build (mentioning last time's).
-            PersoperMemoryRecord memory = PersoperMemoryStore.Load(player);
             string remembered = PersoperMemory.RememberedLine(memory, player.Name, DateTime.UtcNow, random);
             if (remembered != null)
                 persoper.Say(remembered);
@@ -112,10 +121,13 @@ namespace DOL.GS.Commands
                 persoper.Say(specLine);
             PersoperMemory.RecordSummon(memory, player.Name, spec, player.CurrentZone?.Description, DateTime.UtcNow);
             PersoperMemoryStore.Save(memory);
-
             DisplayMessage(client,
                 $"{persoper.Name}, level {persoper.Level} {characterClass}, joined your group. " +
                 "Like other companions she takes no loot and her gear is not saved, but she remembers who she is.");
+
+            // Called again right after the last time: that tries her patience (and may end this summon).
+            if (quickResummon)
+                PersoperAnnoyance.Irritate(player, persoper, PersoperAnnoyance.eIrritation.QuickResummon);
         }
 
         private static void ApplyLook(GameBot persoper)

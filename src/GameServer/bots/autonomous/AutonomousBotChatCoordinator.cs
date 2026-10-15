@@ -515,6 +515,8 @@ public static class AutonomousBotChatCoordinator
             PersoperMemory.RecordChat(memory, intent, message);
             PersoperMemoryStore.Save(memory);
         }
+        if (intent == eAutonomousChatIntent.Abuse && askedHer)
+            PersoperAnnoyance.Irritate(player, bot, PersoperAnnoyance.eIrritation.Rude);
         return special;
     }
 

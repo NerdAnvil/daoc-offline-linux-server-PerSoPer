@@ -41,6 +41,17 @@ new surname when summoned. The default is 5.
 ./daoc-admin options set persoper_surname_change_percent 100   # new surname every summon
 ```
 
+**Patience** (`persoper_annoyance`, `persoper_rage_quit`, `persoper_sulk_minutes`): repeat
+irritations within a few minutes (quick re-summons, rudeness, emote spam, dying while she heals
+you) make her grumble, then warn you. On the fifth she rage-quits, leaves your group and refuses
+to come back for a while.
+
+```bash
+./daoc-admin options set persoper_annoyance off      # she ignores irritations entirely
+./daoc-admin options set persoper_rage_quit off      # she warns, but never leaves
+./daoc-admin options set persoper_sulk_minutes 10    # default; 0 to 100 minutes, 0 = no sulk
+```
+
 See the current values with `./daoc-admin options`. The same commands can be typed into the
 server console without `./daoc-admin`.
 

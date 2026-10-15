@@ -21,3 +21,9 @@ GameGuard.GetExamineMessages.Examine:			You examine the {0}. {1} is {2} and is a
 # GAMESTAICITEM
 GameStaticItem.GetName.Article1:			The {0}
 GameStaticItem.GetName.Article2:			the {0}
+
+# EMOTES (shown when emoting faster than the emote delay allows)
+Scripts.Players.Emotes.Message1:			Looks like someone had too much caffeine today.
+Scripts.Players.Emotes.Message2:			Hey! Slow down. Take a few minutes, calm down and gather your thoughts.
+Scripts.Players.Emotes.Message3:			Careful, or your face will stay like that.
+Scripts.Players.Emotes.Message4:			Slow down, you're too fast! Enjoy the moment.

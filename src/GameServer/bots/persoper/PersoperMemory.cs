@@ -26,6 +26,8 @@ public sealed class PersoperMemoryRecord : DataObject
     [DataElement(AllowDbNull = false)] public int LastSpec { get; set; } = (int)eSpecType.None;
     [DataElement(AllowDbNull = false)] public string LastZone { get; set; } = string.Empty;
     [DataElement(AllowDbNull = false)] public string LastInsult { get; set; } = string.Empty;
+    /// <summary>Until when she refuses this player after a rage-quit (empty: not sulking).</summary>
+    [DataElement(AllowDbNull = false)] public string SulkUntilUtc { get; set; } = string.Empty;
 }
 
 public static class PersoperMemoryStore

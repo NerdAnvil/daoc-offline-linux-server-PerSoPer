@@ -33,6 +33,9 @@ namespace DOL.GS.Admin
             "rvr_siege_defense_ratio",
             "persoper_tone_down",
             "persoper_surname_change_percent",
+            "persoper_annoyance",
+            "persoper_rage_quit",
+            "persoper_sulk_minutes",
         ];
 
         private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
@@ -125,7 +128,7 @@ namespace DOL.GS.Admin
                         ? number
                         : throw new AdminException(AdminErrorCodes.Invalid, $"{key} must be a number from 0 to 1 (for example 0.5).");
                 case int:
-                    // Whole-number options are percentages.
+                    // Whole-number options run 0-100: percentages, or minutes (persoper_sulk_minutes).
                     return int.TryParse(value, NumberStyles.Integer, Invariant, out int percent) && percent is >= 0 and <= 100
                         ? percent
                         : throw new AdminException(AdminErrorCodes.Invalid, $"{key} must be a whole number from 0 to 100.");

@@ -362,6 +362,8 @@ namespace DOL.GS.Commands
 			}
 
 			SendEmote(client.Player, client.Player.TargetObject, emoteID, emoteMessages);
+			if (client.Player.TargetObject is GameBot bot && BotPersonalities.For(bot) == PersoperIdentity.Personality)
+				PersoperAnnoyance.OnEmote(client.Player, bot);
 		}
 
 

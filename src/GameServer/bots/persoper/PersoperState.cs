@@ -13,6 +13,15 @@ public static class PersoperProperties
 
     [ServerProperty("persoper", "persoper_surname_change_percent", "Chance (0-100) that Persoper decides on a new surname when summoned.", 5)]
     public static int SURNAME_CHANGE_PERCENT;
+
+    [ServerProperty("persoper", "persoper_annoyance", "Persoper notices repeat irritations (quick resummons, rudeness, emote spam, your deaths) and grumbles.", true)]
+    public static bool ANNOYANCE;
+
+    [ServerProperty("persoper", "persoper_rage_quit", "When annoyed enough, Persoper leaves the group and sulks. Off: she only warns.", true)]
+    public static bool RAGE_QUIT;
+
+    [ServerProperty("persoper", "persoper_sulk_minutes", "Minutes Persoper refuses to be summoned after a rage-quit (0 = no sulk).", 10)]
+    public static int SULK_MINUTES;
 }
 
 /// <summary>

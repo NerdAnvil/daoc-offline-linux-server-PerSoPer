@@ -5788,6 +5788,10 @@ namespace DOL.GS
         /// <param name="killer">the killer</param>
         public override void ProcessDeath(GameObject killer)
         {
+            // Persoper loses patience with players who keep dying while she heals them.
+            if (DOL.GS.Commands.PersoperCommandHandler.Active is { } persoper && persoper.Group != null && persoper.Group == Group)
+                PersoperAnnoyance.Irritate(this, persoper, PersoperAnnoyance.eIrritation.Death);
+
             // Ambient trigger upon killing player
             if (killer is GameNPC)
                 (killer as GameNPC).FireAmbientSentence(GameNPC.eAmbientTrigger.killing, killer as GameLiving);
