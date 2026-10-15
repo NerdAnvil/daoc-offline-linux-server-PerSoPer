@@ -53,6 +53,32 @@ public class UT_Kobaldjovi
     }
 
     [Test]
+    public void SongReaction_UsesPersopersOwnLinesAndPlainLinesOtherwise()
+    {
+        var random = new Random(5);
+        string[] persoper = PersoperIdentity.Personality.SongReactions.Select(line => string.Format(line, "Kobaldjovi")).ToArray();
+        for (int i = 0; i < 50; i++)
+        {
+            Assert.That(persoper, Does.Contain(KobaldjoviIdentity.SongReaction(PersoperIdentity.Personality, random)));
+            string plain = KobaldjoviIdentity.SongReaction(null, random);
+            Assert.That(plain, Is.Not.Empty.And.Not.Contain("{"));
+            Assert.That(persoper, Does.Not.Contain(plain));
+        }
+    }
+
+    [Test]
+    public void Thanks_NamesWhoeverReacted()
+    {
+        var random = new Random(9);
+        for (int i = 0; i < 20; i++)
+        {
+            string thanks = KobaldjoviIdentity.ThanksFor("Tester", random);
+            Assert.That(thanks, Does.Contain("Tester").And.Not.Contain("{"));
+        }
+        Assert.That(KobaldjoviIdentity.ThanksFor(null, random), Does.Not.Contain("{"));
+    }
+
+    [Test]
     public void GeneratedBots_NeverGetHisName()
     {
         var reserved = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);

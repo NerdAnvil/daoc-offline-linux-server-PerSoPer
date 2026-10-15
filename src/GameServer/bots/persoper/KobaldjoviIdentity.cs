@@ -131,6 +131,49 @@ public static class KobaldjoviIdentity
         ],
     };
 
+    /// <summary>Chance that someone nearby reacts to one of his songs.</summary>
+    public const double SongReactionChance = 0.65;
+
+    /// <summary>Chance that he answers the reaction, once.</summary>
+    public const double ThanksChance = 0.5;
+
+    // How a plain bot reacts to a song; {0} is his name.
+    private static readonly string[] PlainReactions =
+    [
+        "Nice tune, {0}.",
+        "*claps politely*",
+        "Is that a new one, {0}?",
+        "Not bad. Bit loud.",
+        "{0}, do you know any shorter songs?",
+        "My ears are still ringing.",
+        "Encore! Actually, no. Not right now.",
+        "I have heard worse in Jordheim taverns.",
+    ];
+
+    // His answer to a reaction; {0} is whoever reacted.
+    private static readonly string[] Thanks =
+    [
+        "Thank you, thank you, {0}! I'm here all week.",
+        "{0} gets it. Finally, an audience.",
+        "Tough crowd, {0}. Tough crowd.",
+        "Next one's dedicated to you, {0}.",
+        "I'll put you down for the fan club, {0}.",
+    ];
+
+    /// <summary>A reaction to his song: the reactor's own line if it has a personality, else a plain one.</summary>
+    public static string SongReaction(BotPersonality reactor, Random random)
+    {
+        random ??= Random.Shared;
+        string[] lines = reactor?.SongReactions is { Length: > 0 } own ? own : PlainReactions;
+        return string.Format(lines[random.Next(lines.Length)], Name);
+    }
+
+    public static string ThanksFor(string reactorName, Random random)
+    {
+        random ??= Random.Shared;
+        return string.Format(Thanks[random.Next(Thanks.Length)], string.IsNullOrWhiteSpace(reactorName) ? "friend" : reactorName);
+    }
+
     /// <summary>True when a character or bot name would impersonate Kobaldjovi.</summary>
     public static bool IsReservedName(string name) =>
         !string.IsNullOrEmpty(name) && name.Contains(Name, StringComparison.OrdinalIgnoreCase);

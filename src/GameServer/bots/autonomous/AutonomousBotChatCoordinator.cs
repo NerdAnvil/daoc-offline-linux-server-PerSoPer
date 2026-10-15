@@ -76,7 +76,7 @@ public static class AutonomousBotChatCoordinator
             }
         }
 
-        // Kobaldjovi mostly sings; nobody answers a song with small talk.
+        // Kobaldjovi mostly sings; a song gets a reaction instead of small talk.
         bool isSong = false;
         string opening = KobaldjoviIdentity.Is(starter)
             ? KobaldjoviIdentity.AmbientLine(Random.Shared, out isSong)
@@ -86,9 +86,48 @@ public static class AutonomousBotChatCoordinator
         else if (!starter.Say(opening))
             return false;
 
-        if (!isSong)
+        if (isSong)
+            ScheduleSongReaction(starter, faction);
+        else
             ScheduleBotReplies(starter, opening, faction, false);
         return true;
+    }
+
+    /// <summary>
+    /// Sometimes one listener reacts to Kobaldjovi's song (Persoper first, if she can hear it),
+    /// and sometimes he answers that once. At most two lines, never a loop.
+    /// </summary>
+    private static void ScheduleSongReaction(GameBot singer, bool faction)
+    {
+        if (Random.Shared.NextDouble() >= KobaldjoviIdentity.SongReactionChance)
+            return;
+        GameBot[] listeners = AutonomousBotRegistry.Snapshot().Where(Eligible)
+            .Concat(PersonalityCompanions())
+            .Where(bot => bot != singer && bot.Realm == singer.Realm)
+            .Where(bot => faction || bot.CurrentRegion == singer.CurrentRegion && bot.IsWithinRadius(singer, WorldMgr.SAY_DISTANCE))
+            .Distinct()
+            .OrderByDescending(bot => BotPersonalities.For(bot) != null)
+            .ThenBy(_ => Random.Shared.Next())
+            .ToArray();
+        if (listeners.Length == 0)
+            return;
+
+        GameBot reactor = listeners[0];
+        string reaction = KobaldjoviIdentity.SongReaction(BotPersonalities.For(reactor), Random.Shared);
+        Schedule(reactor, 2_000 + Random.Shared.Next(1_500), () => Speak(reactor, reaction, faction));
+        if (Random.Shared.NextDouble() < KobaldjoviIdentity.ThanksChance)
+        {
+            string thanks = KobaldjoviIdentity.ThanksFor(reactor.Name, Random.Shared);
+            Schedule(singer, 6_000 + Random.Shared.Next(1_500), () => Speak(singer, thanks, faction));
+        }
+    }
+
+    private static void Speak(GameBot speaker, string line, bool faction)
+    {
+        if (faction && HasFactionAudience(speaker.Realm))
+            BroadcastFaction(speaker.Name, speaker.Realm, line);
+        else if (!faction && HasLocalAudience(speaker))
+            speaker.Say(line);
     }
 
     public static void OnPlayerFactionChat(GamePlayer player, string message)

@@ -182,6 +182,14 @@ public static partial class PersoperIdentity
                 "I have no idea what that is, {0}, and I'm too busy healing to ask.",
             ],
         },
+        SongReactions =
+        [
+            "{0}, sweetie, I can heal wounds. Not that.",
+            "Lovely, {0}! Now do one about healers.",
+            "If anyone's ears start bleeding, I'm right here.",
+            "Ooh, {0}, that one's catchy. Unfortunately.",
+            "*hums along, badly*",
+        ],
         CheekyReplies = new Dictionary<eAutonomousChatIntent, string[]>
         {
             [eAutonomousChatIntent.Greeting] =

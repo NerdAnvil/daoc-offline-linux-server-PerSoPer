@@ -16,6 +16,9 @@ public sealed class BotPersonality
     public required IReadOnlyDictionary<eAutonomousChatIntent, string[]> Replies { get; init; }
     public required string[] FallbackReplies { get; init; }
 
+    /// <summary>How it reacts when Kobaldjovi sings nearby; {0} is his name. Null uses the plain-bot lines.</summary>
+    public string[] SongReactions { get; init; }
+
     /// <summary>Extra lines mixed in only when tone-down is off.</summary>
     public IReadOnlyDictionary<eAutonomousChatIntent, string[]> CheekyReplies { get; init; }
 
