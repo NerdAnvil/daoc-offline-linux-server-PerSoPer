@@ -1542,6 +1542,8 @@ namespace DOL.GS
                         log.Error($"AUTONOMOUS_LOOT_APPRAISAL_FAILED bot=\"{Name}\" id={DatabaseID} item=\"{item.Item.Name}\" retainedInInventory=true", exception);
                 }
             }
+            if (!item.Item.IsStackable)
+                PersonalityReactions.OnBotLoot(this, item.Item.Name, equipped);
             AutonomousStuckWatchdog.MarkProgress(this, eAutonomousProgressKind.Loot);
             const string firstLootTelemetry = "autonomous.telemetry.first.loot";
             if (!TempProperties.GetProperty<bool>(firstLootTelemetry))
@@ -1640,6 +1642,7 @@ namespace DOL.GS
                 Mana = MaxMana;
                 Endurance = MaxEndurance;
                 AutonomousBotStatusPersistence.Queue(this, true);
+                PersonalityReactions.OnBotLevelUp(this);
             }
             else
             {

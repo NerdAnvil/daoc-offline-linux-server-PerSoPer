@@ -90,6 +90,9 @@ public class UT_PersonalityTypes
         Assert.That(PersonalityChatter.FactionGap(100), Is.EqualTo((15.0, 30.0)));
         Assert.That(PersonalityChatter.LocalGap(100), Is.EqualTo((10.0, 15.0)), "never under 10 s");
         Assert.That(PersonalityChatter.FactionGap(25), Is.EqualTo((60.0, 120.0)));
+        Assert.That(PersonalityChatter.GroupGap(50), Is.EqualTo((45.0, 90.0)));
+        Assert.That(PersonalityChatter.GroupGap(100), Is.EqualTo((22.5, 45.0)));
+        Assert.That(PersonalityChatter.GroupGap(0), Is.Null);
     }
 
     [Test]

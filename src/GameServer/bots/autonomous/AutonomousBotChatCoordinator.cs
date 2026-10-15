@@ -19,6 +19,9 @@ public static class AutonomousBotChatCoordinator
     private static readonly Dictionary<ushort, long> LastLocalPlayerResponse = new();
     private static readonly Dictionary<int, long> LastPrivateReply = new();
     private const int PrivateReplyCooldownMs = 3_000;
+    private static readonly Dictionary<Group, long> NextGroupTalk = new();
+    private const int MaxGroupTalkEntries = 256;
+    private const int PlainGroupTalkGapMs = 120_000;
 
     /// <summary>The private channels a player can use to talk to one personality bot.</summary>
     public enum ePrivateChannel
@@ -56,11 +59,25 @@ public static class AutonomousBotChatCoordinator
             return false;
 
         bool factionAudience = HasFactionAudience(starter.Realm);
-        bool localAudience = HasLocalAudience(starter);
-        if (!factionAudience && !localAudience)
+        // A bot grouped with a player talks in group chat, never starts nearby small talk.
+        bool groupAudience = IsGroupedWithPlayer(starter);
+        bool localAudience = !groupAudience && HasLocalAudience(starter);
+        if (!factionAudience && !localAudience && !groupAudience)
             return false;
 
-        bool faction = factionAudience && (!localAudience || Random.Shared.NextDouble() < 0.24);
+        bool faction = factionAudience && (!localAudience && !groupAudience || Random.Shared.NextDouble() < 0.24);
+        if (!faction && groupAudience)
+        {
+            if (!IsGroupTurn(starter.Group))
+                return false;
+            string line = KobaldjoviIdentity.Is(starter)
+                ? KobaldjoviIdentity.AmbientLine(Random.Shared, out _)
+                : BuildAmbientOpening(starter, context, false);
+            if (!SpeakInGroup(starter, line))
+                return false;
+            MarkGroupTurn(starter.Group, PlainGroupTalkGapMs);
+            return true;
+        }
         lock (Sync)
         {
             if (faction)
@@ -253,7 +270,7 @@ public static class AutonomousBotChatCoordinator
     /// someone can hear it; nearby bots may answer (in their own voices if they have one).
     /// Paced by PersonalityChatter, outside the plain bots' shared chat slots.
     /// </summary>
-    public static bool SpeakAsPersonality(GameBot bot, string line, bool faction)
+    public static bool SpeakAsPersonality(GameBot bot, string line, bool faction, eChatTopic? topic = null)
     {
         if (!Eligible(bot) || string.IsNullOrWhiteSpace(line))
             return false;
@@ -265,9 +282,114 @@ public static class AutonomousBotChatCoordinator
         }
         else if (!HasLocalAudience(bot) || !bot.Say(line))
             return false;
-        ScheduleBotReplies(bot, line, faction, false);
+        ScheduleBotReplies(bot, line, faction, false, topic);
         return true;
     }
+
+    /// <summary>
+    /// A personality-type bot reacts to an event (a ding, a death, a drop): in group chat
+    /// when a player is in its group, else nearby when a player can hear it. Nobody answers.
+    /// A dead bot may still speak (allowDead), as players do.
+    /// </summary>
+    public static bool SpeakReaction(GameBot bot, string line, bool allowDead = false)
+    {
+        if (bot?.IsAutonomousWorldBot != true || string.IsNullOrWhiteSpace(line) ||
+            bot.ObjectState != GameObject.eObjectState.Active || bot.IsCasting || !allowDead && !bot.IsAlive)
+            return false;
+        if (IsGroupedWithPlayer(bot))
+        {
+            bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+            return true;
+        }
+        return HasLocalAudience(bot) && bot.Say(line);
+    }
+
+    /// <summary>A personality-type bot's reaction in faction chat (a ding, or cheering one). Nobody answers.</summary>
+    public static bool SpeakFactionReaction(GameBot bot, string line)
+    {
+        if (bot?.IsAutonomousWorldBot != true || string.IsNullOrWhiteSpace(line) ||
+            bot.ObjectState != GameObject.eObjectState.Active || !HasFactionAudience(bot.Realm))
+            return false;
+        BroadcastFaction(bot.Name, bot.Realm, line);
+        return true;
+    }
+
+    /// <summary>
+    /// A bot grouped with a player opens a conversation in group chat; its groupmate bots
+    /// may answer there (typed bots in their own voice, on the same topic when there is one).
+    /// </summary>
+    public static bool SpeakInGroup(GameBot bot, string line, eChatTopic? topic = null)
+    {
+        if (!Eligible(bot) || string.IsNullOrWhiteSpace(line) || !IsGroupedWithPlayer(bot))
+            return false;
+        bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+        ScheduleGroupReplies(bot, line, topic);
+        return true;
+    }
+
+    /// <summary>True when this group may start its next group-chat conversation.</summary>
+    public static bool IsGroupTurn(Group group)
+    {
+        if (group == null)
+            return false;
+        lock (Sync)
+            return !NextGroupTalk.TryGetValue(group, out long next) || GameLoop.GameLoopTime >= next;
+    }
+
+    /// <summary>The group's next conversation waits this long.</summary>
+    public static void MarkGroupTurn(Group group, int gapMs)
+    {
+        if (group == null)
+            return;
+        long now = GameLoop.GameLoopTime;
+        lock (Sync)
+        {
+            // Old groups are forgotten once their gap has passed; the table stays small.
+            if (NextGroupTalk.Count >= MaxGroupTalkEntries)
+            {
+                foreach (Group old in NextGroupTalk.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToArray())
+                    NextGroupTalk.Remove(old);
+            }
+            NextGroupTalk[group] = now + gapMs;
+        }
+    }
+
+    private static void ScheduleGroupReplies(GameBot starter, string opening, eChatTopic? topic)
+    {
+        Group group = starter.Group;
+        GameBot[] mates = group.GetMembersInTheGroup().OfType<GameBot>()
+            .Where(bot => bot != starter && (Eligible(bot) || IsPersonalityCompanion(bot)))
+            .OrderBy(_ => Random.Shared.Next())
+            .ToArray();
+        int count = RollResponseCount(mates.Length);
+        HashSet<string> scheduledResponses = new(StringComparer.OrdinalIgnoreCase);
+        int scheduledCount = 0;
+        for (int index = 0; index < count; index++)
+        {
+            GameBot responder = mates[index];
+            if (!TryAddDistinctResponse(scheduledResponses, BotReply(responder, starter, opening, topic, false), out string response))
+                continue;
+            Schedule(responder, 1_700 + scheduledCount++ * 2_100 + Random.Shared.Next(1_300), () =>
+            {
+                if (responder.Group == group && IsGroupedWithPlayer(responder))
+                    group.SendMessageToGroupMembers(responder, response, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+            });
+        }
+    }
+
+    /// <summary>A bot's answer to another bot's line: in its own voice when it has one, on the topic when there is one.</summary>
+    private static string BotReply(GameBot responder, GameBot starter, string opening, eChatTopic? topic, bool faction)
+    {
+        BotPersonality personality = BotPersonalities.For(responder);
+        if (personality == null)
+            return faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
+        return (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
+            ?? personality.Reply(AutonomousChatIntentModel.Predict(opening), starter.Name, PersoperProperties.TONE_DOWN, Random.Shared);
+    }
+
+    /// <summary>True when the bot is in a group with at least one real player.</summary>
+    public static bool IsGroupedWithPlayer(GameBot bot) =>
+        bot?.Group is { } group && group.GetMembersInTheGroup().Any(member => member is GamePlayer);
 
     /// <summary>True when a message names this bot (full name, or its personality's name).</summary>
     public static bool IsMentionedPublic(string message, GameBot bot) => IsMentioned(message, bot);
@@ -468,7 +590,7 @@ public static class AutonomousBotChatCoordinator
         }
     }
 
-    private static void ScheduleBotReplies(GameBot starter, string opening, bool faction, bool fromPlayer)
+    private static void ScheduleBotReplies(GameBot starter, string opening, bool faction, bool fromPlayer, eChatTopic? topic = null)
     {
         bool hasKnowledge = AutonomousChatKnowledge.TryAnswer(starter.Realm, opening, out string knowledge);
         GameBot[] eligible = AutonomousBotRegistry.Snapshot()
@@ -485,10 +607,7 @@ public static class AutonomousBotChatCoordinator
         for (int index = 0; index < count; index++)
         {
             GameBot responder = eligible[index];
-            BotPersonality personality = BotPersonalities.For(responder);
-            string response = hasKnowledge ? knowledge
-                : personality != null ? personality.Reply(AutonomousChatIntentModel.Predict(opening), starter.Name, PersoperProperties.TONE_DOWN, Random.Shared)
-                : faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
+            string response = hasKnowledge ? knowledge : BotReply(responder, starter, opening, topic, faction);
             if (!TryAddDistinctResponse(scheduledResponses, response, out response))
                 continue;
             Schedule(responder, 1_700 + scheduledCount++ * 2_100 + Random.Shared.Next(1_300), () =>

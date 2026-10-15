@@ -17,12 +17,16 @@ public static class PersonalityChatter
 {
     private const int TickMilliseconds = 5_000;
     private const int MaxLocalSpeakersPerTick = 8;
+    private const int MaxGroupSpeakersPerTick = 8;
 
     /// <summary>Seconds between faction lines per realm at a volume: 30-60 at 50, never under 10. Null = off.</summary>
     public static (double Min, double Max)? FactionGap(int volume) => Gap(volume, 30, 60);
 
     /// <summary>Seconds between nearby lines per region at a volume: 15-30 at 50, never under 10. Null = off.</summary>
     public static (double Min, double Max)? LocalGap(int volume) => Gap(volume, 15, 30);
+
+    /// <summary>Seconds between group-chat conversations per group with a player: 45-90 at 50. Null = off.</summary>
+    public static (double Min, double Max)? GroupGap(int volume) => Gap(volume, 45, 90);
 
     private static (double Min, double Max)? Gap(int volume, double min, double max)
     {
@@ -74,7 +78,7 @@ public static class PersonalityChatter
     private static void Tick()
     {
         int volume = PersoperProperties.CHATTER_PERCENT;
-        if (FactionGap(volume) is not { } factionGap || LocalGap(volume) is not { } localGap)
+        if (FactionGap(volume) is not { } factionGap || LocalGap(volume) is not { } localGap || GroupGap(volume) is not { } groupGap)
             return;
         DateTime now = DateTime.UtcNow;
         var typed = PersonalityTypes.Online().Where(pair => pair.Personality.Ambient is { Length: > 0 }).ToList();
@@ -98,7 +102,8 @@ public static class PersonalityChatter
                 break;
             if (NextLocal.TryGetValue(region.Key, out DateTime next) && now < next)
                 continue;
-            var nearPlayers = region.Where(pair => ClientService.Instance.GetPlayersOfRegion(pair.Bot.CurrentRegion)
+            // Bots grouped with a player don't start nearby talk; they only answer.
+            var nearPlayers = region.Where(pair => !AutonomousBotChatCoordinator.IsGroupedWithPlayer(pair.Bot) && ClientService.Instance.GetPlayersOfRegion(pair.Bot.CurrentRegion)
                 .Any(player => player.ObjectState == GameObject.eObjectState.Active && pair.Bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE)))
                 .ToList();
             if (nearPlayers.Count > 0 && TrySpeak(nearPlayers, faction: false))
@@ -107,17 +112,32 @@ public static class PersonalityChatter
                 spoken++;
             }
         }
+
+        // Group chat: one conversation per group with a player, when it's that group's turn.
+        int groupsSpoken = 0;
+        foreach (IGrouping<Group, (GameBot Bot, BotPersonality Personality)> party in typed
+                     .Where(pair => AutonomousBotChatCoordinator.IsGroupedWithPlayer(pair.Bot))
+                     .GroupBy(pair => pair.Bot.Group))
+        {
+            if (groupsSpoken >= MaxGroupSpeakersPerTick)
+                break;
+            if (!AutonomousBotChatCoordinator.IsGroupTurn(party.Key) || !TrySpeak(party.ToList(), faction: false, group: true))
+                continue;
+            AutonomousBotChatCoordinator.MarkGroupTurn(party.Key, (int)(Between(groupGap) * 1000));
+            groupsSpoken++;
+        }
     }
 
-    private static bool TrySpeak(List<(GameBot Bot, BotPersonality Personality)> candidates, bool faction)
+    private static bool TrySpeak(List<(GameBot Bot, BotPersonality Personality)> candidates, bool faction, bool group = false)
     {
         // A few tries in case the first pick is busy fighting or casting.
         for (int attempt = 0; attempt < 3 && candidates.Count > 0; attempt++)
         {
             var weighted = candidates.Select(pair => (Item: pair, Weight: pair.Personality.Chattiness)).ToList();
             var (bot, personality) = PickWeighted(weighted, Random.Shared);
-            string line = personality.Ambient[Random.Shared.Next(personality.Ambient.Length)];
-            if (AutonomousBotChatCoordinator.SpeakAsPersonality(bot, line, faction))
+            string line = PersonalityReactions.AmbientLine(bot, personality, Random.Shared, out eChatTopic? topic);
+            if (group ? AutonomousBotChatCoordinator.SpeakInGroup(bot, line, topic)
+                    : AutonomousBotChatCoordinator.SpeakAsPersonality(bot, line, faction, topic))
                 return true;
             candidates.Remove((bot, personality));
         }
