@@ -22,6 +22,9 @@ public static class AutonomousBotChatCoordinator
     private static readonly Dictionary<Group, long> NextGroupTalk = new();
     private const int MaxGroupTalkEntries = 256;
     private const int PlainGroupTalkGapMs = 120_000;
+    /// <summary>Groups whose chatter is paused (a pull just started), until when.</summary>
+    private static readonly Dictionary<Group, long> QuietUntil = new();
+    private const int PullQuietMs = 20_000;
 
     /// <summary>The private channels a player can use to talk to one personality bot.</summary>
     public enum ePrivateChannel
@@ -82,13 +85,15 @@ public static class AutonomousBotChatCoordinator
         {
             if (faction)
             {
-                if (LastFactionAmbient.TryGetValue(starter.Realm, out long last) && GameLoop.GameLoopTime - last < 180_000)
+                if (LastFactionAmbient.TryGetValue(starter.Realm, out long last) && GameLoop.GameLoopTime - last < 180_000 ||
+                    PersonalityScenes.HeldMs(PersonalityScenes.FactionKey(starter.Realm)) > 0)
                     return false;
                 LastFactionAmbient[starter.Realm] = GameLoop.GameLoopTime;
             }
             else
             {
-                if (LastLocalAmbient.TryGetValue(starter.CurrentRegionID, out long last) && GameLoop.GameLoopTime - last < 90_000)
+                if (LastLocalAmbient.TryGetValue(starter.CurrentRegionID, out long last) && GameLoop.GameLoopTime - last < 90_000 ||
+                    PersonalityScenes.HeldMs(PersonalityScenes.NearbyKey(starter.CurrentRegionID)) > 0)
                     return false;
                 LastLocalAmbient[starter.CurrentRegionID] = GameLoop.GameLoopTime;
             }
@@ -236,7 +241,7 @@ public static class AutonomousBotChatCoordinator
             LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
         }
 
-        eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
+        eAutonomousChatIntent intent = NotWhenGrouped(AutonomousChatIntentModel.Predict(message), bot.Group != null && bot.Group == player.Group);
         string reply = PersonalitySpecialReply(bot, player, message, intent, true)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
@@ -327,10 +332,66 @@ public static class AutonomousBotChatCoordinator
         return true;
     }
 
+    /// <summary>True when a world bot is free to say its next scene line (not fighting, casting or riding).</summary>
+    public static bool CanSpeakInScene(GameBot bot) => Eligible(bot);
+
+    /// <summary>
+    /// One line of a PersonalityScenes scene, in its channel. False when the bot can't talk
+    /// now, nobody can hear it, or it left the group; the scene then stops.
+    /// </summary>
+    public static bool SpeakSceneLine(GameBot bot, string line, eSceneChannel channel, Group group)
+    {
+        if (!Eligible(bot) || string.IsNullOrWhiteSpace(line))
+            return false;
+        switch (channel)
+        {
+            case eSceneChannel.Faction:
+                if (!HasFactionAudience(bot.Realm))
+                    return false;
+                BroadcastFaction(bot.Name, bot.Realm, line);
+                return true;
+            case eSceneChannel.Group:
+                if (group == null || bot.Group != group || !IsGroupedWithPlayer(bot) || IsQuiet(group))
+                    return false;
+                group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+                return true;
+            default:
+                return HasLocalAudience(bot) && bot.Say(line);
+        }
+    }
+
+    /// <summary>
+    /// A pull just started: the group's bot chatter stops for a while (queued answers and
+    /// scene lines are dropped), so no line seems to answer the pull order.
+    /// </summary>
+    public static void QuietGroup(Group group, int ms = PullQuietMs)
+    {
+        if (group == null)
+            return;
+        long now = GameLoop.GameLoopTime;
+        lock (Sync)
+        {
+            if (QuietUntil.Count >= MaxGroupTalkEntries)
+            {
+                foreach (Group old in QuietUntil.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToArray())
+                    QuietUntil.Remove(old);
+            }
+            QuietUntil[group] = now + ms;
+        }
+    }
+
+    private static bool IsQuiet(Group group)
+    {
+        if (group == null)
+            return false;
+        lock (Sync)
+            return QuietUntil.TryGetValue(group, out long until) && GameLoop.GameLoopTime < until;
+    }
+
     /// <summary>True when this group may start its next group-chat conversation.</summary>
     public static bool IsGroupTurn(Group group)
     {
-        if (group == null)
+        if (group == null || PersonalityScenes.HeldMs(group) > 0 || IsQuiet(group))
             return false;
         lock (Sync)
             return !NextGroupTalk.TryGetValue(group, out long next) || GameLoop.GameLoopTime >= next;
@@ -361,6 +422,9 @@ public static class AutonomousBotChatCoordinator
             .Where(bot => bot != starter && (Eligible(bot) || IsPersonalityCompanion(bot)))
             .OrderBy(_ => Random.Shared.Next())
             .ToArray();
+        // A typed groupmate may carry the topic on as a scene instead of the usual answers.
+        if (PersonalityScenes.TryTopicScene(starter, mates, topic, eSceneChannel.Group, group))
+            return;
         int count = RollResponseCount(mates.Length);
         HashSet<string> scheduledResponses = new(StringComparer.OrdinalIgnoreCase);
         int scheduledCount = 0;
@@ -371,7 +435,7 @@ public static class AutonomousBotChatCoordinator
                 continue;
             Schedule(responder, 1_700 + scheduledCount++ * 2_100 + Random.Shared.Next(1_300), () =>
             {
-                if (responder.Group == group && IsGroupedWithPlayer(responder))
+                if (responder.Group == group && IsGroupedWithPlayer(responder) && !IsQuiet(group))
                     group.SendMessageToGroupMembers(responder, response, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
             });
         }
@@ -384,8 +448,16 @@ public static class AutonomousBotChatCoordinator
         if (personality == null)
             return faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
         return (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
-            ?? personality.Reply(AutonomousChatIntentModel.Predict(opening), starter.Name, PersoperProperties.TONE_DOWN, Random.Shared);
+            ?? personality.Reply(NotWhenGrouped(AutonomousChatIntentModel.Predict(opening), responder.Group != null && responder.Group == starter.Group),
+                starter.Name, PersoperProperties.TONE_DOWN, Random.Shared);
     }
+
+    /// <summary>
+    /// Someone already in its group isn't asking it to group: a line that sounds like
+    /// grouping gets a banter reply instead of "count me in".
+    /// </summary>
+    public static eAutonomousChatIntent NotWhenGrouped(eAutonomousChatIntent intent, bool sameGroup) =>
+        sameGroup && intent == eAutonomousChatIntent.Grouping ? eAutonomousChatIntent.Banter : intent;
 
     /// <summary>True when the bot is in a group with at least one real player.</summary>
     public static bool IsGroupedWithPlayer(GameBot bot) =>
@@ -599,6 +671,10 @@ public static class AutonomousBotChatCoordinator
             .OrderByDescending(bot => Relevance(bot, opening))
             .ThenBy(_ => Random.Shared.Next())
             .ToArray();
+        // A typed answerer may carry a typed bot's topic on as a scene instead of the usual answers.
+        if (!fromPlayer && !hasKnowledge &&
+            PersonalityScenes.TryTopicScene(starter, eligible, topic, faction ? eSceneChannel.Faction : eSceneChannel.Nearby, null))
+            return;
         int count = hasKnowledge ? Math.Min(1, eligible.Length) : RollResponseCount(eligible.Length);
         HashSet<string> scheduledResponses = new(StringComparer.OrdinalIgnoreCase);
         int scheduledCount = 0;

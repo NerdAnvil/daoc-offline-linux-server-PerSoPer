@@ -104,13 +104,15 @@ namespace DOL.GS.Commands
             PersoperIdentity.eGreeting greeting = firstMeeting ? PersoperIdentity.eGreeting.FirstMeeting
                 : newSurname ? PersoperIdentity.eGreeting.NewSurname
                 : PersoperIdentity.eGreeting.Returning;
-            persoper.Say(PersoperIdentity.Greeting(greeting, surname, player.Name, toneDown, random));
-            string grumble = PersoperIdentity.OffClassGrumble(characterClass, random);
-            if (grumble != null)
-                persoper.Say(grumble);
+            string hello = PersoperIdentity.Greeting(greeting, surname, player.Name, toneDown, random);
+            // A plain "welcome back" gives way to what she remembers of this player, so she greets once.
+            bool memoryGreets = greeting == PersoperIdentity.eGreeting.Returning;
+            if (!memoryGreets)
+                PersonalityMeetings.Speak(persoper, hello);
 
-            // Her memory of this player, then her build (mentioning last time's).
-            bool quickResummon = PersonalityMeetings.Greet(persoper, player, random);
+            // Her memory of this player (or the greeting), then her build (mentioning last time's).
+            bool quickResummon = PersonalityMeetings.Greet(persoper, player, random, memoryGreets ? hello : null);
+            PersonalityMeetings.Speak(persoper, PersoperIdentity.OffClassGrumble(characterClass, random));
 
             DisplayMessage(client,
                 $"{persoper.Name}, level {persoper.Level} {characterClass}, joined your group. " +

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using DOL.Database;
 using DOL.Database.Attributes;
+using DOL.GS.PacketHandler;
 
 namespace DOL.GS;
 
@@ -291,30 +292,43 @@ public static class PersonalityMemory
 public static class PersonalityMeetings
 {
     /// <summary>
-    /// Says its remembered line and build line, then records the meeting. Returns true when
-    /// this was a quick re-call, which the caller counts as an irritation once its own
-    /// messages are out (it may make the bot quit on the spot).
+    /// Says its remembered line and build line, then records the meeting. A caller's plain
+    /// "welcome back" (greeting) is said only when there's no remembered line, so it isn't
+    /// greeted twice. Lines go to group chat when it's in a group with a player. Returns
+    /// true when this was a quick re-call, which the caller counts as an irritation once
+    /// its own messages are out (it may make the bot quit on the spot).
     /// </summary>
-    public static bool Greet(GameBot bot, GamePlayer player, Random random)
+    public static bool Greet(GameBot bot, GamePlayer player, Random random, string greeting = null)
     {
         BotPersonality personality = BotPersonalities.For(bot);
         if (personality?.Memory == null || player == null)
+        {
+            Speak(bot, greeting);
             return false;
+        }
         random ??= Random.Shared;
         DateTime now = DateTime.UtcNow;
         PersonalityMemoryRecord memory = PersonalityMemoryStore.Load(personality, player);
         bool quickRecall = PersonalityAnnoyance.IsQuickRecall(memory?.LastSeenUtc, now);
 
-        string remembered = PersonalityMemory.RememberedLine(personality, memory, player.Name, now, random);
-        if (remembered != null)
-            bot.Say(remembered);
+        Speak(bot, PersonalityMemory.RememberedLine(personality, memory, player.Name, now, random) ?? greeting);
         eSpecType spec = bot.BotSpec?.SpecType ?? eSpecType.None;
         string specLine = PersonalityMemory.SpecAnnouncement(personality, spec, (eSpecType)(memory?.LastSpec ?? (int)eSpecType.None), player.Name, random);
-        if (specLine != null)
-            bot.Say(specLine);
+        Speak(bot, specLine);
 
         PersonalityMemory.RecordMeeting(memory, player.Name, spec, player.CurrentZone?.Description, now);
         PersonalityMemoryStore.Save(memory);
         return quickRecall;
+    }
+
+    /// <summary>To group chat when it's grouped with a player, else nearby. Nothing for an empty line.</summary>
+    public static void Speak(GameBot bot, string line)
+    {
+        if (bot == null || string.IsNullOrWhiteSpace(line))
+            return;
+        if (AutonomousBotChatCoordinator.IsGroupedWithPlayer(bot))
+            bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+        else
+            bot.Say(line);
     }
 }

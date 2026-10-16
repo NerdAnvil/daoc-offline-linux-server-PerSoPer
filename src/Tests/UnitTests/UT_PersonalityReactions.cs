@@ -122,4 +122,12 @@ public class UT_PersonalityReactions
         foreach (bool own in new[] { true, false })
             Assert.That(PersonalityReactions.ReactChance(chattiness, volume, own), Is.InRange(0.0, 1.0));
     }
+
+    [Test]
+    public void GroupingLines_FromGroupmates_GetBanterInstead()
+    {
+        Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Grouping, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Banter));
+        Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Grouping, sameGroup: false), Is.EqualTo(eAutonomousChatIntent.Grouping));
+        Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Dungeon, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Dungeon));
+    }
 }

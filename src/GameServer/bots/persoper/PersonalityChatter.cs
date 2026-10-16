@@ -88,10 +88,12 @@ public static class PersonalityChatter
         // Faction chat: one line per realm when it's that realm's turn.
         foreach (IGrouping<eRealm, (GameBot Bot, BotPersonality Personality)> realm in typed.GroupBy(pair => pair.Bot.Realm))
         {
-            if (NextFaction.TryGetValue(realm.Key, out DateTime next) && now < next)
+            object key = PersonalityScenes.FactionKey(realm.Key);
+            if (NextFaction.TryGetValue(realm.Key, out DateTime next) && now < next || PersonalityScenes.HeldMs(key) > 0)
                 continue;
-            if (TrySpeak(realm.ToList(), faction: true))
-                NextFaction[realm.Key] = now.AddSeconds(Between(factionGap));
+            // A scene started now holds the channel; the gap counts from its end.
+            if (TrySpeak(realm.ToList(), eSceneChannel.Faction))
+                NextFaction[realm.Key] = now.AddSeconds(Between(factionGap)).AddMilliseconds(PersonalityScenes.HeldMs(key));
         }
 
         // Nearby: one line per region that has a player near a typed bot.
@@ -100,15 +102,16 @@ public static class PersonalityChatter
         {
             if (spoken >= MaxLocalSpeakersPerTick)
                 break;
-            if (NextLocal.TryGetValue(region.Key, out DateTime next) && now < next)
+            object key = PersonalityScenes.NearbyKey(region.Key);
+            if (NextLocal.TryGetValue(region.Key, out DateTime next) && now < next || PersonalityScenes.HeldMs(key) > 0)
                 continue;
             // Bots grouped with a player don't start nearby talk; they only answer.
             var nearPlayers = region.Where(pair => !AutonomousBotChatCoordinator.IsGroupedWithPlayer(pair.Bot) && ClientService.Instance.GetPlayersOfRegion(pair.Bot.CurrentRegion)
                 .Any(player => player.ObjectState == GameObject.eObjectState.Active && pair.Bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE)))
                 .ToList();
-            if (nearPlayers.Count > 0 && TrySpeak(nearPlayers, faction: false))
+            if (nearPlayers.Count > 0 && TrySpeak(nearPlayers, eSceneChannel.Nearby))
             {
-                NextLocal[region.Key] = now.AddSeconds(Between(localGap));
+                NextLocal[region.Key] = now.AddSeconds(Between(localGap)).AddMilliseconds(PersonalityScenes.HeldMs(key));
                 spoken++;
             }
         }
@@ -121,23 +124,26 @@ public static class PersonalityChatter
         {
             if (groupsSpoken >= MaxGroupSpeakersPerTick)
                 break;
-            if (!AutonomousBotChatCoordinator.IsGroupTurn(party.Key) || !TrySpeak(party.ToList(), faction: false, group: true))
+            if (!AutonomousBotChatCoordinator.IsGroupTurn(party.Key) || !TrySpeak(party.ToList(), eSceneChannel.Group))
                 continue;
-            AutonomousBotChatCoordinator.MarkGroupTurn(party.Key, (int)(Between(groupGap) * 1000));
+            AutonomousBotChatCoordinator.MarkGroupTurn(party.Key, (int)(Between(groupGap) * 1000) + PersonalityScenes.HeldMs(party.Key));
             groupsSpoken++;
         }
     }
 
-    private static bool TrySpeak(List<(GameBot Bot, BotPersonality Personality)> candidates, bool faction, bool group = false)
+    private static bool TrySpeak(List<(GameBot Bot, BotPersonality Personality)> candidates, eSceneChannel channel)
     {
         // A few tries in case the first pick is busy fighting or casting.
         for (int attempt = 0; attempt < 3 && candidates.Count > 0; attempt++)
         {
             var weighted = candidates.Select(pair => (Item: pair, Weight: pair.Personality.Chattiness)).ToList();
             var (bot, personality) = PickWeighted(weighted, Random.Shared);
+            // Now and then the turn goes to a scene with a rival type instead of a single line.
+            if (PersonalityScenes.TryPairScene(bot, personality, channel))
+                return true;
             string line = PersonalityReactions.AmbientLine(bot, personality, Random.Shared, out eChatTopic? topic);
-            if (group ? AutonomousBotChatCoordinator.SpeakInGroup(bot, line, topic)
-                    : AutonomousBotChatCoordinator.SpeakAsPersonality(bot, line, faction, topic))
+            if (channel == eSceneChannel.Group ? AutonomousBotChatCoordinator.SpeakInGroup(bot, line, topic)
+                    : AutonomousBotChatCoordinator.SpeakAsPersonality(bot, line, channel == eSceneChannel.Faction, topic))
                 return true;
             candidates.Remove((bot, personality));
         }

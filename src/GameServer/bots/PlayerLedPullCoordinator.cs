@@ -36,6 +36,8 @@ namespace DOL.GS
                 player.ControlledBrain?.Attack(target);
                 return player.ControlledBrain == null ? "No party companions or pet to pull with." : "Pet pull ordered.";
             }
+            // Bot chatter pauses, so no group-chat line seems to answer the pull order.
+            AutonomousBotChatCoordinator.QuietGroup(group);
             GroupState state = States.GetOrCreateValue(group);
             Cancel(state.Pending, false);
             GameBot[] helpers = group.GetMembersInTheGroup().OfType<GameBot>()
