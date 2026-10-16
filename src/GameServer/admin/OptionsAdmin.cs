@@ -37,6 +37,10 @@ namespace DOL.GS.Admin
             "persoper_rage_quit",
             "persoper_sulk_minutes",
             "persoper_chatter_percent",
+            "persoper_leeroy_battle_cry_percent",
+            "persoper_full_leeroy",
+            "persoper_full_leeroy_percent",
+            "persoper_emotes",
         ];
 
         private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;

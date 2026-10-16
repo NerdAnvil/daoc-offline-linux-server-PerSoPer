@@ -25,6 +25,18 @@ public static class PersoperProperties
 
     [ServerProperty("persoper", "persoper_sulk_minutes", "Minutes a personality bot refuses you after quitting on you (0 = no sulk).", 10)]
     public static int SULK_MINUTES;
+
+    [ServerProperty("persoper", "persoper_leeroy_battle_cry_percent", "Chance (0-100) a Leeroy-type bot yells a battle cry when a fight starts (with a cooldown).", 33)]
+    public static int LEEROY_BATTLE_CRY_PERCENT;
+
+    [ServerProperty("persoper", "persoper_full_leeroy", "Leeroy-type bots in a player's group may charge a nearby mob on their own while the group waits.", true)]
+    public static bool FULL_LEEROY;
+
+    [ServerProperty("persoper", "persoper_full_leeroy_percent", "Chance (0-100), checked once a minute while his group is idle, that a Leeroy goes full Leeroy.", 10)]
+    public static int FULL_LEEROY_PERCENT;
+
+    [ServerProperty("persoper", "persoper_emotes", "Bots answer emotes aimed at them and emote when someone near them dies; Jokers emote on their own.", true)]
+    public static bool EMOTES;
 }
 
 /// <summary>

@@ -434,6 +434,13 @@ namespace DOL.GS
                 // every tick restarts the pose and loses recovery-to-full. Only
                 // an obsolete camp's sit state is stale; routing below also wakes
                 // the bot when movement actually takes over.
+                // A Casual-type bot on a short "brb" break (only when solo) stands and rests until it ends.
+                if (PersonalityBehaviours.OnBreak(bot))
+                {
+                    bot.BeginRecoveryRest();
+                    return true;
+                }
+
                 bool recoveringAtCurrentCamp = _camp != null && ReferenceEquals(_restingCamp, _camp);
                 if (bot.IsRecoveryResting && !recoveringAtCurrentCamp && !_dungeonRouteResting &&
                     _groupDirective?.Phase != "Regrouping" && !_townIdleUntilUtc.HasValue)

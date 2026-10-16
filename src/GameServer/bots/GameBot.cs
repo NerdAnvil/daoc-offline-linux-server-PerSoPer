@@ -2588,6 +2588,8 @@ namespace DOL.GS
                 (TargetObject == target || rangeAttackComponent.AutoFireTarget == target))
                 return;
 
+            // A Leeroy-type bot may yell a battle cry as a new fight starts.
+            PersonalityBehaviours.OnStartAttack(this, target);
             base.StartAttack(target);
         }
 

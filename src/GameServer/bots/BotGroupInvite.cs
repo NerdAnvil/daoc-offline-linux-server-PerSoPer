@@ -34,6 +34,13 @@ public static class BotGroupInvite
             return false;
         }
 
+        // A Loner-type bot usually turns invites down (less often for someone it knows).
+        if (countQuickRecall && PersonalityBehaviours.LonerDeclines(player, bot, out string refusal))
+        {
+            ChatUtil.SendSystemMessage(player, refusal);
+            return false;
+        }
+
         if (bot.Group != null)
         {
             bool autonomousGroup = bot.PlayerGroupLeader == null;
