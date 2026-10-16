@@ -8,7 +8,10 @@ using DOL.Database.Attributes;
 
 namespace DOL.GS;
 
-/// <summary>Which personality type a generated world bot has. Our own table; the roster table is untouched.</summary>
+/// <summary>
+/// Which personality type a generated world bot has, or "plain" for none. Our own table; the
+/// roster table is untouched.
+/// </summary>
 [DataTable(TableName = "persoper_bot_type")]
 public sealed class PersonalityTypeRecord : DataObject
 {
@@ -20,10 +23,22 @@ public sealed class PersonalityTypeRecord : DataObject
 /// Personality types (Hardcore, Casual, Min/maxer, Joker, Loner, Leeroy) for any number of
 /// generated world bots. Each typed bot gets its own copy of the type's personality, named
 /// after the bot and keyed "joker#123", so its memories and patience are its own.
+/// A world bot without a saved type is rolled once, the first time it's looked at: about half
+/// get a random type, the rest are saved as "plain". That covers existing, admin-made and
+/// population-made bots alike; named personalities (Persoper, Kobaldjovi) are never rolled.
 /// </summary>
 public static partial class PersonalityTypes
 {
     public const string Mixed = "mixed";
+
+    /// <summary>Saved for a world bot that was rolled and stays without a type.</summary>
+    public const string Plain = "plain";
+
+    /// <summary>Share of world bots that get a type when rolled (the 50/50 split).</summary>
+    public const int TypedSharePercent = 50;
+
+    /// <summary>New rolls per second at most, so a big roster's first look doesn't stall a tick.</summary>
+    private const int MaxRollsPerSecond = 20;
 
     /// <summary>Every type, by key.</summary>
     public static IReadOnlyDictionary<string, BotPersonality> Templates => PersonalityTypeVoices.All;
@@ -50,6 +65,13 @@ public static partial class PersonalityTypes
         random ??= Random.Shared;
         IReadOnlyList<string> keys = Keys;
         return keys[random.Next(keys.Count)];
+    }
+
+    /// <summary>The roll for a world bot with no saved type: a random type, or <see cref="Plain"/>.</summary>
+    public static string Roll(Random random)
+    {
+        random ??= Random.Shared;
+        return random.Next(100) < TypedSharePercent ? Pick(Mixed, random) : Plain;
     }
 
     [GeneratedRegex("[^a-z]")]
@@ -99,7 +121,8 @@ public static partial class PersonalityTypes
     public static BotPersonality InstanceFor(GameBot bot)
     {
         long botId = bot?.DatabaseID ?? 0;
-        if (botId <= 0 || TypeOf(botId) is not { } typeKey || !Templates.TryGetValue(typeKey, out BotPersonality template))
+        if (botId <= 0 || (TypeOf(botId) ?? RollOnce(bot, botId)) is not { } typeKey ||
+            !Templates.TryGetValue(typeKey, out BotPersonality template))
             return null;
         return Instances.GetOrAdd(botId, _ => template with
         {
@@ -108,6 +131,45 @@ public static partial class PersonalityTypes
             Matches = other => other?.DatabaseID == botId,
             TypeKey = typeKey,
         });
+    }
+
+    private static long _rollWindowStart;
+    private static int _rollsInWindow;
+
+    /// <summary>
+    /// Rolls and saves the type of a world bot seen for the first time. Null when the bot can't be
+    /// rolled (not a world bot, a named personality) or this second's roll budget is spent; it's
+    /// then simply rolled on a later look.
+    /// </summary>
+    private static string RollOnce(GameBot bot, long botId)
+    {
+        if (!bot.IsAutonomousWorldBot || BotPersonalities.All.Any(named => named.Matches(bot)))
+            return null;
+        string rolled;
+        lock (Sync)
+        {
+            if (Types.TryGetValue(botId, out string known))
+                return known;
+            long now = Environment.TickCount64;
+            if (now - _rollWindowStart >= 1000)
+            {
+                _rollWindowStart = now;
+                _rollsInWindow = 0;
+            }
+            if (_rollsInWindow >= MaxRollsPerSecond)
+                return null;
+            _rollsInWindow++;
+            rolled = Roll(Random.Shared);
+            Types[botId] = rolled;
+        }
+        // Saved outside Sync: admin create takes the write lock first, then Sync (via Assign).
+        // If saving fails the roll still holds until the next restart, then it's rolled again.
+        lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
+        {
+            if (GameServer.Database.FindObjectByKey<PersonalityTypeRecord>(botId) == null)
+                GameServer.Database.AddObject(new PersonalityTypeRecord { BotId = botId, TypeKey = rolled });
+        }
+        return rolled;
     }
 
     /// <summary>Typed bots in the world right now.</summary>

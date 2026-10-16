@@ -112,4 +112,16 @@ public class UT_PersonalityTypes
         Assert.That(PersonalityTypeVoices.SpecWords(eSpecType.MendHealer), Is.EqualTo("mend healer"));
         Assert.That(PersonalityTypeVoices.SpecWords(eSpecType.None), Is.Null);
     }
+
+    [Test]
+    public void Roll_GivesAboutHalfARandomType_AndTheRestPlain()
+    {
+        var random = new Random(7);
+        var rolls = Enumerable.Range(0, 2000).Select(_ => PersonalityTypes.Roll(random)).ToList();
+        int typed = rolls.Count(key => key != PersonalityTypes.Plain);
+        Assert.That(typed, Is.InRange(900, 1100), "about 50/50");
+        Assert.That(rolls.Where(key => key != PersonalityTypes.Plain).Distinct(), Is.EquivalentTo(PersonalityTypes.Keys), "every type turns up");
+        Assert.That(PersonalityTypes.Templates.ContainsKey(PersonalityTypes.Plain), Is.False, "plain is never a type");
+        Assert.That(PersonalityTypes.Normalise(PersonalityTypes.Plain), Is.Null, "admins can't ask for plain as a type");
+    }
 }
