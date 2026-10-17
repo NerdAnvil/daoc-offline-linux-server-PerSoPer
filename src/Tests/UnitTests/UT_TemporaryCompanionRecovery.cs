@@ -42,6 +42,21 @@ public class UT_TemporaryCompanionRecovery
         Assert.That(persistent.TryReturnTemporaryCompanionToLeader(true), Is.False);
     }
 
+    [TestCase(true, 0, true)] [TestCase(true, -5, true)] [TestCase(true, 1, false)]
+    [TestCase(false, 0, false)]
+    public void OnlyDeadBotBodiesAreHiddenFromClients(bool isBot, int health, bool expected) =>
+        Assert.That(GameBot.HidesBodyFromClients(isBot, health), Is.EqualTo(expected),
+            "Ordinary NPCs and living bots are always shown; a dead bot's corpse never is.");
+
+    [Test]
+    public void FailedReleaseMoveLeavesCompanionDead()
+    {
+        var companion = (GameBot)RuntimeHelpers.GetUninitializedObject(typeof(GameBot));
+        companion.ObjectState = GameObject.eObjectState.Inactive;
+        Assert.That(companion.MoveReleasedCompanionTo(1, 0, 0, 0, 0), Is.False);
+        Assert.That(companion.Health, Is.Zero, "A failed move must never revive the helper next to its killer.");
+    }
+
     [TestCase(false, true, true, true)] [TestCase(true, false, true, true)]
     [TestCase(true, true, false, true)] [TestCase(true, true, true, false)]
     public void DeadRemovedUngroupedOrUnboundCompanionsAreNotRecalled(bool alive, bool active, bool grouped, bool follows) =>

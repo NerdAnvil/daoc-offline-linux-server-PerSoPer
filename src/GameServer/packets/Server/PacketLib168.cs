@@ -1064,6 +1064,9 @@ namespace DOL.GS.PacketHandler
 		{
 			if (m_gameClient.Player == null || npc.IsVisibleTo(m_gameClient.Player) == false)
 				return;
+			// A dead bot's kept corpse would be drawn standing (no dead state in this packet).
+			if (GameBot.HidesBodyFromClients(npc is GameBot, npc.Health))
+				return;
 
 			if (npc is GameMovingObject)
 			{

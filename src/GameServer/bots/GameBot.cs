@@ -214,12 +214,22 @@ namespace DOL.GS
             set
             {
                 byte oldPercent = HealthPercent;
+                bool wasDead = base.Health <= 0;
                 base.Health = value;
 
                 if (oldPercent != HealthPercent)
                     Group?.UpdateMember(this, false, false);
+
+                // A dead bot is never created for clients (HidesBodyFromClients); show it again once it lives.
+                if (wasDead && base.Health > 0 && ObjectState is eObjectState.Active)
+                    ClientService.CreateObjectForPlayers(this);
             }
         }
+
+        // Owner 2026-10-16: the NPC create packet has no "dead" state, so a kept bot corpse that was sent to a client
+        // again (after the client had sunk and dropped it) was drawn standing, ignored by mobs. Clients that saw the
+        // death keep the falling body; nobody is sent the corpse again until the bot is alive.
+        public static bool HidesBodyFromClients(bool isBot, int health) => isBot && health <= 0;
 
         public override int Mana
         {
@@ -1058,13 +1068,10 @@ namespace DOL.GS
                 StopCurrentSpellcast();
                 (Brain as BotBrain)?.PrepareForTankPull();
                 StopMoving();
-                if (!MoveTo(Owner.CurrentRegionID, (int)Math.Round(destination.X),
+                if (!MoveReleasedCompanionTo(Owner.CurrentRegionID, (int)Math.Round(destination.X),
                     (int)Math.Round(destination.Y), (int)Math.Round(destination.Z), Owner.Heading))
                     return;
 
-                Health = Math.Max(1, MaxHealth);
-                Mana = Math.Max(0, MaxMana);
-                Endurance = Math.Max(0, MaxEndurance);
                 IsReturningAfterRelease = false;
                 _stableReturnPlan = null;
                 EnterPlayerLedGroup(Owner);
@@ -1111,6 +1118,19 @@ namespace DOL.GS
                 PersistentRecord.TravelDestination = CurrentZone?.Description ?? string.Empty;
                 MarkAutonomousStateDirty();
             }
+        }
+
+        // Owner 2026-10-16: the released helper was revived only after MoveTo, so clients were sent a dead body at the
+        // owner's side and showed a second, dying copy by the killer. It is now revived inside the move (AddToWorld,
+        // after the corpse has left the world), so clients see the corpse go and a living helper appear. A move that
+        // fails before the corpse is taken out leaves the helper dead where it fell, as before.
+        private bool _reviveOnArrival;
+
+        public bool MoveReleasedCompanionTo(ushort regionID, int x, int y, int z, ushort heading)
+        {
+            _reviveOnArrival = true;
+            try { return MoveTo(regionID, x, y, z, heading); }
+            finally { _reviveOnArrival = false; }
         }
 
         private Point3D? FindNearestBindPoint()
@@ -2595,6 +2615,14 @@ namespace DOL.GS
 
         public override bool AddToWorld()
         {
+            if (_reviveOnArrival)
+            {
+                _reviveOnArrival = false;
+                Health = Math.Max(1, MaxHealth);
+                Mana = Math.Max(0, MaxMana);
+                Endurance = Math.Max(0, MaxEndurance);
+            }
+
             if (!base.AddToWorld())
                 return false;
 
