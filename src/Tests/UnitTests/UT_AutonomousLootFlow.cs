@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -173,7 +174,17 @@ namespace DOL.UnitTests
             {
                 [Abilities.HibArmor] = new Ability(new DbAbility { KeyName = Abilities.HibArmor, Name = "Cloth" }, 1)
             });
+            MarkPlain(bot);
             return bot;
+        }
+
+        // A world bot's first loot reaction rolls and saves its personality type; the loot tests'
+        // database refuses writes, so test bots start as "plain" (no personality, nothing to save).
+        private static void MarkPlain(GameBot bot)
+        {
+            var types = (ConcurrentDictionary<long, string>)typeof(PersonalityTypes)
+                .GetProperty("Types", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            types[bot.DatabaseID] = PersonalityTypes.Plain;
         }
 
         private static LootMob Mob(byte level = 10)
