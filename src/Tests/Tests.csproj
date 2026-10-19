@@ -42,6 +42,7 @@
         <ProjectReference Include="..\CoreServer\CoreServer.csproj" Name="CoreServer" />
         <ProjectReference Include="..\GameServer\GameServer.csproj" Name="GameServer" />
         <ProjectReference Include="..\WorldBuilder\WorldBuilder.csproj" Name="WorldBuilder" />
+        <ProjectReference Include="..\HeadlessClient\HeadlessClient.csproj" Name="HeadlessClient" />
     </ItemGroup>
     <ItemGroup>
         <ScriptFiles Include="..\GameServerScripts\**\*.cs" />

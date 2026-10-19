@@ -1,0 +1,18 @@
+<Project>
+    <PropertyGroup>
+        <BaseIntermediateOutputPath>..\build\HeadlessClient\$(Configuration)\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+    <!-- headless-client: a test driver that logs in to a running server the way the new (Godot) client does, without graphics. -->
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <AssemblyName>HeadlessClient</AssemblyName>
+        <RootNamespace>DaocServer.HeadlessClient</RootNamespace>
+        <IntermediateOutputPath>..\build\HeadlessClient\$(Configuration)\obj\</IntermediateOutputPath>
+        <OutputPath>..\build\HeadlessClient\$(Configuration)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>
