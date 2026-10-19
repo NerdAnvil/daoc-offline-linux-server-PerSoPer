@@ -72,7 +72,9 @@ a new release, skip step 1):
    list against the release's `progress-policy.json` (in its `OfflineDaoc.ProgressImport` source).
 4. Verify: build with only the `200-*` patches (`--patches <folder with copies of them>`), then
    run the same script against the result. It must print `0 tables differ`.
-5. Update `UPSTREAM.md`.
+5. Replace `world/classic-quests.json` with the release's `runtime/server/classic-quests.json` (it goes
+   with the quest rows in the world).
+6. Update `UPSTREAM.md`.
 
 ## Upgrading OpenDAoC itself
 

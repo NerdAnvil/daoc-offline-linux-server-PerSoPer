@@ -36,6 +36,7 @@ for name in GameServer CoreBase CoreDatabase Admin.Protocol; do
     [[ -f $src ]] && cp -f "$src" "$DEST/bin/"
   done
 done
+cp -f "$REPO/world/classic-quests.json" "$DEST/bin/"
 
 if $was_running; then
   echo "== Restarting in the background (log: logs/console.out; reopen the admin screen with ./daoc-admin)"

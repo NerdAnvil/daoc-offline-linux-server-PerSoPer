@@ -51,6 +51,11 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="config\serverconfig.example.xml" />
+        <!-- Classic quest steps, markers and event spawns (ClassicQuests.cs reads it next to the server). -->
+        <None Include="..\..\world\classic-quests.json" Link="classic-quests.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </None>
     </ItemGroup>
     <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

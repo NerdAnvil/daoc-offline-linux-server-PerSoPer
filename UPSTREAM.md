@@ -49,6 +49,10 @@ Policy: **static snapshot, manual pulls.** See docs/ARCHITECTURE.md §9.
   and `pockets.json` from the 0.37 game patch; all 106 match the 0.37 package manifest. The meshes and
   `seams.json` are unchanged since `classic-si-2` (0.35b); `roads.json` is new (0.36) and `pockets.json`
   changed.
+- `world/classic-quests.json`: the 0.37 game patch's `runtime/server/classic-quests.json` (SHA-256
+  `8ff88f60…`, as in its package manifest). It holds what the classic quests' data-quest rows can't:
+  map markers, custom steps (group, travel, has item…), event spawns and some rewards. Without it they
+  stall at those steps. The build copies it into `bin/`.
 
 ## OpenDAoC
 

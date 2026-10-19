@@ -50,6 +50,8 @@ cp -L "$REPO/src/Pathing/Detour/build/libDetour.so" "$OUT/bin/lib/Detour.so"
 
 # A post-build step copies translations into src/Release/ only; publish needs them too.
 (cd "$REPO/src/GameServer/language" && find . -name '*.txt' -exec install -D -m 644 {} "$OUT/bin/languages/{}" \;)
+# Classic quest steps, markers and event spawns; the server reads it next to its program.
+cp "$REPO/world/classic-quests.json" "$OUT/bin/"
 
 echo "== Building the world (upstream OpenDAoC-Database + world/patches)"
 dump=$("$REPO/tools/fetch-upstream-db.sh")

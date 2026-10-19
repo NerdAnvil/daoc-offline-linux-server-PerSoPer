@@ -43,6 +43,7 @@ namespace DOL.GS.Quests
         private static Timer _timer;
         private static Config _config = new();
         private static DateTime _loadedWrite;
+        private static bool _missingLogged;
 
         public sealed record Point(ushort Region, int X, int Y, int Z);
 
@@ -681,7 +682,15 @@ namespace DOL.GS.Quests
             try
             {
                 string path = Path.Combine(AppContext.BaseDirectory, FileName);
-                if (!File.Exists(path)) return;
+                if (!File.Exists(path))
+                {
+                    // Checked every refresh: say it once, or classic quests stall at their custom steps unexplained.
+                    if (!_missingLogged && Log.IsWarnEnabled)
+                        Log.Warn($"{path} not found; classic quest markers, custom steps and event spawns are off");
+                    _missingLogged = true;
+                    return;
+                }
+                _missingLogged = false;
                 DateTime write = File.GetLastWriteTimeUtc(path);
                 if (write == _loadedWrite) return;
                 Config config = JsonSerializer.Deserialize<Config>(File.ReadAllText(path),
