@@ -170,6 +170,8 @@ namespace DOL.GS
         private long _nextTrainingDecisionTick;
         private string _observedObjectiveAssignmentId = string.Empty;
         private GameNPC _serviceNpc;
+        private int[] _campLevelScratch = new int[16];
+        private readonly AutonomousServiceReachability.ApproachFailures _serviceApproachFailures = new();
         private eWorldServiceKind? _serviceKind;
         private long _nextServiceSearchTick;
         private long _nextRvrReleaseCheckTick;
@@ -220,6 +222,36 @@ namespace DOL.GS
 
         private static CampCatalogCell[] _campCatalog = [];
 
+        private long _nextPocketCheckTick;
+        private static long _nextPocketNudgeLog;
+
+        /// <summary>
+        /// A bot standing in a listed walled-off pocket (navmesh/pockets.json) is put on the nearest real floor at once.
+        /// 2026-10-16: Vindsaul Faste's one-unit sliver at 704633,738032 sits 26 units from the courtyard floor; bots stepped
+        /// onto it, then every route from it failed (242 stable approaches to Ulufgar since 10/09, raid hub routes, ~600 ms
+        /// of route recovery each) before a later escape moved them off.
+        /// </summary>
+        private static bool TryLeaveListedPocket(GameBot bot, out bool inPocket)
+        {
+            inPocket = false;
+            if (!bot.IsAlive || bot.InCombat || bot.IsOnStableMasterRoute || bot.CurrentZone is not Zone zone ||
+                !AutonomousZonePockets.Contains(zone.ID, bot.X, bot.Y, bot.Z))
+                return false;
+            inPocket = true;
+            if (!AutonomousNavigationSurface.TryNearestWalkableFloor(PathfindingProvider.Instance, zone,
+                    new Vector3(bot.X, bot.Y, bot.Z), 600, out Vector3 floor, leavePocket: true) ||
+                !bot.MoveInRegion(bot.CurrentRegionID, (int)floor.X, (int)floor.Y, (int)floor.Z, bot.Heading, true))
+                return false;
+            bot.StopMovingOnPath();
+            if (GameLoop.GameLoopTime >= _nextPocketNudgeLog)
+            {
+                _nextPocketNudgeLog = GameLoop.GameLoopTime + 10_000;
+                Log.Info($"AUTONOMOUS_POCKET_NUDGE bot={bot.Name} id={bot.DatabaseID} region={bot.CurrentRegionID} " +
+                         $"to={(int)floor.X},{(int)floor.Y},{(int)floor.Z}");
+            }
+            return true;
+        }
+
         public bool Tick(BotBrain brain)
         {
             GameBot bot = brain?.BotBody;
@@ -229,6 +261,14 @@ namespace DOL.GS
             try
             {
                 long nowTick = GameLoop.GameLoopTime;
+                if (nowTick >= _nextPocketCheckTick)
+                {
+                    _nextPocketCheckTick = nowTick + 5_000 + bot.ObjectID % 1_000;
+                    if (TryLeaveListedPocket(bot, out bool stillInPocket))
+                        return true;
+                    // A pocket with no real floor within reach: the normal escape handles it; do not re-search every 5 s.
+                    if (stillInPocket) _nextPocketCheckTick = nowTick + 60_000;
+                }
                 // A solo siege force is released at most a couple of seconds
                 // after its event ends; no need to take the event lock each turn.
                 if (bot.Group == null && nowTick >= _nextRvrReleaseCheckTick)
@@ -270,6 +310,9 @@ namespace DOL.GS
                     _emptyCampSinceTick = 0;
                     _patrolDestination = null;
                     _pendingStableChoice = null;
+                    // A teleporter trip planned for the old task is not this one's (known issues #4: 1 in 30 trips failed;
+                    // 2026-10-16, 152 of 566 failures were bots that planned a trip alone and were then led off by a group).
+                    ClearTownPort();
                     _nextPlanTick = 0;
                     if (!bot.IsOnStableMasterRoute)
                     {
@@ -291,6 +334,7 @@ namespace DOL.GS
                     _emptyCampSinceTick = 0;
                     _patrolDestination = null;
                     _pendingStableChoice = null;
+                    ClearTownPort();
                     _nextPlanTick = 0;
                     // A new group assignment changes the destination after the
                     // current authoritative ticket leg. It must not make a rider
@@ -314,6 +358,7 @@ namespace DOL.GS
                     _emptyCampSinceTick = 0;
                     _patrolDestination = null;
                     _pendingStableChoice = null;
+                    ClearTownPort();
                     _nextPlanTick = 0;
                 }
                 ObserveDeaths(bot);
@@ -483,16 +528,16 @@ namespace DOL.GS
                         _nextRvrPlanReview = nowTick + 45_000;
                         _rvrDestination = ChooseRvrDestination(bot);
                     }
-                    if (AutonomousRvrEventLayer.IsBattleForce(eventForce, nowTick))
+                    if (AutonomousRvrEventLayer.IsEventForce(eventForce, nowTick))
                         return ExecuteRvr(brain, bot);
                 }
                 if (_groupDirective?.IsDynamic == true && _groupDirective.Phase == "Regrouping" &&
-                    !AutonomousRvrEventLayer.IsBattleForce(_groupDirective.GroupId, nowTick))
+                    !AutonomousRvrEventLayer.IsEventForce(_groupDirective.GroupId, nowTick))
                     return HandleRecoveryRegroup(brain, bot);
                 if (_groupDirective?.IsDynamic == true &&
                     AutonomousBotGroupCoordinator.IsAssemblyPhase(_groupDirective.Phase) &&
                     !(_groupDirective.ObjectiveKind == eAutonomousObjectiveKind.RvR &&
-                      AutonomousRvrEventLayer.IsBattleForce(_groupDirective.GroupId, nowTick)))
+                      AutonomousRvrEventLayer.IsEventForce(_groupDirective.GroupId, nowTick)))
                 {
                     // A wipe/no-show resize invalidates the old shared
                     // camp even when the group ID itself has not changed.
@@ -1033,10 +1078,30 @@ namespace DOL.GS
                     // authored point preserves legacy behavior without a mesh.
                     // The Realm Exchange prefers a point with a clear view of the
                     // broker so bots never trade through a pillar or hallway wall.
-                    TryResolveConnectedApproach(bot, rawPoint, Math.Max(16, interactionRadius - 16), out point,
-                        needed == eWorldServiceKind.RealmExchange
-                            ? AutonomousZonePointApproach.ClearSightOf(PathfindingProvider.Instance, _serviceNpc.CurrentZone, rawPoint)
-                            : null);
+                    if (!TryResolveConnectedApproach(bot, rawPoint, Math.Max(16, interactionRadius - 16), out point,
+                            needed == eWorldServiceKind.RealmExchange
+                                ? AutonomousZonePointApproach.ClearSightOf(PathfindingProvider.Instance, _serviceNpc.CurrentZone, rawPoint)
+                                : null) &&
+                        _serviceApproachFailures.Observe(AutonomousServiceReachability.Key(_serviceNpc),
+                            Vector3.Distance(new(bot.X, bot.Y, bot.Z), rawPoint), GameLoop.GameLoopTime))
+                    {
+                        // No way to stand beside this service and no progress toward it for a minute (Grimspound's
+                        // Kel and Kuz, 2026-10-17): skip it and choose another instead of searching every turn.
+                        // Earlier failures walk toward the authored point as before.
+                        _serviceApproachFailures.Reset();
+                        string service = AutonomousServiceReachability.Key(_serviceNpc);
+                        bool shared = AutonomousServiceReachability.ReportFailure(service, bot.DatabaseID, GameLoop.GameLoopTime);
+                        Log.Info($"AUTONOMOUS_SERVICE_UNREACHABLE bot={bot.Name} id={bot.DatabaseID} service=\"{_serviceNpc.Name}\" " +
+                                 $"region={_serviceNpc.CurrentRegionID} at={_serviceNpc.X},{_serviceNpc.Y},{_serviceNpc.Z} " +
+                                 $"from={bot.X},{bot.Y},{bot.Z} skippedByAll={shared}");
+                        _serviceNpc = null;
+                        _nextServiceSearchTick = 0;
+                        bot.StopMovingOnPath();
+                        bot.StopMoving();
+                        SetStatus(bot, "Choosing another merchant", needed == eWorldServiceKind.RealmExchange ? "Use the Realm Exchange" : "Sell ordinary backpack loot",
+                            "The chosen service has no reachable spot to stand beside it", string.Empty, destination.ZoneName);
+                        return true;
+                    }
                 }
                 if (TryBeginFasterStableRoute(bot, point, _serviceNpc.Name))
                     return true;
@@ -1115,6 +1180,8 @@ namespace DOL.GS
 
             void ConsiderService(GameNPC npc)
             {
+                if (AutonomousServiceReachability.IsSkipped(AutonomousServiceReachability.Key(npc), bot.DatabaseID, GameLoop.GameLoopTime))
+                    return;
                 double minutes = EstimateTravelMinutes(bot, npc.CurrentRegionID, npc.X, npc.Y);
                 if (minutes < bestMinutes)
                 {
@@ -1573,6 +1640,9 @@ namespace DOL.GS
             return true;
         }
 
+        /// <summary>Within this of its slot a party member formation-follows its leader; farther away it paths there first.</summary>
+        public const int FormationFollowReach = 2_500;
+
         private bool FollowDynamicGroupLeader(GameBot bot, AutonomousBotGroupCoordinator.Directive directive)
         {
             GameBot leader = directive.Leader;
@@ -1638,8 +1708,8 @@ namespace DOL.GS
             bool tight = leader.CurrentRegion?.IsDungeon == true || leader.CurrentZone?.IsDungeon == true;
             // Aim around where the leader is about to be, not where it was
             // (smooth group travel from the stefanrows/OfflineDAoC fork).
-            Vector3 formation = AutonomousBotGroupCoordinator.FormationPoint(bot,
-                leader.IsMoving && !tight ? AutonomousGroupMotion.PredictLeader(leader) : new(leader.X, leader.Y, leader.Z), tight);
+            Vector3 formationCenter = leader.IsMoving && !tight ? AutonomousGroupMotion.PredictLeader(leader) : new(leader.X, leader.Y, leader.Z);
+            Vector3 formation = AutonomousBotGroupCoordinator.FormationPoint(bot, formationCenter, tight);
             // Close the gap on the move so the party travels as one unit instead of the
             // leader stopping for formation (the follower runs up to 25% faster while behind).
             if (bot.CurrentRegionID == leader.CurrentRegionID)
@@ -1660,20 +1730,15 @@ namespace DOL.GS
                     bot.StopMoving();
                 }
             }
-            else if (leader.IsMoving && !tight &&
-                     Vector3.DistanceSquared(new(bot.X, bot.Y, bot.Z), formation) < 2_500 * 2_500)
+            else if (Vector3.DistanceSquared(new(bot.X, bot.Y, bot.Z), formation) < FormationFollowReach * FormationFollowReach)
             {
-                // Walk with the leader: steer smoothly, match its pace, never stop mid-march.
-                AutonomousGroupMotion.FollowMovingLeader(bot, leader, formation);
-            }
-            else if (Vector3.DistanceSquared(new(bot.X, bot.Y, bot.Z), formation) > 95 * 95)
-            {
-                IssuePath(bot, formation, retargetWhileMoving: true);
+                // Move as one unit: the movement service keeps this slot around the leader between AI turns,
+                // walking or standing, like companions follow their player (AutonomousGroupFormationFollow).
+                AutonomousGroupFormationFollow.Ensure(bot, leader, formationCenter, formation, tight);
             }
             else
             {
-                bot.StopMovingOnPath();
-                bot.StopMoving();
+                IssuePath(bot, formation, retargetWhileMoving: true);
             }
             SetStatus(bot, "Traveling in group formation", directive.SharedGoal,
                 $"Keeping formation with {leader.Name}; the party clears dungeon threats before advancing",
@@ -2918,7 +2983,8 @@ namespace DOL.GS
             {
                 Zone zone = region?.GetZone((int)anchor.X, (int)anchor.Y);
                 if (AutonomousRendezvousNavigation.TryChoosePoint(
-                        PathfindingProvider.Instance, zone, anchor, out point))
+                        PathfindingProvider.Instance, zone, anchor, out point) &&
+                    AutonomousRvrStaging.IsConnectedToKeep(keep, point))
                     return true;
             }
             point = default;
@@ -3178,7 +3244,20 @@ namespace DOL.GS
                                             cell.Zone?.ID ?? 0) &&
                                         AutonomousAuditedCampPolicy.CanAssignToParty(cell.Id, groupSize)))
             {
-                int[] validLevels = cell.Levels.Where(level =>
+                // Filled into a reused buffer; only a camp that qualifies gets its own array (this per-cell
+                // filter was the largest single allocation in a 30 s trace, 2026-10-17).
+                int validCount = 0;
+                if (_campLevelScratch.Length < cell.Levels.Length)
+                    _campLevelScratch = new int[Math.Max(16, cell.Levels.Length)];
+                foreach (int candidateLevel in cell.Levels)
+                    if (IsValidCampLevel(candidateLevel))
+                        _campLevelScratch[validCount++] = candidateLevel;
+                if (validCount == 0 ||
+                    !sharedGroup && !AutonomousSoloCampFloor.CampQualifies(bot.Level, validCount, cell.Levels.Length))
+                    continue;
+                int[] validLevels = _campLevelScratch.AsSpan(0, validCount).ToArray();
+
+                bool IsValidCampLevel(int level)
                     {
                         if (sharedGroup)
                             return level >= planningLevel + 3 &&
@@ -3191,11 +3270,7 @@ namespace DOL.GS
                         // XP-bearing creature at this level.
                         return con >= ConColor.GREEN && con <= naturalMaximumTargetCon &&
                             AutonomousSoloCampFloor.Allows(bot.Level, level);
-                    })
-                    .ToArray();
-                if (validLevels.Length == 0 ||
-                    !sharedGroup && !AutonomousSoloCampFloor.CampQualifies(bot.Level, validLevels.Length, cell.Levels.Length))
-                    continue;
+                    }
 
                 // Solo bots keep Darkness Falls, but only once they can survive
                 // it: level 25+ and targets that con blue or easier. (Solo
@@ -4060,8 +4135,9 @@ namespace DOL.GS
             {
                 // Boarding uses a narrow 3-D check, tighter than ordinary
                 // travel arrival (48 horizontal / 96 vertical). Finish the
-                // validated approach instead of stopping outside boarding range.
-                if (!IssuePath(bot, stable.BoardingPoint, preciseArrival: true))
+                // validated approach instead of stopping outside boarding range. A bot already walking elsewhere turns
+                // for the horse at once (a moving bot kept its old order, as on teleporter trips).
+                if (!IssuePath(bot, stable.BoardingPoint, preciseArrival: true, retargetWhileMoving: true))
                 {
                     RejectPendingBoarding(bot, "No connected route to this horse; continuing toward the destination");
                     return false;
@@ -4123,8 +4199,11 @@ namespace DOL.GS
         }
 
         private bool IssuePath(GameBot bot, Vector3 destination, Vector3? validatedContinuation = null,
-            bool preciseArrival = false, bool retargetWhileMoving = false)
+            bool preciseArrival = false, bool retargetWhileMoving = false,
+            [System.Runtime.CompilerServices.CallerMemberName] string caller = "")
         {
+            // A route order replaces the party formation follow (it resumes on the next follow turn).
+            AutonomousGroupFormationFollow.Release(bot);
             TryRepairNavigationFloor(bot);
             if (AutonomousRvrTravel.TraverseFriendlyDoor(bot, destination))
             {
@@ -4150,6 +4229,7 @@ namespace DOL.GS
             _restingCamp = null;
             bot.WakeRecoveryRest();
             long now = GameLoop.GameLoopTime;
+            Vector3? previousDestination = _issuedRouteDestination;
             bool destinationChanged = !_issuedRouteDestination.HasValue ||
                                       Vector3.DistanceSquared(_issuedRouteDestination.Value, destination) > 96 * 96;
             // Arrival is distinct from a failed/repeated movement order. Only a
@@ -4271,9 +4351,19 @@ namespace DOL.GS
             // A follower chasing a moving formation spot is the exception: its
             // destination moved, so it heads for the new spot right away instead of
             // finishing the walk to the old one and stopping there first.
-            if (!(retargetWhileMoving && destinationChanged) &&
+            // A destination far from the one being walked to also turns a moving bot at once: finishing the old walk
+            // first sent bots away from a teleporter, stopped armies at every march waypoint and walked travellers to a
+            // zone connection they no longer used (run 22: 322 such kept orders in five minutes, by many callers).
+            bool farRetarget = destinationChanged && previousDestination is { } old &&
+                Vector3.DistanceSquared(old, destination) > RetargetDistance * RetargetDistance;
+            if (!((retargetWhileMoving || farRetarget) && destinationChanged) &&
                 AutonomousRouteRecoveryPolicy.ShouldRetainMovementOrder(bot.IsMoving, now, _nextMoveOrderTick))
+            {
+                if (destinationChanged && bot.IsMoving && previousDestination is { } kept &&
+                    Vector3.DistanceSquared(kept, destination) > KeptOrderReportDistance * KeptOrderReportDistance)
+                    NoteKeptOrder(caller, now);
                 return true;
+            }
             _nextMoveOrderTick = now + 1_500;
 
             Zone currentZone = bot.CurrentZone;
@@ -4339,6 +4429,27 @@ namespace DOL.GS
             return true;
         }
 
+        // How often a moving bot kept walking its old order although the new destination lies far from it (the walk
+        // to the old one is finished first). Run 22: teleporter trips walked away this way; measured per caller.
+        private const float RetargetDistance = 1_500f;
+        // Kept orders still counted: new destination 400-1,500 from the old one (the far ones now retarget).
+        private const float KeptOrderReportDistance = 400f;
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, int> KeptOrders = new();
+        private static long _nextKeptOrderReportTick;
+
+        private static void NoteKeptOrder(string caller, long now)
+        {
+            KeptOrders.AddOrUpdate(caller ?? "?", 1, (_, count) => count + 1);
+            long next = System.Threading.Interlocked.Read(ref _nextKeptOrderReportTick);
+            if (now < next || System.Threading.Interlocked.CompareExchange(ref _nextKeptOrderReportTick, now + 5 * 60_000, next) != next)
+                return;
+            var counts = KeptOrders.ToArray();
+            KeptOrders.Clear();
+            if (next == 0) return;
+            Log.Info($"AUTONOMOUS_ROUTE_ORDER_KEPT total={counts.Sum(pair => pair.Value)} callers=\"" +
+                     string.Join(", ", counts.OrderByDescending(pair => pair.Value).Take(10).Select(pair => $"{pair.Key}:{pair.Value}")) + "\"");
+        }
+
         private bool TryBeginLocalRouteRecovery(
             GameBot bot,
             Vector3 current,
@@ -4347,6 +4458,19 @@ namespace DOL.GS
             Vector3 failedDestination)
         {
             bot.GoalDiagnosticAttempt?.RouteFailed(failureStatus.ToString());
+
+            // Standing just off the walkable mesh, no route can start (several bots at once beside Vindsaul Faste and
+            // Caer Diogel, 2026-10-13): step onto the nearest real floor, then plan again from there.
+            if (AutonomousNavigationSurface.TryNearestWalkableFloor(PathfindingProvider.Instance, bot.CurrentZone, current, 300,
+                    out Vector3 floorStep) &&
+                bot.MoveInRegion(bot.CurrentRegionID, (int)floorStep.X, (int)floorStep.Y, (int)floorStep.Z, bot.Heading, true))
+            {
+                Log.Info($"AUTONOMOUS_FLOOR_STEP bot={bot.Name} id={bot.DatabaseID} region={bot.CurrentRegionID} " +
+                         $"from={(int)current.X},{(int)current.Y},{(int)current.Z} to={(int)floorStep.X},{(int)floorStep.Y},{(int)floorStep.Z} " +
+                         $"distance={Vector2.Distance(new(current.X, current.Y), new(floorStep.X, floorStep.Y)):0}");
+                _routeStallReplans = 0;
+                return true;
+            }
 
             // The Jordheim exchange room has one collision pocket whose Detour
             // polygon is connected on paper but whose physical approach stops at
@@ -4529,7 +4653,12 @@ namespace DOL.GS
             Vector3 escape;
             ushort escapeRegion;
             string escapeName;
-            if (_camp != null &&
+            // 2026-10-16 (owner's session, Camelot Hills): Haroorwin failed the same route every 7 seconds for minutes,
+            // each failure an 800-query, 2-9 second AI turn that froze the server (rubberbanding). Every escape was a short
+            // hop beside the pocket and reset the failure count, so it never reached the real relocation. Repeated
+            // failures in one spot now skip the short hops.
+            bool localHopsLeft = _terminalRouteFailuresInPocket < AutonomousRouteRecoveryPolicy.FailuresBeforeSafeRelocation;
+            if (localHopsLeft && _camp != null &&
                 AutonomousRouteHotspotRepair.TryGetAuditedCampEscape(
                     PathfindingProvider.Instance, bot.CurrentRegion, bot.CurrentRegionID,
                     _camp.MonsterName, current, out escape))
@@ -4537,19 +4666,30 @@ namespace DOL.GS
                 escapeRegion = bot.CurrentRegionID;
                 escapeName = _camp.ZoneName;
             }
-            else if (AutonomousRouteHotspotRepair.TryGetImmediateEscape(
+            else if (localHopsLeft && AutonomousRouteHotspotRepair.TryGetImmediateEscape(
                     PathfindingProvider.Instance, bot.CurrentRegion, bot.CurrentRegionID, current, out escape))
             {
                 escapeRegion = bot.CurrentRegionID;
                 escapeName = bot.CurrentZone?.Description ?? $"region {escapeRegion}";
             }
-            else if (_camp != null &&
+            else if (localHopsLeft && _camp != null &&
                      AutonomousRouteHotspotRepair.TryResolveStarterDungeonRouteSurface(
                          PathfindingProvider.Instance, bot.CurrentRegion, bot.CurrentRegionID,
                          _camp.RegionId, current, out escape))
             {
                 escapeRegion = bot.CurrentRegionID;
                 escapeName = bot.CurrentZone?.Description ?? $"region {escapeRegion}";
+            }
+            else if (_terminalRouteFailuresInPocket >= AutonomousRouteRecoveryPolicy.FailuresBeforeSafeRelocation &&
+                     AutonomousRealmRaid.TryDungeonRegroupPoint(bot, out ushort raidRegion, out Vector3 raidFront) &&
+                     Vector3.DistanceSquared(current, raidFront) > 300f * 300f)
+            {
+                // A raider inside its raid's dungeon rejoins the raid front, not its capital. Run 9 (2026-10-14):
+                // Hibernia's Darkness Falls raiders arriving at the entrance (46,325 / 40,969) could not route the
+                // 15,000+ units to the front, were sent to Tir na Nog, rode back and failed again, 338 times.
+                escapeRegion = raidRegion;
+                escape = raidFront;
+                escapeName = "the raid front";
             }
             else
             {
@@ -4584,7 +4724,10 @@ namespace DOL.GS
                      $"to={escapeRegion}:{(int)escape.X},{(int)escape.Y},{(int)escape.Z} " +
                      $"terminalFailures={_terminalRouteFailuresInPocket}");
             ResetRouteOrderState();
-            ResetRepeatedRouteFailures();
+            // A short hop keeps the pocket's failure count (the bot comes back to the same spot); a real relocation clears it.
+            if (!localHopsLeft || escapeRegion != failedSourceRegion ||
+                Vector3.DistanceSquared(_lastTerminalRouteFailurePosition, escape) > AutonomousRouteRecoveryPolicy.RepeatedFailureRadius * AutonomousRouteRecoveryPolicy.RepeatedFailureRadius * 16)
+                ResetRepeatedRouteFailures();
             bot.MarkAutonomousStateDirty();
             AutonomousBotStatusPersistence.Queue(bot);
             AutonomousStuckWatchdog.MarkProgress(bot, eAutonomousProgressKind.Recovery);
@@ -4739,8 +4882,13 @@ namespace DOL.GS
             return IsZoneAccessible(realm, zone);
         }
 
+        // An exit of the region the bot already stands in is always usable (the realm row, portal-row and target
+        // checks still apply). Run 4 (2026-10-14): 77 bots saved inside Summoner's Hall after a raid logged in there,
+        // found no usable crossing (the hall is no ordinary-goal zone) and stood still until the 15-minute rescue.
         private static bool IsCrossingSourceAccessible(eRealm realm, ushort currentRegion, DbZonePoint point) =>
             AutonomousDarknessFallsPolicy.CanEvacuateThroughHomeExit(realm, currentRegion, point) ||
+            point.SourceRegion == currentRegion && WorldMgr.GetRegion(currentRegion) is { } here &&
+                AutonomousCapnBryGoalCatalog.IsClassicOrShroudedIslesExpansion(here.Expansion) ||
             IsRegionPointAccessible(realm, point.SourceRegion, point.SourceX, point.SourceY);
 
         private bool RetireStaleDarknessFallsGoalAndEvacuate(GameBot bot)

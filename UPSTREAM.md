@@ -14,7 +14,15 @@ Policy: **static snapshot, manual pulls.** See docs/ARCHITECTURE.md §9.
   Not imported: `source/server/tools/` (Windows client patchers and navmesh analysis scripts).
   - `CoreServer/Actions/ConsoleStart.cs`: kept ours. Upstream `c1c465c` (PR #3) backs off on stdin
     EOF; our console thread already stops reading at EOF.
-- Next pull: `git diff d337d18 <new tag> -- source/server/GameServer source/server/CoreServer source/server/Tests`,
+- **Synced to v0.37 / 0.37b / 0.37c (`ab4df02`, 2026-10-18).** Applied `d337d18..ab4df02` for
+  `source/server/{GameServer,CoreServer,CoreDatabase,Tests}`. Server code only: world data and
+  navmeshes are still from v0.35b (below). Not imported: `source/server/tools/` and
+  `source/new-client/`.
+  - Hand-merged: `bots/GameBot.cs` (upstream changed it to LF line endings; our respawn fix sits
+    next to upstream's guild-name line in `AddToWorld`) and `bots/autonomous/AutonomousPopulationController.cs`
+    (our population settings next to upstream's `OrphanChecked`).
+  - Line endings follow upstream, so some files went from CRLF to LF (e.g. `bots/BotBrain.cs`).
+- Next pull: `git diff ab4df02 <new tag> -- source/server/GameServer source/server/CoreServer source/server/CoreDatabase source/server/Tests`,
   then `git apply -p3 --directory=src`. Our own changes on top are small: `GameServer/admin/`,
   `DaocAdmin/`, `Admin.Protocol/`, `WorldBuilder/`, population settings, login handler, console
   host, the csproj files and `Pathing/Detour/CMakeLists.txt`.

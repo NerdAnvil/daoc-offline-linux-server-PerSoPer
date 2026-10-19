@@ -3714,7 +3714,7 @@ namespace DOL.AI.Brain
 
         public void CheckOffensiveAbilities()
         {
-            if (Body.Abilities == null || Body.Abilities.Count <= 0)
+            if (Body.AbilityCount <= 0)
                 return;
 
             foreach (Ability ab in Body.GetAllAbilities())
@@ -3990,30 +3990,47 @@ namespace DOL.AI.Brain
             // AutonomousPetSupport. Keeping them out of this combat selector
             // prevents a second cooldown/queue from recasting buffs or treating
             // one-shot power transfer as idle upkeep.
+            GameLiving servant = servantBrain.Body;
             commands = commands.Where(spell => spell.IsHarmful &&
                 Body.IsWithinRadius(target, Math.Max(1, spell.CalculateEffectiveRange(Body))) &&
+                ServantCanReach(target, spell) &&
                 ServantPayloadNeedsApplication(target, spell));
 
-            // The normal spell construction already reduced each line to its
-            // learned, level-valid ranks. Prefer the highest legal commands but
-            // retain some variation between equally useful servant actions.
+            // One command per servant line (the highest learned rank of each payload kind), so every line gets used.
+            // Taking the four highest-level commands overall kept out the lower-level area debuffs (Shroud of
+            // Affliction, Vortex of Anguish) whenever damage lines had higher ranks (owner report 2026-10-15).
             Spell[] best = commands
-                .OrderByDescending(spell => spell.Level)
-                .ThenByDescending(spell => spell.SubSpellID)
-                .Take(4)
+                .GroupBy(ServantCommandKind)
+                .Select(line => line.OrderByDescending(spell => spell.Level).ThenByDescending(spell => spell.SubSpellID).First())
                 .ToArray();
             if (best.Length == 0)
                 return false;
 
-            Spell command = BotBody.IsEndgameCompanion
-                ? TemporaryCompanionBalance.HighestSpell(best)
-                : best[Random.Shared.Next(best.Length)];
+            // A debuff the target does not have yet goes first, on a single enemy as on a pack: area debuffs are worth
+            // casting on one target too.
+            Spell[] debuffs = best.Where(spell => SkillBase.GetSpellByID(spell.SubSpellID) is { } payload && IsServantDebuff(payload)).ToArray();
+            Spell command = debuffs.Length > 0
+                ? debuffs[Random.Shared.Next(debuffs.Length)]
+                : BotBody.IsEndgameCompanion
+                    ? TemporaryCompanionBalance.HighestSpell(best)
+                    : best[Random.Shared.Next(best.Length)];
             GameObject oldTarget = Body.TargetObject;
             Body.TargetObject = target;
             bool cast = Body.CastSpell(command, ResolveKnownSpellLine(command), false);
             Body.TargetObject = oldTarget;
             _nextNecromancerCommandTick = GameLoop.GameLoopTime + (cast ? 750 : 2_000);
             return cast;
+
+            // A point-blank payload (Billowing Death and its ranks: range 0, radius 350) bursts around the servant, so
+            // the servant, not the shade, must stand by the target. It was sent from 1,500 away and hit nothing.
+            bool ServantCanReach(GameLiving commandTarget, Spell wrapper)
+            {
+                Spell payload = SkillBase.GetSpellByID(wrapper.SubSpellID);
+                if (payload == null || payload.Range > 0 || payload.Radius <= 0)
+                    return true;
+                return servant.CurrentRegionID == commandTarget.CurrentRegionID &&
+                       servant.IsWithinRadius(commandTarget, Math.Max(100, payload.Radius * 8 / 10));
+            }
 
             bool ServantPayloadNeedsApplication(GameLiving commandTarget, Spell wrapper)
             {
@@ -4027,6 +4044,22 @@ namespace DOL.AI.Brain
                 return payload.Duration <= 0 || !LivingHasEffect(commandTarget, payload);
             }
         }
+
+        /// <summary>A servant command's line: what its payload does, its damage type, and whether it is single-target,
+        /// a targeted area or a burst around the servant.</summary>
+        public static string ServantCommandKind(Spell wrapper)
+        {
+            Spell payload = SkillBase.GetSpellByID(wrapper.SubSpellID);
+            if (payload == null)
+                return $"wrapper:{wrapper.ID}";
+            string shape = payload.Radius <= 0 ? "single" : payload.Range <= 0 ? "pbaoe" : "area";
+            return $"{payload.SpellType}/{payload.DamageType}/{shape}";
+        }
+
+        /// <summary>Stat, resist, armor and speed debuffs (Shroud of Affliction, Vortex of Anguish and the like).</summary>
+        public static bool IsServantDebuff(Spell payload) =>
+            payload.SpellType == eSpellType.SpeedDecrease ||
+            payload.SpellType.ToString().Contains("Debuff", StringComparison.Ordinal);
 
         private SpellLine ResolveKnownSpellLine(Spell spell)
         {
@@ -4235,6 +4268,11 @@ namespace DOL.AI.Brain
                 return false;
 
             bool casted = false;
+
+            // No pet near an encounter that devours pets (AutonomousPetSupport.PetEaterNear).
+            if ((AutonomousPetSupport.IsMainPetSummon(spell.SpellType) || spell.SpellType == eSpellType.SummonMinion) &&
+                AutonomousPetSupport.PetEaterNear(Body) != null)
+                return false;
 
             Body.TargetObject = null;
 
@@ -4711,6 +4749,8 @@ namespace DOL.AI.Brain
 
             if (TryResurrectGroupMember())
                 return true;
+            if (TryResurrectSiegeComrade())
+                return true;
 
             if (!Body.CanCastHealSpells) return false;
 
@@ -5140,6 +5180,68 @@ namespace DOL.AI.Brain
             log.Info($"AUTONOMOUS_RESURRECTION_BLOCKED bot=\"{BotBody.Name}\" class=\"{BotBody.ClassName}\" corpse=\"{corpse.Name}\" " +
                      $"distance={Body.GetDistanceTo(corpse)} spell=\"{resurrection.Name}\" mana={BotBody.Mana}/{BotBody.MaxMana} " +
                      $"inCombat={Body.InCombat} reason=\"{reason}\"");
+        }
+
+        private long _nextSiegeRaiseScanTick;
+
+        /// <summary>
+        /// A siege attacker's healer raises fallen realm-mates near it, not only its own party (AutonomousSiegeResurrection).
+        /// Out of combat only, as players raised between waves; one corpse per healer at a time.
+        /// </summary>
+        private bool TryResurrectSiegeComrade()
+        {
+            Spell resurrection = BotBody.ResurrectionSpell;
+            long now = GameLoop.GameLoopTime;
+            // In the battle too, as players raised from the back line: only while nothing has hit the healer for a few
+            // seconds and no enemy stands by the corpse. Out of combat only, no siege corpse was ever raised (run 22: 48
+            // Midgard dead at Dun Dagda, none raised, each waiting for a raise before walking back from its muster).
+            bool fighting = Body.InCombat;
+            if (resurrection == null || now < _nextSiegeRaiseScanTick || Body.IsCasting)
+                return false;
+            _nextSiegeRaiseScanTick = now + 3_000;
+            if (!AutonomousSiegeResurrection.IsSiegeAttacker(BotBody))
+            {
+                if (AutonomousObjectiveAssignments.Is(BotBody, eAutonomousObjectiveKind.RvR) && AutonomousSiegeResurrection.HasFallenComradeNear(BotBody))
+                    AutonomousSiegeResurrection.Note(AutonomousSiegeResurrection.Check.NotAttacker);
+                _nextSiegeRaiseScanTick = now + 15_000;
+                return false;
+            }
+            if (fighting && now - Body.LastAttackedByEnemyTick < AutonomousSiegeResurrection.QuietMilliseconds)
+            {
+                AutonomousSiegeResurrection.Note(AutonomousSiegeResurrection.Check.UnderAttack);
+                return false;
+            }
+            if (!AutonomousSiegeResurrection.CanRaise(BotBody) || !CheckHealSpell(resurrection))
+            {
+                AutonomousSiegeResurrection.Note(AutonomousSiegeResurrection.Check.CannotCast);
+                return false;
+            }
+            GameBot corpse = AutonomousSiegeResurrection.ClaimCorpse(BotBody, fighting);
+            AutonomousSiegeResurrection.Note(corpse == null ? AutonomousSiegeResurrection.Check.NoCorpse : AutonomousSiegeResurrection.Check.Corpse);
+            if (corpse == null)
+                return false;
+            int range = BotBody.castingComponent.CalculateSpellRange(resurrection);
+            if (!BotBody.IsWithinRadius(corpse, range) || !BotGroupSupport.HasCorpseLineOfSight(BotBody, corpse))
+            {
+                Vector3 current = new(BotBody.X, BotBody.Y, BotBody.Z);
+                Vector3 desired = new(corpse.X, corpse.Y, corpse.Z);
+                AutonomousThreatAwarePathing.SafeStep step = AutonomousThreatAwarePathing.ChooseStep(BotBody, current, desired, 900);
+                BotBody.PathTo(step.Position, BotBody.MaxSpeed);
+                return true;
+            }
+            GameObject previous = BotBody.TargetObject;
+            BotBody.attackComponent.StopAttack();
+            BotBody.StopFollowing();
+            BotBody.StopMoving();
+            BotBody.TargetObject = corpse;
+            if (BotBody.CastSpell(resurrection, m_mobSpellLine, false))
+            {
+                log.Info($"AUTONOMOUS_SIEGE_RESURRECTION healer=\"{BotBody.Name}\" corpse=\"{corpse.Name}\" realm={BotBody.Realm} " +
+                         $"region={BotBody.CurrentRegionID} at={BotBody.X},{BotBody.Y},{BotBody.Z}");
+                return true;
+            }
+            BotBody.TargetObject = previous;
+            return false;
         }
 
         private bool TryResurrectGroupMember()
