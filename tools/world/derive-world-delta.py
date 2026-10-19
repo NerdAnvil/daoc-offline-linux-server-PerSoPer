@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Derive world/patches from an Offline DAoC release's pristine world (currently 0.35).
+"""Derive world/patches from an Offline DAoC release's pristine world (currently 0.37).
 
 Developer-only and run once per world update; the generated patches are committed, so users never
 need the release. The build applies them on top of the pinned upstream OpenDAoC-Database to recreate
@@ -17,21 +17,21 @@ import pathlib
 import sqlite3
 import sys
 
-WORLD = "Offline DAoC 0.35"  # the release the pristine DB comes from; named in each patch header
+WORLD = "Offline DAoC 0.37"  # the release the pristine DB comes from; named in each patch header
 
 src_path, upstream_path, out = sys.argv[1], sys.argv[2], pathlib.Path(sys.argv[3])
 
 # Player progress and runtime state: never part of the world (the release's progress-policy.json;
-# unchanged from 0.33 to 0.35).
+# 0.37 adds offline_world_bot_guild; offline_patch_log is the update log).
 EXCLUDED = {t.lower() for t in """
 Account AccountXCrafting AccountXCustomParam AccountXMoney CharacterXDataQuest CharacterXMasterLevel
 CharacterXOneTimeDrop DBHouseCharsXPerms DBHousePermissions DBIndoorItem DBOutdoorItem DOLCharacters
 DOLCharactersBackup DOLCharactersBackupXCustomParam DOLCharactersXCustomParam FactionAggroLevel Guild
 GuildAlliance GuildRank HouseConsignmentMerchant Inventory ItemUnique PlayerBoats PlayerXEffect Quest Task
 TimeXLevel bot_profiles bot_settings househookpointitem offline_auction_escrow offline_auction_ledger
-offline_auction_listings offline_world_bots realm_exchange_sales
+offline_auction_listings offline_world_bots offline_world_bot_guild realm_exchange_sales
 Appeal AuditEntry Ban BugReport KeepCaptureLog News PlayerInfo ServerInfo SinglePermission Voting
-offline_bot_commands offline_local_options offline_runtime_status serverstats
+offline_bot_commands offline_local_options offline_runtime_status offline_patch_log serverstats
 offline_classic165_removed_mobs offline_classic165_restored_mobs
 """.split()}
 IGNORED_COLUMNS = {"lasttimerowupdated"}

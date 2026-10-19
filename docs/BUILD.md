@@ -7,7 +7,7 @@ publish it, see [RELEASING.md](RELEASING.md).
 ```
 dist/daoc-server/                              portable server folder, ready to start (world and navmeshes installed)
 dist/daoc-server-<version>-linux-x64.tar.gz    the folder without navmeshes, as one archive (~85 MB)
-dist/daoc-navmeshes-classic-si-2.tar.xz        the navmeshes (~360 MB), joined from world/navmesh/ parts
+dist/daoc-navmeshes-classic-si-3.tar.xz        the navmeshes (~360 MB), joined from world/navmesh/ parts
 ```
 
 No client files are included.
@@ -52,7 +52,7 @@ Then run `tools/build-release.sh`. The result needs your system's glibc version 
    - the result is `defaults/world.sqlite`.
 4. Copies translations, default config, scripts (`daoc-server.sh`, `daoc-admin`,
    `navmesh-install.sh`, `release.conf`) and the README into the folder.
-5. **Navmeshes:** joins `world/navmesh/*.part-*` into `dist/daoc-navmeshes-classic-si-2.tar.xz`,
+5. **Navmeshes:** joins `world/navmesh/*.part-*` into `dist/daoc-navmeshes-classic-si-3.tar.xz`,
    verifies it against the committed `.sha256`, and installs it into `dist/daoc-server/navmesh`.
 6. Writes `VERSION` (`git describe`, or `dev` without git) and the tarball, which excludes
    `navmesh/`.
@@ -81,8 +81,8 @@ These are automated and log checks. In game, the owner has used the predecessor 
 | Check | Result |
 |---|---|
 | Build | 0 errors (~650 pre-existing warnings) |
-| Tests | 2,754 passed, 0 failed (0.35 sync, 2026-10-09) |
-| World build | ~95 s, 68 MB; identical to Offline DAoC 0.35's pristine world (0 differing tables) |
+| Tests | 3,005 passed, 0 failed (0.37 sync, 2026-10-18) |
+| World build | ~92 s, 67 MB; identical to Offline DAoC 0.37's pristine world (0 differing tables) |
 | Fresh release start | Ready in ~21 s; 99/99 navmeshes (measured at 0.33; not re-measured for 0.35's 103) |
 | Bot logins | 9 new bots in the world in about 1 s; full AI active within 30 s; 0 errors |
 | Stop | Saves and exits in ~2 s |

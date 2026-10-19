@@ -9,7 +9,7 @@ A Dark Age of Camelot server for Linux, built on an OpenDAoC fork. It hosts play
 machine together with two kinds of bots, and ships as **one portable folder**: no .NET install,
 no Wine, no Docker. The game client is not part of the project; players install it separately.
 
-- **World:** Classic + Shrouded Isles (no Trials of Atlantis), the world of Offline DAoC 0.35.
+- **World:** Classic + Shrouded Isles (no Trials of Atlantis), the world of Offline DAoC 0.37.
 - **Classes:** the classic Classic + SI classes. The custom Sluaghbinder class exists in the code
   but is switched off (`classes / enable_sluaghbinder = False`), and it needs a patched client.
 - **Bots:** autonomous gamebots that live in the world, and companion bots that players summon.
@@ -85,7 +85,7 @@ project, not routine. See [UPSTREAM.md](../UPSTREAM.md).
 | Server settings | `ServerProperty` table | In game: `/serverproperty`. Bot settings are in category `autonomous_population`. |
 | Config | `config/serverconfig.xml`, `logconfig.xml`, `invalidnames.txt`, `admins.json` | Created from `defaults/`; never overwritten by upgrades. |
 | Bot tuning | `bin/bot-goals.json` (optional; defaults built in) | Goal mix per level band; read at startup. |
-| Navmeshes | `navmesh/zone*.nav` (103 files, about 2 GB) plus `seams.json` and `pockets.json` | Set `classic-si-2`; manifest `world/navmesh-manifest.sha256`. |
+| Navmeshes | `navmesh/zone*.nav` (103 files, about 2 GB) plus `seams.json`, `pockets.json` and `roads.json` | Set `classic-si-3`; manifest `world/navmesh-manifest.sha256`. |
 
 **World pipeline** (`tools/build-release.sh`):
 1. `fetch-upstream-db.sh` downloads OpenDAoC-Database at the pinned commit and verifies a content
@@ -93,7 +93,7 @@ project, not routine. See [UPSTREAM.md](../UPSTREAM.md).
 2. `WorldBuilder` creates every table from the server's own DataObjects and loads the dump's
    rows.
 3. `world/patches/*.sql` run in name order:
-   - `200-*` is the generated Offline DAoC delta, which reproduces 0.35's pristine world exactly;
+   - `200-*` is the generated Offline DAoC delta, which reproduces 0.37's pristine world exactly;
    - `300-*` are hand-written changes (for example, faster bot logins).
 
 ## 6. Bots (summary)
