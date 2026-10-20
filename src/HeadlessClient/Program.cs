@@ -1,6 +1,6 @@
 // headless-client: logs in to a running game server the way the new (Godot) client does, without graphics, and
 // checks each step: login, character list, optionally creating a character, entering the world, optional chat lines
-// or commands, then the replies and who is nearby, and optionally /quit and deleting the created (or a named level 1)
+// or commands, then the replies and who is nearby, optionally walking to a spot or someone nearby, and optionally /quit and deleting the created (or a named level 1)
 // character.
 // Prints OK and exits 0 when every step worked; prints FAIL with the step and exits 1 otherwise.
 using System;
@@ -27,6 +27,8 @@ public static class Program
         "                       with --create of the same name, at the end, after /quit back to the character screen\n" +
         "  --send=TEXT          after entering, send a typed line (\"/persoper\", \"hello\"); repeatable\n" +
         "  --listen=SECONDS     how long to print server messages after entering, then who is nearby (default 5)\n" +
+        "  --goto=NAME|X,Y      then walk to someone nearby (\"Persoper\": full name, first name or part of it) or to a\n" +
+        "                       spot in the region; stops within 150 units, or fails after 120 s\n" +
         "  --timeout=SECONDS    how long each step may take (default 20)\n" +
         "  --verbose            print every packet code received";
 
@@ -114,6 +116,12 @@ public static class Program
             Note(c, o, p);
         }
         PrintNearby(pos);
+        if (o.Goto != null)
+        {
+            var walked = Walk(c, o, pos);
+            if (walked == null) return 1;
+            pos = walked;
+        }
 
         // 5. Optional: back to the character screen the way the new client leaves (/quit: sit, the server's
         // countdown of up to 20 s, more after a fight, then Quit), and delete the character created above.
@@ -139,7 +147,7 @@ public static class Program
     static void PrintNearby(Packets.Position you)
     {
         var list = Nearby.Values.OrderBy(l => l.DistanceTo(you)).ToList();
-        Console.WriteLine($"nearby: {list.Count} (distance from where you entered, to where each was first seen)");
+        Console.WriteLine($"nearby: {list.Count} (distance from where you entered, to where each was last seen)");
         foreach (var l in list)
         {
             string guild = l.Guild.Length > 0 ? $" <{l.Guild}>" : "";
@@ -147,6 +155,96 @@ public static class Program
         }
     }
     const int QuitWaitSeconds = 90;
+
+    // Zone corners in region coordinates, learned from ObjectUpdates (the client has no zone files).
+    static readonly Dictionary<int, (int X, int Y)> ZoneCorners = new();
+
+    const float WalkSpeed = 191;                                   // GamePlayer.PLAYER_BASE_SPEED, units a second
+    const int StepMilliseconds = 200, MaxWalkSeconds = 120, ZoneWaitSeconds = 15;
+    public const int ArriveDistance = 150;
+
+    // Walks in a straight line to --goto (a spot, or someone nearby, followed as ObjectUpdates move them), sending
+    // the position the way the client does while running. Capped at MaxWalkSeconds. Returns where it stopped, or
+    // null after printing FAIL.
+    static Packets.Position? Walk(Connection c, Options o, Packets.Position you)
+    {
+        Packets.Living? target = null;
+        if (o.GotoName != null)
+        {
+            target = FindNearby(Nearby.Values, o.GotoName, you);
+            if (target == null) return FailPos("goto", $"nobody called {o.GotoName} nearby");
+        }
+
+        // The position update names your zone; take the nearest living's, once the server has placed one.
+        var zoneDeadline = DateTime.UtcNow.AddSeconds(ZoneWaitSeconds);
+        int zone = ZoneNear(you);
+        while (zone < 0 && DateTime.UtcNow < zoneDeadline)
+        {
+            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return FailPos("goto", "disconnected");
+            zone = ZoneNear(you);
+        }
+        if (zone < 0) return FailPos("goto", $"no ObjectUpdate within {ZoneWaitSeconds} s, so your zone is unknown");
+
+        float x = you.X, y = you.Y, z = you.Z;
+        string what = target == null ? $"{o.GotoX:0},{o.GotoY:0}" : target.Name;
+        Console.WriteLine($"walking to {what} (zone {zone})");
+        double distance = double.MaxValue;
+        int maxSteps = MaxWalkSeconds * 1000 / StepMilliseconds;
+        for (int i = 0; i < maxSteps; i++)
+        {
+            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return FailPos("goto", "disconnected");
+            float tx = o.GotoX, ty = o.GotoY, tz = z;
+            if (target != null)
+            {
+                if (!Nearby.TryGetValue(target.ObjectId, out var now)) return FailPos("goto", $"{target.Name} left view");
+                (tx, ty, tz) = (now.X, now.Y, now.Z);
+            }
+            distance = Math.Sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y));
+            if (distance <= ArriveDistance)
+            {
+                c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, 0, c.SessionId, you.ObjectId, zone, Packets.Heading(x, y, tx, ty)));
+                Console.WriteLine($"arrived: {what} is {distance:0} away (within {ArriveDistance}), at {x:0},{y:0},{z:0}");
+                return you with { X = x, Y = y, Z = z };
+            }
+            float step = (float)Math.Min(WalkSpeed * StepMilliseconds / 1000.0, distance);
+            int heading = Packets.Heading(x, y, tx, ty);
+            x += (float)((tx - x) * step / distance);
+            y += (float)((ty - y) * step / distance);
+            z += (float)((tz - z) * step / distance);
+            int near = ZoneNear(you with { X = x, Y = y });                 // crossing into the next zone
+            if (near >= 0) zone = near;
+            c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, WalkSpeed, c.SessionId, you.ObjectId, zone, heading));
+            if (i % 25 == 24) Console.WriteLine($"  walking: {distance:0} away");
+        }
+        c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, 0, c.SessionId, you.ObjectId, zone, 0));
+        return FailPos("goto", $"still {distance:0} away from {what} after {MaxWalkSeconds} s");
+    }
+
+    // Someone nearby by name, closest first: the full name, else the first name ("Persoper" for "Persoper Mendsalot"),
+    // else any name containing it.
+    public static Packets.Living? FindNearby(IEnumerable<Packets.Living> nearby, string name, Packets.Position you)
+    {
+        var byDistance = nearby.OrderBy(l => l.DistanceTo(you)).ToList();
+        return byDistance.FirstOrDefault(l => Same(l.Name, name))
+            ?? byDistance.FirstOrDefault(l => Same(l.Name.Split(' ')[0], name))
+            ?? byDistance.FirstOrDefault(l => l.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    static int ZoneNear(Packets.Position you) =>
+        Nearby.Values.Where(l => l.Zone >= 0).OrderBy(l => l.DistanceTo(you)).Select(l => l.Zone).DefaultIfEmpty(-1).First();
+
+    // Reads packets until the deadline (capped); false if the connection ended.
+    static bool Pump(Connection c, Options o, DateTime deadline)
+    {
+        for (int i = 0; i < MaxPacketsPerWait; i++)
+        {
+            var p = c.Next(deadline);
+            if (p == null) return true;
+            if (p.Code < 0) return false;
+            Note(c, o, p);
+        }
+        return true;
+    }
 
     static bool Same(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 
@@ -200,6 +298,7 @@ public static class Program
 
     static Packets.Character? FailNull(string step, string why) { Fail(step, why); return null; }
     static bool FailFalse(string step, string why) { Fail(step, why); return false; }
+    static Packets.Position? FailPos(string step, string why) { Fail(step, why); return null; }
 
     // Waits for one of the codes, printing messages and noting the session id on the way; null on timeout.
     static Connection.Packet? WaitFor(Connection c, Options o, TimeSpan step, params byte[] codes)
@@ -243,6 +342,16 @@ public static class Program
         }
         else if (p.Code is Packets.ObjectDelete or Packets.RemoveObject)
             Nearby.Remove(Packets.ReadRemovedObjectId(p.Data));
+        else if (p.Code == Packets.ObjectUpdate)
+        {
+            var m = Packets.ReadObjectUpdate(p.Data);
+            if (Nearby.TryGetValue(m.ObjectId, out var l))
+            {
+                if (!ZoneCorners.TryGetValue(m.Zone, out var corner))
+                    ZoneCorners[m.Zone] = corner = Packets.ZoneCorner(l.X, l.Y, m.ZoneX, m.ZoneY);
+                Nearby[m.ObjectId] = l with { X = corner.X + m.ZoneX, Y = corner.Y + m.ZoneY, Z = m.Z, Zone = m.Zone };
+            }
+        }
     }
 
     static int Ok() { Console.WriteLine("OK"); return 0; }
@@ -261,6 +370,8 @@ public sealed class Options
     public int ListenSeconds = 5;
     public int TimeoutSeconds = 20;
     public string? Create, Delete;
+    public string? Goto, GotoName;                             // GotoName null: walk to GotoX, GotoY
+    public float GotoX, GotoY;
     public int Realm, RaceId, ClassId;
     public bool Female;
 
@@ -289,6 +400,7 @@ public sealed class Options
                 case "--race": race = value; break;
                 case "--class": cls = value; break;
                 case "--female": o.Female = true; break;
+                case "--goto": o.Goto = value; break;
                 default: throw new ArgumentException($"unknown option: {a}");
             }
         }
@@ -314,6 +426,20 @@ public sealed class Options
         if (o.Delete != null && o.Create != null && !string.Equals(o.Delete, o.Create, StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("with --create, --delete must name the same character");
         if (o.Delete is "") throw new ArgumentException("--delete needs a character name");
+        if (o.Goto != null)
+        {
+            var xy = o.Goto.Split(',');
+            if (o.Goto.Trim().Length == 0) throw new ArgumentException("--goto needs a name or x,y");
+            if (xy.Length == 2 && float.TryParse(xy[0], System.Globalization.CultureInfo.InvariantCulture, out o.GotoX)
+                && float.TryParse(xy[1], System.Globalization.CultureInfo.InvariantCulture, out o.GotoY))
+            {
+                if (o.GotoX is < 0 or > 2_000_000 || o.GotoY is < 0 or > 2_000_000)
+                    throw new ArgumentException("--goto x,y must be region coordinates (0 to 2000000)");
+            }
+            else if (xy.Length > 1) throw new ArgumentException("--goto x,y needs two numbers");
+            else o.GotoName = o.Goto.Trim();
+            if (o.LoginOnly) throw new ArgumentException("--goto needs the world, so not with --login-only");
+        }
         if (o.LoginOnly && o.Create != null && o.Delete != null)
             throw new ArgumentException("--login-only stops before the world, so --create with --delete would never delete");
         return o;

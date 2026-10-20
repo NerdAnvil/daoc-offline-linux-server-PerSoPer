@@ -22,12 +22,12 @@ public static class Packets
     // Client -> server codes.
     public const byte CryptKeyRequest = 0xF4, LoginRequest = 0xA7, CharacterOverviewRequest = 0xFC,
         CharacterSelectRequest = 0x10, RegionListRequest = 0x9D, WorldInitRequest = 0xD4, PlayerInitRequest = 0xE8,
-        GameOpenRequest = 0xBF, PlayerCommand = 0xAF, CharacterCreateRequest = 0xFF;
+        GameOpenRequest = 0xBF, PlayerCommand = 0xAF, CharacterCreateRequest = 0xFF, PositionUpdate = 0xA9;
 
     // Server -> client codes.
     public const byte CryptKey = 0x22, LoginGranted = 0x2A, LoginDenied = 0x2C, SessionId = 0x28, Realm = 0xFE,
         CharacterOverview = 0xFC, PositionAndObjectId = 0x20, Message = 0xAF, Quit = 0xA4,
-        NpcCreate = 0xDA, PlayerCreate = 0x4B, ObjectDelete = 0xE1, RemoveObject = 0xA2;
+        NpcCreate = 0xDA, PlayerCreate = 0x4B, ObjectDelete = 0xE1, RemoveObject = 0xA2, ObjectUpdate = 0xA1;
 
     // Races as the new client's server.gd has them: id, name, male and female creation model.
     public sealed record RaceInfo(int Id, string Name, ushort MaleModel, ushort FemaleModel);
@@ -230,6 +230,35 @@ public static class Packets
     // What a typed chat line becomes, as the new client sends it: "/cmd x" -> "&cmd x", anything else is /say.
     public static string TypedLine(string text) => text.StartsWith('/') ? "&" + text[1..] : "&say " + text;
 
+    // PlayerPositionUpdateHandler.HandlePacketSince1124 (+ the object id of 1.127): region coordinates as floats,
+    // speed, fall speed, session, object id, the zone, state flags, unknown, fall/ground word (bit 15 = on the
+    // ground), heading, action flags, 2 unknown, health, 4 trailing. Always on the ground, standing (state 0), no
+    // fall speed, so the server never counts fall damage. The zone must be one the server knows, or it kicks you.
+    public static byte[] PositionUpdateBody(float x, float y, float z, float speed, int sessionId, int objectId, int zone, int heading)
+    {
+        var w = new Writer();
+        w.FloatLE(x); w.FloatLE(y); w.FloatLE(z); w.FloatLE(speed); w.FloatLE(0);
+        w.Short((ushort)sessionId);
+        w.Short((ushort)objectId);
+        w.Short((ushort)zone);
+        w.Byte(0);                                             // state flags
+        w.Byte(0);
+        w.Short(0x8000);                                       // on the ground
+        w.Short((ushort)(heading & 0xFFF));
+        w.Byte(0);                                             // action flags
+        w.Bytes(new byte[2]);
+        w.Byte(100);                                           // health %
+        w.Bytes(new byte[4]);
+        return w.ToArray();
+    }
+
+    // The server's heading from one point to another (Point2D.GetHeading): 4096 steps a circle, 0 = +y.
+    public static int Heading(float fromX, float fromY, float toX, float toY)
+    {
+        double h = Math.Atan2(-(toX - fromX), toY - fromY) * 4096 / (2 * Math.PI);
+        return (int)(h < 0 ? h + 4096 : h) & 0xFFF;
+    }
+
     // ---------------------------------------------------------------- replies
 
     public sealed record Character(int Realm, int Slot, int Level, string Name, string ClassName, string RaceName,
@@ -269,7 +298,9 @@ public static class Packets
 
     // Something in view: an NPC (monsters, merchants, gamebots and companions; bots are NPCs to the server) or another
     // player. The position is where it was when it came into view (the readers below skip ObjectUpdate's moves).
-    public sealed record Living(int ObjectId, bool IsPlayer, string Name, string Guild, int Level, float X, float Y, float Z)
+    // Zone is -1 until an ObjectUpdate places it in one.
+    public sealed record Living(int ObjectId, bool IsPlayer, string Name, string Guild, int Level, float X, float Y, float Z,
+        int Zone = -1)
     {
         public double DistanceTo(Position p) =>
             Math.Sqrt((X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z));
@@ -309,6 +340,31 @@ public static class Packets
 
     // ObjectDelete and RemoveObject: the object id first (gone from view).
     public static int ReadRemovedObjectId(byte[] data) => new Reader(data).Short();
+
+    // A living's place inside its zone (zone x / y are offsets from the zone's corner, not region coordinates).
+    public sealed record Move(int ObjectId, int ZoneX, int ZoneY, int Z, int Zone);
+
+    // ObjectUpdate (PacketLib168.SendObjectUpdate): speed, heading, x in zone, target x, y in zone, target y, z,
+    // target z, oid, target oid, health, flags (0x04 / 0x08: bit 8 of the zone / target zone), zone, target zone.
+    public static Move ReadObjectUpdate(byte[] data)
+    {
+        var r = new Reader(data);
+        r.Short(); r.Short();                                  // speed, heading
+        int x = r.Short(); r.Short();
+        int y = r.Short(); r.Short();
+        int z = r.Short(); r.Short();
+        int oid = r.Short();
+        r.Short(); r.Byte();                                   // target oid, health
+        int flags = r.Byte();
+        int zone = r.Byte() | ((flags & 0x04) << 6);
+        return new Move(oid, x, y, z, zone);
+    }
+
+    // A zone's corner from one living seen both ways (region x/y from NPCCreate, zone x/y from ObjectUpdate). Zone
+    // corners sit on 8192-unit blocks (PositionAndObjectID counts dungeon offsets in them), so rounding to the
+    // block absorbs a living that moved up to 4096 units between the two packets.
+    public static (int X, int Y) ZoneCorner(float regionX, float regionY, int zoneX, int zoneY) =>
+        ((int)Math.Round((regionX - zoneX) / 8192) * 8192, (int)Math.Round((regionY - zoneY) / 8192) * 8192);
 
     // PacketLib1126.SendCharacterOverview: four u32 flags, then ten slots - 0 for an empty one, else the character.
     // The realm is the one asked for; each character also carries its own.

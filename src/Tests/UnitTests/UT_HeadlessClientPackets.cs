@@ -276,6 +276,98 @@ namespace DOL.Tests.Unit
         }
 
         [Test]
+        public void PositionUpdateReadsAsTheServerReadsIt()
+        {
+            // PlayerPositionUpdateHandler.HandlePacketSince1124, for a 1.127 client.
+            byte[] body = Packets.PositionUpdateBody(574797.5f, 530161.25f, 2800f, 191f, 42, 1234, 26, 0x1ABC);
+            GSPacketIn packet = ServerReads(Packets.Frame(Packets.PositionUpdate, 7, 42, body));
+            Assert.That(packet.Code, Is.EqualTo(0xA9));
+            Assert.That(packet.ReadFloatLowEndian(), Is.EqualTo(574797.5f));
+            Assert.That(packet.ReadFloatLowEndian(), Is.EqualTo(530161.25f));
+            Assert.That(packet.ReadFloatLowEndian(), Is.EqualTo(2800f));
+            Assert.That(packet.ReadFloatLowEndian(), Is.EqualTo(191f), "speed");
+            Assert.That(packet.ReadFloatLowEndian(), Is.EqualTo(0f), "fall speed");
+            Assert.That(packet.ReadShort(), Is.EqualTo(42), "session");
+            Assert.That(packet.ReadShort(), Is.EqualTo(1234), "object id");
+            Assert.That(packet.ReadShort(), Is.EqualTo(26), "zone");
+            Assert.That(packet.ReadByte(), Is.EqualTo(0), "state flags: standing");
+            packet.Skip(1);
+            Assert.That(packet.ReadShort() >> 15, Is.EqualTo(1), "on the ground");
+            Assert.That(packet.ReadShort(), Is.EqualTo(0xABC), "heading");
+            Assert.That(packet.ReadByte(), Is.EqualTo(0), "action flags");
+            packet.Skip(2);
+            Assert.That(packet.ReadByte(), Is.EqualTo(100), "health");
+            Assert.That(body.Length, Is.EqualTo(40), "the new client's length, trailing bytes included");
+        }
+
+        [Test]
+        public void HeadingMatchesTheServers()
+        {
+            var from = new Point2D(500000, 500000);
+            foreach (var (x, y) in new[] { (500000, 501000), (501000, 500000), (499000, 499000), (500300, 499100), (499990, 500002) })
+                Assert.That(Packets.Heading(from.X, from.Y, x, y), Is.EqualTo(from.GetHeading(x, y)), $"{x},{y}");
+        }
+
+        [Test]
+        public void ReadsObjectUpdateBuiltAsTheServerBuildsIt()
+        {
+            // PacketLib168.SendObjectUpdate's Write, for a living in zone 0x105 (bit 8 travels in flag 0x04).
+            byte[] data = ServerSends(0xA1, p =>
+            {
+                p.WriteShort(191); p.WriteShort(0x123);                                // speed, heading
+                p.WriteShort(40000); p.WriteShort(41000);                              // x in zone, target x
+                p.WriteShort(30000); p.WriteShort(31000);                              // y in zone, target y
+                p.WriteShort(2800); p.WriteShort(2810);                                // z, target z
+                p.WriteShort(1234); p.WriteShort(65535);                               // oid, target oid
+                p.WriteByte(87);                                                       // health
+                p.WriteByte((byte)((1 << 6) | ((0x105 & 0x100) >> 6)));               // realm, zone bit 8
+                p.WriteByte(0x05); p.WriteByte(0);                                     // zone, target zone
+            });
+            Assert.That(Packets.ReadObjectUpdate(data), Is.EqualTo(new Packets.Move(1234, 40000, 30000, 2800, 0x105)));
+        }
+
+        [Test]
+        public void ZoneCornerIsFoundFromOneLivingSeenBothWays()
+        {
+            // A living at region 574797,530161, 25933,5873 into its zone: the corner is 548864,524288 (67 and 64 blocks),
+            // also when it moved between the two packets.
+            Assert.That(Packets.ZoneCorner(574797, 530161, 574797 - 548864, 530161 - 524288), Is.EqualTo((548864, 524288)));
+            Assert.That(Packets.ZoneCorner(574797 + 3000, 530161 - 3000, 574797 - 548864, 530161 - 524288),
+                Is.EqualTo((548864, 524288)), "moved 3000 between NPCCreate and ObjectUpdate");
+        }
+
+        [Test]
+        public void GotoTakesANameOrASpot()
+        {
+            Options spot = Options.Parse(new[] { "--account=a", "--goto=574900.5,530200" }, null);
+            Assert.That(spot.GotoName, Is.Null);
+            Assert.That((spot.GotoX, spot.GotoY), Is.EqualTo((574900.5f, 530200f)));
+            Assert.That(Options.Parse(new[] { "--account=a", "--goto=Persoper" }, null).GotoName, Is.EqualTo("Persoper"));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--goto=" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--goto=1,x" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--goto=-5,10" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--goto=Persoper", "--login-only" }, null));
+        }
+
+        [Test]
+        public void FindsSomeoneNearbyByFullNameFirstNameOrPart()
+        {
+            var you = new Packets.Position(0, 0, 0, 1, 1);
+            var nearby = new[]
+            {
+                new Packets.Living(2, false, "Persoper Mendsalot", "", 50, 300, 0, 0),
+                new Packets.Living(3, false, "Persoper", "", 1, 900, 0, 0),
+                new Packets.Living(4, false, "Guard Persoperus", "", 1, 100, 0, 0),
+                new Packets.Living(5, true, "Testa", "", 1, 50, 0, 0),
+            };
+            Assert.That(Program.FindNearby(nearby, "persoper", you)?.ObjectId, Is.EqualTo(3), "full name beats closer first names");
+            Assert.That(Program.FindNearby(nearby.Where(l => l.ObjectId != 3), "Persoper", you)?.ObjectId, Is.EqualTo(2),
+                "first name beats a closer part");
+            Assert.That(Program.FindNearby(nearby, "mends", you)?.ObjectId, Is.EqualTo(2));
+            Assert.That(Program.FindNearby(nearby, "Nobody", you), Is.Null);
+        }
+
+        [Test]
         public void OptionsNeedAnAccountAndTakeThePasswordFromTheEnvironment()
         {
             Assert.Throws<ArgumentException>(() => Options.Parse(new string[0], null));
