@@ -73,15 +73,16 @@ Inside the box use `~/.dotnet/dotnet`. Build outputs go to `src/Release/` (serve
 `src/Release/lib/`) and `src/build/`. 47 tests that need an installed world are skipped unless
 `OFFLINE_DAOC_NAV_ROOT`, `OFFLINE_DAOC_DB_PATH` and `OFFLINE_DAOC_TEST_DETOUR` are set.
 
-## Verified (2026-10-01, Steam Deck, Ubuntu 22.04 box)
+## Verified
 
-These are automated and log checks. In game, the owner has used the predecessor build
-(`project/`): login and `/spawn` worked.
+First measured 2026-10-01 on a Steam Deck (Ubuntu 22.04 build box); build and tests re-checked
+2026-10-19 on Linux Mint with the SDK installed directly. These are automated and log checks;
+in-game checks are separate.
 
 | Check | Result |
 |---|---|
 | Build | 0 errors (~650 pre-existing warnings) |
-| Tests | 3,005 passed, 0 failed (0.37 sync, 2026-10-18) |
+| Tests | 3,013 passed, 0 failed (PerSoPer version 1, 2026-10-19) |
 | World build | ~92 s, 67 MB; identical to Offline DAoC 0.37's pristine world (0 differing tables) |
 | Fresh release start | Ready in ~21 s; 99/99 navmeshes (measured at 0.33; not re-measured for 0.35's 103) |
 | Bot logins | 9 new bots in the world in about 1 s; full AI active within 30 s; 0 errors |

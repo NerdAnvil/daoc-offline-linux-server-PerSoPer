@@ -33,6 +33,8 @@ which has these tabs:
 - **Bots:** list, create real roster bots, delete.
 - **Population:** on/off, max bots in the world.
 - **Accounts:** create accounts, set player/GM/admin.
+- **Options:** server and PerSoPer settings (with defaults), bot goal percentages.
+- **RvR:** battlegrounds, keeps, relics and raids.
 
 **Ctrl+Q** closes the screen and asks whether to **stop the server** (it saves first) or **leave it
 running**. If you leave it running, reopen the screen any time with `./daoc-admin`. Closing the
@@ -47,6 +49,8 @@ The same actions also work as single commands:
 ./daoc-admin population max 30                         # most bots in the world at once (0 = all)
 ./daoc-admin accounts set-role <account> admin         # or gm / player
 ./daoc-admin options set bot_use_town_teleporters off  # announcements, teleporters, sieges: ./daoc-admin options
+./daoc-admin bots create --realm mid --count 10 --personality-type mixed  # bots with personalities
+./daoc-admin options set persoper_full_leeroy on       # PerSoPer settings: ./daoc-admin options
 ./daoc-admin goals set 20-49 30 30 20 20               # bot goals: solo, group, RvR, battlegrounds %
 ./daoc-admin rvr                                       # battlegrounds, keeps, relics and raids
 ./daoc-admin server stop                               # or: ./daoc-server.sh stop
@@ -77,4 +81,10 @@ Accounts are created on first login, or with `./daoc-admin accounts create <name
 ## Upgrading
 
 Replace `bin/`, `defaults/` and the scripts with the new release. `config/`, `data/` and
-`navmesh/` are yours and are kept.
+`navmesh/` are yours and are kept. Saved settings keep their values, so a new release's
+defaults don't replace them; check the **Options** tab after upgrading.
+
+## PerSoPer
+
+In game, type `/persoper` to summon Persoper, a healer companion with her own personality. Ask
+her for heals in group chat ("heal me", "big heal"). The project page explains every setting.

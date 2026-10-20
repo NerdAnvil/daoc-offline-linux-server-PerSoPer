@@ -97,7 +97,7 @@ namespace DOL.GS.Admin
             return new ServerStatus(
                 GameServer.Instance.Configuration.ServerName,
                 typeof(GameServer).Assembly.GetName().Version?.ToString() ?? "unknown",
-                ServerProperties.Properties.ENABLE_SLUAGHBINDER ? "0.35b" : "0.35",
+                ServerProperties.Properties.ENABLE_SLUAGHBINDER ? "0.37c + Sluaghbinder" : "0.37c",
                 (long)(DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds,
                 HumanClients().Count(c => c.ClientState == GameClient.eClientState.Playing),
                 population.Online,

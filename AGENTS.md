@@ -21,37 +21,29 @@ built-in Classic + Shrouded Isles world; navmeshes ship as a separate archive. T
 not part of the project. The owner's goal now is to **develop the bots**: smarter, natural
 behaviour, dungeons, battlegrounds, keeps and frontier, and later chat.
 
-## Folders (on the owner's Steam Deck)
+## Repo and upstream
 
-| Folder | What |
-|---|---|
-| `~/Dev/vscode/daoc-offline-linux-server-bots/` | **This repo**: github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer, a fork of github.com/catastrophic-impact/daoc-offline-linux-server-bots. All work happens here. |
-| `~/boxes/daoc-server-box-home/` | The build box's home: `.dotnet/` (SDK), caches. No source. Put test server folders here (e.g. `test/daoc-server`). |
-
-Upstream is https://github.com/shadowofze/OfflineDAoC (see `UPSTREAM.md`); clone it to a scratch
-folder when you need to compare or pull. Its release zips hold the world DB and navmeshes.
+This repo is github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer, a fork of
+github.com/catastrophic-impact/daoc-offline-linux-server-bots. Its server code comes from
+https://github.com/shadowofze/OfflineDAoC (see `UPSTREAM.md`); clone that to a scratch folder
+when you need to compare or pull. Its release zips hold the world DB and navmeshes.
 `rewrite/` and the old `project/` Linux build are gone; see `docs/history/`.
 
 ## Environment and how to run things
 
-- **Host:** SteamOS (read-only root). **Build box:** distrobox `daoc-server-box` (Ubuntu 22.04),
-  home `~/boxes/daoc-server-box-home`, .NET SDK at `~/.dotnet/dotnet` inside it. If the box or SDK
-  is missing, run `tools/setup-build-box.sh` on the host (safe to re-run).
-- The box sees `/home/deck` directly: build the repo in place. Inside the box, `~` is the box home.
-- **From an editor sandbox (VS Code flatpak)**, host commands need `flatpak-spawn --host ...`, and
-  box commands
-  `flatpak-spawn --host distrobox enter daoc-server-box -- bash -lc '...'`. The sandbox `/tmp` is
-  private; put shared files under the box home.
-- **No git identity is set globally;** the repo has a local one (the owner's GitHub noreply).
-- **Common commands** (inside the box, from the repo root):
-  - Build and test: `cd src && ~/.dotnet/dotnet build DaocServer.sln -c Release && ~/.dotnet/dotnet test Tests/Tests.csproj -c Release --no-build`
+- **Building:** either the .NET 10 SDK, cmake and g++ installed on the machine, or a distrobox
+  build box (`tools/setup-build-box.sh`, default name `daoc-server-box`, home
+  `~/boxes/daoc-server-box-home`, SDK at `~/.dotnet/dotnet` inside it; safe to re-run). With a
+  box, run the commands below inside it; it sees your home folder, so build the repo in place.
+- **Common commands** (from the repo root; use the full path to `dotnet` if it isn't on PATH):
+  - Build and test: `cd src && dotnet build DaocServer.sln -c Release && dotnet test Tests/Tests.csproj -c Release --no-build`
   - Full release: `tools/build-release.sh`. About 3 minutes; creates `dist/daoc-server`.
-  - Test server: copy `dist/daoc-server` to `~/test/daoc-server` (box home), then
-    `tools/dev-deploy.sh ~/test/daoc-server` for quick code updates (about 15 s).
-  - Run it (host or box): `<folder>/daoc-server.sh start` (or `start --console`); admin:
+  - Test server: copy `dist/daoc-server` to a folder outside the repo, then
+    `tools/dev-deploy.sh <folder>` for quick code updates (about 15 s).
+  - Run it: `<folder>/daoc-server.sh start` (or `start --console`); admin:
     `<folder>/daoc-admin bots list` and so on.
 - **Ports:** game TCP 10300, UDP 10400. Only one server at a time. Check with
-  `ss -ltnp | grep 10300` (on the host) before starting.
+  `ss -ltnp | grep 10300` before starting.
 
 ## Gotchas
 
