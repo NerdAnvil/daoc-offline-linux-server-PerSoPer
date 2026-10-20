@@ -138,12 +138,12 @@ public static partial class PersonalityTypes
 
     /// <summary>
     /// Rolls and saves the type of a world bot seen for the first time. Null when the bot can't be
-    /// rolled (not a world bot, a named personality) or this second's roll budget is spent; it's
+    /// rolled (not a world bot, a named personality or one of the 33 named bots) or this second's roll budget is spent; it's
     /// then simply rolled on a later look.
     /// </summary>
     private static string RollOnce(GameBot bot, long botId)
     {
-        if (!bot.IsAutonomousWorldBot || BotPersonalities.All.Any(named => named.Matches(bot)))
+        if (!bot.IsAutonomousWorldBot || BotPersonalities.All.Any(named => named.Matches(bot)) || NamedBots.IsNamed(botId))
             return null;
         string rolled;
         lock (Sync)

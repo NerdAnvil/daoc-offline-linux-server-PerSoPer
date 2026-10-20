@@ -117,11 +117,14 @@ namespace DOL.GS.Admin
             return new BotCreateResult(names, enabled);
         }
 
-        /// <summary>Adds one fixed personality bot (only Kobaldjovi so far) to the roster.</summary>
+        /// <summary>Adds one fixed personality bot (Kobaldjovi or one of the 33 named bots) to the roster.</summary>
         private static BotCreateResult CreatePersonality(string personality, int level)
         {
+            if (NamedBots.Find(personality) is { } named)
+                return CreateNamed(named, level);
             if (!personality.Equals(KobaldjoviIdentity.Name, StringComparison.OrdinalIgnoreCase))
-                throw new AdminException(AdminErrorCodes.Invalid, $"Unknown personality '{personality}'. Known: {KobaldjoviIdentity.Name}.");
+                throw new AdminException(AdminErrorCodes.Invalid,
+                    $"Unknown personality '{personality}'. Known: {KobaldjoviIdentity.Name}, or a named bot (see: bots named list).");
 
             AutonomousBotIdentityGenerator.Identity identity = KobaldjoviIdentity.CreateIdentity();
             lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
@@ -141,7 +144,66 @@ namespace DOL.GS.Admin
             return new BotCreateResult([identity.Name], true);
         }
 
-        private static OfflineWorldBotRecord AddRecord(AutonomousBotIdentityGenerator.Identity identity, int level)
+        /// <summary>
+        /// Makes one of the 33 again, fresh at level 1, and saves its row as on. Refused while it
+        /// still exists, or when a bot or player holds its name.
+        /// </summary>
+        private static BotCreateResult CreateNamed(NamedBotLineup.Entry entry, int level)
+        {
+            if (level != 1)
+                throw new AdminException(AdminErrorCodes.Refused, $"Named bots start at level 1; {entry.Name} can't be made at level {level}.");
+
+            lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
+            {
+                if (DOLDB<OfflineWorldBotRecord>.SelectAllObjects().Any(r => r.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
+                    throw new AdminException(AdminErrorCodes.Refused,
+                        $"{entry.Name} already exists. Remove it first with: bots delete {entry.Name}");
+                if (DOLDB<DbCoreCharacter>.SelectAllObjects().Any(c => c.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
+                    throw new AdminException(AdminErrorCodes.Refused,
+                        $"A player character is named {entry.Name}. Rename that character first.");
+                OfflineWorldBotRecord added = AddRecord(NamedBots.IdentityFor(entry, Random.Shared), 1);
+                NamedBots.SaveRow(entry.Key, added.BotId, NamedBots.On);
+            }
+
+            WriteProperty("population_enabled", "true");
+            AutonomousPopulationProperties.POPULATION_ENABLED = true;
+            AutonomousPopulationController.RequestRefresh();
+            Log.Info($"Admin created named bot {entry.Name} ({entry.Key}) at level 1");
+            return new BotCreateResult([entry.Name], true);
+        }
+
+        /// <summary>The 33 named bots, in lineup order, with their saved state.</summary>
+        public static List<NamedBotInfo> NamedList()
+        {
+            Dictionary<long, GameBot> live = AutonomousBotRegistry.Snapshot()
+                .Where(bot => bot.PersistentRecord != null)
+                .GroupBy(bot => bot.PersistentRecord.BotId)
+                .ToDictionary(group => group.Key, group => group.First());
+            Dictionary<string, NamedBotRecord> rows = DOLDB<NamedBotRecord>.SelectAllObjects().ToDictionary(row => row.NamedKey);
+            Dictionary<long, OfflineWorldBotRecord> roster = DOLDB<OfflineWorldBotRecord>.SelectAllObjects().ToDictionary(r => r.BotId);
+
+            var result = new List<NamedBotInfo>(NamedBotLineup.All.Count);
+            foreach (NamedBotLineup.Entry entry in NamedBotLineup.All)
+            {
+                rows.TryGetValue(entry.Key, out NamedBotRecord row);
+                OfflineWorldBotRecord record = row == null ? null : roster.GetValueOrDefault(row.BotId);
+                live.TryGetValue(row?.BotId ?? 0, out GameBot bot);
+                // A row whose roster bot is gone (deleted with bots delete) shows as "missing".
+                string state = row == null ? "not created" : row.BotId > 0 && record == null ? "missing" : row.State;
+                result.Add(new NamedBotInfo(
+                    entry.Key,
+                    entry.Name,
+                    entry.TypeKey,
+                    RealmName((int)entry.Realm),
+                    entry.CharacterClass.ToString(),
+                    state,
+                    bot?.Level ?? record?.Level ?? 0,
+                    bot != null));
+            }
+            return result;
+        }
+
+        internal static OfflineWorldBotRecord AddRecord(AutonomousBotIdentityGenerator.Identity identity, int level)
         {
             string now = DateTime.UtcNow.ToString("O");
             var record = new OfflineWorldBotRecord

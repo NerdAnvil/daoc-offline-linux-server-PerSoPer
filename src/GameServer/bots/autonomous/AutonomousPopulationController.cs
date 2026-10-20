@@ -51,6 +51,8 @@ public static class AutonomousPopulationController
     {
         Interlocked.Increment(ref _loginGeneration);
         _startedUtc = DateTime.UtcNow;
+        // The 33 named bots without a row are made now, before the roster is read and anyone logs in.
+        NamedBots.CreateMissingOnStart();
         OfflineWorldBotRecord[] previouslyOnline = DOLDB<OfflineWorldBotRecord>
             .SelectObjects(DB.Column("IsOnline").IsEqualTo(true))
             .ToArray();
@@ -132,9 +134,14 @@ public static class AutonomousPopulationController
             int enqueueCount = Math.Min(Math.Min(missing, available.Count), _cachedLoginsPerSecond);
             for (int i = 0; i < enqueueCount; i++)
             {
+                // Named bots that are on log in first, so a population limit can't keep them out.
                 long? nextId = AutonomousRealmLoginBalancer.SelectNext(
-                    available.Select(record => new AutonomousRealmLoginBalancer.Candidate(record.BotId, (eRealm)record.Realm)),
-                    realmLoad);
+                                   available.Where(record => NamedBots.IsOn(record.BotId))
+                                       .Select(record => new AutonomousRealmLoginBalancer.Candidate(record.BotId, (eRealm)record.Realm)),
+                                   realmLoad)
+                               ?? AutonomousRealmLoginBalancer.SelectNext(
+                                   available.Select(record => new AutonomousRealmLoginBalancer.Candidate(record.BotId, (eRealm)record.Realm)),
+                                   realmLoad);
                 OfflineWorldBotRecord next = nextId.HasValue
                     ? available.FirstOrDefault(record => record.BotId == nextId.Value)
                     : null;
@@ -366,7 +373,8 @@ public static class AutonomousPopulationController
         foreach (GameBot bot in AutonomousBotRegistry.Snapshot()
                      .Where(bot => bot.PersistentRecord != null && !PendingLogouts.ContainsKey(bot.PersistentRecord.BotId))
                      .Where(bot => bot.Group == null || bot.Group.GetPlayersInTheGroup().Count == 0)
-                     .OrderBy(bot => bot.InCombat ? 1 : 0)
+                     .OrderBy(bot => NamedBots.IsOn(bot.PersistentRecord.BotId) ? 1 : 0)
+                     .ThenBy(bot => bot.InCombat ? 1 : 0)
                      .Take(Math.Min(excess, MaximumSpawnEnqueuePerPoll)))
         {
             if (PendingLogouts.TryAdd(bot.PersistentRecord.BotId, 0))

@@ -20,9 +20,11 @@ public static class AdminCommandLine
           bots list [--realm alb|mid|hib] [--online]
           bots create [--realm alb|mid|hib|all] [--count N] [--level 1|50] [--class NAME]
           bots create --personality kobaldjovi [--level 1|50]   add a personality bot
+          bots create --personality <named bot>   make one of the 33 named bots again (level 1)
           bots create ... --personality-type hardcore|casual|minmaxer|joker|loner|leeroy|mixed
           bots delete <name|id>
           bots delete-all --yes
+          bots named list                 the 33 named bots, their state and level
           population                      show population settings
           population on | off             off also logs every bot out of the world
           population max <N>              most bots in the world at once; 0 = whole roster
@@ -59,6 +61,8 @@ public static class AdminCommandLine
             ("bots", "create") => BotsCreate(rest),
             ("bots", "delete") => Request(AdminOps.BotsDelete, ("bot", Single(rest, "bots delete <name|id>"))),
             ("bots", "delete-all") => BotsDeleteAll(rest),
+            ("bots", "named") when rest is [var sub] && sub.Equals("list", StringComparison.OrdinalIgnoreCase) => Request(AdminOps.BotsNamedList),
+            ("bots", "named") => throw new AdminUsageException("Usage: bots named list"),
             ("population", "" or "show") => Request(AdminOps.PopulationGet),
             ("population", "on") => Request(AdminOps.PopulationSet, ("enabled", true)),
             ("population", "off") => Request(AdminOps.PopulationSet, ("enabled", false)),

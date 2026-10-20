@@ -147,6 +147,10 @@ namespace DOL.GS
                 race);
         }
 
+        /// <summary>A fresh name only (renaming a generated bot that holds a named bot's name).</summary>
+        public static string GenerateName(eRealm realm, eGender gender, ISet<string> reservedNames = null, Random random = null) =>
+            GenerateUniqueName(realm, gender, reservedNames, random ?? Random.Shared);
+
         public static IReadOnlyCollection<eCharacterClass> GetEraClasses(eRealm realm) =>
             Choices.TryGetValue(realm, out ClassChoice[] choices)
                 ? ActiveChoices(choices).Select(choice => choice.CharacterClass).ToArray()

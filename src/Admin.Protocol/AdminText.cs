@@ -37,6 +37,14 @@ public static class AdminText
                 int online = bots.Count(b => b.Online);
                 return $"{table}\n{bots.Count} bots, {online} in the world.";
             }
+            case AdminOps.BotsNamedList:
+            {
+                var bots = AdminJson.To<List<NamedBotInfo>>(result)!;
+                string table = Table(
+                    ["Name", "Type", "Realm", "Class", "Lv", "State", "Online"],
+                    bots.Select(b => new[] { b.Name, b.Type, b.Realm, b.Class, b.Level > 0 ? b.Level.ToString() : "", b.State, b.Online ? "yes" : "" }));
+                return $"{table}\n{bots.Count(b => b.State == "on")} of {bots.Count} named bots on, {bots.Count(b => b.Online)} in the world.";
+            }
             case AdminOps.BotsCreate:
             {
                 var r = AdminJson.To<BotCreateResult>(result)!;

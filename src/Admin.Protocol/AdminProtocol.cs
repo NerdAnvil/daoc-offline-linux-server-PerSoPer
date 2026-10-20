@@ -18,6 +18,7 @@ public static class AdminOps
     public const string BotsCreate = "bots.create";
     public const string BotsDelete = "bots.delete";
     public const string BotsDeleteAll = "bots.deleteAll";
+    public const string BotsNamedList = "bots.named.list";
     public const string PopulationGet = "population.get";
     public const string PopulationSet = "population.set";
     public const string AccountsList = "accounts.list";
@@ -129,6 +130,9 @@ public sealed record BotInfo(
     string Goal,
     bool Online,
     bool Deleting);
+
+/// <summary>One of the 33 named bots. State is on, off, deleted, "not created" or "missing" (its roster bot is gone).</summary>
+public sealed record NamedBotInfo(string Key, string Name, string Type, string Realm, string Class, string State, int Level, bool Online);
 
 public sealed record BotCreateResult(IReadOnlyList<string> Names, bool PopulationEnabled);
 
