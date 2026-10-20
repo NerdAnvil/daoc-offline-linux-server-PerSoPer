@@ -334,3 +334,134 @@ Let's be honest, half of you only group with me for my looks.
 New cloak? Bold choice. I respect bold choices. And cloaks.
 I'd buy you a drink, but my coin pouch is shy.
 Bards, sing me something nice. Or just stand there. That works too.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): tiny, flashy, never serious; really from Swissland. ---
+
+=== shnacksize
+~ ambient
+Back home in Swissland we'd call this a small mountain. Everything is small. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Very serious flag.
+In Swisshlish we say 'Hoi zaeme, cheese please'. It means hello. Also cheese.
+Tiny Valkyn, huge axe, flashy moves. Mostly flashy.
+Midgard is nice, but have you seen Swissland? No? Nobody has.
+I'm not short. I'm Swissland-sized.
+
+~ opener realm
+In Swissland the trolls are polite and the cheese has holes for ventilation.
+Swissland is a real place. It's just very small. And hard to find. And yellow.
+Someone in {zone} asked where I'm from. Swissland! They didn't believe me either.
+
+~ opener life
+The mountains in {zone} are nice. In Swissland they're yellow, but nice.
+I miss Swissland. The yellow circle on the yellow stick. Sniff.
+Tried to teach a Kobold in {zone} Swisshlish. He ate my phrasebook.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice axe'. I made that up. Just now.
+Why is the Swissland flag a yellow circle on a stick? So you can wave it. Obviously.
+Swissland's national sport is spinning around very fast. I'm a Berserker. Coincidence?
+
+~ reply greeting
+Hoi {0}! That's Swisshlish for hello!
+{0}! Greetings from Swissland! It's very far away. And small.
+
+~ reply banter
+Ha! In Swissland that joke would win a medal, {0}. A yellow one.
+Good one, {0}. I'll translate it into Swisshlish. It gets worse.
+
+~ ding
+Level {level}! They'll ring the yellow bells in Swissland tonight!
+Ding! Still tiny. Still flashy.
+
+~ own_death
+Died. In Swissland we call that a little nap.
+Ouch. Swisshlish has no word for that. Now it does.
+
+~ drop
+{item}! Flashy! It goes with my Swissland flag!
+
+=== shnacksizer
+~ ambient
+Back home in Swissland this would count as a castle. Everything's small there. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Do salute it.
+In Swisshlish 'Hoi zaeme' means hello. Also, pass the cheese.
+Tiny Saracen, two swords, maximum flair. Mostly flair.
+Albion's lovely, but Swissland has better cheese. And better flags.
+I'm not short. I'm Swissland-sized.
+
+~ opener realm
+In Swissland knights joust on goats. Small goats. Small knights.
+Swissland is real. It's on no map, which proves it's very exclusive.
+A guard in {zone} asked where I'm from. Swissland! He's still looking it up.
+
+~ opener life
+The hills in {zone} remind me of Swissland. Less yellow, though.
+I miss Swissland. The yellow circle on the yellow stick. It's beautiful.
+Taught a merchant in {zone} some Swisshlish. He charges me double now.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice sword'. Possibly. I'm still learning.
+Why is the Swissland flag on a stick? Because flags on walls are for show-offs.
+In Swissland everyone fights with two swords. One for cheese, one for chocolate.
+
+~ reply greeting
+Hoi {0}! Swisshlish for hello!
+{0}! Greetings from Swissland! Bring cheese next time.
+
+~ reply banter
+In Swissland that joke would get a yellow medal, {0}.
+Ha, {0}! In Swisshlish that's even funnier. Trust me.
+
+~ ding
+Level {level}! Swissland just declared a holiday!
+Ding! Tiny, flashy and one level better!
+
+~ own_death
+Died. In Swissland that's called taking a little break.
+Ouch. Somebody tell Swissland I was brave.
+
+~ drop
+{item}! So flashy! Swissland would approve!
+
+=== shnacksizey
+~ ambient
+Back home in Swissland this tree would be a forest. Everything's tiny there. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Elegant, no?
+In Swisshlish 'Hoi zaeme' means hello, everyone. And also, cheese for everyone.
+Tiny Elf, flashy blades, zero seriousness.
+Hibernia is pretty, but Swissland is prettier. And yellower.
+I'm not short for an Elf. I'm Swissland-sized.
+
+~ opener realm
+In Swissland the faeries wear little yellow hats. It's the law.
+Swissland is real. It just hides between two blinks.
+A Lurikeen in {zone} asked where I'm from. Swissland! He called me tall. I loved him.
+
+~ opener life
+The lakes in {zone} are lovely. In Swissland they're full of fondue.
+I miss Swissland. The yellow circle on the yellow stick. Sigh.
+Tried Swisshlish on a faerie in {zone}. She answered. I didn't understand.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'pretty blades'. I think. Ask Swissland.
+Why is the Swissland flag yellow on yellow? So you can't see the stain from the fondue.
+Swissland's national dance is spinning two blades very fast. I'm a natural.
+
+~ reply greeting
+Hoi {0}! That's Swisshlish for hello!
+{0}! Greetings from Swissland! Mind the tiny mountains.
+
+~ reply banter
+In Swissland you'd get a yellow ribbon for that one, {0}.
+Ha! {0}, in Swisshlish that joke rhymes. Sort of.
+
+~ ding
+Level {level}! The Swissland fondue fountain flows in my honour!
+Ding! Tiny, flashy, still not serious.
+
+~ own_death
+Died. In Swissland that's just a lie-down.
+Ouch. That was not flashy. Do over.
+
+~ drop
+{item}! Flashy! Swissland approves!

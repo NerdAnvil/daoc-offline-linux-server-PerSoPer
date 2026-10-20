@@ -315,3 +315,119 @@ got {item}. no idea what it does
 found a thing. it's {item}
 oh nice, a drop. keeping it
 {item} lol. cool
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): a jolly warrior who loves two-handers and is in no hurry. ---
+
+=== shempenstein
+~ ambient
+big two-handed axe, happy Valkyn. life is good
+tanking a bit today. like, a little bit. don't pull too much
+no hurry. the mobs will still be there tomorrow
+my two-hander is taller than me and I love it
+someone said shields. never heard of her
+gonna sit by the fire in Mularn for a while. pull up a log
+
+~ opener gear
+found a new two-hander. it's huge. no idea if it's better
+who needs a shield when you've got a really big axe
+my axe has a name now. it's Axe
+
+~ opener life
+napped in {zone} for a bit. 10/10 would nap again
+took the long way through {zone}. no reason. just vibes
+there's a nice rock in {zone}. I sat on it. good rock
+
+~ reply greeting
+heyyy {0}! wanna hit stuff slowly?
+oh hi {0}, I was just admiring my axe
+
+~ reply grouping
+sure {0}, I'll tank. a bit. don't expect miracles
+yeah ok {0}, me and my axe are in
+
+~ ding
+level {level}? nice. didn't even notice
+ding lol. bigger axe soon hopefully
+
+~ own_death
+oops. think I took a nap mid-fight
+died. at least my axe looked cool
+
+~ drop
+{item}! is it two-handed? please be two-handed
+
+=== shempenshire
+~ ambient
+big two-handed sword, happy Saracen. life is good
+I'm tanking. kinda. ish. don't pull the whole room
+no rush. Camelot's not going anywhere
+two-handed swords are just hugs with extra steps
+the trainer said shield. I said polearm. we're not talking now
+gonna sit outside Cotswold and watch the sheep for a bit
+
+~ opener gear
+got a new polearm. it's longer than the old one. that's how it works right
+who needs a shield when you've got a sword this big
+my great sword's called Gerald. say hi Gerald
+
+~ opener life
+had a little picnic in {zone}. the bandits didn't join
+wandered around {zone} for ages. found nothing. loved it
+someone in {zone} said hurry up. I didn't
+
+~ reply greeting
+heyyy {0}! wanna swing big swords slowly?
+oh hi {0}, me and Gerald were just chilling
+
+~ reply grouping
+sure {0}, I'll tank. a bit. be gentle
+yeah {0} I'm in. Gerald's in too
+
+~ ding
+level {level}? oh cool. when did that happen
+ding! Gerald's proud of me
+
+~ own_death
+oops. Gerald's fine though
+died. I'll walk back. slowly
+
+~ drop
+{item}! is it a big sword? please be a big sword
+
+=== shempenmore
+~ ambient
+big two-handed sword, happy Sylvan. life is good
+tanking a little. like a tree. a lazy tree
+no rush. trees take hundreds of years and they're fine
+two-handers are great, you never have to decide what's in your other hand
+someone told me to grab a shield. I grabbed a snack
+gonna sit by the lake in Tir na Nog for a while. the fish are chill
+
+~ opener gear
+new two-hander. it's very big. I'm very happy
+who needs a shield when you've got a sword the size of a branch
+my big sword's called Twig. it's not a twig
+
+~ opener life
+took root in {zone} for an hour. just standing. it was great
+the breeze in {zone} is so nice today. in no hurry to leave
+someone in {zone} asked if I was AFK. no, just relaxing
+
+~ reply greeting
+heyyy {0}! wanna bonk things slowly?
+oh hi {0}, I was just being a tree
+
+~ reply grouping
+sure {0}, I'll tank. a bit. like a sleepy oak
+yeah ok {0}, me and Twig are in
+
+~ ding
+level {level}? neat. I'll grow into it
+ding lol. slow and steady
+
+~ own_death
+oops. got chopped. happens to trees
+died. I'll sprout back in a minute
+
+~ drop
+{item}! is it two-handed? please be two-handed

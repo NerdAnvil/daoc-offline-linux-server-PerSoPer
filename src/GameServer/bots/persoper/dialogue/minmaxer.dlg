@@ -314,3 +314,119 @@ Got {item}. Upgrade by 3%. Acceptable.
 {item}. That fills a gap in my template.
 Rare drop. The odds were under 5%.
 Oh, {item}. Running the numbers now.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): a glass cannon who optimised every point; craves trophies. ---
+
+=== redtornader
+~ ambient
+My red tornado is fully optimised. Every spec point. Ask me how.
+Red tornado, red tornado, red tornado. That's the rotation. It's perfect.
+Nobody spins a red tornado like me. I have the numbers.
+Glass cannon? Yes. Glass that wins.
+Need a new trophy for my wall. Something with a big health bar.
+Spiritmaster spec: maxed. Red tornado damage: maxed. Patience: not maxed.
+
+~ opener fun
+Cast my red tornado forty times in {zone}. Forty. Counted. Logged.
+Someone asked why my tornado is red. Because red is 4% more efficient.
+My red tornado has a spreadsheet. The spreadsheet has a fan club.
+
+~ opener trading
+Trophy hunting in {zone}. Need one for my mantel, right next to the tornado.
+Every trophy I own came from a red tornado. Every single one.
+Bought nothing today. Bought a better red tornado, mentally.
+
+~ reply greeting
+{0}! Have you seen my red tornado? You will.
+Hello, {0}. My red tornado says hi. Loudly.
+
+~ reply banter
+Cute, {0}. My red tornado does 30% more than that joke.
+Funny, {0}. Not as funny as my tornado's crit rate.
+
+~ ding
+Level {level}. Red tornado damage: up. As calculated.
+Ding. Re-optimising the red tornado. Again.
+
+~ own_death
+Glass cannon. Emphasis on glass.
+I died mid-tornado. The tornado kept going. Respect.
+
+~ drop
+{item}. Does it boost my red tornado? Then it stays.
+
+=== greenfogger
+~ ambient
+My green fog is fully optimised. Every matter point. Ask me.
+Green fog, then more green fog. That's the template. It's flawless.
+Nobody fogs like me. The numbers agree.
+Glass cannon, yes. A very green one.
+Need a new trophy. Preferably something my fog melted.
+Cabalist spec: maxed. Matter DoT ticks: maxed. Patience: rounding error.
+
+~ opener fun
+Fogged half of {zone} green today. Every tick logged.
+Someone asked why my fog is green. It's 3% more toxic. Probably.
+My green fog has a spreadsheet. The spreadsheet has tabs.
+
+~ opener trading
+Trophy hunting in {zone}. My mantel needs one more, right next to the fog bottle.
+Every trophy I own died in my green fog. Slowly. Efficiently.
+Spent nothing today. Saved it for the next trophy.
+
+~ reply greeting
+{0}! Mind the green fog. It's mine.
+Hello, {0}. You smell that? That's optimal damage.
+
+~ reply banter
+Nice one, {0}. My fog ticks harder.
+Funny, {0}. My DoT is funnier. It keeps going.
+
+~ ding
+Level {level}. Green fog ticks harder. As predicted.
+Ding. Re-optimising the fog. Again.
+
+~ own_death
+Glass cannon. Died in my own spreadsheet.
+Dead. The fog's still ticking. Worth it.
+
+~ drop
+{item}. If it boosts the green fog, it's best in slot.
+
+=== sunrayder
+~ ambient
+My Sun Ray is fully optimised. Every spec point. Ask me.
+Sun Ray, Sun Ray, Sun Ray. That's not spam, it's a rotation.
+Nobody rays the sun like me. I've graphed it.
+Glass cannon? Yes. A shiny one.
+Need a new trophy. Something big that my Sun Ray melted.
+Enchanter spec: maxed. Sun Ray damage: maxed. Patience: minimal.
+
+~ opener fun
+Sun Rayed everything in {zone}. Even the clouds. Statistically justified.
+Someone asked if I cast anything but Sun Ray. Why would I?
+My Sun Ray has a spreadsheet. The spreadsheet has sunglasses.
+
+~ opener trading
+Trophy hunting in {zone}. My shelf needs one more, polished by Sun Ray.
+Every trophy I own got a Sun Ray to the face first.
+Spent nothing today. Saved it for trophies.
+
+~ reply greeting
+{0}! Shield your eyes. Sun Ray incoming.
+Hello, {0}. Want to see my Sun Ray numbers?
+
+~ reply banter
+Cute, {0}. My Sun Ray crits harder than that.
+Funny, {0}. My Sun Ray is brighter.
+
+~ ding
+Level {level}. Sun Ray just got brighter. As calculated.
+Ding. Re-optimising the Sun Ray. Again.
+
+~ own_death
+Glass cannon. Very shiny glass.
+Dead. Sun Ray was on cooldown. It's never on cooldown.
+
+~ drop
+{item}. If it boosts the Sun Ray, it's mine forever.

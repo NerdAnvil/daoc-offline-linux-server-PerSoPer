@@ -116,6 +116,10 @@ public static class NamedBots
     /// <summary>True for a roster bot that is one of the 33, whatever its state.</summary>
     public static bool IsNamed(long botId) => botId > 0 && ByBotId.ContainsKey(botId);
 
+    /// <summary>The lineup entry of a roster bot that is one of the 33, whatever its state, or null.</summary>
+    public static NamedBotLineup.Entry EntryFor(long botId) =>
+        botId > 0 && ByBotId.TryGetValue(botId, out var named) ? named.Entry : null;
+
     /// <summary>True for a named bot that is on: it logs in before other bots.</summary>
     public static bool IsOn(long botId) => botId > 0 && ByBotId.TryGetValue(botId, out var named) && named.State == On;
 

@@ -55,6 +55,8 @@ public sealed record TypeTalk(
 /// <summary>
 /// Conversation content for the six personality types, keyed like PersonalityTypeVoices.
 /// The lines live in dialogue/&lt;type&gt;.dlg (see DialogueFile); all are original.
+/// Each named bot of these types (NamedBotLineup) has its own block in its type's file
+/// ("=== shnacksize"); its lines are mixed into its type's, see <see cref="Mix"/>.
 /// PersonalityReactions puts them into chat.
 /// </summary>
 public static class PersonalityLines
@@ -71,6 +73,19 @@ public static class PersonalityLines
     public static readonly IReadOnlyDictionary<string, TypeLines> All;
     public static readonly IReadOnlyDictionary<string, TypeTalk> Talk;
 
+    /// <summary>A named bot's own lines only, by its memory key ("named:shnacksize").</summary>
+    public static readonly IReadOnlyDictionary<string, (TypeLines Lines, TypeTalk Talk)> Own;
+
+    /// <summary>A named bot's type lines with its own mixed in, by its memory key.</summary>
+    public static readonly IReadOnlyDictionary<string, TypeLines> Named;
+    public static readonly IReadOnlyDictionary<string, TypeTalk> NamedTalk;
+
+    /// <summary>The memory key of a named bot's personality: "named:shnacksize".</summary>
+    public static string NamedKey(NamedBotLineup.Entry entry) => "named:" + BlockName(entry);
+
+    /// <summary>The block holding a named bot's own lines in its type's file: its name in lower case.</summary>
+    public static string BlockName(NamedBotLineup.Entry entry) => entry.Name.ToLowerInvariant();
+
     static PersonalityLines()
     {
         var all = new Dictionary<string, TypeLines>();
@@ -84,6 +99,35 @@ public static class PersonalityLines
         }
         All = all;
         Talk = talk;
+
+        var own = new Dictionary<string, (TypeLines, TypeTalk)>();
+        var named = new Dictionary<string, TypeLines>();
+        var namedTalk = new Dictionary<string, TypeTalk>();
+        foreach (string key in TypeKeys)
+        {
+            DialogueFile file = DialogueLibrary.For(key);
+            if (file == null)
+                continue;
+            NamedBotLineup.Entry[] entries = NamedBotLineup.All.Where(entry => entry.TypeKey == key).ToArray();
+            foreach (string block in file.BlockNames)
+                if (!string.Equals(block, key, StringComparison.OrdinalIgnoreCase) && !entries.Any(entry => BlockName(entry) == block.ToLowerInvariant()))
+                    _errors.Add($"{key}.dlg: block '{block}' is neither the type nor one of its named bots");
+            foreach (NamedBotLineup.Entry entry in entries)
+            {
+                IReadOnlyList<DialogueSection> sections = file.Block(BlockName(entry));
+                if (sections.Count == 0)
+                    _errors.Add($"{key}.dlg: no block '=== {BlockName(entry)}' for {entry.Name}");
+                (TypeLines ownLines, TypeTalk ownTalk) = Read(sections, $"{key}.dlg");
+                string namedKey = NamedKey(entry);
+                own[namedKey] = (ownLines, ownTalk);
+                named[namedKey] = Merge(all[key], ownLines);
+                namedTalk[namedKey] = Merge(talk[key], ownTalk);
+            }
+        }
+        Own = own;
+        Named = named;
+        NamedTalk = namedTalk;
+
         foreach (string error in _errors)
             if (Log.IsErrorEnabled)
                 Log.Error($"Dialogue: {error}");
@@ -91,6 +135,45 @@ public static class PersonalityLines
 
     /// <summary>A type's talk, or empty lists when it has none.</summary>
     public static TypeTalk TalkFor(string key) => Talk.GetValueOrDefault(key) ?? new TypeTalk([], new Dictionary<eAutonomousChatIntent, string[]>(), null, []);
+
+    /// <summary>A named bot's talk (type plus own), or null when it has none.</summary>
+    public static TypeTalk NamedTalkFor(string namedKey) => NamedTalk.GetValueOrDefault(namedKey ?? string.Empty);
+
+    /// <summary>
+    /// A type's pool with a named bot's own lines added. The own lines are repeated so that,
+    /// in a pool that has both, they come up about half the time; a type pool alone or an own
+    /// pool alone is returned as it is.
+    /// </summary>
+    public static string[] Mix(string[] type, string[] own)
+    {
+        if (own is not { Length: > 0 })
+            return type;
+        if (type is not { Length: > 0 })
+            return own;
+        int copies = Math.Max(1, (int)Math.Round((double)type.Length / own.Length));
+        return type.Concat(Enumerable.Repeat(own, copies).SelectMany(lines => lines)).ToArray();
+    }
+
+    private static Dictionary<TKey, string[]> MixAll<TKey>(IReadOnlyDictionary<TKey, string[]> type, IReadOnlyDictionary<TKey, string[]> own)
+    {
+        if (type == null && own == null)
+            return null;
+        var mixed = new Dictionary<TKey, string[]>();
+        foreach (TKey key in (type?.Keys ?? []).Union(own?.Keys ?? []))
+            mixed[key] = Mix(type?.GetValueOrDefault(key), own?.GetValueOrDefault(key));
+        return mixed;
+    }
+
+    private static TypeLines Merge(TypeLines type, TypeLines own) => new()
+    {
+        Openers = MixAll(type.Openers, own.Openers), TopicReplies = MixAll(type.TopicReplies, own.TopicReplies),
+        Ding = Mix(type.Ding, own.Ding), Grats = Mix(type.Grats, own.Grats), OwnDeath = Mix(type.OwnDeath, own.OwnDeath),
+        OtherDeath = Mix(type.OtherDeath, own.OtherDeath), Drop = Mix(type.Drop, own.Drop), Cheeky = Mix(type.Cheeky, own.Cheeky),
+    };
+
+    private static TypeTalk Merge(TypeTalk type, TypeTalk own) => new(
+        Mix(type.Ambient, own.Ambient), MixAll(type.Replies, own.Replies),
+        MixAll(type.CheekyReplies, own.CheekyReplies), Mix(type.FallbackReplies, own.FallbackReplies));
 
     private static (TypeLines, TypeTalk) Read(IReadOnlyList<DialogueSection> sections, string fileName)
     {

@@ -331,3 +331,119 @@ Running in shirtless next time. For speed. Only speed.
 I don't flirt. I charge. Same energy.
 Nobody wants to hear my stories. Too bad, they all end in a res.
 Watch my good side. It's the one facing the enemy.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): charges first, thinks never; at least he has a chicken. ---
+
+=== therioustham
+~ ambient
+THERIOUS THAAAM! Sorry. Practising.
+Where's my chicken? Has anyone seen my chicken?
+Wait. There are no chicken pets in this game?! Who decided that?!
+Big Troll, big hammer, small plan. Perfect.
+Thunder first, questions never!
+I don't pull mobs. I invite them all at once.
+
+~ opener fun
+Taught my battle cry to a guard in {zone}. He's not allowed to use it.
+My chicken would love {zone}. If I had a chicken. WHY CAN'T I HAVE A CHICKEN.
+New battle cry: THERIOUS THAAAM! Rate it out of ten. It's a ten.
+
+~ opener dungeons
+Ran into a dungeon in {zone}. Ran out faster. Still counts!
+Dungeons are just mob buffets with doors. CHARGE!
+Lost the group in a dungeon. They're probably lost. Not me. I'm charging.
+
+~ reply greeting
+{0}! THERIOUS THAAAM! That means hello!
+{0}! Got a chicken? No? Me neither!
+
+~ reply grouping
+I'm in, {0}! I'll go first! I always go first!
+Group up, {0}! I'll pull! All of them!
+
+~ ding
+LEVEL {level}! THERIOUS THAAAM!
+Ding! Still no chicken, but more thunder!
+
+~ own_death
+Worth it! Mostly!
+That was the charge of a lifetime! A short lifetime!
+
+~ drop
+{item}! Does it make me charge faster?!
+
+=== theriousthamm
+~ ambient
+THERIOUS THAAAMM! For Albion! And for my chicken!
+Has anyone in Camelot seen my chicken?
+Hold on. Paladins don't get chicken pets either?! Outrageous!
+Chant on, sword up, brain off. CHARGE!
+The plan is the charge. The charge is the plan.
+I put on my heaviest plate so I can run into more things at once.
+
+~ opener fun
+Taught my battle cry to the knights in {zone}. They've asked me to leave.
+My chicken would look grand in a little helmet in {zone}. If I HAD A CHICKEN.
+New battle cry: THERIOUS THAAAMM! Two m's. For extra charge.
+
+~ opener dungeons
+Charged into a dungeon in {zone}. Chanted all the way in. Died all the way out.
+Dungeon? I see a hallway full of glory! CHARGE!
+The group said wait at the door. I didn't hear them. I was charging.
+
+~ reply greeting
+{0}! THERIOUS THAAAMM! That's Albish for hello!
+{0}! Have you seen a chicken? Any chicken?
+
+~ reply grouping
+Count me in, {0}! I'll lead the charge! I always do!
+Group? Splendid, {0}! I'll pull. All of it!
+
+~ ding
+LEVEL {level}! THERIOUS THAAAMM!
+Ding! More chants, more charging, still no chicken!
+
+~ own_death
+For Albion! And also, ouch!
+Glorious! Short, but glorious!
+
+~ drop
+{item}! Is it shiny enough to charge in?!
+
+=== theriousthamh
+~ ambient
+THERIOUS THAAAMH! The h is silent. The charge is not!
+Anyone in Tir na Nog seen my chicken?
+No chicken pets? Not even in Hibernia? Not even a tiny magic one?!
+Big sword, big shout, no plan. Champion stuff.
+I debuff them, then I charge. Mostly I charge.
+I don't flank. I go straight through.
+
+~ opener fun
+Taught my battle cry to the faeries in {zone}. They cried for real.
+My chicken would love the meadows in {zone}. If there were chickens. THERE ARE NO CHICKENS.
+New battle cry: THERIOUS THAAAMH! Silent h, loud everything else.
+
+~ opener dungeons
+Charged a dungeon in {zone}. Found the boss. Boss found me back.
+Dungeon in {zone}? More like a charging lane!
+Our healer said slow down. I sped up. Healer's still running.
+
+~ reply greeting
+{0}! THERIOUS THAAAMH! Means hello! And charge!
+{0}! Got a chicken? Know a chicken? Anything?
+
+~ reply grouping
+I'm in, {0}! Point me at something big!
+Group, {0}? I'll pull! Everything in sight!
+
+~ ding
+LEVEL {level}! THERIOUS THAAAMH!
+Ding! Still chickenless, still charging!
+
+~ own_death
+Charged a bit too hard. Is there such a thing?
+Worth every step! All twelve of them!
+
+~ drop
+{item}! Will it help me charge?!

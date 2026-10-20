@@ -26,6 +26,7 @@ public sealed class PersonalityTypeRecord : DataObject
 /// A world bot without a saved type is rolled once, the first time it's looked at: about half
 /// get a random type, the rest are saved as "plain". That covers existing, admin-made and
 /// population-made bots alike; named personalities (Persoper, Kobaldjovi) are never rolled.
+/// The 33 named bots aren't rolled either: they have their type from the lineup (<see cref="Named"/>).
 /// </summary>
 public static partial class PersonalityTypes
 {
@@ -117,10 +118,32 @@ public static partial class PersonalityTypes
         return saved;
     }
 
-    /// <summary>This bot's own copy of its type's personality, or null when it has no type.</summary>
+    /// <summary>
+    /// A named bot's personality: its type's, under its own name and memory key
+    /// ("named:shnacksize"), with its own lines mixed in. Null when its type has no voice yet
+    /// (Crafter and the other named-only types). Matches nothing; the running server matches it by roster id.
+    /// </summary>
+    public static BotPersonality Named(NamedBotLineup.Entry entry)
+    {
+        if (entry == null || !Templates.TryGetValue(entry.TypeKey, out BotPersonality template))
+            return null;
+        string key = PersonalityLines.NamedKey(entry);
+        TypeTalk talk = PersonalityLines.NamedTalkFor(key) ?? PersonalityLines.TalkFor(entry.TypeKey);
+        return template with
+        {
+            Name = entry.Name,
+            Key = key,
+            TypeKey = entry.TypeKey,
+            Ambient = talk.Ambient, Replies = talk.Replies, CheekyReplies = talk.CheekyReplies, FallbackReplies = talk.FallbackReplies,
+        };
+    }
+
+    /// <summary>This bot's own copy of its type's personality (a named bot's own one), or null when it has no type.</summary>
     public static BotPersonality InstanceFor(GameBot bot)
     {
         long botId = bot?.DatabaseID ?? 0;
+        if (botId > 0 && NamedBots.EntryFor(botId) is { } named)
+            return Instances.GetOrAdd(botId, _ => Named(named) is { } personality ? personality with { Matches = other => other?.DatabaseID == botId } : null);
         if (botId <= 0 || (TypeOf(botId) ?? RollOnce(bot, botId)) is not { } typeKey ||
             !Templates.TryGetValue(typeKey, out BotPersonality template))
             return null;

@@ -314,3 +314,119 @@ Decent drop: {item}. Kills just got faster.
 Oh, {item}. That's an upgrade.
 Good loot. Didn't even slow down.
 {item} dropped. Worth the pull.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): a no-nonsense assassin who knows every shadow. ---
+
+=== xxxnatasehsxxx
+~ ambient
+Every shadow in Midgard knows my name. None of them say it out loud.
+Liver shot. Clean. He thanked me on the way down.
+Albs and Hibs stand no chance. I've counted.
+Small Kobold, big daggers. Do the maths.
+I don't hide. I just stop being where you're looking.
+You won't see me at the next camp. That's the point.
+
+~ opener rvr
+Emain has seven good hiding spots. I use all of them.
+Stabbed an Infiltrator in the liver today. He said thank you. Polite, for an Alb.
+Hibs walk past my shadow every night. Some of them don't walk back.
+
+~ opener zones
+I know every shadow in {zone}. Most of them by first name.
+Best hiding spot in {zone}: right behind you.
+Spent an hour hidden in {zone}. Nobody found me. Nobody ever does.
+
+~ reply greeting
+You saw me, {0}? No. I let you.
+{0}. I was behind you for ten minutes.
+
+~ reply banter
+Careful, {0}. I know where your liver is.
+Funny, {0}. I'll laugh later. From a shadow.
+
+~ ding
+Level {level}. Sharper daggers, shorter fights.
+Ding. More shadows to stand in.
+
+~ own_death
+Out of stealth for one second. Never again.
+They got lucky. Write that down. Lucky.
+
+~ drop
+{item}. Light, quiet, pointy. Perfect.
+
+=== xaxnatasehsxax
+~ ambient
+Every shadow in Albion knows my name. None of them say it out loud.
+One stab to the liver. He said it was the best day of his life.
+Mids and Hibs stand no chance. I've done the count.
+Inconnu don't sneak. We simply decline to be seen.
+Camelot's alleys are mine. Pay the toll or don't, I'll collect.
+If you saw me, it was on purpose.
+
+~ opener rvr
+Odin's Gate has six good shadows. I'm usually in the best one.
+Stabbed a Shadowblade in the liver tonight. Kobolds are short. Easy reach.
+Hibs keep looking up at the trees. I'm never in the trees.
+
+~ opener zones
+I've mapped every shadow in {zone}. Twice.
+Nobody hides in {zone} better than me. Nobody's even close.
+{zone} looks empty. It isn't. I'm here.
+
+~ reply greeting
+Evening, {0}. I've been here a while.
+{0}. Don't turn around.
+
+~ reply banter
+Keep talking, {0}. I'm finding your liver.
+Cute, {0}. I'll remember that one. I remember everything.
+
+~ ding
+Level {level}. The shadows got deeper.
+Ding. Someone in Midgard just felt a chill.
+
+~ own_death
+I was seen. That's a first. And a last.
+Unacceptable. Reviewing my route.
+
+~ drop
+{item}. Silent enough. It'll do.
+
+=== xhxnatasehsxhx
+~ ambient
+Every shadow in Hibernia knows my name. They're too scared to say it.
+Small Lurikeen, quick blades, liver first. They always like it.
+Albs and Mids stand no chance. Not one.
+Being tiny is a feature. I fit in every shadow.
+Tir na Nog has a dark corner for every day of the year. I've tried them all.
+Blink and you missed me. Don't blink and you still missed me.
+
+~ opener rvr
+Emain bridge has a shadow made for a Lurikeen. Guess whose.
+Stabbed a Mid in the liver. Troll livers are big. Easy target.
+Albs look straight past me. Lurikeen are below eye level.
+
+~ opener zones
+Every shadow in {zone} is a friend of mine.
+Hid in {zone} for an hour. A bear sat on me. Still unseen.
+{zone}: lovely, dark, full of livers.
+
+~ reply greeting
+Down here, {0}. No, lower.
+{0}! You didn't see me. Nobody does.
+
+~ reply banter
+Watch it, {0}. I'm exactly liver height.
+Ha. {0}, I'll stab you nicely for that one.
+
+~ ding
+Level {level}. Smaller target, bigger damage.
+Ding. Hibernia's shadows just got scarier.
+
+~ own_death
+Someone stepped on me. Literally. Unfair.
+Spotted. Somebody's going to pay for that.
+
+~ drop
+{item}. Small, sharp, sneaky. Like me.

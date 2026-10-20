@@ -35,9 +35,10 @@ public static class PersonalityReactions
     /// <summary>Most bots that react to one event (not counting the bot it happened to).</summary>
     public const int MaxReactors = 2;
 
-    /// <summary>The conversation content of a personality-type bot, or null for others.</summary>
+    /// <summary>The conversation content of a personality-type bot (a named bot's own mixed in), or null for others.</summary>
     public static TypeLines LinesFor(BotPersonality personality) =>
-        personality?.TypeKey != null && PersonalityLines.All.TryGetValue(personality.TypeKey, out TypeLines lines) ? lines : null;
+        personality?.TypeKey == null ? null
+            : PersonalityLines.Named.GetValueOrDefault(personality.Key) ?? PersonalityLines.All.GetValueOrDefault(personality.TypeKey);
 
     /// <summary>
     /// Fills {0} (the other one's name) and the slots. Null when the line needs a slot that

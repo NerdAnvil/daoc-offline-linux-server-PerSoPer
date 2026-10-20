@@ -312,3 +312,119 @@ Hm. {item}.
 {item}. Keeping it.
 Good drop.
 {item}. Nobody needs to know.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): a pet for company, doesn't want yours; philosophical when stirred. ---
+
+=== femurtamer
+~ ambient
+My skeletons don't talk. That's why I like them.
+Got my bones. Don't need yours.
+Every skeleton was someone once. Now it's company.
+Quiet. Just me and the femurs.
+No group. I have a commander. He listens.
+
+~ opener life
+Sat in {zone} with my skeletons. Nobody spoke. Perfect day.
+Is a bone lonely without its body? Thought about that in {zone}.
+Sunset over {zone}. My skeleton watched it too. I think.
+
+~ opener classes
+Bonedancer. I bring my own friends. They're dead. Easier that way.
+Other classes need groups. I need bones.
+A pet that never asks where we're going. Best kind.
+
+~ reply greeting
+{0}. My skeletons say hi. They don't.
+{0}. The bones rattled. That means hello.
+
+~ reply banter
+We're all bones under the skin, {0}. Think about it.
+Laugh now, {0}. One day you'll be someone's pet.
+
+~ reply grouping
+I have a group, {0}. It's dead.
+No. My bones and I are enough.
+
+~ ding
+Level {level}. More bones.
+Ding. The skeletons didn't clap. Fine.
+
+~ own_death
+Even bones break. Mine too.
+Dead. Now I know how my pets feel.
+
+=== deaditetamer
+~ ambient
+My pet does the fighting. I do the thinking. Nobody does the talking.
+I have a pet. I don't need yours.
+Death is just a quieter way to group.
+My shade and I. That's the whole guild.
+Albion's loud. My pet isn't.
+
+~ opener life
+Stood in {zone} as a shade for an hour. Very peaceful. No one saw me.
+Do pets dream? Mine stares at walls in {zone}. Probably yes.
+Fog in {zone} today. Fitting.
+
+~ opener classes
+Necromancer. My pet takes the hits. I take the silence.
+Groups ask questions. Pets just obey.
+Some people buy a horse. I raised a servant. Cheaper.
+
+~ reply greeting
+{0}. My pet noticed you. I didn't.
+...{0}. Hello, I suppose.
+
+~ reply banter
+Everything ends, {0}. Even this joke.
+Is a laugh still a laugh if no one cares, {0}?
+
+~ reply grouping
+I have a group, {0}. It's one big angry pet.
+No. Thank you. No.
+
+~ ding
+Level {level}. My pet got bigger. I got quieter.
+Ding. Nobody needs to know.
+
+~ own_death
+Died. My pet went with me. Loyal.
+Dead again. Death and I are on first-name terms.
+
+=== shroomtamer
+~ ambient
+My mushrooms don't talk. Best company there is.
+Got my shrooms. Don't need your pet.
+A mushroom grows alone in the dark and it's fine. So am I.
+Quiet. Just me and the turrets.
+No group needed. I plant my own.
+
+~ opener life
+Planted shrooms in {zone}. Watched them grow. Didn't talk to anyone. Lovely.
+Does a mushroom know it's a mushroom? Wondered that all day in {zone}.
+Rain in {zone}. The shrooms liked it. So did I.
+
+~ opener classes
+Animist. My friends grow from the ground. They stay where I put them.
+Other classes chase their pets around. Mine sit still.
+Turrets don't ask for buffs. Or chat.
+
+~ reply greeting
+{0}. The mushrooms saw you first.
+{0}. The spores are watching.
+
+~ reply banter
+We all grow from something, {0}. Most of us from dirt.
+Funny, {0}. The shrooms didn't laugh. Neither did I.
+
+~ reply grouping
+I have a group, {0}. It's planted.
+No. My shrooms and I are fine.
+
+~ ding
+Level {level}. Bigger shrooms.
+Ding. The mushrooms grew a little. So did I.
+
+~ own_death
+Stepped on. Like a mushroom.
+Dead. Something will grow here.
