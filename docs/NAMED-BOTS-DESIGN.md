@@ -3,7 +3,7 @@
 How the 33 named bots in [BOT-PERSONALITIES.md](BOT-PERSONALITIES.md) get built. That file stays
 the master for names, classes and characters; this page only says *how*.
 
-Status: **approved 2026-10-19.** No code yet; step 1 is next.
+Status: **approved 2026-10-19.** Steps 1 and 2 done (2026-10-20); step 3 is next.
 
 ## Builds on what exists
 
