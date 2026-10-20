@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using DaocServer.HeadlessClient;
+using DOL.GS;
 using DOL.GS.PacketHandler;
 using NUnit.Framework;
 
@@ -129,6 +130,102 @@ namespace DOL.Tests.Unit
             var list = Packets.ReadOverview(w.ToArray(), 1);
             Assert.That(list, Has.Count.EqualTo(1));
             Assert.That(list.Single(), Is.EqualTo(new Packets.Character(1, 1, 12, "Aldric", "Cleric", "Briton", "Camelot Hills", 6)));
+        }
+
+        [Test]
+        public void CreateRequestReadsAsTheServerReadsIt()
+        {
+            byte[] stats = Packets.CreationStats(1);
+            GSPacketIn packet = ServerReads(Packets.Frame(Packets.CharacterCreateRequest, 0, 0,
+                Packets.CreateCharacter(2, 3, "Testa", 22, 6, false, 137, stats)));
+
+            // CharacterCreateRequestHandler.CreationCharacterData, 1.126+ layout
+            Assert.That(packet.Code, Is.EqualTo(0xFF));
+            Assert.That(packet.ReadByte(), Is.EqualTo(13), "cross-realm slot");
+            Assert.That(packet.ReadIntPascalStringLowEndian(), Is.EqualTo("Testa"));
+            packet.Skip(4);
+            Assert.That(packet.ReadByte(), Is.EqualTo(1), "custom mode");
+            packet.Skip(6 + 3 + 1 + 9);
+            Assert.That(packet.ReadByte(), Is.EqualTo(1), "operation: create");
+            packet.Skip(1 + 2 + 15);
+            Assert.That(packet.ReadByte(), Is.EqualTo(22), "class");
+            Assert.That(packet.ReadByte(), Is.EqualTo(2), "realm");
+            Assert.That(packet.ReadByte() & 0x1F, Is.EqualTo(6), "race");
+            Assert.That(packet.ReadShortLowEndian(), Is.EqualTo(137), "model");
+            for (int i = 0; i < 8; i++) Assert.That(packet.ReadByte(), Is.EqualTo(stats[i]));
+            packet.Skip(43);
+            Assert.That(packet.ReadByte(), Is.EqualTo(stats[2]), "constitution again");
+
+            byte[] female = Packets.CreateCharacter(1, 0, "Testa", 2, 1, true, 35, stats);
+            Assert.That(female[1 + 4 + 5 + 4 + 20 + 4 + 15 + 2] >> 7, Is.EqualTo(1), "gender bit");
+        }
+
+        [Test]
+        public void DeleteRequestCarriesOperationThreeAndTheSlot()
+        {
+            GSPacketIn packet = ServerReads(Packets.Frame(Packets.CharacterCreateRequest, 0, 0, Packets.DeleteCharacter(3, 2)));
+            Assert.That(packet.ReadByte(), Is.EqualTo(22), "cross-realm slot");
+            Assert.That(packet.ReadIntPascalStringLowEndian(), Is.Empty);
+            packet.Skip(4 + 1 + 6 + 3 + 1 + 9);
+            Assert.That(packet.ReadByte(), Is.EqualTo(3), "operation: delete");
+            Assert.That(packet.DataSize, Is.EqualTo(Packets.CreateCharacter(1, 0, "", 1, 1, false, 0, new byte[8]).Length),
+                "same size as a create");
+        }
+
+        [Test]
+        public void CreationStatsSpendExactlyTheServersPointBudgetForEveryRace()
+        {
+            string[] order = { "STR", "DEX", "CON", "QUI", "INT", "PIE", "EMP", "CHR" };
+            foreach (var race in Packets.Races)
+            {
+                Assert.That(race.Name, Is.EqualTo(((eRace)race.Id).ToString()), "race id");
+                byte[] s = Packets.CreationStats(race.Id);
+                var stats = order.Select((name, i) => (Enum.Parse<eStat>(name), (int)s[i])).ToDictionary(x => x.Item1, x => x.Item2);
+                bool valid = CharacterStatValidator.Validate(stats, GlobalConstants.STARTING_STATS_DICT[(eRace)race.Id],
+                    eStat.STR, eStat.DEX, eStat.CON, 1, out int points);
+                Assert.That(valid, Is.True, $"{race.Name}: {points} points");
+            }
+        }
+
+        [Test]
+        public void ClassNamesMatchTheServersClassIds()
+        {
+            foreach (var (name, id) in Packets.ClassIds)
+                Assert.That(id, Is.EqualTo((int)Enum.Parse<eCharacterClass>(name)), name);
+            foreach (var realm in GlobalConstants.STARTING_CLASSES_DICT.Values)
+                foreach (var cls in realm)
+                    Assert.That(Packets.ClassIds.ContainsValue((int)cls), Is.True, $"starting class {cls} missing");
+        }
+
+        [Test]
+        public void NamesFollowTheServersRule()
+        {
+            Assert.That(Packets.IsValidName("Testa"), Is.True);
+            Assert.That(Packets.IsValidName("Te"), Is.False);
+            Assert.That(Packets.IsValidName("testa"), Is.False);
+            Assert.That(Packets.IsValidName("Test_a"), Is.False);
+            Assert.That(Packets.IsValidName("Tëst"), Is.False);
+            Assert.That(Packets.IsValidName(new string('a', 23).Insert(0, "A")), Is.False, "24 letters");
+        }
+
+        [Test]
+        public void CreateAndDeleteOptions()
+        {
+            Options o = Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=mid", "--race=troll", "--class=Warrior",
+                "--delete=testa" }, null);
+            Assert.That((o.Create, o.Delete, o.Realm, o.RaceId, o.ClassId, o.Female), Is.EqualTo(("Testa", "testa", 2, 6, 22, false)));
+            Assert.That(Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Norse", "--class=2", "--female" },
+                null).RaceId, Is.EqualTo(5));
+            Assert.That(Options.Parse(new[] { "--account=a", "--delete=Testa" }, null).Delete, Is.EqualTo("Testa"));
+
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Briton" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=te", "--realm=1", "--race=Briton", "--class=2" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=4", "--race=Briton", "--class=2" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Ogre", "--class=2" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Briton", "--class=Jester" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Briton", "--class=2", "--delete=Other" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--race=Briton" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--delete=" }, null));
         }
 
         [Test]
