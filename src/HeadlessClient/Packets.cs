@@ -26,7 +26,8 @@ public static class Packets
 
     // Server -> client codes.
     public const byte CryptKey = 0x22, LoginGranted = 0x2A, LoginDenied = 0x2C, SessionId = 0x28, Realm = 0xFE,
-        CharacterOverview = 0xFC, PositionAndObjectId = 0x20, Message = 0xAF, Quit = 0xA4;
+        CharacterOverview = 0xFC, PositionAndObjectId = 0x20, Message = 0xAF, Quit = 0xA4,
+        NpcCreate = 0xDA, PlayerCreate = 0x4B, ObjectDelete = 0xE1, RemoveObject = 0xA2;
 
     // Races as the new client's server.gd has them: id, name, male and female creation model.
     public sealed record RaceInfo(int Id, string Name, ushort MaleModel, ushort FemaleModel);
@@ -266,6 +267,49 @@ public static class Packets
         return (type, text);
     }
 
+    // Something in view: an NPC (monsters, merchants, gamebots and companions; bots are NPCs to the server) or another
+    // player. The position is where it was when it came into view (the readers below skip ObjectUpdate's moves).
+    public sealed record Living(int ObjectId, bool IsPlayer, string Name, string Guild, int Level, float X, float Y, float Z)
+    {
+        public double DistanceTo(Position p) =>
+            Math.Sqrt((X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z));
+    }
+
+    // NPCCreate (1124): oid, speed, heading, z, x, y, speed z, model, size, level (0x80 = statue), flags, stick
+    // distance, flags2, flags3, u16, name, guild.
+    public static Living ReadNpcCreate(byte[] data)
+    {
+        var r = new Reader(data);
+        int oid = r.Short();
+        r.Short(); r.Short();                                  // speed, heading
+        float z = r.Short();
+        float x = r.Int(), y = r.Int();
+        r.Short(); r.Short(); r.Byte();                        // speed z, model, size
+        int level = r.Byte() & 0x7F;
+        r.Byte(); r.Byte(); r.Byte(); r.Byte(); r.Short();     // flags, stick distance, flags2, flags3, unknown
+        string name = r.Pascal();
+        return new Living(oid, false, name, r.Pascal(), level, x, y, z);
+    }
+
+    // PlayerCreate172 (1124): x, y, z, session, oid, heading, model, level, flags, face (7), 3 unknown, name, guild,
+    // last name, prefix, title.
+    public static Living ReadPlayerCreate(byte[] data)
+    {
+        var r = new Reader(data);
+        float x = r.FloatLE(), y = r.FloatLE(), z = r.FloatLE();
+        r.Short();                                             // session
+        int oid = r.Short();
+        r.Short(); r.Short();                                  // heading, model
+        int level = r.Byte();
+        r.Byte();                                              // flags
+        r.Skip(7 + 3);
+        string name = r.Pascal();
+        return new Living(oid, true, name, r.Pascal(), level, x, y, z);
+    }
+
+    // ObjectDelete and RemoveObject: the object id first (gone from view).
+    public static int ReadRemovedObjectId(byte[] data) => new Reader(data).Short();
+
     // PacketLib1126.SendCharacterOverview: four u32 flags, then ten slots - 0 for an empty one, else the character.
     // The realm is the one asked for; each character also carries its own.
     public static List<Character> ReadOverview(byte[] data, int askedRealm)
@@ -328,6 +372,7 @@ public static class Packets
         public void Skip(int n) => _p = Math.Min(_d.Length, _p + n);
         public int Short() => (Byte() << 8) | Byte();
         public int ShortLE() => Byte() | (Byte() << 8);
+        public uint Int() => ((uint)Byte() << 24) | ((uint)Byte() << 16) | ((uint)Byte() << 8) | Byte();
         public uint IntLE() => Byte() | ((uint)Byte() << 8) | ((uint)Byte() << 16) | ((uint)Byte() << 24);
         public float FloatLE() => BitConverter.Int32BitsToSingle((int)IntLE());
         public string Pascal() => Str(Byte());

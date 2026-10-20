@@ -109,6 +109,53 @@ namespace DOL.Tests.Unit
         }
 
         [Test]
+        public void ReadsNpcCreateBuiltAsTheServerBuildsIt()
+        {
+            byte[] npc = ServerSends(Packets.NpcCreate, p =>                         // as PacketLib1124.SendNPCCreate
+            {
+                p.WriteShort(1234);                                                 // object id
+                p.WriteShort(0); p.WriteShort(2048);                                // speed, heading
+                p.WriteShort(3200);                                                 // z
+                p.WriteInt(531000); p.WriteInt(479500);                             // x, y
+                p.WriteShort(0); p.WriteShort(32); p.WriteByte(50);                 // speed z, model, size
+                p.WriteByte(50 | 0x80);                                             // level, statue bit
+                p.WriteByte(1 << 6); p.WriteByte(0x20); p.WriteByte(0); p.WriteByte(0); p.WriteShort(0);
+                p.WritePascalString("Persoper");
+                p.WritePascalString("Companions");
+                p.WriteByte(0);
+            });
+            Assert.That(Packets.ReadNpcCreate(npc),
+                Is.EqualTo(new Packets.Living(1234, false, "Persoper", "Companions", 50, 531000, 479500, 3200)));
+        }
+
+        [Test]
+        public void ReadsPlayerCreateBuiltAsTheServerBuildsIt()
+        {
+            byte[] player = ServerSends(Packets.PlayerCreate, p =>                  // as PacketLib1124.SendPlayerCreate
+            {
+                p.WriteFloatLowEndian(531010.5f); p.WriteFloatLowEndian(479490f); p.WriteFloatLowEndian(3201f);
+                p.WriteShort(7); p.WriteShort(88); p.WriteShort(1024); p.WriteShort(32);   // session, oid, heading, model
+                p.WriteByte(12); p.WriteByte(1 << 2);                               // level, flags
+                for (int i = 0; i < 7 + 3; i++) p.WriteByte(0);                     // face, unknown
+                p.WritePascalString("Aldric");
+                p.WritePascalString("");
+                p.WritePascalString("Smith");
+                p.WritePascalString("");
+                p.WritePascalString("");
+            });
+            var l = Packets.ReadPlayerCreate(player);
+            Assert.That(l, Is.EqualTo(new Packets.Living(88, true, "Aldric", "", 12, 531010.5f, 479490f, 3201f)));
+            Assert.That(l.DistanceTo(new Packets.Position(531010.5f, 479494f, 3204f, 1, 1)), Is.EqualTo(5).Within(0.001));
+        }
+
+        [Test]
+        public void ReadsTheObjectIdOfObjectsLeavingView()
+        {
+            byte[] delete = ServerSends(Packets.ObjectDelete, p => { p.WriteShort(1234); p.WriteShort(1); });  // PacketLib168
+            Assert.That(Packets.ReadRemovedObjectId(delete), Is.EqualTo(1234));
+        }
+
+        [Test]
         public void ReadsOneCharacterFromAnOverview()
         {
             var w = new Packets.Writer();

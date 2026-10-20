@@ -1,6 +1,7 @@
 // headless-client: logs in to a running game server the way the new (Godot) client does, without graphics, and
 // checks each step: login, character list, optionally creating a character, entering the world, optional chat lines
-// or commands, then the replies, and optionally /quit and deleting the created (or a named level 1) character.
+// or commands, then the replies and who is nearby, and optionally /quit and deleting the created (or a named level 1)
+// character.
 // Prints OK and exits 0 when every step worked; prints FAIL with the step and exits 1 otherwise.
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ public static class Program
         "  --delete=NAME        delete a level 1 character: alone, right after the character list (no world);\n" +
         "                       with --create of the same name, at the end, after /quit back to the character screen\n" +
         "  --send=TEXT          after entering, send a typed line (\"/persoper\", \"hello\"); repeatable\n" +
-        "  --listen=SECONDS     how long to print server messages after entering (default 5)\n" +
+        "  --listen=SECONDS     how long to print server messages after entering, then who is nearby (default 5)\n" +
         "  --timeout=SECONDS    how long each step may take (default 20)\n" +
         "  --verbose            print every packet code received";
 
@@ -112,6 +113,7 @@ public static class Program
             if (p.Code < 0) return Fail("listen", Packets.Text1252.GetString(p.Data));
             Note(c, o, p);
         }
+        PrintNearby(pos);
 
         // 5. Optional: back to the character screen the way the new client leaves (/quit: sit, the server's
         // countdown of up to 20 s, more after a fight, then Quit), and delete the character created above.
@@ -128,6 +130,22 @@ public static class Program
     }
 
     const int MaxPacketsPerWait = 100_000;
+    const int MaxNearby = 5_000;
+
+    // Players and NPCs (bots included) in view, by object id: added on NPCCreate / PlayerCreate, dropped when the
+    // server says they left view.
+    static readonly Dictionary<int, Packets.Living> Nearby = new();
+
+    static void PrintNearby(Packets.Position you)
+    {
+        var list = Nearby.Values.OrderBy(l => l.DistanceTo(you)).ToList();
+        Console.WriteLine($"nearby: {list.Count} (distance from where you entered, to where each was first seen)");
+        foreach (var l in list)
+        {
+            string guild = l.Guild.Length > 0 ? $" <{l.Guild}>" : "";
+            Console.WriteLine($"  {(l.IsPlayer ? "player" : "npc   ")} {l.Name}{guild}, level {l.Level}, {l.DistanceTo(you):0} away");
+        }
+    }
     const int QuitWaitSeconds = 90;
 
     static bool Same(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
@@ -218,6 +236,13 @@ public static class Program
             var (type, text) = Packets.ReadMessage(p.Data);
             Console.WriteLine($"  [msg {type}] {text}");
         }
+        else if (p.Code is Packets.NpcCreate or Packets.PlayerCreate)
+        {
+            var l = p.Code == Packets.NpcCreate ? Packets.ReadNpcCreate(p.Data) : Packets.ReadPlayerCreate(p.Data);
+            if (Nearby.Count < MaxNearby || Nearby.ContainsKey(l.ObjectId)) Nearby[l.ObjectId] = l;
+        }
+        else if (p.Code is Packets.ObjectDelete or Packets.RemoveObject)
+            Nearby.Remove(Packets.ReadRemovedObjectId(p.Data));
     }
 
     static int Ok() { Console.WriteLine("OK"); return 0; }
