@@ -112,6 +112,7 @@ public static class AutonomousPopulationController
             int desired = AutonomousPopulationRamp.DesiredActiveCount(_cachedEnabled, roster.Length, _cachedRampMinutes, nowUtc - _startedUtc);
             if (_cachedMaxActive > 0)
                 desired = Math.Min(desired, _cachedMaxActive);
+            LogOutOffNamedBots();
             LogOutExcessBots();
             int missing = desired - AutonomousBotRegistry.Count - PendingSpawns.Count;
             _populationSatisfied = missing <= 0;
@@ -195,7 +196,7 @@ public static class AutonomousPopulationController
         {
             if (prepared.Generation != Volatile.Read(ref _loginGeneration) || _timer == null) return;
             OfflineWorldBotRecord record = _cachedRoster.FirstOrDefault(candidate => candidate.BotId == botId);
-            if (record == null || record.IsRetired || record.IsOnline || AutonomousBotRegistry.Contains(botId))
+            if (record == null || record.IsRetired || record.IsOnline || AutonomousBotRegistry.Contains(botId) || NamedBots.IsOff(botId))
                 return;
 
             GameBot bot = new(record, prepared.Inventory);
@@ -344,12 +345,15 @@ public static class AutonomousPopulationController
         _cachedRampMinutes = ReadInt("startup_ramp_minutes", 0);
         _cachedLoginsPerSecond = Math.Clamp(ReadInt("bot_logins_per_second", 8), 1, MaximumSpawnEnqueuePerPoll);
         _cachedMaxActive = Math.Max(0, ReadInt("max_active_bots", 0));
-        _cachedRoster = DOLDB<OfflineWorldBotRecord>
+        OfflineWorldBotRecord[] roster = DOLDB<OfflineWorldBotRecord>
             .SelectObjects(DB.Column("IsRetired").IsEqualTo(false))
             .OrderBy(record => record.BotId)
             .ToArray();
+        // Named bots turned off (bots named off) stay in the roster but never log in.
+        _cachedRoster = roster.Where(record => !NamedBots.IsOff(record.BotId)).ToArray();
         // A gamebot taken off the roster (launcher removal, retirement, test-roster rollback) leaves its guild.
-        long[] rosterIds = _cachedRoster.Select(record => record.BotId).ToArray();
+        // Off named bots keep theirs.
+        long[] rosterIds = roster.Select(record => record.BotId).ToArray();
         NpcService.Instance.Post<long[]>(ids => AutonomousBotGuilds.Reconcile(ids), rosterIds);
     }
 
@@ -376,6 +380,22 @@ public static class AutonomousPopulationController
                      .OrderBy(bot => NamedBots.IsOn(bot.PersistentRecord.BotId) ? 1 : 0)
                      .ThenBy(bot => bot.InCombat ? 1 : 0)
                      .Take(Math.Min(excess, MaximumSpawnEnqueuePerPoll)))
+        {
+            if (PendingLogouts.TryAdd(bot.PersistentRecord.BotId, 0))
+                NpcService.Instance.Post(LogOutOnGameLoop, bot);
+        }
+    }
+
+    /// <summary>
+    /// Named bots turned off (bots named off) leave the world, a bounded batch per poll, even when
+    /// grouped with a player: the owner asked for that bot by name. Their characters stay.
+    /// </summary>
+    private static void LogOutOffNamedBots()
+    {
+        foreach (GameBot bot in AutonomousBotRegistry.Snapshot()
+                     .Where(bot => bot.PersistentRecord != null && NamedBots.IsOff(bot.PersistentRecord.BotId))
+                     .Where(bot => !PendingLogouts.ContainsKey(bot.PersistentRecord.BotId))
+                     .Take(MaximumSpawnEnqueuePerPoll))
         {
             if (PendingLogouts.TryAdd(bot.PersistentRecord.BotId, 0))
                 NpcService.Instance.Post(LogOutOnGameLoop, bot);

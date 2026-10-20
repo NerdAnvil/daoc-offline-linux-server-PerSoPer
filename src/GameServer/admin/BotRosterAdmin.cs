@@ -154,22 +154,85 @@ namespace DOL.GS.Admin
                 throw new AdminException(AdminErrorCodes.Refused, $"Named bots start at level 1; {entry.Name} can't be made at level {level}.");
 
             lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
-            {
-                if (DOLDB<OfflineWorldBotRecord>.SelectAllObjects().Any(r => r.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
-                    throw new AdminException(AdminErrorCodes.Refused,
-                        $"{entry.Name} already exists. Remove it first with: bots delete {entry.Name}");
-                if (DOLDB<DbCoreCharacter>.SelectAllObjects().Any(c => c.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
-                    throw new AdminException(AdminErrorCodes.Refused,
-                        $"A player character is named {entry.Name}. Rename that character first.");
-                OfflineWorldBotRecord added = AddRecord(NamedBots.IdentityFor(entry, Random.Shared), 1);
-                NamedBots.SaveRow(entry.Key, added.BotId, NamedBots.On);
-            }
+                AddNamedRecord(entry);
 
             WriteProperty("population_enabled", "true");
             AutonomousPopulationProperties.POPULATION_ENABLED = true;
             AutonomousPopulationController.RequestRefresh();
             Log.Info($"Admin created named bot {entry.Name} ({entry.Key}) at level 1");
             return new BotCreateResult([entry.Name], true);
+        }
+
+        /// <summary>Adds the roster bot for a named entry at level 1 and saves its row as on. Caller holds the write lock.</summary>
+        private static void AddNamedRecord(NamedBotLineup.Entry entry)
+        {
+            if (DOLDB<OfflineWorldBotRecord>.SelectAllObjects().Any(r => r.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new AdminException(AdminErrorCodes.Refused,
+                    $"{entry.Name} already exists. Remove it first with: bots delete {entry.Name}");
+            if (DOLDB<DbCoreCharacter>.SelectAllObjects().Any(c => c.Name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new AdminException(AdminErrorCodes.Refused,
+                    $"A player character is named {entry.Name}. Rename that character first.");
+            OfflineWorldBotRecord added = AddRecord(NamedBots.IdentityFor(entry, Random.Shared), 1);
+            NamedBots.SaveRow(entry.Key, added.BotId, NamedBots.On);
+        }
+
+        /// <summary>
+        /// bots named on|off: one named bot, or all three of a type. Off keeps the character and
+        /// the population controller logs it out; on lets it log in again. Deleted bots, bots not
+        /// created yet and bots already in that state are left alone and listed with the reason.
+        /// </summary>
+        public static NamedBotSetResult SetNamed(string typed, bool on)
+        {
+            IReadOnlyList<NamedBotLineup.Entry> entries = NamedBots.FindAll(typed);
+            if (entries.Count == 0)
+                throw new AdminException(AdminErrorCodes.NotFound, $"No named bot or type '{typed}'. See: bots named list");
+
+            string state = on ? NamedBots.On : NamedBots.Off;
+            var changed = new List<string>();
+            var skipped = new List<string>();
+            lock (AutonomousBotStatusPersistence.DatabaseWriteLock)
+            {
+                var rosterIds = new HashSet<long>(DOLDB<OfflineWorldBotRecord>.SelectObjects(DB.Column("IsRetired").IsEqualTo(false)).Select(r => r.BotId));
+                foreach (NamedBotLineup.Entry entry in entries)
+                {
+                    NamedBotRecord row = NamedBots.RowFor(entry);
+                    if (row == null)
+                        skipped.Add($"{entry.Name}: not created yet; the next server start makes it.");
+                    else if (row.State == NamedBots.Deleted || (row.BotId > 0 && !rosterIds.Contains(row.BotId)))
+                        skipped.Add($"{entry.Name}: deleted. Make it again with: bots create --personality {entry.Name}");
+                    else if (row.State == state)
+                        skipped.Add($"{entry.Name}: already {state}.");
+                    else if (row.BotId == 0)
+                    {
+                        // Skipped on start because a player had its name: off stays off, on makes it now.
+                        if (!on)
+                        {
+                            skipped.Add($"{entry.Name}: already off.");
+                            continue;
+                        }
+                        try
+                        {
+                            AddNamedRecord(entry);
+                            changed.Add(entry.Name);
+                        }
+                        catch (AdminException exception)
+                        {
+                            skipped.Add($"{entry.Name}: {exception.Message}");
+                        }
+                    }
+                    else
+                    {
+                        NamedBots.SaveRow(entry.Key, row.BotId, state);
+                        changed.Add(entry.Name);
+                    }
+                }
+            }
+
+            AutonomousPopulationController.RequestRefresh();
+            if (changed.Count > 0)
+                Log.Info($"Admin turned named bot(s) {state}: {string.Join(", ", changed)}");
+            bool enabled = bool.TryParse(ReadProperty("population_enabled"), out bool populationOn) && populationOn;
+            return new NamedBotSetResult(changed, skipped, state, enabled);
         }
 
         /// <summary>The 33 named bots, in lineup order, with their saved state.</summary>
@@ -189,7 +252,10 @@ namespace DOL.GS.Admin
                 OfflineWorldBotRecord record = row == null ? null : roster.GetValueOrDefault(row.BotId);
                 live.TryGetValue(row?.BotId ?? 0, out GameBot bot);
                 // A row whose roster bot is gone (deleted with bots delete) shows as "missing".
-                string state = row == null ? "not created" : row.BotId > 0 && record == null ? "missing" : row.State;
+                string state = row == null ? "not created"
+                    : row.State == NamedBots.Deleted ? NamedBots.Deleted
+                    : row.BotId > 0 && record == null ? "missing"
+                    : row.State;
                 result.Add(new NamedBotInfo(
                     entry.Key,
                     entry.Name,
@@ -321,6 +387,7 @@ namespace DOL.GS.Admin
                 Retire(live.PersistentRecord, now);
             Retire(record, now);
             GameServer.Database.SaveObject(record);
+            NamedBots.MarkDeleted(record.BotId);
 
             bool alreadyQueued = DOLDB<OfflineBotCommandRecord>
                 .SelectObjects(DB.Column("BotId").IsEqualTo(record.BotId))

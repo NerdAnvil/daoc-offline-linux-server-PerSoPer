@@ -45,6 +45,21 @@ public static class AdminText
                     bots.Select(b => new[] { b.Name, b.Type, b.Realm, b.Class, b.Level > 0 ? b.Level.ToString() : "", b.State, b.Online ? "yes" : "" }));
                 return $"{table}\n{bots.Count(b => b.State == "on")} of {bots.Count} named bots on, {bots.Count(b => b.Online)} in the world.";
             }
+            case AdminOps.BotsNamedSet:
+            {
+                var r = AdminJson.To<NamedBotSetResult>(result)!;
+                var lines = new List<string>();
+                if (r.Changed.Count > 0)
+                    lines.Add($"Turned {r.State}: {string.Join(", ", r.Changed)}");
+                lines.AddRange(r.Skipped);
+                if (r.Changed.Count > 0)
+                    lines.Add(r.State == "off"
+                        ? "They log out of the world within a few seconds; their characters stay."
+                        : r.PopulationEnabled
+                            ? "They log in over the next minutes."
+                            : "Population is OFF: they stay offline until you run 'population on'.");
+                return string.Join('\n', lines);
+            }
             case AdminOps.BotsCreate:
             {
                 var r = AdminJson.To<BotCreateResult>(result)!;

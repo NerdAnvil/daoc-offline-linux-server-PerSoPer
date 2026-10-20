@@ -45,6 +45,7 @@ namespace DOL.GS.Admin
                         request.GetString("personalityType")),
                     AdminOps.BotsDelete => BotRosterAdmin.Delete(Required(request, "bot")),
                     AdminOps.BotsNamedList => BotRosterAdmin.NamedList(),
+                    AdminOps.BotsNamedSet => BotRosterAdmin.SetNamed(Required(request, "bot"), request.GetBool("on") ?? throw new AdminException(AdminErrorCodes.Invalid, "Say on or off.")),
                     AdminOps.BotsDeleteAll => request.GetBool("confirm") == true
                         ? BotRosterAdmin.DeleteAll()
                         : throw new AdminException(AdminErrorCodes.Refused, "Deleting every bot needs confirm=true."),

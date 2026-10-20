@@ -25,6 +25,8 @@ public static class AdminCommandLine
           bots delete <name|id>
           bots delete-all --yes
           bots named list                 the 33 named bots, their state and level
+          bots named off <name|type>      log a named bot out and keep it out (joker = all three)
+          bots named on <name|type>       let it log in again with its saved progress
           population                      show population settings
           population on | off             off also logs every bot out of the world
           population max <N>              most bots in the world at once; 0 = whole roster
@@ -61,8 +63,7 @@ public static class AdminCommandLine
             ("bots", "create") => BotsCreate(rest),
             ("bots", "delete") => Request(AdminOps.BotsDelete, ("bot", Single(rest, "bots delete <name|id>"))),
             ("bots", "delete-all") => BotsDeleteAll(rest),
-            ("bots", "named") when rest is [var sub] && sub.Equals("list", StringComparison.OrdinalIgnoreCase) => Request(AdminOps.BotsNamedList),
-            ("bots", "named") => throw new AdminUsageException("Usage: bots named list"),
+            ("bots", "named") => BotsNamed(rest),
             ("population", "" or "show") => Request(AdminOps.PopulationGet),
             ("population", "on") => Request(AdminOps.PopulationSet, ("enabled", true)),
             ("population", "off") => Request(AdminOps.PopulationSet, ("enabled", false)),
@@ -135,6 +136,17 @@ public static class AdminCommandLine
         if (options.TryGetValue("--personality-type", out string? personalityType))
             request.Args["personalityType"] = personalityType;
         return request;
+    }
+
+    private static AdminRequest BotsNamed(List<string> rest)
+    {
+        string sub = rest.Count > 0 ? rest[0].ToLowerInvariant() : string.Empty;
+        return (sub, rest.Count) switch
+        {
+            ("list", 1) => Request(AdminOps.BotsNamedList),
+            ("on" or "off", 2) => Request(AdminOps.BotsNamedSet, ("bot", rest[1]), ("on", sub == "on")),
+            _ => throw new AdminUsageException("Usage: bots named list | bots named on <name|type> | bots named off <name|type>"),
+        };
     }
 
     private static AdminRequest BotsDeleteAll(List<string> rest)

@@ -91,7 +91,53 @@ public class UT_NamedBots
         AdminRequest request = AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named list"));
         Assert.That(request.Op, Is.EqualTo(AdminOps.BotsNamedList));
         Assert.Throws<AdminUsageException>(() => AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named")));
-        Assert.Throws<AdminUsageException>(() => AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named off joker")));
+        Assert.Throws<AdminUsageException>(() => AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named off")));
+        Assert.Throws<AdminUsageException>(() => AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named pause joker")));
+        Assert.Throws<AdminUsageException>(() => AdminCommandLine.Parse(AdminCommandLine.SplitLine("bots named on joker extra")));
+    }
+
+    [TestCase("bots named off joker", "joker", false)]
+    [TestCase("bots named ON Shnacksize", "Shnacksize", true)]
+    [TestCase("bots named off \"herbal doctor\"", "herbal doctor", false)]
+    public void AdminCommand_BotsNamedOnOff(string line, string bot, bool on)
+    {
+        AdminRequest request = AdminCommandLine.Parse(AdminCommandLine.SplitLine(line));
+        Assert.That(request.Op, Is.EqualTo(AdminOps.BotsNamedSet));
+        Assert.That(request.GetString("bot"), Is.EqualTo(bot));
+        Assert.That(request.GetBool("on"), Is.EqualTo(on));
+    }
+
+    [TestCase("joker", "joker-mid", "joker-alb", "joker-hib")]
+    [TestCase("JOKER", "joker-mid", "joker-alb", "joker-hib")]
+    [TestCase("Herbal Doctor", "herbaldoctor-mid", "herbaldoctor-alb", "herbaldoctor-hib")]
+    [TestCase("min/maxer", "minmaxer-mid", "minmaxer-alb", "minmaxer-hib")]
+    [TestCase("Shnacksize", "joker-mid")]
+    [TestCase("joker-alb", "joker-alb")]
+    public void FindAll_NameKeyOrType(string typed, params string[] keys) =>
+        Assert.That(NamedBots.FindAll(typed).Select(entry => entry.Key), Is.EquivalentTo(keys));
+
+    [TestCase("Kobaldjovi")]
+    [TestCase("mixed")]
+    [TestCase("")]
+    [TestCase("!!")]
+    public void FindAll_UnknownIsEmpty(string typed) => Assert.That(NamedBots.FindAll(typed), Is.Empty);
+
+    [Test]
+    public void AdminText_NamedOffSaysWhoChangedAndWhoNot()
+    {
+        var result = new NamedBotSetResult(["Shnacksize", "Shnacksizer"], ["Shnacksizey: already off."], "off", true);
+        string text = AdminText.Format(AdminOps.BotsNamedSet, JsonSerializer.SerializeToNode(result, AdminJson.Options));
+        Assert.That(text, Does.Contain("Turned off: Shnacksize, Shnacksizer"));
+        Assert.That(text, Does.Contain("Shnacksizey: already off."));
+        Assert.That(text, Does.Contain("log out"));
+    }
+
+    [Test]
+    public void AdminText_NamedOnWithPopulationOffSaysSo()
+    {
+        var result = new NamedBotSetResult(["Shnacksize"], [], "on", false);
+        string text = AdminText.Format(AdminOps.BotsNamedSet, JsonSerializer.SerializeToNode(result, AdminJson.Options));
+        Assert.That(text, Does.Contain("Turned on: Shnacksize").And.Contain("Population is OFF"));
     }
 
     [Test]

@@ -78,6 +78,18 @@ public static class NamedBots
         NamedBotLineup.FindByName(typed) ??
         NamedBotLineup.All.FirstOrDefault(entry => string.Equals(entry.Key, typed, StringComparison.OrdinalIgnoreCase));
 
+    /// <summary>
+    /// The entries for what an admin typed after "bots named on|off": one name or key, or a type
+    /// ("joker", "Herbal Doctor", "min/maxer") for all three realms. Empty when nothing matches.
+    /// </summary>
+    public static IReadOnlyList<NamedBotLineup.Entry> FindAll(string typed)
+    {
+        if (Find(typed) is { } one)
+            return [one];
+        string type = new string((typed ?? string.Empty).Where(char.IsLetter).ToArray()).ToLowerInvariant();
+        return type.Length == 0 ? [] : NamedBotLineup.All.Where(entry => entry.TypeKey == type).ToList();
+    }
+
     // --- In the running server ---
 
     private static readonly object Sync = new();
@@ -106,6 +118,19 @@ public static class NamedBots
 
     /// <summary>True for a named bot that is on: it logs in before other bots.</summary>
     public static bool IsOn(long botId) => botId > 0 && ByBotId.TryGetValue(botId, out var named) && named.State == On;
+
+    /// <summary>True for a named bot that is off: the population controller leaves it out of the world.</summary>
+    public static bool IsOff(long botId) => botId > 0 && ByBotId.TryGetValue(botId, out var named) && named.State == Off;
+
+    /// <summary>Marks a named bot deleted (bots delete), so it isn't made again on start. Others are ignored.</summary>
+    public static void MarkDeleted(long botId)
+    {
+        if (botId > 0 && ByBotId.TryGetValue(botId, out var named) && named.State != Deleted)
+        {
+            SaveRow(named.Entry.Key, botId, Deleted);
+            Log.Info($"Named bot {named.Entry.Name} ({named.Entry.Key}) deleted; bots create --personality {named.Entry.Name} makes it again.");
+        }
+    }
 
     /// <summary>
     /// Server start: creates every named bot that has no row yet, at level 1 with no armour, and
