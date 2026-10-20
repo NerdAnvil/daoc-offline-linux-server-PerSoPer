@@ -350,6 +350,57 @@ namespace DOL.Tests.Unit
         }
 
         [Test]
+        public void ReadsTheServersJump()
+        {
+            // As PacketLib168.SendPlayerJump writes it after /tele inside the region.
+            byte[] data = ServerSends(Packets.CharacterJump, p =>
+            {
+                p.WriteInt(574797); p.WriteInt(530161);
+                p.WriteShort(1234); p.WriteShort(2800); p.WriteShort(2048); p.WriteShort(0);   // oid, z, heading, house
+            });
+            Assert.That(Packets.ReadJump(data), Is.EqualTo((574797f, 530161f, 2800f)));
+            byte[] headingOnly = ServerSends(Packets.CharacterJump, p =>
+            {
+                p.WriteInt(0); p.WriteInt(0); p.WriteShort(1234); p.WriteShort(0); p.WriteShort(2048); p.WriteShort(0);
+            });
+            Assert.That(Packets.ReadJump(headingOnly), Is.Null, "a heading-only jump doesn't move you");
+        }
+
+        [Test]
+        public void StepsTowardATargetWithoutPassingIt()
+        {
+            Assert.That(Program.StepToward((0, 0, 0), (300, 400, 100), 50), Is.EqualTo((30f, 40f, 10f)));
+            Assert.That(Program.StepToward((0, 0, 0), (3, 4, 1), 50), Is.EqualTo((3f, 4f, 1f)), "close enough: lands on it");
+        }
+
+        [Test]
+        public void FollowWalksBeforeSayRangeIsLostAndCountsHowItWent()
+        {
+            Assert.That(Program.NeedsWalk(Program.FollowStartDistance), Is.False);
+            Assert.That(Program.NeedsWalk(Program.FollowStartDistance + 1), Is.True);
+            Assert.That(Program.FollowStartDistance, Is.LessThan(Program.SayDistance));
+            Assert.That(Program.SayDistance, Is.EqualTo(WorldMgr.SAY_DISTANCE));
+
+            Assert.That(Program.Decide(100, true, true), Is.EqualTo(Program.FollowAction.Wait));
+            Assert.That(Program.Decide(400, true, true), Is.EqualTo(Program.FollowAction.Walk));
+            Assert.That(Program.Decide(400, true, false), Is.EqualTo(Program.FollowAction.Wait), "walk cap reached");
+            Assert.That(Program.Decide(3000, true, true), Is.EqualTo(Program.FollowAction.Teleport));
+            Assert.That(Program.Decide(null, true, true), Is.EqualTo(Program.FollowAction.Teleport));
+            Assert.That(Program.Decide(3000, false, true), Is.EqualTo(Program.FollowAction.Walk), "no /tele: keep walking");
+            Assert.That(Program.Decide(null, false, true), Is.EqualTo(Program.FollowAction.Wait), "no /tele, not in view");
+
+            var stats = new Program.FollowStats();
+            stats.Check(100);
+            stats.Check(600);
+            stats.Check(null);
+            Assert.That((stats.Checks, stats.OutOfRange, stats.Unseen, stats.Furthest), Is.EqualTo((3, 1, 1, 600.0)));
+
+            Assert.That(Options.Parse(new[] { "--account=a", "--follow= Shnacksize " }, null).Follow, Is.EqualTo("Shnacksize"));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--follow=" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--follow=X", "--login-only" }, null));
+        }
+
+        [Test]
         public void FindsSomeoneNearbyByFullNameFirstNameOrPart()
         {
             var you = new Packets.Position(0, 0, 0, 1, 1);

@@ -41,6 +41,7 @@ public sealed class Connection : IDisposable
     {
         var left = deadline - DateTime.UtcNow;
         if (left < TimeSpan.Zero) left = TimeSpan.Zero;
+        left = TimeSpan.FromMilliseconds(Math.Ceiling(left.TotalMilliseconds));   // under 1 ms would not wait at all
         return _inbox.TryTake(out var p, left) ? p : null;
     }
 

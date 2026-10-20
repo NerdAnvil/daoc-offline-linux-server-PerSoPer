@@ -1,7 +1,8 @@
 // headless-client: logs in to a running game server the way the new (Godot) client does, without graphics, and
 // checks each step: login, character list, optionally creating a character, entering the world, optional chat lines
 // or commands, then the replies and who is nearby, optionally walking to a spot or someone nearby, optionally recording
-// chat to a file for a while, and optionally /quit and deleting the created (or a named level 1) character.
+// chat to a file for a while (optionally following someone), then /quit and optionally deleting the created (or a named
+// level 1) character. It keeps track of where the server puts it (/tele, portals), so walking starts from there.
 // Prints OK and exits 0 when every step worked; prints FAIL with the step and exits 1 otherwise.
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ public static class Program
         "                       after --listen and --goto keep listening for --record-seconds; at most 1000 lines, 256 KB\n" +
         "  --record-seconds=N   how long to keep recording at the end (default 30)\n" +
         "  --record-from=NAME   record only lines that mention NAME (\"Persoper\")\n" +
+        "  --follow=NAME        during --listen and --record, walk back to someone nearby (as --goto) whenever they are\n" +
+        "                       more than 250 units away, so they stay in /say range; prints how far they got. If a\n" +
+        "                       --send was a /tele, also /tele NAME again when they are out of view or 400+ away\n" +
         "  --overwrite          let --record replace an existing file\n" +
         "  --timeout=SECONDS    how long each step may take (default 20)\n" +
         "  --verbose            print every packet code received";
@@ -115,54 +119,134 @@ public static class Program
         c.Send(Packets.WorldInitRequest, Packets.IndexOnly(pick.Realm, pick.Slot));
         var you = WaitFor(c, o, step, Packets.PositionAndObjectId);
         if (you == null) return Fail("enter", "no PositionAndObjectID reply");
-        var pos = Packets.ReadPosition(you.Data);
+        Me = Packets.ReadPosition(you.Data);
+        WorldInit = Packets.IndexOnly(pick.Realm, pick.Slot);
         InWorld = true;
-        Console.WriteLine($"in the world as {pick.Name}: region {pos.Region}, object {pos.ObjectId}, at {pos.X:0},{pos.Y:0},{pos.Z:0}");
+        Console.WriteLine($"in the world as {pick.Name}: region {Me.Region}, object {Me.ObjectId}, at {Me.X:0},{Me.Y:0},{Me.Z:0}");
         c.Send(Packets.PlayerInitRequest, Array.Empty<byte>());           // "the zone is loaded"
         c.Send(Packets.GameOpenRequest, Packets.GameOpen());
 
+        // In the world from here on: whatever happens, leave with /quit, so the next login isn't refused while this
+        // character stays linkdead (LoginDenied 17 for about a minute).
+        int result = Play(c, o);
+        Recorder = null;                                                     // nothing more after the recording time
+        Console.WriteLine("> /quit");
+        c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine("/quit")));
+        if (WaitFor(c, o, TimeSpan.FromSeconds(QuitWaitSeconds), Packets.Quit) == null)
+            return result != 0 ? result : Fail("quit", $"no Quit reply within {QuitWaitSeconds} s");
+        InWorld = false;
+        // The server counts you as playing (and a closed connection as linkdead) until the character list is asked for.
+        if (RequestCharacters(c, o, step, pick.Realm) == null)
+            return result != 0 ? result : Fail("quit", "no character overview after Quit");
+        Console.WriteLine("back at the character screen");
+
+        // Optional: delete the character created above (also after a failed step, so test characters don't pile up).
+        if (o.Delete != null && !Delete(c, o, step, characters)) return 1;
+        return result != 0 ? result : Ok();
+    }
+
+    // Everything between entering the world and /quit; 0 when it all worked, else 1 after printing FAIL.
+    static int Play(Connection c, Options o)
+    {
         // 4. Typed lines, then the server's messages for a while.
         foreach (var line in o.Send)
         {
             Console.WriteLine($"> {line}");
             c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine(line)));
         }
-        var until = DateTime.UtcNow.AddSeconds(o.ListenSeconds);
-        for (int i = 0; i < MaxPacketsPerWait; i++)
-        {
-            var p = c.Next(until);
-            if (p == null) break;
-            if (p.Code < 0) return Fail("listen", Packets.Text1252.GetString(p.Data));
-            Note(c, o, p);
-        }
-        PrintNearby(pos);
+        var follow = o.Follow == null ? null : new FollowStats();
+        if (!Listen(c, o, DateTime.UtcNow.AddSeconds(o.ListenSeconds), follow)) return Fail("listen", "disconnected");
+        PrintNearby(Me);
         if (o.Goto != null)
         {
-            var walked = Walk(c, o, pos);
-            if (walked == null) return 1;
-            pos = walked;
+            string? why = Walk(c, o, o.GotoName, o.GotoX, o.GotoY, DateTime.UtcNow.AddSeconds(MaxWalkSeconds), true);
+            if (why != null) return Fail("goto", why);
         }
         if (Recorder != null)
         {
             string path = Path.GetFullPath(o.Record!);
             Console.WriteLine($"recording for {o.RecordSeconds} s to {path}");
-            if (!Pump(c, o, DateTime.UtcNow.AddSeconds(o.RecordSeconds))) return Fail("record", "disconnected");
+            if (!Listen(c, o, DateTime.UtcNow.AddSeconds(o.RecordSeconds), follow)) return Fail("record", "disconnected");
             Console.WriteLine($"recorded {Recorder.Lines} line(s) to {path}{(Recorder.Full ? " (full: stopped at the limit)" : "")}");
-            Recorder = null;                                                 // nothing more after the recording time
+        }
+        if (follow != null) Console.WriteLine($"follow {o.Follow}: {follow}");
+        // 5. Back to the character screen the way the new client leaves (Run sends /quit: sit, the server's countdown
+        // of up to 20 s, more after a fight, then Quit).
+        return 0;
+    }
+
+    // Reads packets until the deadline; with --follow, checks every FollowCheckMilliseconds how far the one followed is and
+    // walks back to them when they are more than FollowStartDistance away, or, if the run used /tele, teleports to them
+    // again when they got out of view or more than FollowTeleDistance away (a hunting bot runs at about 480 units a
+    // second between fights, far faster than walking; walking still covers the slow moments). Capped in
+    // checks, walks and teleports. False if the connection ended.
+    static bool Listen(Connection c, Options o, DateTime until, FollowStats? follow)
+    {
+        if (follow == null) return Pump(c, o, until);
+        bool canTele = o.Send.Any(line => line.StartsWith("/tele ", StringComparison.OrdinalIgnoreCase));
+        for (int i = 0; i < MaxFollowChecks && DateTime.UtcNow < until; i++)
+        {
+            var next = DateTime.UtcNow.AddMilliseconds(FollowCheckMilliseconds);
+            if (!Pump(c, o, next < until ? next : until)) return false;
+            if (DateTime.UtcNow >= until) break;
+            var target = FindNearby(Nearby.Values, o.Follow!, Me);
+            double? distance = target?.DistanceTo(Me);
+            follow.Check(distance);
+            var action = Decide(distance, canTele && follow.Teles < MaxFollowTeles, follow.Walks < MaxFollowWalks);
+            if (action == FollowAction.Teleport)
+            {
+                follow.Teles++;
+                string line = $"/tele {o.Follow}";
+                Console.WriteLine($"  follow: {(distance == null ? "not in view" : $"{distance:0} away")}; > {line}");
+                c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine(line)));
+            }
+            else if (action == FollowAction.Walk)
+            {
+                follow.Walks++;
+                var walkUntil = DateTime.UtcNow.AddSeconds(MaxFollowWalkSeconds);
+                string? why = Walk(c, o, target!.Name, 0, 0, walkUntil < until ? walkUntil : until, false, follow,
+                    canTele ? FollowTeleDistance : double.MaxValue);
+                if (why == "disconnected") return false;
+                if (why != null) Console.WriteLine($"  follow: {why}");
+            }
+        }
+        return Pump(c, o, until);                                            // after the check cap: just listen
+    }
+
+    // --follow: walk when the one followed is further than FollowStartDistance, teleport when further than
+    // FollowTeleDistance; both inside the server's /say range (WorldMgr.SAY_DISTANCE). Checking twice a second, a bot
+    // running at 480 units a second gets about 240 further between checks.
+    public const int FollowStartDistance = 250, SayDistance = 512, FollowTeleDistance = 400;
+    const int FollowCheckMilliseconds = 500, MaxFollowChecks = 8_000, MaxFollowWalks = 1_000, MaxFollowTeles = 1_000,
+        MaxFollowWalkSeconds = 30;
+    public static bool NeedsWalk(double distance) => distance > FollowStartDistance;
+
+    public enum FollowAction { Wait, Walk, Teleport }
+
+    // What --follow does after a check (distance null: not in view).
+    public static FollowAction Decide(double? distance, bool mayTele, bool mayWalk)
+    {
+        if (distance == null || distance > FollowTeleDistance)
+            return mayTele ? FollowAction.Teleport : distance != null && mayWalk ? FollowAction.Walk : FollowAction.Wait;
+        return NeedsWalk(distance.Value) && mayWalk ? FollowAction.Walk : FollowAction.Wait;
+    }
+
+    // How --follow went: how often they were seen, out of /say range or out of view, and how far they got.
+    public sealed class FollowStats
+    {
+        public int Checks, Unseen, OutOfRange, Walks, Teles;
+        public double Furthest;
+
+        public void Check(double? distance)
+        {
+            Checks++;
+            if (distance == null) { Unseen++; return; }
+            if (distance > SayDistance) OutOfRange++;
+            Furthest = Math.Max(Furthest, distance.Value);
         }
 
-        // 5. Optional: back to the character screen the way the new client leaves (/quit: sit, the server's
-        // countdown of up to 20 s, more after a fight, then Quit), and delete the character created above.
-        if (o.Delete != null)
-        {
-            Console.WriteLine("> /quit");
-            c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine("/quit")));
-            if (WaitFor(c, o, TimeSpan.FromSeconds(QuitWaitSeconds), Packets.Quit) == null)
-                return Fail("quit", $"no Quit reply within {QuitWaitSeconds} s");
-            Console.WriteLine("back at the character screen");
-            if (!Delete(c, o, step, characters)) return 1;
-        }
-        return Ok();
+        public override string ToString() =>
+            $"{Checks} check(s), {Walks} walk(s), {Teles} teleport(s), furthest {Furthest:0}, out of /say range ({SayDistance}) {OutOfRange}, not in view {Unseen}";
     }
 
     const int MaxPacketsPerWait = 100_000;
@@ -175,7 +259,7 @@ public static class Program
     static void PrintNearby(Packets.Position you)
     {
         var list = Nearby.Values.OrderBy(l => l.DistanceTo(you)).ToList();
-        Console.WriteLine($"nearby: {list.Count} (distance from where you entered, to where each was last seen)");
+        Console.WriteLine($"nearby: {list.Count} (distance from where you are, to where each was last seen)");
         foreach (var l in list)
         {
             string guild = l.Guild.Length > 0 ? $" <{l.Guild}>" : "";
@@ -188,68 +272,91 @@ public static class Program
     static ChatRecorder? Recorder;
     static bool InWorld;
 
+    // Where you are: from entering the world, then your own walking and the server's moves (CharacterJump, and
+    // PositionAndObjectID again after a region change).
+    static Packets.Position Me = new(0, 0, 0, 0, 0);
+    static byte[] WorldInit = Array.Empty<byte>();                   // the enter-world request, sent again on a region change
+
     // Zone corners in region coordinates, learned from ObjectUpdates (the client has no zone files).
     static readonly Dictionary<int, (int X, int Y)> ZoneCorners = new();
 
     const float WalkSpeed = 191;                                   // GamePlayer.PLAYER_BASE_SPEED, units a second
     const int StepMilliseconds = 200, MaxWalkSeconds = 120, ZoneWaitSeconds = 15;
+    const int ChecksEverySteps = 1000 / StepMilliseconds;                // --follow counts one check a second while walking
     public const int ArriveDistance = 150;
 
-    // Walks in a straight line to --goto (a spot, or someone nearby, followed as ObjectUpdates move them), sending
-    // the position the way the client does while running. Capped at MaxWalkSeconds. Returns where it stopped, or
-    // null after printing FAIL.
-    static Packets.Position? Walk(Connection c, Options o, Packets.Position you)
+    // Walks in a straight line to someone nearby (followed as ObjectUpdates move them; name null: to x, y) from where
+    // you are, sending the position the way the client does while running, until within ArriveDistance or the deadline.
+    // Picks up the server's moves on the way (Me). With `follow`, counts a check each second on the way, and gives up
+    // when the one walked to is further than giveUpBeyond. Returns null on arrival, else why not ("disconnected" if so).
+    static string? Walk(Connection c, Options o, string? name, float gotoX, float gotoY, DateTime deadline, bool chatty,
+        FollowStats? follow = null, double giveUpBeyond = double.MaxValue)
     {
         Packets.Living? target = null;
-        if (o.GotoName != null)
+        if (name != null)
         {
-            target = FindNearby(Nearby.Values, o.GotoName, you);
-            if (target == null) return FailPos("goto", $"nobody called {o.GotoName} nearby");
+            target = FindNearby(Nearby.Values, name, Me);
+            if (target == null) return $"nobody called {name} nearby";
         }
 
         // The position update names your zone; take the nearest living's, once the server has placed one.
         var zoneDeadline = DateTime.UtcNow.AddSeconds(ZoneWaitSeconds);
-        int zone = ZoneNear(you);
+        int zone = ZoneNear(Me);
         while (zone < 0 && DateTime.UtcNow < zoneDeadline)
         {
-            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return FailPos("goto", "disconnected");
-            zone = ZoneNear(you);
+            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return "disconnected";
+            zone = ZoneNear(Me);
         }
-        if (zone < 0) return FailPos("goto", $"no ObjectUpdate within {ZoneWaitSeconds} s, so your zone is unknown");
+        if (zone < 0) return $"no ObjectUpdate within {ZoneWaitSeconds} s, so your zone is unknown";
 
-        float x = you.X, y = you.Y, z = you.Z;
-        string what = target == null ? $"{o.GotoX:0},{o.GotoY:0}" : target.Name;
-        Console.WriteLine($"walking to {what} (zone {zone})");
+        string what = target == null ? $"{gotoX:0},{gotoY:0}" : target.Name;
+        if (chatty) Console.WriteLine($"walking to {what} (zone {zone})");
         double distance = double.MaxValue;
         int maxSteps = MaxWalkSeconds * 1000 / StepMilliseconds;
-        for (int i = 0; i < maxSteps; i++)
+        for (int i = 0; i < maxSteps && DateTime.UtcNow < deadline; i++)
         {
-            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return FailPos("goto", "disconnected");
-            float tx = o.GotoX, ty = o.GotoY, tz = z;
+            if (!Pump(c, o, DateTime.UtcNow.AddMilliseconds(StepMilliseconds))) return "disconnected";
+            float tx = gotoX, ty = gotoY, tz = Me.Z;
             if (target != null)
             {
-                if (!Nearby.TryGetValue(target.ObjectId, out var now)) return FailPos("goto", $"{target.Name} left view");
+                if (!Nearby.TryGetValue(target.ObjectId, out var now))       // out of view and back: a new object id
+                    now = FindNearby(Nearby.Values, target.Name, Me);
+                if (now == null) { Stop(c, zone, 0); return $"{target.Name} left view"; }
+                target = now;
                 (tx, ty, tz) = (now.X, now.Y, now.Z);
             }
-            distance = Math.Sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y));
+            distance = Math.Sqrt((tx - Me.X) * (tx - Me.X) + (ty - Me.Y) * (ty - Me.Y));
+            if (follow != null && i % ChecksEverySteps == ChecksEverySteps - 1) follow.Check(target?.DistanceTo(Me) ?? distance);
+            if (distance > giveUpBeyond) { Stop(c, zone, 0); return $"{what} is {distance:0} away, too far to walk"; }
             if (distance <= ArriveDistance)
             {
-                c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, 0, c.SessionId, you.ObjectId, zone, Packets.Heading(x, y, tx, ty)));
-                Console.WriteLine($"arrived: {what} is {distance:0} away (within {ArriveDistance}), at {x:0},{y:0},{z:0}");
-                return you with { X = x, Y = y, Z = z };
+                Stop(c, zone, Packets.Heading(Me.X, Me.Y, tx, ty));
+                Console.WriteLine($"{(chatty ? "" : "  follow: ")}arrived: {what} is {distance:0} away (within {ArriveDistance}), at {Me.X:0},{Me.Y:0},{Me.Z:0}");
+                return null;
             }
-            float step = (float)Math.Min(WalkSpeed * StepMilliseconds / 1000.0, distance);
-            int heading = Packets.Heading(x, y, tx, ty);
-            x += (float)((tx - x) * step / distance);
-            y += (float)((ty - y) * step / distance);
-            z += (float)((tz - z) * step / distance);
-            int near = ZoneNear(you with { X = x, Y = y });                 // crossing into the next zone
+            int heading = Packets.Heading(Me.X, Me.Y, tx, ty);
+            var (x, y, z) = StepToward((Me.X, Me.Y, Me.Z), (tx, ty, tz), WalkSpeed * StepMilliseconds / 1000f);
+            Me = Me with { X = x, Y = y, Z = z };
+            int near = ZoneNear(Me);                                         // crossing into the next zone
             if (near >= 0) zone = near;
-            c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, WalkSpeed, c.SessionId, you.ObjectId, zone, heading));
-            if (i % 25 == 24) Console.WriteLine($"  walking: {distance:0} away");
+            c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, WalkSpeed, c.SessionId, Me.ObjectId, zone, heading));
+            if (chatty && i % 25 == 24) Console.WriteLine($"  walking: {distance:0} away");
         }
-        c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(x, y, z, 0, c.SessionId, you.ObjectId, zone, 0));
-        return FailPos("goto", $"still {distance:0} away from {what} after {MaxWalkSeconds} s");
+        Stop(c, zone, 0);
+        return $"still {distance:0} away from {what} when the walking time ran out";
+    }
+
+    // Standing still where you are.
+    static void Stop(Connection c, int zone, int heading) =>
+        c.Send(Packets.PositionUpdate, Packets.PositionUpdateBody(Me.X, Me.Y, Me.Z, 0, c.SessionId, Me.ObjectId, zone, heading));
+
+    // One step of at most `step` units in a straight line (x/y distance; z follows along), not past the target.
+    public static (float X, float Y, float Z) StepToward((float X, float Y, float Z) from, (float X, float Y, float Z) to, float step)
+    {
+        double distance = Math.Sqrt((to.X - from.X) * (to.X - from.X) + (to.Y - from.Y) * (to.Y - from.Y));
+        if (distance <= step) return to;
+        double f = step / distance;
+        return ((float)(from.X + (to.X - from.X) * f), (float)(from.Y + (to.Y - from.Y) * f), (float)(from.Z + (to.Z - from.Z) * f));
     }
 
     // Someone nearby by name, closest first: the full name, else the first name ("Persoper" for "Persoper Mendsalot"),
@@ -330,7 +437,6 @@ public static class Program
 
     static Packets.Character? FailNull(string step, string why) { Fail(step, why); return null; }
     static bool FailFalse(string step, string why) { Fail(step, why); return false; }
-    static Packets.Position? FailPos(string step, string why) { Fail(step, why); return null; }
 
     // Waits for one of the codes, printing messages and noting the session id on the way; null on timeout.
     static Connection.Packet? WaitFor(Connection c, Options o, TimeSpan step, params byte[] codes)
@@ -377,6 +483,28 @@ public static class Program
             var l = p.Code == Packets.NpcCreate ? Packets.ReadNpcCreate(p.Data) : Packets.ReadPlayerCreate(p.Data);
             if (Nearby.Count < MaxNearby || Nearby.ContainsKey(l.ObjectId)) Nearby[l.ObjectId] = l;
         }
+        else if (p.Code == Packets.CharacterJump && InWorld)
+        {
+            var jump = Packets.ReadJump(p.Data);
+            if (jump == null) return;                                        // heading only
+            Me = Me with { X = jump.Value.X, Y = jump.Value.Y, Z = jump.Value.Z };
+            Console.WriteLine($"  moved by the server to {Me.X:0},{Me.Y:0},{Me.Z:0}");
+        }
+        else if (p.Code == Packets.RegionChanged && InWorld)
+        {
+            // Into another region: everything in view is gone; ask for the world again, as the client does after loading.
+            Nearby.Clear();
+            ZoneCorners.Clear();
+            Console.WriteLine("  region changed; entering it");
+            c.Send(Packets.WorldInitRequest, WorldInit);
+        }
+        else if (p.Code == Packets.PositionAndObjectId && InWorld)
+        {
+            Me = Packets.ReadPosition(p.Data);
+            Console.WriteLine($"  now in region {Me.Region}, object {Me.ObjectId}, at {Me.X:0},{Me.Y:0},{Me.Z:0}");
+            c.Send(Packets.PlayerInitRequest, Array.Empty<byte>());
+            c.Send(Packets.GameOpenRequest, Packets.GameOpen());              // playing again: objects in view come now
+        }
         else if (p.Code is Packets.ObjectDelete or Packets.RemoveObject)
             Nearby.Remove(Packets.ReadRemovedObjectId(p.Data));
         else if (p.Code == Packets.ObjectUpdate)
@@ -411,7 +539,7 @@ public sealed class Options
     public float GotoX, GotoY;
     public int Realm, RaceId, ClassId;
     public bool Female;
-    public string? Record, RecordFrom;
+    public string? Record, RecordFrom, Follow;
     public int RecordSeconds = 30;
     public bool Overwrite;
 
@@ -443,6 +571,7 @@ public sealed class Options
                 case "--female": o.Female = true; break;
                 case "--goto": o.Goto = value; break;
                 case "--record": o.Record = value; break;
+                case "--follow": o.Follow = value.Trim(); break;
                 case "--record-seconds": o.RecordSeconds = Seconds(key, value, 0); recordOption = true; break;
                 case "--record-from": o.RecordFrom = value; recordOption = true; break;
                 case "--overwrite": o.Overwrite = true; recordOption = true; break;
@@ -484,6 +613,11 @@ public sealed class Options
             else if (xy.Length > 1) throw new ArgumentException("--goto x,y needs two numbers");
             else o.GotoName = o.Goto.Trim();
             if (o.LoginOnly) throw new ArgumentException("--goto needs the world, so not with --login-only");
+        }
+        if (o.Follow != null)
+        {
+            if (o.Follow.Length == 0) throw new ArgumentException("--follow needs a name");
+            if (o.LoginOnly) throw new ArgumentException("--follow needs the world, so not with --login-only");
         }
         if (o.Record != null)
         {

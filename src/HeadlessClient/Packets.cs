@@ -27,7 +27,8 @@ public static class Packets
     // Server -> client codes.
     public const byte CryptKey = 0x22, LoginGranted = 0x2A, LoginDenied = 0x2C, SessionId = 0x28, Realm = 0xFE,
         CharacterOverview = 0xFC, PositionAndObjectId = 0x20, Message = 0xAF, Quit = 0xA4,
-        NpcCreate = 0xDA, PlayerCreate = 0x4B, ObjectDelete = 0xE1, RemoveObject = 0xA2, ObjectUpdate = 0xA1;
+        NpcCreate = 0xDA, PlayerCreate = 0x4B, ObjectDelete = 0xE1, RemoveObject = 0xA2, ObjectUpdate = 0xA1,
+        CharacterJump = 0x04, RegionChanged = 0xB7;
 
     // Races as the new client's server.gd has them: id, name, male and female creation model.
     public sealed record RaceInfo(int Id, string Name, ushort MaleModel, ushort FemaleModel);
@@ -284,6 +285,17 @@ public static class Packets
         int oid = r.Short();
         r.Short(); r.Short(); r.Short();                       // heading, zone x, zone y
         return new Position(x, y, z, oid, r.Short());
+    }
+
+    // CharacterJump (PacketLib168.SendPlayerJump): the server moved you inside the region (/tele, a portal): x, y
+    // (u32), oid, z, heading, house. A heading-only jump has x, y and z 0.
+    public static (float X, float Y, float Z)? ReadJump(byte[] data)
+    {
+        var r = new Reader(data);
+        float x = r.Int(), y = r.Int();
+        r.Short();                                             // oid
+        float z = r.Short();
+        return x == 0 && y == 0 && z == 0 ? null : (x, y, z);
     }
 
     // Message (1127): chat type, then the text ("@@" chat window / "##" popup prefix removed).
