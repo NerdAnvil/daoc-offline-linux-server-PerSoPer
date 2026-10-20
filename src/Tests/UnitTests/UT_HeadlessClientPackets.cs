@@ -114,12 +114,12 @@ namespace DOL.Tests.Unit
             for (int i = 0; i < 4; i++) w.IntLE(0);
             w.Byte(0);                                                                  // slot 0 empty
             w.Byte(12);                                                                 // slot 1: level 12
-            w.IntPascal("Aldric");
+            w.IntPascal("Aldric\0");                                                    // the server counts and sends a closing NUL
             w.IntLE(0x18); w.Byte(1);
             w.Bytes(new byte[10 + 13]);
-            w.IntPascal("Camelot Hills");
-            w.IntPascal("Cleric");
-            w.IntPascal("Briton");
+            w.IntPascal("Camelot Hills\0");
+            w.IntPascal("Cleric\0");
+            w.IntPascal("Briton\0");
             w.ShortLE(0); w.Byte(1); w.Byte(2);
             w.Bytes(new byte[2 * 20 + 8]);
             w.Byte(6); w.Byte(1); w.Byte(0);                                            // class, realm, race/gender

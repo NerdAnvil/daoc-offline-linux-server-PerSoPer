@@ -225,7 +225,8 @@ public static class Packets
         public uint IntLE() => Byte() | ((uint)Byte() << 8) | ((uint)Byte() << 16) | ((uint)Byte() << 24);
         public float FloatLE() => BitConverter.Int32BitsToSingle((int)IntLE());
         public string Pascal() => Str(Byte());
-        public string IntPascal() => Str((int)Math.Min(IntLE(), int.MaxValue));
+        // The server counts a closing NUL in the length (PacketOut.WritePascalStringIntLE); drop it.
+    public string IntPascal() => Str((int)Math.Min(IntLE(), int.MaxValue)).TrimEnd('\0');
         public string CString()
         {
             int s = _p;
