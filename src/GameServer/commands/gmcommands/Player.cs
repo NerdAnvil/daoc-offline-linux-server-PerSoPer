@@ -86,6 +86,13 @@ namespace DOL.GS.Commands
                             return;
                         }
 
+                        // Reserved personality names (Persoper, Kobaldjovi, the named bots) and bad names.
+                        if (GameServer.Instance.PlayerManager.InvalidNames[args[2]])
+                        {
+                            client.Out.SendMessage("That name is reserved or not allowed!", eChatType.CT_Important, eChatLoc.CL_SystemWindow);
+                            return;
+                        }
+
                         string oldName = player.Name;
 
                         player.Name = args[2];

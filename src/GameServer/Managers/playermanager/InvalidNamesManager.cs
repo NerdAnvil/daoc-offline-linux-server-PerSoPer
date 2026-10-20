@@ -76,8 +76,8 @@ namespace DOL.GS
 				if (string.IsNullOrEmpty(match))
 					return true;
 
-				// Persoper and Kobaldjovi are unique server personalities; no one else may use their names.
-				if (PersoperIdentity.IsReservedName(match) || KobaldjoviIdentity.IsReservedName(match))
+				// Persoper, Kobaldjovi and the named bots are unique server personalities; no one else may use their names.
+				if (PersoperIdentity.IsReservedName(match) || KobaldjoviIdentity.IsReservedName(match) || NamedBotLineup.IsReservedName(match))
 					return true;
 
 				return BadNamesContains.Any(pattern => match.IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0)

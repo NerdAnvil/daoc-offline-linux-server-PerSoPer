@@ -394,7 +394,7 @@ namespace DOL.GS.PacketHandler.Client.v168
 
             // The client's name checks can be skipped, so enforce the reserved
             // personality names here as well.
-            if (PersoperIdentity.IsReservedName(pdata.CharName) || KobaldjoviIdentity.IsReservedName(pdata.CharName))
+            if (PersoperIdentity.IsReservedName(pdata.CharName) || KobaldjoviIdentity.IsReservedName(pdata.CharName) || NamedBotLineup.IsReservedName(pdata.CharName))
             {
                 if (log.IsWarnEnabled)
                     log.Warn($"{account.Name} tried to create a character with the reserved name '{pdata.CharName}'");
