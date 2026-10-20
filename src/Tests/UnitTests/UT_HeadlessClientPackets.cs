@@ -378,5 +378,60 @@ namespace DOL.Tests.Unit
             Assert.That(o.LoginOnly, Is.True);
             Assert.That(o.Server, Is.EqualTo("127.0.0.1"));
         }
+
+        [Test]
+        public void RecordedLinesHaveTimeTypeAndTextOnOneLine()
+        {
+            var when = new DateTime(2026, 10, 20, 14, 2, 31);
+            Assert.That(ChatRecorder.Format(when, 3, "[Party] Persoper: \"Lead on!\""),
+                Is.EqualTo("14:02:31 [party] [Party] Persoper: \"Lead on!\""));
+            Assert.That(ChatRecorder.Format(when, 0x99, "one\r\ntwo\nthree"), Is.EqualTo("14:02:31 [type 153] one two three"));
+            Assert.That(ChatRecorder.TypeName((int)eChatType.CT_Group), Is.EqualTo("party"), "matches the server's chat type");
+            Assert.That(ChatRecorder.TypeName((int)eChatType.CT_Say), Is.EqualTo("say"));
+            Assert.That(ChatRecorder.TypeName((int)eChatType.CT_Spell), Is.EqualTo("spell"));
+        }
+
+        [Test]
+        public void RecorderKeepsOnlyLinesMentioningTheName()
+        {
+            var output = new System.IO.StringWriter();
+            var r = new ChatRecorder(output, "persoper");
+            Assert.That(r.Add(DateTime.Now, 3, "[Party] Persoper: \"Hi\""), Is.True);
+            Assert.That(r.Add(DateTime.Now, 0, "You join the group."), Is.False);
+            Assert.That(r.Add(DateTime.Now, 1, "Persoper says, \"Hello!\""), Is.True);
+            Assert.That(r.Lines, Is.EqualTo(2));
+            Assert.That(output.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries), Has.Length.EqualTo(2));
+            Assert.That(new ChatRecorder(new System.IO.StringWriter(), null).Add(DateTime.Now, 0, "anything"), Is.True, "no name: everything");
+        }
+
+        [Test]
+        public void RecorderStopsAtTheLineAndSizeLimits()
+        {
+            var lines = new ChatRecorder(new System.IO.StringWriter(), null);
+            for (int i = 0; i < ChatRecorder.MaxLines + 50; i++) lines.Add(DateTime.Now, 3, "short");
+            Assert.That((lines.Lines, lines.Full), Is.EqualTo((ChatRecorder.MaxLines, true)));
+
+            var output = new System.IO.StringWriter();
+            var big = new ChatRecorder(output, null);
+            string text = new string('x', 2000);
+            for (int i = 0; i < ChatRecorder.MaxLines; i++) big.Add(DateTime.Now, 3, text);
+            Assert.That(big.Full, Is.True);
+            Assert.That(System.Text.Encoding.UTF8.GetByteCount(output.ToString()), Is.LessThanOrEqualTo(ChatRecorder.MaxBytes));
+            Assert.That(big.Add(DateTime.Now, 3, "more"), Is.False, "nothing more once full");
+        }
+
+        [Test]
+        public void RecordOptions()
+        {
+            Options o = Options.Parse(new[] { "--account=a", "--record=chat.txt", "--record-seconds=60", "--record-from=Persoper", "--overwrite" }, null);
+            Assert.That((o.Record, o.RecordSeconds, o.RecordFrom, o.Overwrite), Is.EqualTo(("chat.txt", 60, "Persoper", true)));
+            Assert.That(Options.Parse(new[] { "--account=a", "--record=chat.txt" }, null).RecordSeconds, Is.EqualTo(30));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--record=" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--record=c.txt", "--login-only" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--record=c.txt", "--record-seconds=5000" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--record=c.txt", "--record-from=" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--record-from=Persoper" }, null));
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--overwrite" }, null));
+        }
     }
 }

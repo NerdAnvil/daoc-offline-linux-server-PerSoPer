@@ -1,10 +1,11 @@
 // headless-client: logs in to a running game server the way the new (Godot) client does, without graphics, and
 // checks each step: login, character list, optionally creating a character, entering the world, optional chat lines
-// or commands, then the replies and who is nearby, optionally walking to a spot or someone nearby, and optionally /quit and deleting the created (or a named level 1)
-// character.
+// or commands, then the replies and who is nearby, optionally walking to a spot or someone nearby, optionally recording
+// chat to a file for a while, and optionally /quit and deleting the created (or a named level 1) character.
 // Prints OK and exits 0 when every step worked; prints FAIL with the step and exits 1 otherwise.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace DaocServer.HeadlessClient;
@@ -29,6 +30,11 @@ public static class Program
         "  --listen=SECONDS     how long to print server messages after entering, then who is nearby (default 5)\n" +
         "  --goto=NAME|X,Y      then walk to someone nearby (\"Persoper\": full name, first name or part of it) or to a\n" +
         "                       spot in the region; stops within 150 units, or fails after 120 s\n" +
+        "  --record=FILE        write the server's messages from entering the world on to FILE (time, type, text), and\n" +
+        "                       after --listen and --goto keep listening for --record-seconds; at most 1000 lines, 256 KB\n" +
+        "  --record-seconds=N   how long to keep recording at the end (default 30)\n" +
+        "  --record-from=NAME   record only lines that mention NAME (\"Persoper\")\n" +
+        "  --overwrite          let --record replace an existing file\n" +
         "  --timeout=SECONDS    how long each step may take (default 20)\n" +
         "  --verbose            print every packet code received";
 
@@ -48,6 +54,19 @@ public static class Program
     static int Run(Options o)
     {
         var step = TimeSpan.FromSeconds(o.TimeoutSeconds);
+        // Open the --record file first, so a bad path or an existing file fails before logging in.
+        StreamWriter? file = null;
+        if (o.Record != null)
+        {
+            try { file = new StreamWriter(new FileStream(o.Record, o.Overwrite ? FileMode.Create : FileMode.CreateNew, FileAccess.Write)); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                return Fail("record", File.Exists(o.Record) && !o.Overwrite
+                    ? $"{o.Record} already exists (add --overwrite to replace it)" : e.Message);
+            }
+            Recorder = new ChatRecorder(file, o.RecordFrom);
+        }
+        using var recordFile = file;
         using var c = new Connection(o.Server, Packets.Port, step);
         Console.WriteLine($"connected to {o.Server}:{Packets.Port}");
 
@@ -97,6 +116,7 @@ public static class Program
         var you = WaitFor(c, o, step, Packets.PositionAndObjectId);
         if (you == null) return Fail("enter", "no PositionAndObjectID reply");
         var pos = Packets.ReadPosition(you.Data);
+        InWorld = true;
         Console.WriteLine($"in the world as {pick.Name}: region {pos.Region}, object {pos.ObjectId}, at {pos.X:0},{pos.Y:0},{pos.Z:0}");
         c.Send(Packets.PlayerInitRequest, Array.Empty<byte>());           // "the zone is loaded"
         c.Send(Packets.GameOpenRequest, Packets.GameOpen());
@@ -121,6 +141,14 @@ public static class Program
             var walked = Walk(c, o, pos);
             if (walked == null) return 1;
             pos = walked;
+        }
+        if (Recorder != null)
+        {
+            string path = Path.GetFullPath(o.Record!);
+            Console.WriteLine($"recording for {o.RecordSeconds} s to {path}");
+            if (!Pump(c, o, DateTime.UtcNow.AddSeconds(o.RecordSeconds))) return Fail("record", "disconnected");
+            Console.WriteLine($"recorded {Recorder.Lines} line(s) to {path}{(Recorder.Full ? " (full: stopped at the limit)" : "")}");
+            Recorder = null;                                                 // nothing more after the recording time
         }
 
         // 5. Optional: back to the character screen the way the new client leaves (/quit: sit, the server's
@@ -155,6 +183,10 @@ public static class Program
         }
     }
     const int QuitWaitSeconds = 90;
+
+    // --record: messages are written from entering the world on.
+    static ChatRecorder? Recorder;
+    static bool InWorld;
 
     // Zone corners in region coordinates, learned from ObjectUpdates (the client has no zone files).
     static readonly Dictionary<int, (int X, int Y)> ZoneCorners = new();
@@ -334,6 +366,11 @@ public static class Program
         {
             var (type, text) = Packets.ReadMessage(p.Data);
             Console.WriteLine($"  [msg {type}] {text}");
+            if (Recorder != null && InWorld && !Recorder.Full)
+            {
+                Recorder.Add(DateTime.Now, type, text);
+                if (Recorder.Full) Console.WriteLine($"  (record file full at {Recorder.Lines} lines; no more lines written)");
+            }
         }
         else if (p.Code is Packets.NpcCreate or Packets.PlayerCreate)
         {
@@ -374,11 +411,15 @@ public sealed class Options
     public float GotoX, GotoY;
     public int Realm, RaceId, ClassId;
     public bool Female;
+    public string? Record, RecordFrom;
+    public int RecordSeconds = 30;
+    public bool Overwrite;
 
     public static Options Parse(string[] args, string? passwordFromEnvironment)
     {
         var o = new Options { Password = passwordFromEnvironment ?? "" };
         string? realm = null, race = null, cls = null;
+        bool recordOption = false;
         foreach (var a in args)
         {
             int eq = a.IndexOf('=');
@@ -401,6 +442,10 @@ public sealed class Options
                 case "--class": cls = value; break;
                 case "--female": o.Female = true; break;
                 case "--goto": o.Goto = value; break;
+                case "--record": o.Record = value; break;
+                case "--record-seconds": o.RecordSeconds = Seconds(key, value, 0); recordOption = true; break;
+                case "--record-from": o.RecordFrom = value; recordOption = true; break;
+                case "--overwrite": o.Overwrite = true; recordOption = true; break;
                 default: throw new ArgumentException($"unknown option: {a}");
             }
         }
@@ -440,6 +485,14 @@ public sealed class Options
             else o.GotoName = o.Goto.Trim();
             if (o.LoginOnly) throw new ArgumentException("--goto needs the world, so not with --login-only");
         }
+        if (o.Record != null)
+        {
+            if (o.Record.Trim().Length == 0) throw new ArgumentException("--record needs a file name");
+            if (o.LoginOnly) throw new ArgumentException("--record needs the world, so not with --login-only");
+            if (o.RecordFrom is "") throw new ArgumentException("--record-from needs a name");
+        }
+        else if (recordOption)
+            throw new ArgumentException("--record-seconds, --record-from and --overwrite go with --record");
         if (o.LoginOnly && o.Create != null && o.Delete != null)
             throw new ArgumentException("--login-only stops before the world, so --create with --delete would never delete");
         return o;
