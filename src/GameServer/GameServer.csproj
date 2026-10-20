@@ -57,6 +57,7 @@
         <ProjectReference Include="..\CoreDatabase\CoreDatabase.csproj" Name="CoreDatabase" />
         <ProjectReference Include="..\Admin.Protocol\Admin.Protocol.csproj" Name="Admin.Protocol" />
         <EmbeddedResource Include=".\config\*" />
+        <EmbeddedResource Include=".\bots\persoper\dialogue\*.dlg" />
         <EmbeddedResource Include=".\bots\autonomous\data\capnbry_classic_si_goals.json" />
         <EmbeddedResource Include=".\bots\autonomous\data\classic165_restored_spawn_ids.txt" />
         <EmbeddedResource Include=".\bots\autonomous\data\classic165_period_restored_spawn_ids.txt" />

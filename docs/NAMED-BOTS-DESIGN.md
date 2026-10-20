@@ -3,7 +3,7 @@
 How the 33 named bots in [BOT-PERSONALITIES.md](BOT-PERSONALITIES.md) get built. That file stays
 the master for names, classes and characters; this page only says *how*.
 
-Status: **approved 2026-10-19.** Steps 1 to 3 done (2026-10-20); step 4 is next.
+Status: **approved 2026-10-19.** Steps 1 to 3 done (2026-10-20); step 3b is next, then step 4.
 
 ## Builds on what exists
 
@@ -88,6 +88,14 @@ Each step is small, on its own branch, with build and tests passing before the i
 3. **Off, on and delete.** The `bots named` commands and the `deleted` mark.
    *Done when I can see:* `bots named off joker` logs out all three Jokers; after a restart
    they're still gone; `bots named on joker` brings them back at the same level.
+3b. **Dialogue in text files** (added 2026-10-20). The six types' lines move out of the C#
+   code into one text file per type (`dialogue/<type>.dlg`, a small format inspired by
+   Dialogue Manager: blocks, sections, lines, comments, simple conditions), built into the
+   server DLL and read by our own small C# reader. Same lines, nothing new in game. Persoper,
+   Kobaldjovi and the scenes move in a later step. Step 4 then adds each named bot's lines as
+   its own block in its type's file.
+   *Done when I can see:* a Joker and a Min/maxer world bot still chatting their usual lines in
+   `/say`, and `server.log` reporting the dialogue files loaded with no errors.
 4. **Voices for the six existing types** (Hardcore, Casual, Leeroy, Loner, Min/maxer, Joker):
    each named bot's own lines on top of its type's.
    *Done when I can see:* Shnacksize talk about Swissland in `/say`, and Redtornader brag

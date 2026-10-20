@@ -1,0 +1,316 @@
+# Hardcore: the personality type's lines. Format: see DialogueFile.cs.
+=== hardcore
+
+~ ambient
+Camp's been perfect for an hour. Not moving until I ding.
+Anyone else tracking XP per hour? I'm up 12% on yesterday.
+Corpse runs are a choice. Pull smarter.
+If you're not chain pulling, you're resting wrong.
+Sleep is a debuff.
+Two more levels before I log. Maybe three.
+Who's farming the next camp over? You're slow. Respectfully.
+Ran the numbers: this spot beats the dungeon by a mile.
+
+~ reply greeting
+{0}. Busy. Talk while I pull.
+Hey {0}. Don't break my chain.
+
+~ reply banter
+Funny, {0}. Jokes don't give XP though.
+Ha. Now pull something.
+
+~ reply abuse
+Noted, {0}. Still out-levelling you.
+Cry about it at the bind stone, {0}.
+
+~ reply grouping
+Group? Only if you can keep up, {0}.
+I'll join, {0}, but nobody AFKs. Ever.
+
+~ reply grinding
+Best grind in the zone is right here, {0}.
+Grinding is life, {0}.
+
+~ reply travel
+Travel time is wasted XP, {0}. Take the horse.
+Shortest route or no route, {0}.
+
+~ reply dungeon
+Dungeon's good XP if the group doesn't wipe, {0}.
+I'll tank the run if nobody stops to loot every corpse.
+
+~ reply rvr
+RvR after I cap, {0}. Priorities.
+Realm points are just XP with extra steps, {0}.
+
+~ reply trading
+No time to haggle, {0}. Fair price or nothing.
+Gear is a tool, {0}. I buy what levels me faster.
+
+~ reply help
+Quick answer, {0}: train, then go back out.
+Help? Pull, kill, rest less. Done.
+
+~ reply farewell
+Bye, {0}. Some of us are still grinding.
+Later, {0}.
+
+~ fallback
+Mm. Anyway, back to the grind, {0}.
+Sure, {0}. Pulling.
+
+~ opener xp
+Halfway through the bar since lunch. Not bad, not great.
+If a mob is grey, it's not a mob. It's a waste of an arrow.
+Just did the math: four more hours to {level}. Doable tonight.
+Blue cons give the best XP per minute. Oranges are for show-offs.
+Camp bonus is still up here. Nobody touch the spawn.
+Third bubble this hour. I want a fourth before the timer runs out.
+Resting to full is a habit. Rest to sixty percent and go.
+Chain pulling {monster} for an hour now. Clean, fast, boring. Perfect.
+Every death costs me twenty minutes. I counted.
+Yellow cons, short rests, no chatter. That's the whole secret.
+
+~ opener gear
+Gear that doesn't speed up kills is just decoration.
+Upgraded my weapon. Kill time down by a full swing.
+I don't loot vendor trash. Full bags mean the pulls stop.
+Picked up {item}. Equipped it without breaking the chain.
+Armour can wait. Damage first, then you live longer anyway.
+Repair bill's getting silly. Still cheaper than slow kills.
+Anyone selling a faster weapon? I'll pay, I just won't haggle.
+Spent zero time shopping today. That's the dream.
+My cloak is ugly and gives nothing. Replacing it at the next town run.
+Best gear is whatever you're wearing when the pull is ready.
+
+~ opener zones
+{zone} is decent until a group moves in on the spawns.
+Every zone has one perfect camp. Most people walk right past it.
+Too many wanderers in this zone. They steal pulls.
+Changing zones costs a bubble. Only worth it if the next one's better.
+Spawns here are fast. That's all I ask of a zone.
+The roads in this zone are terrible for travel time.
+Scouted three zones for this level range. This one wins.
+If a zone has long respawns, it's dead to me.
+Someone's camping my old spot in {zone}. Fine. Mine's better now.
+Zones with aggro mobs mixed in are slow. You rest more than you fight.
+
+~ opener classes
+Pet classes level fast. I won't pretend otherwise.
+Pure melee needs a healer or it rests half the night.
+Casters burn down pulls, then burn the clock on mana.
+A {class} that knows how to pull is worth two that don't.
+A healer in the group doubles the XP. I'd duo with one any day.
+Every class levels well if the player stops wandering.
+Tanks that can't hold aggro cost the whole group XP.
+Hybrids are fine solo. Slow, but steady.
+Stealthers pick their fights. Smart, but the bar crawls.
+Best class is the one with the lowest downtime. Prove me wrong.
+
+~ opener dungeons
+Dungeon XP is great if the group keeps moving.
+One wipe in a dungeon and the hour's gone.
+Darkness Falls at the right level is pure profit.
+Dungeon pulls are tight. Great for chaining, terrible for adds.
+If {monster} spawns where I think, that room is ours for an hour.
+Clear to the boss, skip the boss, farm the hallway. Trust me.
+Nobody in a dungeon group should stop to read the walls.
+Respawn timers in dungeons are faster. Use it.
+Dungeons punish slow groups. I like being punished less.
+Who's up for a dungeon run later? Back rooms only.
+
+~ opener rvr
+Realm points come after the level cap. That's the rule.
+RvR at low level is just a long corpse run.
+Keep sieges are slow XP but fast realm points. Fair trade.
+Frontier's busy tonight. Good time to grind in peace.
+I'll go to the frontier when I can solo the guards.
+Battlegrounds give decent kills if you don't chase.
+Running circles around a keep for an hour is not a plan.
+Fastest realm points: stick with the big group and never stop.
+Every death in RvR is a free point for someone else. Don't donate.
+Siege weapons take ages to build. I'd rather hit things.
+
+~ opener trading
+Selling everything at the next town. Fixed prices, no bargaining.
+Time spent haggling is time not spent pulling.
+If you want my spare drops, make an offer. Fast.
+Bought potions in bulk. Fewer town trips.
+Merchant prices are fine. Walking to a better merchant isn't.
+Got {item} I don't need. First fair offer takes it.
+Coins are just future repairs.
+The Realm Exchange is fine if you don't stare at it all day.
+I sell when the bags are full. Not before, not after.
+Crafted gear is worth it only if it saves me time.
+
+~ opener realm
+Town's too crowded tonight. In and out, two minutes.
+The trainer talks too much. Just give me the points.
+Binding near your camp saves hours. Do it.
+Stablemasters are the best NPCs in the realm. Pure time saved.
+Read the lore once. Back to pulling.
+Guards should clear the mobs off the roads. Free XP for them.
+Every quest NPC is a detour. Some are worth it.
+Our capital is huge and none of it is near the bank.
+Healer NPCs in town are fast. I respect that.
+Somebody should time every stable route. I'd use it daily.
+
+~ opener gripes
+Someone pulled my spawn again. Second time this hour.
+Groups that wait for everyone to eat drive me mad.
+Lag spike right as I pulled. Of course.
+Out of mana on the last mob. Every single time.
+A train came through and ruined my camp.
+Missed a ding by a sliver before logging last night. Still bitter.
+Why do mobs here run at low health? Just die.
+Resists on {monster} are rude. Half my hits bounce.
+Someone asked me to walk to town with them. Walk. On foot.
+Bags full mid-chain. Worst feeling in the realm.
+
+~ opener fun
+Fun is a full bar and an empty camp.
+Raced myself to the next level. I won. Barely.
+Heard a joke earlier. Laughed while pulling. Multitasking.
+My idea of a break is running to the next camp.
+Personal record: forty kills with no rest. Beat that.
+Sometimes I count pulls out loud. Helps.
+Same tune in my head for six hours of grinding. Still going.
+Bet anyone a gold I ding first tonight.
+Chased a rabbit for ten seconds. Regret.
+I let myself enjoy one sunset. Then I pulled.
+
+~ opener life
+Ate standing up. The rest timer barely moved.
+Rain slows nobody down, but people still complain.
+Four hours of sleep is plenty.
+Travel is the worst part of any day.
+Coffee is a buff. Prove me wrong.
+Lunch is whatever's in my bag.
+My stretch breaks happen on the stable horse.
+Woke up early to get the good spawns.
+Cold out tonight. Good. More reason to stay in and grind.
+I plan meals around respawn timers.
+
+~ opener questions
+Who's got the best XP per hour right now? Honest numbers.
+Anyone know the respawn timer on {monster}?
+What level is everyone? I'm comparing.
+Which camp are people using at this level? Not mine, I hope.
+Anyone need a puller? I don't stop for chat.
+Anyone buffing near {zone}? I'll trade pulls for buffs.
+Fastest stable route to the frontier? Anyone timed it?
+Anyone selling potions cheap? I'm buying, not talking.
+Who's soloing and who's grouping tonight?
+How long did your last level take? Be honest.
+
+~ topic_reply xp
+Good pace, {0}. Now beat it.
+Numbers or it didn't happen, {0}.
+{0}, less talking, more pulling.
+XP talk? Finally. What's your hourly, {0}?
+
+~ topic_reply gear
+Does it kill faster, {0}? That's all that matters.
+Nice, {0}. Don't spend an hour admiring it.
+{0}, gear's a tool. Use it.
+Sell the rest, {0}. Full bags slow you down.
+
+~ topic_reply zones
+Spawn rate, {0}? That's the only question.
+Been there, {0}. Camp near the back.
+Too crowded, {0}. Try one zone over.
+{0}, any zone is good if you never stop.
+
+~ topic_reply classes
+Downtime, {0}. That's how I rank classes.
+{0}, every class works if you pull right.
+Fair, {0}. But can it chain pull?
+Talk to me when it solos oranges, {0}.
+
+~ topic_reply dungeons
+Count me in, {0}, if nobody stops to loot.
+Back rooms, {0}. Fastest respawns.
+{0}, one wipe and I'm out.
+Dungeon run? Set a time, {0}. Then be there.
+
+~ topic_reply rvr
+After I cap, {0}.
+Realm points are fine, {0}. Levels first.
+{0}, frontier's busy. Good. Camps are empty.
+Don't donate deaths out there, {0}.
+
+~ topic_reply trading
+Fixed price, {0}. No haggling.
+{0}, what's it worth to you in minutes?
+I'll buy it if it saves time, {0}.
+Name a number, {0}. Quick.
+
+~ topic_reply realm
+Town's a time sink, {0}.
+Lore's nice, {0}. Pulls are nicer.
+{0}, find a stablemaster and skip the walk.
+Bind near your camp, {0}. Always.
+
+~ topic_reply gripes
+Pull faster and it hurts less, {0}.
+Been there, {0}. Get back on the chain.
+{0}, complaining costs XP too.
+Annoying, {0}. Now move on.
+
+~ topic_reply fun
+Fun, {0}? Sure. While pulling.
+Ha. Good one, {0}. Next mob.
+{0}, my fun is a full bar.
+I'll laugh at the next ding, {0}.
+
+~ topic_reply life
+Eat fast, {0}. Spawns don't wait.
+{0}, sleep is for after the cap.
+Same, {0}. Back to it.
+Good for you, {0}. I'll rest when everything is grey.
+
+~ topic_reply questions
+Ask the trainer, {0}. Then pull.
+Short answer, {0}: yes. Now go.
+{0}, depends on your downtime.
+Good question, {0}. Answer after this mob.
+
+~ ding
+Ding {level}. Next.
+{level}. Took longer than planned.
+Level {level}. Not stopping.
+Ding! {level}, and the camp's still mine.
+{level} done. Train, back out, keep going.
+Hit {level}. Right on schedule.
+
+~ grats
+Grats, {0}. Keep going.
+Nice ding, {0}. Don't stop now.
+{0} dinged? Good pace.
+Grats {0}. Next one's faster if you rest less.
+Gz, {0}. Now catch me.
+Grats, {0}. Train and get back out.
+
+~ own_death
+Dead. That's twenty minutes gone.
+Bad pull. My fault. Never again.
+Adds. Should have watched the path.
+Releasing. Nobody touch my camp.
+A death on the clock. Terrible.
+Note to self: that one hits harder than it looks.
+
+~ other_death
+{0} down. Pull slower next time.
+Rough, {0}. Run back fast.
+{0}, that's a long walk. Go.
+Watch the adds, {0}.
+Down already, {0}? Get up.
+{0} died. I'll hold the camp.
+
+~ drop
+{item}. Nice. Back to pulling.
+Got {item}. Equipping now.
+Decent drop: {item}. Kills just got faster.
+Oh, {item}. That's an upgrade.
+Good loot. Didn't even slow down.
+{item} dropped. Worth the pull.
