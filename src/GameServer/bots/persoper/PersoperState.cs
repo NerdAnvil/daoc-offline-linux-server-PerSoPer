@@ -29,7 +29,7 @@ public static class PersoperProperties
     [ServerProperty("persoper", "persoper_leeroy_battle_cry_percent", "Chance (0-100) a Leeroy-type bot yells a battle cry when a fight starts (with a cooldown).", 33)]
     public static int LEEROY_BATTLE_CRY_PERCENT;
 
-    [ServerProperty("persoper", "persoper_full_leeroy", "Leeroy-type bots in a player's group may charge a nearby mob on their own while the group waits.", true)]
+    [ServerProperty("persoper", "persoper_full_leeroy", "Leeroy-type bots in a player's group may charge a nearby mob on their own while the group waits. Off by default until fully checked in game.", false)]
     public static bool FULL_LEEROY;
 
     [ServerProperty("persoper", "persoper_full_leeroy_percent", "Chance (0-100), checked once a minute while his group is idle, that a Leeroy goes full Leeroy.", 10)]
