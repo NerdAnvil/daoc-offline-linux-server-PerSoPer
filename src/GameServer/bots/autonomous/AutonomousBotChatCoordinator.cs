@@ -550,18 +550,32 @@ public static class AutonomousBotChatCoordinator
 
     public static string GenerateLocalReply(GameBot bot, string incoming, Random random = null)
     {
-        random ??= Random.Shared;
-        string activity = Clean(bot?.PersistentRecord?.Activity, "taking a short rest");
-        string target = Clean(bot?.PersistentRecord?.TargetName, "the creatures nearby");
-        string destination = Clean(bot?.PersistentRecord?.TravelDestination, bot?.CurrentZone?.Description ?? "this area");
+        string zone = bot?.CurrentZone?.Description ?? "this area";
+        return BuildLocalReply(AutonomousChatIntentModel.Predict(incoming), bot?.PersistentRecord, zone,
+            bot?.Group != null, bot?.IsMoving ?? false, bot?.InCombat ?? false, random);
+    }
 
-        return AutonomousChatIntentModel.Predict(incoming) switch
+    /// <summary>
+    /// The words of a nearby-chat reply. The saved task (activity, target, destination) is only
+    /// quoted while it is still true: the destination while the bot is moving, the target while it
+    /// is fighting. A bot standing still says it is resting here instead of an old trip.
+    /// </summary>
+    public static string BuildLocalReply(eAutonomousChatIntent intent, OfflineWorldBotRecord record, string zone,
+        bool inGroup, bool moving, bool fighting, Random random = null)
+    {
+        random ??= Random.Shared;
+        bool current = moving || fighting;
+        string activity = current ? Clean(record?.Activity, "taking a short rest") : "taking a short rest";
+        string target = fighting ? Clean(record?.TargetName, "the creatures nearby") : "the creatures nearby";
+        string destination = moving ? Clean(record?.TravelDestination, zone) : zone;
+
+        return intent switch
         {
             eAutonomousChatIntent.Greeting => random.Next(2) == 0 ? $"Hello. I am keeping an eye on {target}." : $"Greetings. I am {LowerFirst(activity)}.",
             eAutonomousChatIntent.Banter => random.Next(2) == 0 ? "Good luck on the next pull." : "Keep your weapon ready and stay with the group.",
             eAutonomousChatIntent.Abuse => random.Next(3) switch { 0 => "Let us keep this helpful.", 1 => "I am focusing on my current task.", _ => "Safe travels when you move on." },
-            eAutonomousChatIntent.Grouping or eAutonomousChatIntent.Help => bot?.Group == null ? $"I am working around {target} for now, but I could group." : "I am already moving with a group right now.",
-            eAutonomousChatIntent.Travel => $"I am headed toward {destination}.",
+            eAutonomousChatIntent.Grouping or eAutonomousChatIntent.Help => !inGroup ? $"I am working around {target} for now, but I could group." : "I am already moving with a group right now.",
+            eAutonomousChatIntent.Travel => moving ? $"I am headed toward {destination}." : $"I am not going anywhere right now. I am staying around {destination}.",
             eAutonomousChatIntent.Dungeon => $"We should clear one pull at a time if we head deeper. I am {LowerFirst(activity)}.",
             eAutonomousChatIntent.RvR => "If I head to the frontier, I will stay with the realm group.",
             eAutonomousChatIntent.Trading => "I will check my real inventory and the Realm Exchange when I return to town.",
@@ -572,7 +586,7 @@ public static class AutonomousBotChatCoordinator
             {
                 0 => $"I am focused on {target} at the moment.",
                 1 => $"Right now I am {LowerFirst(activity)}.",
-                _ => $"I will be around {destination} for a while.",
+                _ => moving ? $"I will be around {destination} for a while." : $"I am staying around {destination} for now.",
             },
         };
     }
