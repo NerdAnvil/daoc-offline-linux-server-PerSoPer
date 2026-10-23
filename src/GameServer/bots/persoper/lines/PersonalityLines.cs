@@ -63,6 +63,9 @@ public static class PersonalityLines
 {
     public static readonly IReadOnlyList<string> TypeKeys = ["hardcore", "casual", "minmaxer", "joker", "loner", "leeroy"];
 
+    /// <summary>Types only the named bots have; generated bots never roll them, so they're not in <see cref="All"/>.</summary>
+    public static readonly IReadOnlyList<string> NamedOnlyKeys = ["crafter"];
+
     private const string ToneDownOff = "tone_down off";
     private static readonly Logger Log = LoggerManager.Create(MethodBase.GetCurrentMethod().DeclaringType);
     private static readonly List<string> _errors = [];
@@ -72,6 +75,9 @@ public static class PersonalityLines
 
     public static readonly IReadOnlyDictionary<string, TypeLines> All;
     public static readonly IReadOnlyDictionary<string, TypeTalk> Talk;
+
+    /// <summary>The talk of the named-only types (Crafter...), by type key.</summary>
+    public static readonly IReadOnlyDictionary<string, TypeTalk> NamedOnlyTalk;
 
     /// <summary>A named bot's own lines only, by its memory key ("named:shnacksize").</summary>
     public static readonly IReadOnlyDictionary<string, (TypeLines Lines, TypeTalk Talk)> Own;
@@ -100,14 +106,27 @@ public static class PersonalityLines
         All = all;
         Talk = talk;
 
+        var namedOnlyLines = new Dictionary<string, TypeLines>();
+        var namedOnlyTalk = new Dictionary<string, TypeTalk>();
+        foreach (string key in NamedOnlyKeys)
+        {
+            DialogueFile file = DialogueLibrary.For(key);
+            if (file == null)
+                _errors.Add($"{key}.dlg: missing");
+            (namedOnlyLines[key], namedOnlyTalk[key]) = Read(file?.Block(key) ?? [], $"{key}.dlg");
+        }
+        NamedOnlyTalk = namedOnlyTalk;
+
         var own = new Dictionary<string, (TypeLines, TypeTalk)>();
         var named = new Dictionary<string, TypeLines>();
         var namedTalk = new Dictionary<string, TypeTalk>();
-        foreach (string key in TypeKeys)
+        foreach (string key in TypeKeys.Concat(NamedOnlyKeys))
         {
             DialogueFile file = DialogueLibrary.For(key);
             if (file == null)
                 continue;
+            TypeLines typeLines = all.GetValueOrDefault(key) ?? namedOnlyLines[key];
+            TypeTalk typeTalk = talk.GetValueOrDefault(key) ?? namedOnlyTalk[key];
             NamedBotLineup.Entry[] entries = NamedBotLineup.All.Where(entry => entry.TypeKey == key).ToArray();
             foreach (string block in file.BlockNames)
                 if (!string.Equals(block, key, StringComparison.OrdinalIgnoreCase) && !entries.Any(entry => BlockName(entry) == block.ToLowerInvariant()))
@@ -120,8 +139,8 @@ public static class PersonalityLines
                 (TypeLines ownLines, TypeTalk ownTalk) = Read(sections, $"{key}.dlg");
                 string namedKey = NamedKey(entry);
                 own[namedKey] = (ownLines, ownTalk);
-                named[namedKey] = Merge(all[key], ownLines);
-                namedTalk[namedKey] = Merge(talk[key], ownTalk);
+                named[namedKey] = Merge(typeLines, ownLines);
+                namedTalk[namedKey] = Merge(typeTalk, ownTalk);
             }
         }
         Own = own;
@@ -134,7 +153,7 @@ public static class PersonalityLines
     }
 
     /// <summary>A type's talk, or empty lists when it has none.</summary>
-    public static TypeTalk TalkFor(string key) => Talk.GetValueOrDefault(key) ?? new TypeTalk([], new Dictionary<eAutonomousChatIntent, string[]>(), null, []);
+    public static TypeTalk TalkFor(string key) => Talk.GetValueOrDefault(key) ?? NamedOnlyTalk.GetValueOrDefault(key) ?? new TypeTalk([], new Dictionary<eAutonomousChatIntent, string[]>(), null, []);
 
     /// <summary>A named bot's talk (type plus own), or null when it has none.</summary>
     public static TypeTalk NamedTalkFor(string namedKey) => NamedTalk.GetValueOrDefault(namedKey ?? string.Empty);

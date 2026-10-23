@@ -24,6 +24,12 @@ public static partial class PersonalityTypeVoices
         ["leeroy"] = Leeroy(),
     };
 
+    /// <summary>Types only the named bots have. Never rolled for generated bots and not in <see cref="All"/>.</summary>
+    public static readonly IReadOnlyDictionary<string, BotPersonality> NamedOnly = new Dictionary<string, BotPersonality>
+    {
+        ["crafter"] = Crafter(),
+    };
+
     // --- Hardcore: XP per hour, efficiency, no time to waste ---
     private static BotPersonality Hardcore() => new()
     {
@@ -164,6 +170,29 @@ public static partial class PersonalityTypeVoices
     // --- Shared builders ---
 
     /// <summary>A type's ambient lines and replies, from its dialogue file.</summary>
+    // --- Crafter (named only): always busy crafting, never actually crafts for you, very rich ---
+    private static BotPersonality Crafter() => new()
+    {
+        Name = "Crafter", Key = "crafter", Matches = _ => false, Chattiness = 55,
+        Ambient = Talk("crafter").Ambient, Replies = Talk("crafter").Replies,
+        CheekyReplies = Talk("crafter").CheekyReplies, FallbackReplies = Talk("crafter").FallbackReplies,
+        Memory = Voice(
+            warm: ["{0}! My favourite customer. Not that I take orders.", "That's the {1} time we've grouped, {0}. I'd craft you something, but, you know."],
+            cool: ["Oh. {0}. The one who keeps asking me to craft.", "You said \"{3}\", {0}. I'm too rich for that."],
+            neutral: ["Back, {0}? I'm mid-craft. Very mid.", "{2} since we met, {0}. I made a fortune. Several."],
+            recall: "We met {0} ago, {1}. {2} together.{3}{4} {5}",
+            warmMood: "You never ask for freebies. Lovely.", coolMood: "You've been rude {0}. I have staff for that. Imaginary staff.", neutralMood: "You're fine. Poorer than me, but fine.",
+            coolTint: "*counts coins loudly*", warmTint: "*polishes a coin*"),
+        Build = Build(phrase => [$"{phrase}, but the real build is my crafting skill, {0}.", "Spec? I'm fully geared in things I bought, {0}."],
+            "{0} now, {2}. {1} paid worse."),
+        Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
+            grumbles: ["I'm busy crafting, {0}. Mind that.", "{0}, that's costing me money."],
+            warnings: ["{0}, my time is expensive.", "I bill by the minute, {0}."],
+            lastWarnings: ["Last warning, {0}. Then I take my coins elsewhere.", "One more, {0}, and I'm off to my forge."],
+            quits: ["I'm out, {0}. The forge is calling.", "Done. My coin purse is lonely, {0}."],
+            makeUps: ["The forge is dull without you, {0}. Coming back.", "Fine, {0}. Rejoining. Don't ask me to craft."]),
+    };
+
     private static TypeTalk Talk(string key) => PersonalityLines.TalkFor(key);
 
     private static MemoryVoice Voice(string[] warm, string[] cool, string[] neutral, string recall, string warmMood,

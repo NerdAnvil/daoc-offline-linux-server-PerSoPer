@@ -121,11 +121,12 @@ public static partial class PersonalityTypes
     /// <summary>
     /// A named bot's personality: its type's, under its own name and memory key
     /// ("named:shnacksize"), with its own lines mixed in. Null when its type has no voice yet
-    /// (Crafter and the other named-only types). Matches nothing; the running server matches it by roster id.
+    /// (the other named-only types). Matches nothing; the running server matches it by roster id.
     /// </summary>
     public static BotPersonality Named(NamedBotLineup.Entry entry)
     {
-        if (entry == null || !Templates.TryGetValue(entry.TypeKey, out BotPersonality template))
+        if (entry == null || !(Templates.TryGetValue(entry.TypeKey, out BotPersonality template) ||
+                               PersonalityTypeVoices.NamedOnly.TryGetValue(entry.TypeKey, out template)))
             return null;
         string key = PersonalityLines.NamedKey(entry);
         TypeTalk talk = PersonalityLines.NamedTalkFor(key) ?? PersonalityLines.TalkFor(entry.TypeKey);

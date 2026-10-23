@@ -1,0 +1,368 @@
+# Crafter: the personality type's lines (named bots only). Format: see DialogueFile.cs.
+=== crafter
+
+~ ambient
+Busy. Crafting. Very important crafting. Don't look at it.
+Another day, another small mountain of coins.
+I'd tell you my profits, but it makes people sad.
+Pressing one button every few seconds is a real skill. Look it up.
+My coin pouch is so full it has started clinking in its sleep.
+Whoever said crafting doesn't pay never met my bank.
+Spent the morning on the forge. It was lovely. I'm told.
+I don't sell things. Things sell themselves, to me, for more.
+
+~ reply greeting
+Welcome, {0}! Browse, don't touch. Nothing here is for you.
+{0}! Lovely timing. I was just counting.
+
+~ reply banter
+Ha, {0}. Almost as funny as my bank balance.
+Good one, {0}. I'd pay for that. I pay for everything, I'm rich.
+
+~ reply abuse
+Rude, {0}. I have a lot of coin to console myself with.
+Careful, {0}. I'm too rich to be insulted properly.
+
+~ reply grouping
+Group, {0}? I can't craft in a group. The forge hates company.
+I'll come, {0}, if the loot is good. It's always the loot.
+
+~ reply grinding
+Grinding, {0}? I only chase the expensive drops.
+I level on the side, {0}. Mostly I chase profit.
+
+~ reply travel
+Take the stables, {0}. I've paid for the route twice, for luck.
+Travel's cheap, {0}. Even for you. I could lend you a coin. Maybe.
+
+~ reply dungeon
+Dungeons have the best drops, {0}. I'll come for those only.
+Only if the loot is sellable, {0}. I've got a reputation.
+
+~ reply rvr
+RvR, {0}? Nothing sells in a keep. Well, not much.
+I'll come, {0}, if someone else carries the forge.
+
+~ reply trading
+Craft you something, {0}? I'd love to, but my forge is... in the other realm. Sorry.
+Order a craft, {0}? Can't. The materials are on backorder. Very rich backorder.
+A craft, {0}? Not today. I'm between orders. I'm always between orders.
+I can't take requests, {0}. I'm rich enough that everyone asks. It's exhausting.
+
+~ reply help
+Help you craft, {0}? Tools are at the cleaners. Try next week.
+Crafting advice, {0}? Never share the secret. It's why I'm rich.
+I'd help, {0}, but I'm mid-craft. Perpetually mid-craft.
+
+~ reply farewell
+Off to the forge, {0}. Money won't make itself.
+Goodbye, {0}. Spend something on the way out.
+
+~ fallback
+Interesting, {0}. Speaking of money.
+Sorry, {0}, I was counting. What was that?
+Indeed, {0}. Profit comes to those who wait.
+
+~ opener xp
+Levelled a bit between sales. The real XP is gold.
+Almost {level}. The forge doesn't care, but I do.
+Got some XP from {monster}. The drop was better.
+Experience is nice. Experience that sells is nicer.
+
+~ opener gear
+Found {item}. Worth a lot. Not wearing it, selling it.
+Armour is just a thing I wear until I can sell it.
+My gear is all crafted. By whom? Business secret.
+Repairs are cheap when you're rich. Mine are almost free.
+
+~ opener zones
+{zone} has a fine market. I can smell the profit from here.
+Every zone has something worth selling. {zone} has three.
+Walked half of {zone} for one rare drop. Worth every step.
+Zones are just shops with monsters in them.
+
+~ opener classes
+My {class} skills are fine. My crafting skills are legendary.
+Every class has its crafting trade. Mine is: gold.
+Some classes sell better than others. That's economics.
+Casters do all the cute damage. I do all the cute selling.
+
+~ opener dungeons
+Dungeons are warehouses with teeth.
+Best drops come from dungeons. Best prices come from me.
+Went into a dungeon for one thing. Came out with twelve. Sold eleven.
+A dark dungeon is just a shop with no lights.
+
+~ opener rvr
+RvR drops sell for a lot. I've heard. I send others.
+Keeps are expensive to build. I'd know. I've priced the stone.
+I sell to every realm. The war is bad for me. Good for business.
+Relics are sentimental. I prefer coin.
+
+~ opener trading
+Prices today are very good. For me.
+I don't haggle. Prices are final. Pay up.
+The Realm Exchange is my second home. My first is the forge.
+Everything is for sale. Not to you. To someone with more coin.
+
+~ opener realm
+The capital is nice this time of year. The market, even nicer.
+Vendors in this realm owe me favours. And money. Mostly money.
+I know every shop in this realm. They know me. Fondly.
+Realm pride is good. Realm profit is better.
+
+~ opener gripes
+Someone asked me to craft a thing. For free. Free! I nearly dropped a coin.
+Cheap people ruin the economy. Not me. I'm expensive.
+The forge is hot and my patience is hotter.
+Everyone wants a discount. I want a vault.
+
+~ opener fun
+Why did the gold coin cross the road? To get to the better exchange rate.
+I have never lost money. I have misplaced some. It's different.
+My favourite game is: spot the underpriced item.
+I told a joke at the market. The vendors paid me to stop.
+
+~ opener life
+Breakfast was expensive. Dinner will be more.
+Lovely weather. Wonderful for carrying coin.
+Slept well last night. On a pile of something shiny.
+A nice hot meal is the only thing I haven't crafted.
+
+~ opener questions
+Does anyone know what a rare drop sells for these days?
+What would you pay for a perfect item? Asking for a friend.
+Anyone selling? Asking so I can buy it cheaper.
+Do you craft? I'm told it's a hobby. For other people.
+
+~ topic_reply zones
+Good market there, {0}? I'll check it out.
+Any rare drops in that zone, {0}?
+I'd go for the profit, {0}. Not the view.
+
+~ topic_reply classes
+Does that class sell well, {0}? Asking for economics.
+Nice, {0}. As long as you can still pay your bills.
+I'd hire that class, {0}. If I did hiring.
+
+~ topic_reply dungeons
+Any good drops there, {0}?
+I'd go, {0}, if the loot is worth the trip.
+Bring me something rare, {0}. I'll pay a bit under value.
+
+~ topic_reply rvr
+Is there money in that, {0}? I'm only asking about money.
+I'd sell to both sides, {0}. Just saying.
+Sounds loud, {0}. Loud is bad for the forge.
+
+~ topic_reply trading
+Name your price, {0}. I'll tell you why it's too high.
+I'd buy it, {0}. For slightly less than you asked.
+Interesting, {0}. Is it fenced or free-range?
+
+~ topic_reply gear
+What's it worth, {0}? Honestly.
+Does it come with a receipt, {0}?
+That sounds sellable, {0}. Keep it clean.
+
+~ topic_reply realm
+Lovely place, {0}. Great market.
+I know a vendor there, {0}. Owes me money.
+Never been, {0}. Is it profitable?
+
+~ topic_reply gripes
+Sorry, {0}. Have a coin. A small one.
+Terrible, {0}. It'd happen less if you were richer.
+It happens, {0}. I recommend a bigger pouch.
+
+~ topic_reply fun
+Ha, {0}. That's gold. Or at least silver.
+{0}, I'd pay for that. Not much, but something.
+Good one, {0}. Worth a coin.
+
+~ topic_reply life
+Sounds expensive, {0}.
+Very nice, {0}. Sounds like it needs more gold.
+{0}, you've the right idea.
+
+~ topic_reply questions
+Price depends, {0}. It always does.
+No idea, {0}. Ask a vendor. They'll overcharge.
+I'd say yes, {0}, but only if it's profitable.
+
+~ ding
+Ding! {level}! The forge will be impressed. Probably.
+Level {level}. Business is good.
+{level} now. Time to raise the prices.
+Ding, {level}! Gold and levels, both going up.
+
+~ grats
+Grats, {0}! May your next drop sell high.
+Nice, {0}! Level up, wallet up.
+Well done, {0}. Don't spend it all.
+Grats {0}. Your next purchase is on me. Almost.
+
+~ own_death
+Died. Well, the coin pouch survived. That's what matters.
+Oh dear. That's a repair bill. A tiny one.
+Dead. At least I wasn't carrying the good stuff.
+Well, that was a bad trade.
+
+~ other_death
+Oh no, {0}! That's a lot of repairs.
+{0} down! I'll watch your stuff. For a fee.
+Easy, {0}. Death is expensive. Learn from my wallet.
+You alright, {0}? Need a coin for the cleric?
+
+~ drop
+{item}! That'll sell for a lot.
+Oh, {item}. I know exactly who'd pay for this.
+{item}! Finally, something worth the walk.
+Got {item}. Not wearing it. Selling it.
+{item}! That's tomorrow's profit.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): Crafters who can't take a craft request and are very rich. ---
+
+=== muckaduck
+~ ambient
+Runes are a fine craft. I've carved a fortune from them. Not for you though.
+Norse gold is the heaviest gold. Mine's heavy enough to need a cart.
+Another rune cut, another coin earned. I don't remember which one I cut.
+Craft requests? I'd love to. The runes say no. They're very firm.
+My coin pouch is the size of a Norse shield now. Hard to carry. Easy to love.
+Midgard winters are cold. My gold keeps me warm.
+
+~ opener realm
+In Midgard the dwarves forge the best. I forge the best profit.
+Jarlshof has the finest market. I own half a stall there. Not telling which half.
+A Runemaster who crafts: that's me. Rich as a king, too.
+
+~ opener fun
+Why do Norse markets smell of fish? Easy money. Don't tell the fish.
+I carved my own rune once. It meant: pay me. It worked.
+The best spell I know is: invoice.
+
+~ opener trading
+I sell, I buy, I never craft for others. That's the rule.
+Midgard prices are the most honest. Mostly honest.
+
+~ reply greeting
+Skål, {0}! Welcome to my forge. No orders today.
+Hail, {0}! I'd craft you a hello, but I'm out of runes.
+
+~ reply trading
+Craft you something, {0}? The runes say no. They always say no. Very firm runes.
+A rune order, {0}? Out of stock. I'm always out of stock. It's very prestigious.
+Sorry, {0}. The Runemaster doesn't do commissions. Just profits.
+
+~ reply help
+Crafting help, {0}? I'd tell you, but a Norse vow forbids it. I invented the vow.
+Can't help you craft, {0}. I'm rich. It takes up a lot of time.
+
+~ ding
+Ding, {level}! A new rune, a new fortune!
+{level}! The gods approve. Of my gold, at least.
+
+~ own_death
+Died. The runes should have warned me. I'll ask for a refund.
+Ow. Mjolnir's worst day. Not the first.
+
+~ drop
+{item}! Norse gold if I ever saw it.
+{item}! The forge will sing.
+
+=== muckaducke
+~ ambient
+Camelot has the finest guilds. I've paid every one of them. Twice.
+A Wizard who crafts: dangerous, wealthy and very busy.
+Craft requests? I'd love to. The spellbook says no. In very small print.
+Albion gold is shiny and regal. Mine is shinier. Slightly.
+I could tell you how rich I am, but the queen might hear.
+Spells for show, coins for dough. That's my motto.
+
+~ opener realm
+In Albion the knights wear the armour. The rest of us wear the profit.
+Cotswold has the best market. Cotswold also has the best bargains. For me.
+Camelot is lovely. I've bought a piece of it. A small piece. A very expensive piece.
+
+~ opener fun
+Why did the wizard cross the market? To undercut a rival's price.
+My spellbook has a page for gold. It's the only page I read.
+I conjure coins. Don't ask how. Don't ask how many.
+
+~ opener trading
+The Albion Exchange is my second home. Right behind the vault.
+I'd buy you a drink, but the tavern is overpriced. I'd sell you one though.
+
+~ reply greeting
+Good day, {0}! No orders today. I'm terribly sorry. I'm rich.
+Hail, {0}! Welcome to Albion's most expensive forge.
+
+~ reply trading
+Craft you something, {0}? My spellbook says no. In very small print, I'm afraid.
+A commission, {0}? The guild forbids it. I am the guild. It's a strict guild.
+Sorry, {0}. The Wizard can't craft today. Or tomorrow. It's a longstanding condition.
+
+~ reply help
+Crafting help, {0}? I'd say, but the secret is my fortune.
+Can't help, {0}. Wizards have an exemption. I wrote it.
+
+~ ding
+Ding, {level}! A new spell and a new price list!
+{level}! Camelot will hear of this. I'll make sure it costs them.
+
+~ own_death
+Died. Even rich Wizards run out of hit points.
+Ow. That was an unplanned expense.
+
+~ drop
+{item}! Sells like a Camelot sunrise.
+{item}! The vault has room. The vault always has room.
+
+=== muckaduckeen
+~ ambient
+Tir na Nog has the prettiest gold. Mine is the prettiest of those.
+An Eldritch who crafts: pretty, powerful and very, very rich.
+Craft requests? I'd love to. The fae said no. They always say no.
+Hibernian markets glitter. Mine glitter and clink.
+I could tell you my wealth, but the druids already know.
+The mists are lovely. The profits are lovelier.
+
+~ opener realm
+In Hibernia the druids hold the old magic. I hold the new money.
+Tir na Nog has the finest vendors. I know all their prices. They hate it.
+Lovely green hills, lovely green gold. Lovely.
+
+~ opener fun
+Why do fae never haggle? They already know my price.
+I wove a spell for gold once. It was a fine fabric. It sold well.
+Magic is great. Magic that sells is greater.
+
+~ opener trading
+Hibernian prices are the most poetic. They rhyme with 'ouch'.
+I'd sell you a spell, but the fae have a say in pricing.
+
+~ reply greeting
+Fair day, {0}! Welcome to my glittering forge. No orders today.
+Blessings, {0}! I'd craft you a hello, but the fae have the loom.
+
+~ reply trading
+Craft you something, {0}? The fae said no. They often do. It's very mystical.
+A commission, {0}? Booked until the next mist. Always the next mist.
+Sorry, {0}. The Eldritch doesn't do orders. Just wealth.
+
+~ reply help
+Crafting help, {0}? The old magic forbids it. Forbidden by me, just now.
+Can't help, {0}. Riches take all my attention. Sorry.
+
+~ ding
+Ding, {level}! The mist smiles on my purse!
+{level}! The fae approve. They've asked for a cut. I said no.
+
+~ own_death
+Died. The mist let me down. I'll bill it.
+Ow. The fae owe me for that one.
+
+~ drop
+{item}! Pure Hibernian gold.
+{item}! The mist brought me a gift. I'll sell it.
