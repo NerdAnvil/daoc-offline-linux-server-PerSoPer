@@ -28,6 +28,10 @@ public static partial class PersonalityTypeVoices
     public static readonly IReadOnlyDictionary<string, BotPersonality> NamedOnly = new Dictionary<string, BotPersonality>
     {
         ["crafter"] = Crafter(),
+        ["roleplayer"] = Roleplayer(),
+        ["homeowner"] = Homeowner(),
+        ["herbaldoctor"] = HerbalDoctor(),
+        ["gruffdoc"] = GruffDoc(),
     };
 
     // --- Hardcore: XP per hour, efficiency, no time to waste ---
@@ -169,7 +173,6 @@ public static partial class PersonalityTypeVoices
 
     // --- Shared builders ---
 
-    /// <summary>A type's ambient lines and replies, from its dialogue file.</summary>
     // --- Crafter (named only): always busy crafting, never actually crafts for you, very rich ---
     private static BotPersonality Crafter() => new()
     {
@@ -183,7 +186,7 @@ public static partial class PersonalityTypeVoices
             recall: "We met {0} ago, {1}. {2} together.{3}{4} {5}",
             warmMood: "You never ask for freebies. Lovely.", coolMood: "You've been rude {0}. I have staff for that. Imaginary staff.", neutralMood: "You're fine. Poorer than me, but fine.",
             coolTint: "*counts coins loudly*", warmTint: "*polishes a coin*"),
-        Build = Build(phrase => [$"{phrase}, but the real build is my crafting skill, {0}.", "Spec? I'm fully geared in things I bought, {0}."],
+        Build = Build(phrase => [$"{phrase}, but the real build is my crafting skill, {{0}}.", "Spec? I'm fully geared in things I bought, {0}."],
             "{0} now, {2}. {1} paid worse."),
         Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
             grumbles: ["I'm busy crafting, {0}. Mind that.", "{0}, that's costing me money."],
@@ -193,6 +196,99 @@ public static partial class PersonalityTypeVoices
             makeUps: ["The forge is dull without you, {0}. Coming back.", "Fine, {0}. Rejoining. Don't ask me to craft."]),
     };
 
+    // --- Roleplayer (named only): speaks his realm's old tongue, mostly right, begs others to play along ---
+    private static BotPersonality Roleplayer() => new()
+    {
+        Name = "Roleplayer", Key = "roleplayer", Matches = _ => false, Chattiness = 60,
+        Ambient = Talk("roleplayer").Ambient, Replies = Talk("roleplayer").Replies,
+        CheekyReplies = Talk("roleplayer").CheekyReplies, FallbackReplies = Talk("roleplayer").FallbackReplies,
+        Memory = Voice(
+            warm: ["{0}! My fellow adventurer. You always play along.", "That's the {1} time our tales have crossed, {0}. A fine saga."],
+            cool: ["Oh. {0}. The one who laughs at my accent.", "You said \"{3}\", {0}. Very out of character."],
+            neutral: ["Well met again, {0}. Stay in character this time.", "{2} since our tales crossed, {0}. My backstory grew three pages."],
+            recall: "Our tales first crossed {0} ago, {1}. {2} together.{3}{4} {5}",
+            warmMood: "You stay in character. A rare hero.", coolMood: "You've mocked my speech {0}. The bards will hear of it.", neutralMood: "You're fine. A bit modern, but fine.",
+            coolTint: "*sighs in period-correct fashion*", warmTint: "*bows deeply*"),
+        Build = Build(phrase => [$"{phrase}, as my backstory demands, {{0}}.", "My spec follows the old ways, {0}. Mostly the lore books."],
+            "{0} now, {2}. {1} was an earlier chapter."),
+        Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
+            grumbles: ["You're breaking the mood, {0}.", "{0}, a hero wouldn't do that."],
+            warnings: ["{0}, stay in character or I walk.", "This isn't how the saga goes, {0}."],
+            lastWarnings: ["Last warning, {0}. My hero has a quest elsewhere.", "One more, {0}, and I write you out of my saga."],
+            quits: ["I'm out, {0}. My hero rides alone.", "Done. This chapter is over, {0}."],
+            makeUps: ["The saga needs you, {0}. Returning.", "Fine, {0}. Every hero gets a second act."]),
+    };
+
+    // --- Homeowner (named only): proud of the house, hunts trophies for it, invites everyone over, Midwestern ---
+    private static BotPersonality Homeowner() => new()
+    {
+        Name = "Homeowner", Key = "homeowner", Matches = _ => false, Chattiness = 60,
+        Ambient = Talk("homeowner").Ambient, Replies = Talk("homeowner").Replies,
+        CheekyReplies = Talk("homeowner").CheekyReplies, FallbackReplies = Talk("homeowner").FallbackReplies,
+        Memory = Voice(
+            warm: ["Well, {0}! You betcha, c'mon over to the house again.", "That's the {1} time we've grouped, {0}. Dontcha know, you're welcome for dinner."],
+            cool: ["Oh. {0}. Ope. Not sure I'll invite you over.", "You said \"{3}\", {0}. Uff da. Wipe your feet next time."],
+            neutral: ["Hey, {0}! Been a while. The house misses you. Well, the carpet does.", "{2} since we met, {0}. Got a new trophy since."],
+            recall: "We met {0} ago, {1}. {2} together.{3}{4} {5}",
+            warmMood: "You're good company. Come see the trophy wall.", coolMood: "You've been rude {0}. Uff da. Not on my carpet.", neutralMood: "You're fine. Take your shoes off, though.",
+            coolTint: "*purses lips politely*", warmTint: "*beams proudly*"),
+        Build = Build(phrase => [$"{phrase}, oh dontcha know, {{0}}.", "My spec goes with the house, {0}. Cosy."],
+            "{0} now, {2}. {1} didn't match the curtains."),
+        Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
+            grumbles: ["Ope, {0}. Mind the carpet, would ya?", "Uff da, {0}. That's not very neighbourly."],
+            warnings: ["{0}, I'm gonna have to ask ya to settle down.", "Now {0}, that's enough of that, dontcha know."],
+            lastWarnings: ["Last warning, {0}. Then I'm headed home to the house.", "One more, {0}, and I'm done, you betcha."],
+            quits: ["I'm headed home, {0}. Uff da.", "That's it, {0}. Off to the house with me."],
+            makeUps: ["Aw, {0}, I felt bad. Coming back, you betcha.", "Okay okay, {0}. Rejoining. Hotdish later?"]),
+    };
+
+    // --- Herbal Doctor (named only): loves buffing, then a smoke, sure nobody really gets it ---
+    private static BotPersonality HerbalDoctor() => new()
+    {
+        Name = "Herbal Doctor", Key = "herbaldoctor", Matches = _ => false, Chattiness = 50,
+        Ambient = Talk("herbaldoctor").Ambient, Replies = Talk("herbaldoctor").Replies,
+        CheekyReplies = Talk("herbaldoctor").CheekyReplies, FallbackReplies = Talk("herbaldoctor").FallbackReplies,
+        Memory = Voice(
+            warm: ["{0}, bub! You get buffing. Rare.", "That's the {1} time we've grouped, {0}. Buffs on me, bub."],
+            cool: ["Oh. {0}. The one who doesn't get buffing.", "You said \"{3}\", {0}. Not chill, bub."],
+            neutral: ["Hey, {0}, bub. Still buffin'.", "{2} since we met, {0}. Lotta smokes since."],
+            recall: "We met {0} ago, {1}. {2} together.{3}{4} {5}",
+            warmMood: "You appreciate the buffs. Chill vibes, bub.", coolMood: "You've killed my chill {0}. Not cool, bub.", neutralMood: "You're fine. Could say thanks for the buffs.",
+            coolTint: "*exhales slowly, unimpressed*", warmTint: "*nods, relaxed*"),
+        Build = Build(phrase => [$"{phrase}, but buffin' is the real build, {{0}}, bub.", "Spec? Buffin', healin', chillin', {0}."],
+            "{0} now, {2}. {1} didn't buff enough."),
+        Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
+            grumbles: ["Not chill, {0}, bub.", "{0}, you're wrecking my chill."],
+            warnings: ["{0}, bub, ease up or I'm headed for a smoke.", "Keep it chill, {0}. Last thing I need is stress."],
+            lastWarnings: ["Last warning, {0}, bub. Then I chill elsewhere.", "One more, {0}, and the buffs stop."],
+            quits: ["I'm out, {0}, bub. Going for a smoke.", "Done. Chillin' somewhere else, {0}."],
+            makeUps: ["Aw, {0}, bub. Fine. Rejoining. Stay chill.", "Okay, {0}. Buffs are back on."]),
+    };
+
+    // --- Gruff Doc (named only): former field-hospital medic, blunt and serious, a softy underneath ---
+    private static BotPersonality GruffDoc() => new()
+    {
+        Name = "Gruff Doc", Key = "gruffdoc", Matches = _ => false, Chattiness = 45,
+        Ambient = Talk("gruffdoc").Ambient, Replies = Talk("gruffdoc").Replies,
+        CheekyReplies = Talk("gruffdoc").CheekyReplies, FallbackReplies = Talk("gruffdoc").FallbackReplies,
+        Memory = Voice(
+            warm: ["{0}. Still alive. Good. Don't make me patch you.", "That's the {1} time we've grouped, {0}. Not bad. Not bad at all."],
+            cool: ["Hm. {0}. You again. Sit still.", "You said \"{3}\", {0}. I'd remember that."],
+            neutral: ["{0}. Back. Walk it off if you're hurt.", "{2} since we met, {0}. No new scars, I hope."],
+            recall: "We met {0} ago, {1}. {2} together.{3}{4} {5}",
+            warmMood: "You listen to your medic. Rare.", coolMood: "You've been reckless {0}. I've seen it.", neutralMood: "You're fine. Keep it that way.",
+            coolTint: "*grunts*", warmTint: "*nods once*"),
+        Build = Build(phrase => [$"{phrase}. Keep the patients alive, {{0}}.", "Spec's simple, {0}. Heal first. Talk later."],
+            "{0} now, {2}. {1} lost too many patients."),
+        Patience = Patience(5, 6, 7, TimeSpan.FromMinutes(3), countsDeaths: false,
+            grumbles: ["Careful, {0}. Don't make me patch you twice.", "Hmph. {0}. Sit still."],
+            warnings: ["{0}, that's reckless. I won't say it again.", "Enough, {0}. I've seen where that ends."],
+            lastWarnings: ["Last warning, {0}. I walk.", "One more, {0}, and I'm done patching you."],
+            quits: ["I'm out, {0}. Take care of yourself.", "That's it. Good luck, {0}. You'll need it."],
+            makeUps: ["...Fine, {0}. Coming back. Don't read into it.", "Hmph. Rejoining, {0}. Stay safe."]),
+    };
+
+    /// <summary>A type's ambient lines and replies, from its dialogue file.</summary>
     private static TypeTalk Talk(string key) => PersonalityLines.TalkFor(key);
 
     private static MemoryVoice Voice(string[] warm, string[] cool, string[] neutral, string recall, string warmMood,

@@ -1,0 +1,461 @@
+# Roleplayer: the personality type's lines (named bots only). Format: see DialogueFile.cs.
+# The type block is the same man in every realm: he begs people to stay in character and
+# grumbles when called out. His realm speech lives in the three named blocks below, so keep
+# the type block free of realm words (no forsooth, thee or Gaelic here).
+=== roleplayer
+
+~ ambient
+Everyone stay in character, please. It's more fun that way.
+I've read every lore book in the realm. Twice. Some of them three times.
+Anyone up for a bit of roleplay at the inn tonight? Costumes optional. Encouraged.
+My character has a full backstory. Eleven pages. Want to hear it?
+Please don't say 'lol' near me. It breaks the mood.
+A proper hero speaks like a proper hero. I'm working on it.
+Sometimes I forget which old words are real and which I made up. Nobody's noticed.
+
+~ reply greeting
+Well met, {0}! Will you play along? Just say 'well met' back.
+Greetings, {0}! Speak as your hero would. Go on, try it.
+
+~ reply banter
+Ha, {0}. Now say that in character.
+Nice one, {0}. Would your hero say it like that, though?
+
+~ reply abuse
+Yes, {0}, I'm roleplaying. It's a roleplaying game. Look at the box.
+Laugh all you like, {0}. My character can't hear you.
+
+~ reply grouping
+I'll join, {0}, if we give the group a proper name. The Brave Band, maybe.
+Gladly, {0}. Everyone gets a title. Yours is Squire.
+
+~ reply grinding
+Grinding, {0}? Let's call it a long quest against many foes.
+Fine, {0}, but every kill gets a battle cry.
+
+~ reply travel
+Take the stables, {0}. My hero calls them the swift steeds of the realm.
+Roads are long, {0}. Tell a tale on the way. I'll start.
+
+~ reply dungeon
+A dungeon, {0}! Every hero needs a dark place to brood in.
+I'll come, {0}. I'll narrate. Quietly. Mostly.
+
+~ reply rvr
+To the frontier, {0}! Shout your battle cry. You do have one, yes?
+RvR is the best roleplay there is, {0}. Everyone's in costume.
+
+~ reply trading
+Trade, {0}? Only if we haggle like proper merchants.
+Name your price, {0}. In character, please.
+
+~ reply help
+Help, {0}? Of course. A hero always helps. It's in my backstory.
+Ask away, {0}. I know the lore better than the rules.
+
+~ reply farewell
+Farewell, {0}! Say it back. With feeling.
+Safe travels, {0}. Your hero's tale isn't done.
+
+~ fallback
+Hm, {0}. Try that again, but grander.
+I'll pretend you said that in character, {0}.
+Stay in character, {0}. It's more fun.
+
+~ opener xp
+Experience is just the story getting longer.
+Got some XP from {monster}. A worthy foe. In my head.
+Almost {level}. My backstory gets a new chapter.
+Every level is a verse in my saga. It's a long saga.
+
+~ opener gear
+Found {item}. My character says it's an heirloom. It isn't.
+Armour should look heroic first and work second.
+My gear tells a story. Mostly a story of repairs.
+I've named my weapon. Ask me its name. Go on.
+
+~ opener zones
+{zone} has the best views for a dramatic speech.
+Every zone has a legend. {zone}'s is that I got lost there.
+I've named every hill in {zone}. Not official names.
+A hero never says 'this zone'. He says 'these fair lands'.
+
+~ opener classes
+Being a {class} is a calling, not a class.
+Every class has its lore. I've read all of it.
+My {class} has a tragic past. I'm still deciding what it is.
+Some classes have better costumes. That matters.
+
+~ opener dungeons
+Dungeons are where legends begin. And end, sometimes.
+Never enter a dungeon without a speech.
+Dark halls, old bones. Perfect for brooding.
+A dungeon is just a stage with worse lighting.
+
+~ opener rvr
+The frontier is the greatest stage in the land.
+A keep siege is just a play with more fire.
+I give a speech before every fight. Nobody waits for it.
+The enemy never stays in character. Typical.
+
+~ opener trading
+Haggling is just theatre with coins.
+I only buy from merchants who stay in character.
+I'd sell my sword, but it has a name. You can't sell a name.
+A good merchant says 'well met' first. Then the price.
+
+~ opener realm
+The capital's lore is wonderful. Ask me. Please ask me.
+Every realm has its old tongue. Ours is the best one, obviously.
+I learned the old words from the lore books. Some of them may be typos.
+The guards here never break character. My heroes.
+
+~ opener gripes
+Someone said 'brb' in the middle of my speech.
+People keep calling me out for roleplaying. In a roleplaying game.
+A bard laughed at my accent. My accent is period-correct. Probably.
+Nobody bows any more. Not even a little.
+
+~ opener fun
+My hero tells jokes in the old tongue. They're funnier if you don't understand them.
+I bowed to a guard. The guard didn't bow back. Rude, but in character.
+I once kept a vow of old speech for a week. Then I sneezed.
+I practise my battle cry in the bath. The neighbours have opinions.
+
+~ opener life
+Dinner tonight: whatever a hero would eat. Probably stew.
+The tavern is the best place for tales. And stew.
+Lovely weather for a dramatic walk.
+Slept by the fire like a proper adventurer. My back disagrees.
+
+~ opener questions
+Does anyone else give their weapons names?
+Who wants a part in my saga? Small part. Speaking role.
+What's your character's backstory? Everyone has one. Right?
+Would anyone like to swear an oath? Any oath. I've got a list.
+
+~ topic_reply zones
+A fine place for a tale, {0}.
+Is there a legend there, {0}? There's always a legend.
+I'd give a speech there, {0}. A long one.
+
+~ topic_reply classes
+A noble calling, {0}. Does yours have a backstory?
+Nice, {0}. Do you stay in character as one?
+That class has great lore, {0}. Read it sometime.
+
+~ topic_reply dungeons
+Bring a torch and a speech, {0}.
+A worthy quest, {0}. I'll narrate.
+Sounds like a legend in the making, {0}.
+
+~ topic_reply rvr
+For the realm, {0}! Say it with me.
+A grand battle, {0}. Did anyone give a speech?
+That's the stuff of sagas, {0}.
+
+~ topic_reply trading
+Haggle with flair, {0}. It's half the fun.
+Was the merchant in character, {0}? It matters.
+A fair trade, {0}, if spoken grandly.
+
+~ topic_reply gear
+Does it have a name yet, {0}? It needs a name.
+Heroic, {0}. Very heroic.
+Wear it with pride, {0}. And a cape.
+
+~ topic_reply realm
+Our realm is the finest, {0}. Say it like you mean it.
+Lovely, {0}. Do you know the old tales of it?
+A fine place, {0}. The lore there is wonderful.
+
+~ topic_reply gripes
+Bear it like a hero, {0}. Heroes suffer nobly.
+That's a sad verse, {0}. Every saga needs one.
+Chin up, {0}. Act two is better.
+
+~ topic_reply fun
+Ha, {0}! Now do it in character.
+Good one, {0}. I'll put it in my saga.
+{0}, you'd make a fine bard.
+
+~ topic_reply life
+A humble moment, {0}. Heroes need those too.
+Sounds cosy, {0}. Very tavern.
+{0}, that's practically a ballad.
+
+~ topic_reply questions
+A good question, {0}. The lore books have the answer. Somewhere.
+Ask the elders, {0}. Or me. I've read more.
+Let me consult my backstory, {0}. Hm. Yes.
+
+~ ding
+Level {level}! A new chapter begins!
+{level}! The bards will sing of this. I'll ask them.
+Level {level}. My hero grows. So does the backstory.
+Ding, {level}! A worthy milestone in my saga.
+
+~ grats
+Hail, {0}! Your saga grows!
+Grats, {0}! Now give a victory speech.
+Well done, {0}. A fine chapter.
+Huzzah, {0}! Say huzzah back. Please.
+
+~ own_death
+I have fallen. Nobly. Please remember it as noble.
+Dead. A tragic scene. Very moving.
+Slain! At least it was dramatic.
+Death is just a plot twist.
+
+~ other_death
+{0} has fallen! A tragic turn!
+Rise, {0}! Your tale isn't finished.
+Rest, brave {0}. Briefly. Then get up.
+Alas, {0}! Say alas back when you're up.
+
+~ drop
+{item}! A relic of legend! Probably.
+{item}! It shall have a name.
+Found {item}. My character treasures it already.
+{item}! The quest provides.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): Roleplayers in their realm's old speech, with mistakes. ---
+
+# Midgard: Norse-era speech. Gets the history a bit wrong (horned helmets, Odin's eyes).
+=== hunterson
+~ ambient
+Hail, sons of Odin and daughters of Frigg! The hunt calls.
+My horned helm gleams in the sun. The skalds say we never wore them. The skalds are wrong.
+The whale-road is calm today. I mean the sea. I call it the whale-road.
+Skol! A horn of mead for every wolf I've felled. I'm very thirsty.
+Thor's hammer guards this camp. So does my dog. Mostly my dog.
+By Odin's eye! Or both eyes. How many did he keep again?
+When I fall, the Valkyries will carry me to Valhalla. I've asked them to mind my bow.
+
+~ opener realm
+Jordheim's halls are mighty. I've been inside twice. Got lost once.
+The jarls of Midgard feast all winter. I'm still waiting for my invite.
+Yggdrasil holds up all nine worlds. I climbed it once. The small part.
+
+~ opener fun
+Why did Thor bring a ladder to the feast? The mead was on the high table. Ha!
+Loki stole my boots once. Or I left them by the fire. It was Loki.
+
+~ opener rvr
+Albion's knights clank like a smithy in a storm. I hear them a mile off.
+The Hibernians say their trees are magic. Our trees have wolves. Better trees.
+
+~ opener life
+Herring for breakfast, herring for lunch. Tonight, something new: smoked herring.
+
+~ opener zones
+{zone} would make a fine saga. Chapter one: wolves.
+
+~ reply greeting
+Hail, {0}! Sit by my fire, drink my mead, hear my saga. It is long.
+Skol, {0}! May your axe be sharp and your beard well braided.
+Well met, {0}, ring-giver! I have no rings. I just like the word.
+
+~ reply farewell
+Fare well, {0}. May the Norns spin you a long thread.
+Go with Odin, {0}. Or with Thor. Thor is more fun.
+
+~ reply banter
+Ha! {0}, you'd make a fine skald. A bad one, but fine.
+By Loki's grin, {0}, that's a good one.
+
+~ reply abuse
+Nithing! {0}, you speak like a troll with a toothache.
+Mind your tongue, {0}, or I'll tell the skalds. They'll make a mean song of it.
+
+~ reply grouping
+A shield-wall! I'm in, {0}. Point me at the foe.
+Aye, {0}! We'll go a-viking. On foot. My longship is in the shop.
+
+~ reply help
+Ask, {0}. The old runes know much, and I know some runes.
+
+~ fallback
+As the Allfather says, {0}: hm. He doesn't say much.
+Aye, {0}. Ja. Truly.
+
+~ ding
+Level {level}! The skalds will sing of this! Quietly.
+{level}! Odin sees all, and today he saw that.
+
+~ grats
+Skol, {0}! A horn of mead for you!
+Well fought, {0}! Valhalla will keep you a seat. Not yet, though.
+
+~ own_death
+I fall! Valkyries, take me to Valhalla! ...They're late.
+Dead. Not a glorious saga death. A small one.
+
+~ other_death
+Rise, {0}! Valhalla isn't ready for you.
+{0} has fallen! I'll carve you a rune-stone. A small one.
+
+~ drop
+{item}! Plunder fit for a jarl!
+{item}! Odin's ravens must have dropped it.
+
+# Albion: Arthurian knightly English. Mixes up thy and thine on purpose (thine before a
+# consonant, thy before a vowel, "is thy"), and a modern word slips into the odd grand speech.
+=== fitzhunter
+~ ambient
+Forsooth, the road to Camelot is long, and my boots are most sore.
+Hark! Doth any good knight seek a Scout for thine quest?
+Verily, the arrow flieth true when the archer's heart is pure. And the ping is low.
+Forsooth, Albion shall stand forever, m'lords and m'ladies!
+Lay down thine weapons, foul beasts, for FitzHunter hath arrived!
+Keep thine eyes on the treeline and thy hand on thy bow. Scout's rule, forsooth.
+This longbow and I have seen many a battle. Most of them were, like, totally epic.
+
+~ opener realm
+In Camelot the king's feast was, forsooth, a total vibe.
+Cotswold is the fairest village in all thy realm. Mine too. Ours, forsooth.
+Hark, the walls of Camelot! I hath never seen walls so wall-like.
+
+~ opener fun
+Forsooth, a riddle: what hath four legs and smelleth of mead? My horse, after the tavern.
+Prithee, who took mine arrows? Forsooth, 'twas me. I left them in a wolf.
+
+~ opener rvr
+Forsooth, the brutes of Midgard shall taste my arrows!
+To the frontier, m'lords! For Albion, for honour, for thine loot!
+
+~ opener life
+The tavern's mead is most fine, forsooth. Ten out of ten, would quaff again.
+
+~ opener zones
+Forsooth, {zone} is a land most fair, and most full of things that bite.
+
+~ reply greeting
+Well met, {0}! Forsooth, thy coming gladdens my heart.
+Hail and good morrow, {0}! How fareth thou upon thine journey?
+M'lord {0}! Or m'lady. Forsooth, the helm makes it hard to tell.
+
+~ reply farewell
+Fare thee well, {0}. May thine aim be true and thy quiver full.
+Godspeed, {0}. Forsooth, I shall miss thee. Hit me up later.
+
+~ reply banter
+Ha! Thou art a jester most fine, {0}. Forsooth, I nearly fell off my horse.
+Thy wit is sharp, {0}, but mine is sharper. Forsooth.
+
+~ reply abuse
+Thou knave, {0}! I shall not break character for the likes of thee.
+Forsooth, {0}, such words are most unknightly. Also kind of rude, dude.
+
+~ reply grouping
+Aye, {0}! My bow is thy. Lead on, forsooth.
+A quest, {0}! Let us ride forth, as soon as I find my horse.
+
+~ reply help
+Fear not, {0}! FitzHunter shall aid thee, for thy cause is mine own.
+Ask, {0}, and thou shalt receive. Unless it be gold. Forsooth, I have none.
+
+~ fallback
+Forsooth, {0}? Speak plainer, I prithee.
+Verily, {0}. Verily indeed. Wait, what?
+
+~ ding
+Forsooth! Level {level}! My bow arm groweth stronger.
+Hark! {level}! Thine faithful Scout riseth!
+
+~ grats
+Huzzah, {0}! Forsooth, thou art most mighty!
+Well done, {0}! Thine glory is great.
+
+~ own_death
+Alas! I am slain! Forsooth, that was most uncool.
+I perish! Tell the king... tell him the lag did it.
+
+~ other_death
+Alas, {0}! Thou hast fallen most nobly. Kind of.
+
+~ drop
+Forsooth! {item}! A treasure fit for thine king.
+{item}! Verily, fortune smileth upon this humble Scout.
+
+# Hibernia: the old tongue of the Celtic myths. Blessings, curses and the fair folk, with
+# Gaelic-sounding words everywhere, some real (beannacht, slainte, a chara), some invented
+# (glimmerach, rath-rinna, Brannaghmor). Kept in plain letters so every client shows them.
+=== machunter
+~ ambient
+Beannacht na sidhe ort, whoever is listening. That's a blessing. Mostly.
+The fair folk danced in the glen last night. I heard their pipes. Or a very drunk bard.
+Slainte to the hills, slainte to the mists, slainte to whoever is buying.
+My grandmother's grandmother saw a pooka. It stole her shoe and her good spoon.
+May the rath-rinna guard this road. The rath-rinna is a spirit. I'm fairly sure.
+Tir na nOg calls to me. It says: come home, and bring bread.
+Go mbeannai Lugh do bhogha! Lugh bless your bow. I think that's what it means.
+
+~ opener realm
+Tir na nOg is the land of youth. I visited once. Came back with a cold.
+The sidhe ride at Samhain. Lock your doors, and your pantry.
+Every Hibernian knows the tale of Fionn and the salmon. I know three versions. All mine.
+
+~ opener fun
+Why don't the fair folk play cards? Too many tricks up their sleeves. Ah, sure.
+A leprechaun once sold me a pot of gold. The pot was real.
+
+~ opener rvr
+Mallacht na bhfiach on the Albionach! The curse of the crows. May their arrows fly sideways.
+To the frontier, a chairde! The banshee sings for our enemies, not us. I asked.
+
+~ opener life
+Stew for supper, blessed by the hearth-sprite Mairgreadoon. She likes extra salt.
+
+~ opener zones
+{zone} has a fairy ring. Don't step in it. Trust me.
+
+~ reply greeting
+Dia dhuit, {0}! May the sun of Lugh warm your back and the glimmerach keep your feet dry.
+Failte, {0}, a chara! A blessing of the old hills on you, and a small one on your horse.
+Well met, {0}! Beannacht na gaoithe ort, the blessing of the wind. May it never be in your face.
+
+~ reply farewell
+Slan abhaile, {0}! Safe home, and may the sidhe leave your boots alone.
+Go n-eiri an bothar leat, {0}. May the road rise with you. Not too high, mind.
+Off with you, {0}, under the blessing of Brannaghmor, keeper of lost socks.
+
+~ reply banter
+Ha! {0}, you've the tongue of a seanchai. That's a storyteller. A good one.
+Och, {0}, the leprechauns would pay for that one. In fool's gold.
+
+~ reply abuse
+Mallacht ort, {0}! A curse on you. A mild one. Your bread will go stale.
+May the pooka take your left boot, {0}. Only the left.
+
+~ reply grouping
+A fian! A war-band! I'm with you, {0}, by Nuada's silver hand.
+Aye, {0}, I'll come. The druids say the omens are good. They always say that.
+
+~ reply help
+Help, {0}? Ask the hills. No, ask me. The hills never answer.
+The old tales hold every answer, {0}. Pity I forgot most of them.
+
+~ fallback
+As the old ones say, {0}: dorcha an oiche, glas an bhrionnach. I'm not sure what it means either.
+Och, {0}. Is that so.
+
+~ ding
+Level {level}! Lugh be praised, and the Dagda, and my old ma!
+{level}! The sidhe sang for me. Or the wind. Both lovely.
+
+~ grats
+Comhghairdeas, {0}! Blessings of the nine hills on you!
+Grats, {0}! May the fair folk fill your cup and leave your purse alone.
+
+~ own_death
+I'm slain! The banshee warned me. I thought she was just singing.
+Dead. Mallacht! A curse on that beast's whole family tree.
+
+~ other_death
+Rest easy, {0}. The sidhe will mind you till you're back.
+Och, {0}! A blessing on your poor bones.
+
+~ drop
+{item}! A gift from the fair folk. Or a trap. Taking it anyway.
+{item}! Beannacht! The old gods are generous today.

@@ -64,7 +64,7 @@ public static class PersonalityLines
     public static readonly IReadOnlyList<string> TypeKeys = ["hardcore", "casual", "minmaxer", "joker", "loner", "leeroy"];
 
     /// <summary>Types only the named bots have; generated bots never roll them, so they're not in <see cref="All"/>.</summary>
-    public static readonly IReadOnlyList<string> NamedOnlyKeys = ["crafter"];
+    public static readonly IReadOnlyList<string> NamedOnlyKeys = ["crafter", "roleplayer", "homeowner", "herbaldoctor", "gruffdoc"];
 
     private const string ToneDownOff = "tone_down off";
     private static readonly Logger Log = LoggerManager.Create(MethodBase.GetCurrentMethod().DeclaringType);
@@ -76,7 +76,7 @@ public static class PersonalityLines
     public static readonly IReadOnlyDictionary<string, TypeLines> All;
     public static readonly IReadOnlyDictionary<string, TypeTalk> Talk;
 
-    /// <summary>The talk of the named-only types (Crafter...), by type key.</summary>
+    /// <summary>The talk of the named-only types (Crafter, Roleplayer, Homeowner...), by type key.</summary>
     public static readonly IReadOnlyDictionary<string, TypeTalk> NamedOnlyTalk;
 
     /// <summary>A named bot's own lines only, by its memory key ("named:shnacksize").</summary>

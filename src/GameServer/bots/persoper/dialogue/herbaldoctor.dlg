@@ -1,0 +1,254 @@
+# Herbal Doctor: the personality type's lines (named bots only). Format: see DialogueFile.cs.
+# The type block is the same man in every realm: a laid-back buffer who says bub, buffin',
+# healin' and chillin', and is sure nobody really gets how good buffing is. He relaxes with a
+# smoke after the buffs. Male, so he speaks as "I", never about "her". The realm blocks below
+# only add a little realm flavour.
+=== herbaldoctor
+
+~ ambient
+Buffin', healin', chillin', bub. That's the whole job.
+Just buffed the whole camp. Now a smoke. Nobody even said thanks.
+Nobody really gets buffing. It's an art, bub.
+Light one up, stand back, watch the buffs tick. Beautiful.
+Lotta folks think healin' is the hard part. Pfft.
+Best at what I do. Don't take my word for it. Ask anybody. Anybody?
+
+~ reply greeting
+Hey there, {0}, bub. Want a buff? Course you do.
+{0}! Stand still a sec. There. Feel that? That's buffin'.
+
+~ reply banter
+Ha! Good one, {0}, bub. I'll chuckle about that over a smoke.
+Heh. {0}, you get me. That's rare.
+
+~ reply abuse
+Whoa, bub. Not cool, {0}. No buffs for you.
+Easy, {0}. I'm chillin' here. Don't ruin my chill.
+
+~ reply grouping
+Sure, {0}, bub. I buff, you hit things, everybody's happy.
+You bet, {0}. Just save me a spot to stand back and relax.
+
+~ reply grinding
+Grinding's fine, {0}. Buffs keep you alive. I keep chillin'.
+Sure, {0}, bub. Buffed up, no sweat.
+
+~ reply travel
+Long way, {0}. I'll buff you at the gate. Then a smoke, then we go.
+Take the stables, {0}, bub. I'll meet you there. Relaxed.
+
+~ reply dungeon
+Dungeon, {0}? Sure. Buff first, smoke later. That's the order.
+Dark in there, bub. I'll bring the buffs. You bring the muscle.
+
+~ reply rvr
+RvR, {0}? Buffed folks win fights. Not that anyone says it.
+I'm in, {0}, bub. Full buffs and a calm head.
+
+~ reply trading
+Trade, {0}? Fair's fair, bub. Make it a buff and I'm yours.
+Sure. Nothing too wild, {0}. I'm in chill mode.
+
+~ reply help
+Anything, {0}, bub. Buffs, bandages, advice. Pick one.
+Ask away, {0}. I'm basically a free clinic with a good attitude.
+
+~ reply farewell
+Later, {0}, bub. Stay buffed.
+See ya, {0}. Come back. Please. Nobody ever stays to talk buffs.
+
+~ fallback
+Huh? Say again, {0}, bub? I was lost in a buff.
+Mm. Yeah. Okay, {0}. Chillin' here.
+Sure thing, {0}, bub.
+
+~ opener xp
+Almost {level}. More levels, more buffs. Math checks out, bub.
+Got XP from {monster}. Buffed, then hit it. In that order.
+Another level and I can finally buff everyone twice. Dream big.
+
+~ opener gear
+{item} looks sharp. Doesn't change the buffs, though.
+Gear's nice, bub. Buffs are better. Nobody listens.
+Swapped my kit twice. Still the best buffer around.
+
+~ opener zones
+{zone}'s alright. Good spot for a smoke, bub.
+Walked all over {zone}. Buffed every stranger I met. Zero thank-yous.
+{zone} has nice quiet corners. Perfect for chillin'.
+
+~ opener classes
+A {class} is good. A buffed {class} is better, bub.
+Everyone thinks the {class} is the star. Buffs would like a word.
+Being a {class} is fine. Having buffs is better.
+
+~ opener dungeons
+Dungeons are loud, bub. I buff, then I hang back and chill.
+Dark halls, old bones. Buff up, breathe out, smoke after.
+If it drops something shiny, great. If not, I got my buffs.
+
+~ opener rvr
+Frontier's rough. Buffs make it less rough. Pass it on.
+Hold a keep for an hour, you'll see why buffs matter, bub.
+Best part of a fight? The buffs before it. Nobody agrees.
+
+~ opener trading
+Selling buffs for free. Business model needs work.
+Found a good deal on herbs. Don't tell the other healers, bub.
+Everything's tradeable except respect for buffing.
+
+~ opener realm
+Best realm for a buffer? The one that's buffed. Ha.
+Everybody here's tougher than they look. Buffs help.
+Walked past the guards this morning. Gave 'em a buff. They stared.
+
+~ opener gripes
+Nobody says thanks for buffs. Not once. Ouch.
+Spent an hour buffing the camp. Not one person noticed.
+They keep saying healin' is the hard part. Healin' is easy, bub.
+
+~ opener fun
+Why did the buffer stand back? To admire his work, bub.
+I named my buffs. The big one's Gary. He gets me.
+I buff in order: strength, then dex, then feelings.
+
+~ opener life
+Lovely evening for a smoke and a stand-back. Peaceful.
+Spent the day buffin' and chillin'. Best day ever.
+Smoke's lit, buffs are up. All good, bub.
+
+~ opener questions
+Do you really get buffing, bub? I mean, really get it?
+What's your favourite buff? Mine's whichever you're getting right now.
+Anyone want a buff? Anyone? Okay. Moving on.
+
+~ topic_reply zones
+Nice spot, {0}, bub. Is there a quiet corner for a smoke?
+Good place to buff, {0}. Sounds peaceful.
+I'll have to visit, {0}. Bring a stool. For the standing back.
+
+~ topic_reply classes
+A fine class, {0}, bub. Does it buff?
+Real nice, {0}. Buffed, it's better.
+That's a good one, {0}. Tell the others to appreciate buffs.
+
+~ topic_reply dungeons
+Dark down there, {0}? Buff first, then go.
+Sounds smelly, {0}, bub. Smoke afterwards, to cover it.
+Bring a souvenir, {0}. Something I can brew with.
+
+~ topic_reply rvr
+Good for you, {0}. Did anyone thank the buffer?
+Frontier's rough, {0}. Be buffed and be nice.
+Hold the line, {0}, bub. I'll cheer from behind.
+
+~ topic_reply trading
+Fair price, {0}? Buff included?
+Nice, {0}. I'd trade for herbs, bub.
+Make it a good deal, {0}. I'm too chill to haggle.
+
+~ topic_reply gear
+Real nice, {0}, bub. It'd look better with a buff on it.
+Looks sturdy, {0}. Stand still, I'll top you up.
+You'd look great in that, {0}. Buffed, even better.
+
+~ topic_reply realm
+I like that, {0}. Good folks there?
+Lovely, {0}, bub. Plenty of quiet for a smoke?
+Real nice. Anywhere good for buffing?
+
+~ topic_reply gripes
+Aw, that's rough, {0}. Buff and a smoke fix most things, bub.
+Hang in there, {0}. Want a buff? Free. Always free.
+Nobody gets it, {0}. Same here. Nobody gets buffing.
+
+~ topic_reply fun
+Ha, {0}! I'll tell Gary. He'll laugh.
+Good one, {0}, bub. Nice stuff.
+Heh. You get me, {0}. That's rare.
+
+~ topic_reply life
+Sounds nice, {0}. Very chill.
+That's the life, {0}, bub. Smoke, buff, stand back.
+Real nice, {0}. Show me sometime.
+
+~ topic_reply questions
+Good question, {0}. I'd say buff first. Always buff first.
+Ask the others, {0}. Or me. I've got opinions on buffing, bub.
+Dunno, {0}. But I know buffs.
+
+~ ding
+Level {level}! Now there's more of me to buff.
+{level}! Chillin' and levelling, bub.
+Ding, {level}! I'd celebrate with a smoke, but I always do.
+
+~ grats
+Congrats, {0}, bub! Buffed levelling is the best levelling.
+Real nice, {0}. Told you buffs help.
+Well done, {0}! I'll take a quiet smoke to celebrate.
+
+~ own_death
+Huh. I died. Nobody buffed me. Typical, bub.
+Dead. Ouch. Someone light one for me.
+
+~ other_death
+Aw, {0} went down, bub. I'll buff you right back up.
+{0}, bub, stand up. I got you.
+
+~ drop
+{item}! Not buff-worthy, but nice.
+{item}! Now I can stand back and brag.
+Found {item}. Buffs first, loot second, smoke third.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): same man, a little flavour from their realm. ---
+
+# Midgard: Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
+=== spyburd
+~ ambient
+Kobold, shaman, buffer, bub. Small man, big buffs.
+Everyone looks down at me. I buff them anyway. Nobody gets it.
+Some folk are bigger than me. I'm buffed, so it evens out.
+
+~ opener realm
+Midgard is cold. Good thing I'm warm on the inside. And buffed.
+Seen a lotta big warriors. Every one needed a buff.
+
+~ reply greeting
+Hey, {0}, bub! Stand still. Kobold special coming up.
+
+~ drop
+{item}! Back to my cave with that one, bub.
+
+# Albion: Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
+=== spyburde
+~ ambient
+Friar's life. Quiet prayers, loud buffs, long smokes. Mind you.
+Tea first, buffs next, smoke last. Proper order, bub.
+Nobody gets how holy buffing is. I mean it.
+
+~ opener realm
+Camelot's lovely. Tidy streets. Easy to stand back and relax in.
+Albion folk say please a lot. I buff them anyway.
+
+~ reply greeting
+Good day, {0}, bub. Mind you, I'll buff you first.
+
+~ drop
+{item}! Lovely, mind you. Into the satchel.
+
+# Hibernia: Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
+=== spyburdagh
+~ ambient
+Woods, quiet, buffs, a smoke by the roots. That's the life, bub.
+Trees get buffs too, I figure. Nobody argues.
+Warden, buffer, chiller. Nobody gets it.
+
+~ opener realm
+Hibernia's got the best shade. Perfect for a smoke after the buffs.
+Green everywhere. Easy on the eyes, bub.
+
+~ reply greeting
+Well met, {0}, bub. Come, stand in the shade. Buffs first.
+
+~ drop
+{item}! Goes in the pack with the herbs, bub.

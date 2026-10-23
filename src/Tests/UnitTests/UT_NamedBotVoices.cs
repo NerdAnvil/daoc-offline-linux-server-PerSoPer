@@ -122,9 +122,10 @@ public class UT_NamedBotVoices
     }
 
     [Test]
-    public void Named_IsNullForTypesWithoutAVoiceYet()
+    public void Named_IsNullWithoutAnEntry_AndEveryLineupBotHasAVoice()
     {
-        Assert.That(PersonalityTypes.Named(NamedBotLineup.FindByName("Hunterson")), Is.Null);
+        foreach (NamedBotLineup.Entry entry in NamedBotLineup.All)
+            Assert.That(PersonalityTypes.Named(entry), Is.Not.Null, entry.Name);
         Assert.That(PersonalityTypes.Named(null), Is.Null);
     }
 

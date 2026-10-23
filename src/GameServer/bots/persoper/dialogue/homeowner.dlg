@@ -1,0 +1,254 @@
+# Homeowner: the personality type's lines (named bots only). Format: see DialogueFile.cs.
+# The type block is the same person in every realm, in a Midwestern voice (oh, you betcha;
+# dontcha know; ope; uff da). Gender is random, so keep every line gender-neutral. The realm
+# blocks below only add the house and realm flavour.
+=== homeowner
+
+~ ambient
+Ope, sorry. Just thinking about my house. Again.
+Got a new rug. Real nice. Come see it sometime. Dontcha know.
+Anybody wanna come over for hotdish? Well. Pretend hotdish. It's a game.
+Spare room's all made up. Nobody's stayed yet. Hint, hint.
+Housing rent's due. Worth it, though. Oh, you betcha.
+Could use one more head for the wall. Big one. Over the fireplace.
+I dust the trophies twice a week. Once for them, once for me.
+
+~ reply greeting
+Well hey there, {0}! You oughta come see the house sometime.
+Oh, hi {0}! Come on over, I'll put the kettle on. Figuratively.
+
+~ reply banter
+Ha! Oh, that's a good one, {0}. I'm gonna tell the trophies.
+Uff da, {0}, you're something else.
+
+~ reply abuse
+Well, that's not very nice, {0}. Not coming to my house with that attitude.
+Ope! Okay, {0}. You're off the guest list. For now.
+
+~ reply grouping
+Oh sure, {0}! Long as we're back in time to see the house.
+You bet, {0}. Anything that drops goes on my wall, though. Fair?
+
+~ reply grinding
+Grinding's fine, {0}. Every kill's practice for the big trophy.
+Sure, {0}. Pays the rent, too.
+
+~ reply travel
+Take the stables, {0}. Then stop by my place! It's on the way. Kinda.
+Ope, long ride, {0}. Bring a snack. And swing by the house.
+
+~ reply dungeon
+Dungeons have the best trophies, {0}. Count me in.
+Oh, you betcha, {0}. I'll carry the wall space. You carry the loot.
+
+~ reply rvr
+RvR, {0}? Sure. Trophies from the other realms look real nice on the mantel.
+I'll come, {0}. Heads up, though: I'm picky about the decor.
+
+~ reply trading
+Trade, {0}? Do you have anything that'd look nice in a living room?
+Fair prices only, {0}. I've got rent to pay.
+
+~ reply help
+Of course, {0}! And after, you can come see the house.
+Ask away, {0}. Always happy to help a neighbour.
+
+~ reply farewell
+Take care, {0}! Come by the house whenever. The door's open.
+See ya, {0}. Don't be a stranger. Nobody visits, you know.
+
+~ fallback
+Ope, say that again, {0}? I was thinking about wallpaper.
+Hm. Okay, {0}. Sure. You bet.
+Well, that's something, {0}.
+
+~ opener xp
+Almost {level}. House gets a bigger mat for every level, I figure.
+Got XP from {monster}. Not trophy-worthy. Yet.
+Another level and I can finally afford the nice curtains.
+
+~ opener gear
+{item} would look real nice over the mantel. Wearing it is a bonus.
+Gear's for fighting. Trophies are for the wall. Two different things.
+Swapped my armour twice. House is still the nicest thing I own.
+
+~ opener zones
+{zone} has a few trophies I'm eyeing. Bring a friend, they said.
+Walked all over {zone} today. House is still the best view.
+{zone}'s not bad. My front porch is nicer, though.
+
+~ opener classes
+Being a {class} is fine. Having a house is better.
+My {class} pays the rent. That's what it's for.
+A {class} with a big house. Now that's a combination.
+
+~ opener dungeons
+Dungeons have the good trophies. And the bad smell.
+If it drops something shiny, it's coming home with me.
+Dark halls, old bones. Nice mantel material, dontcha know.
+
+~ opener rvr
+Took a banner off a keep once. Hung it in the hall. Looks real nice.
+Frontier's rough, but the trophies are worth it.
+You'd be amazed what a rival's helmet does for a bookshelf.
+
+~ opener trading
+Selling for the house fund. Real nice rug, real nice rent.
+Merchant wanted a lot for that statue. I said I'd think about it. I'm still thinking.
+Found a good deal on curtains. Don't tell the other homeowners.
+
+~ opener realm
+Housing's the best part of the realm. Quiet, nice neighbours. Mostly.
+Everybody should own a little place. Ours is lovely.
+Walked past the guards this morning. They waved. Big day.
+
+~ opener gripes
+Nobody's visited the house yet. Not once. Ope. Okay.
+Rent went up. Again. Uff da.
+Someone took the parking spot at the stables. I mean, my horse's spot.
+
+~ opener fun
+Why did the knight bring a ladder to the party? For the high-end trophy. Ha!
+I named my trophies. The big one's Gary.
+I arranged my trophies by size. Then by colour. Then by feelings.
+
+~ opener life
+Baking bars tonight. Well, pretending to. Still counts.
+Lovely evening for sitting on the porch. Even if the porch is a rug.
+Spent the whole day rearranging the living room. Productive day.
+
+~ opener questions
+Anybody got a spare room needs filling? I'll trade.
+What's your favourite trophy? Mine's the one I haven't got yet.
+Anyone wanna see a picture of my house? It's a screenshot.
+
+~ topic_reply zones
+Nice place, {0}. Any good trophies there?
+Real pretty, {0}. Is there a view? I like a view.
+I'll have to visit, {0}. Bring a camera. For the house.
+
+~ topic_reply classes
+A fine class, {0}. Does it come with a house?
+Real nice, {0}. Mine pays the rent.
+That's a good one, {0}. Good for dungeon trophies.
+
+~ topic_reply dungeons
+Anything worth hanging on a wall down there, {0}?
+Sounds dark and smelly, {0}. Perfect.
+Bring me a souvenir, {0}. Something for the fireplace.
+
+~ topic_reply rvr
+Did you bring back a trophy, {0}?
+Frontier's rough, {0}. But the souvenirs are real nice.
+Good for you, {0}. Hang something on the wall for me.
+
+~ topic_reply trading
+Fair price, {0}? Rent's due, so I'm asking for a friend.
+Did it come with a warranty, {0}? Houses do.
+Oh, that'd look nice in the hall, {0}.
+
+~ topic_reply gear
+Real nice, {0}. Better than what's on my wall?
+Looks sturdy, {0}. Nice cut.
+You'd look great in that, {0}. The house would too.
+
+~ topic_reply realm
+Real nice place, {0}. Do they do housing there?
+I like that, {0}. Neighbours matter.
+Lovely, {0}. I'd hang something from there on the wall.
+
+~ topic_reply gripes
+Ope, that's rough, {0}. Come over, I'll make hotdish.
+Uff da, {0}. Things'll turn around. Maybe stop by the house.
+Aw, that's a shame, {0}. Everything's better with a porch.
+
+~ topic_reply fun
+Ha, {0}! I'll tell Gary. He'll laugh.
+Good one, {0}. I'll put it on the wall.
+Oh, you betcha, {0}. That's a keeper.
+
+~ topic_reply life
+Sounds nice, {0}. Very cozy. Very house.
+That's the life, {0}. Porch, bars, nobody bothering.
+Real nice, {0}. Come show me sometime.
+
+~ topic_reply questions
+Good question, {0}. Let me think. Ope, no clue.
+Ask the neighbours, {0}. Or me. I've got opinions.
+Dunno, {0}. But I know a guy. Gary.
+
+~ ding
+Level {level}! Time for new curtains!
+{level}! Oh, you betcha!
+Ding, {level}! House feels bigger already.
+
+~ grats
+Congrats, {0}! Come celebrate at the house!
+Real nice, {0}. Worth hanging on the wall.
+Well done, {0}! Ope, I almost spilled my tea.
+
+~ own_death
+Ope. Well. That's one for the wall. The wrong way around.
+Dead. Uff da. Somebody feed the trophies.
+
+~ other_death
+Ope! {0} went down. Come to the house after, I'll make hotdish.
+Aw, {0}. Up you get, nobody wants you dead on a Tuesday.
+
+~ drop
+{item}! That's going straight over the mantel.
+{item}! Real nice. Gary will be so jealous.
+Found {item}. Don't tell the landlord.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): same person, house in their realm's housing. ---
+
+# Midgard: Troll Savage. Big, rough, gentle underneath; house is a cosy hall in Jordheim housing.
+=== barbalicious
+~ ambient
+Hall's got a good fire going. Come on in, dontcha know. Duck at the door.
+Got a boar's head over the hearth. Real nice. Its eyes follow you.
+Big hands, small house. Ope, watch the mead cups.
+
+~ opener realm
+Jordheim housing's quiet. Bit of snow, bit of mead. Perfect.
+Midgard has the best halls. Mine's the cosiest one.
+
+~ reply greeting
+Skol, {0}! Oh, you betcha, come see the hall!
+
+~ drop
+{item}! Over the hearth it goes. Next to the boar.
+
+# Albion: Inconnu Reaver. A bit dark and brooding, but invites tea; house in Albion housing.
+=== barbaliciouse
+~ ambient
+Kettle's on, parlour's warm. Come on over, dontcha know.
+Mounted a nice pair of antlers by the window. Ope, mind your head.
+Nice cottage. Crooked chimney. Real nice, though.
+
+~ opener realm
+Camelot's housing is lovely. Neat hedges, nice neighbours.
+Albion's got the best tea. And my parlour has the best chairs.
+
+~ reply greeting
+Well hello, {0}! You oughta come for tea. Oh, you betcha.
+
+~ drop
+{item}! For the parlour wall. Real nice.
+
+# Hibernia: Firbolg Valewalker. Gentle and green, garden-minded; house in Hibernia housing.
+=== barbalicioush
+~ ambient
+Garden's coming along real nice. Come see the roses. Dontcha know.
+Put a stag's skull over the door. Gives the house character.
+Ope, the moss is growing on the porch again. It's lovely.
+
+~ opener realm
+Tir na Nog housing is green and quiet. My kinda place.
+Hibernia's got the best gardens. Mine's the best of those.
+
+~ reply greeting
+Hi there, {0}! Come see the garden, you betcha.
+
+~ drop
+{item}! For the hall by the garden. Real nice.

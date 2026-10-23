@@ -1,0 +1,254 @@
+# Gruff Doc: the personality type's lines (named bots only). Format: see DialogueFile.cs.
+# The type block is the same doctor in every realm: a former army field-hospital medic, clipped
+# and blunt, who says "Sit still", "Walk it off" and "Don't make me patch you twice". Serious
+# when things go wrong, a softy underneath who hates admitting it. Gender is random, so no line
+# uses he or she; all lines speak as "I". The realm blocks below only add a little realm flavour.
+=== gruffdoc
+
+~ ambient
+Field hospital taught me one thing. Wash your hands. Then everything else.
+Sit down. Drink water. Doctor's orders.
+Slow day. Good. Slow days mean nobody's bleeding. Time for a martini.
+Don't thank me. Just stay out of trouble. Please.
+Seen worse. Seen a lot worse. Let's leave it there.
+Not soft. Just tired of patching people up.
+
+~ reply greeting
+Hm. {0}. You look fine. Good. Don't make me check.
+{0}. Sit still. Let me look at you. ...Fine. Off you go.
+
+~ reply banter
+Ha. Not bad, {0}. Don't tell anyone I laughed.
+Hmph. Funny, {0}. Very funny. Keep going.
+
+~ reply abuse
+Careful, {0}. I know where you keep your ribs.
+Enough, {0}. I patch folk up. I can unpatch them too.
+
+~ reply grouping
+Fine, {0}. I heal, you stay alive. Simple.
+Count me in, {0}. Stay close. I can't mend what I can't reach.
+
+~ reply grinding
+Grind away, {0}. I'll watch your health. Somebody has to.
+Fine. Slow and steady, {0}. No heroics.
+
+~ reply travel
+Long road, {0}. Pack bandages. And water. Always water.
+Go on, {0}. I'll tag along. Someone has to look after you.
+
+~ reply dungeon
+Dungeon, {0}? Stay behind me. No, in front. No, just stay alive.
+Dark, damp, and full of teeth. Great. Lead on, {0}.
+
+~ reply rvr
+RvR, {0}? Worst place for a medic. Best place for one. I'm in.
+Stay tight, {0}. I want everyone back in one piece.
+
+~ reply trading
+Trade, {0}? Fine. Fair price. I don't haggle. Much.
+Sure, {0}. Bandages first. Coin second.
+
+~ reply help
+What's wrong, {0}? Where does it hurt? Talk.
+Ask. I'll help, {0}. Don't make a fuss about it.
+
+~ reply farewell
+Go on then, {0}. Stay safe. That's an order.
+Off you go, {0}. Come back in one piece. Please.
+
+~ fallback
+Hm? Say again, {0}. I was counting bandages.
+Mm. Fine, {0}.
+Right. Noted, {0}.
+
+~ opener xp
+Almost {level}. More levels, more patients. Wonderful. I need a drink...
+Got XP from {monster}. Nothing broken. Good enough.
+One more level and I can mend a bit more. Don't tell anyone I'm excited.
+
+~ opener gear
+{item}. Solid. Keeps the wounds shallow.
+Good gear means fewer visits to me. Buy good gear.
+Swapped my kit again. Padded the bandage pouch first.
+
+~ opener zones
+{zone}'s all right. Plenty of clean water. That matters.
+Walked all over {zone}. Mended three strangers. None said thanks. Fine.
+{zone} is quiet. I like quiet. Nobody's bleeding.
+
+~ opener classes
+A {class}? Tough lot. Always stitching them up.
+Everyone loves the {class}. Nobody loves the one behind them with the bandages.
+Being a {class} is fine. Just don't get hurt. Please.
+
+~ opener dungeons
+Dungeons mean wounds. Bring bandages. Bring more.
+Dark halls, old bones, bad air. I patch up whoever walks out.
+If it drops something shiny, fine. Come out alive first.
+
+~ opener rvr
+Frontier's rough. I've seen rougher. Not much.
+Hold a keep for an hour. You'll learn to love a medic.
+Best part of a fight? Everyone walking home after.
+
+~ opener trading
+Selling bandages. Cheap. People keep forgetting to buy them.
+Found a good deal on herbs. Don't tell the apothecary.
+Everything's for sale. Except hands that heal. Not for sale.
+
+~ opener realm
+Folks here are tougher than they look. I patch them anyway.
+Walked past the guards this morning. One had a cough. I gave advice. Ignored.
+Best realm? The one where everyone gets home.
+
+~ opener gripes
+Nobody drinks water. Nobody. I keep telling them.
+Spent an hour on one cut. Patient wouldn't sit still.
+Told them to rest. They went and fought. Of course.
+
+~ opener fun
+Why do medics carry two bandages? One for you, one for the fool who hit you.
+I name my bandages. This one's Pete. He's seen some shit.
+Rule of the ward: sit, breathe, behave. Mostly works.
+
+~ opener life
+Quiet night. Mug of something hot. Not bad.
+Mended a stranger, drank some tea. Good day.
+Fire's warm, bandages are rolled. All good.
+
+~ opener questions
+Anyone hurt? Anyone pretending not to be?
+What's the worst you've ever been hurt? Mine I won't repeat.
+Anyone need a once-over? No? Fine. Moving on.
+
+~ topic_reply zones
+Clean water there, {0}? Matters more than you think.
+Sounds peaceful, {0}. I might visit. Bring a stool.
+Good place to rest, {0}? Tell me. I'll remember.
+
+~ topic_reply classes
+Sturdy class, {0}. Still need a medic, though.
+Good one, {0}. Don't get hit. Please.
+Fine, {0}. Wear the armour. All of it.
+
+~ topic_reply dungeons
+Sounds nasty, {0}. Bandages. Water. Don't be a hero.
+Come out with all your limbs, {0}. That's the goal.
+Bring me a souvenir, {0}. Something that isn't poisonous.
+
+~ topic_reply rvr
+Good for you, {0}. Come see me afterwards. Don't argue.
+Frontier's rough, {0}. Keep your head down. Literally.
+Hold the line, {0}. I'm right behind you.
+
+~ topic_reply trading
+Fair price, {0}? Don't get fleeced.
+Nice, {0}. I'd trade for bandage cloth.
+Good deal, {0}. Don't spend it all in one place.
+
+~ topic_reply gear
+Looks sturdy, {0}. Wear it properly. Straps matter.
+Nice kit, {0}. Doesn't make you invincible. Remember that.
+Good, {0}. Fewer visits to me. I approve.
+
+~ topic_reply realm
+Good folk there, {0}? I hope so. Rough times out there.
+Sounds decent, {0}. Anywhere I can set up a bed?
+Lovely, {0}. Tell them there's a medic about.
+
+~ topic_reply gripes
+Rough, {0}. Sit down. Breathe. It gets better.
+Hang in there, {0}. And drink water. Don't argue.
+I know, {0}. I've seen it all. Tea helps. Mostly.
+
+~ topic_reply fun
+Ha. Good one, {0}. Don't tell my patients.
+Funny, {0}. Do it again.
+Hmph. Better than a sedative, {0}.
+
+~ topic_reply life
+Sounds nice, {0}. Peaceful. Hold onto it.
+Good for you, {0}. You earned it.
+Sounds like a good day, {0}. Enjoy it.
+
+~ topic_reply questions
+Good question, {0}. Short answer: rest more.
+Ask the others, {0}. Or me. I'm usually right.
+Dunno, {0}. But I know a bandage when I see one.
+
+~ ding
+Level {level}. Fine. Now I can mend more. Good.
+{level}. Hm. Not bad. Back to work.
+Ding, {level}. Don't fuss. I'm not smiling.
+
+~ grats
+Well done, {0}. Proud of you. Don't tell anyone I said so.
+Good, {0}. Level well. Eat something.
+Congrats, {0}. About time. ...Kidding. Well done.
+
+~ own_death
+Dead. Wonderful. Somebody get me a doctor.
+Hm. Down. I'll be fine. Mostly.
+
+~ other_death
+{0} is down! Hold on, {0}. I've got you.
+Don't move, {0}. I'm coming. Don't you dare die on me.
+
+~ drop
+{item}. Could be worse. Into the pouch.
+Found {item}. Bandages first, loot second.
+{item}! Hm. Well. Don't tell anyone I'm pleased.
+
+# --- Named bots (docs/BOT-PERSONALITIES.md): same doctor, a little flavour from their realm. ---
+
+# Midgard: Dwarf Healer. Stocky, stubborn, plain-spoken; patches people by the forge and the fire.
+=== eaglefang
+~ ambient
+Dwarf, healer, medic. Short, tough, stubborn. Like my patients should be.
+Forge's warm, bandages are boiled. Good day.
+Everyone's bigger than me. Everyone still comes to me. Funny.
+
+~ opener realm
+Midgard's cold. Wounds heal slow in the cold. Wear a scarf.
+Seen big warriors cry over a splinter. Don't tell them.
+
+~ reply greeting
+Hm. {0}. Come in by the fire. Let me look at you.
+
+~ drop
+{item}. Good solid thing. Dwarf-made, I'd wager.
+
+# Albion: Highlander Cleric. Plain, proud, a little dry; patches soldiers like it's a field hospital still.
+=== eaglefange
+~ ambient
+Cleric, medic, nuisance. In that order.
+Good wool, good boots, good sense. Three rules for the road.
+Highlands taught me to bandage in the wind. Hard to keep tidy.
+
+~ opener realm
+Albion folk say please a lot. Wounded ones say it more.
+Camelot's tidy. I'd still bandage a wall if it bled.
+
+~ reply greeting
+Good day, {0}. You look wobbly. Sit.
+
+~ drop
+{item}. Fine. Into the satchel.
+
+# Hibernia: Firbolg Druid. Big, quiet, tender with plants; hates admitting the herbs are the favourite part.
+=== eaglefangh
+~ ambient
+Druid, medic, nuisance. Herbs first, fuss later.
+Moss on a cut works better than people think.
+Tall folk fall hard. I've mended plenty.
+
+~ opener realm
+Hibernia's green. Plenty of herbs. Plenty of patients.
+Good shade, good water. Everything a medic wants.
+
+~ reply greeting
+Well met, {0}. Sit in the shade. Let me see that.
+
+~ drop
+{item}. Goes in with the herbs.
