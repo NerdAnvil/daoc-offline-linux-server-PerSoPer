@@ -15,7 +15,7 @@ public static class Program
 {
     const string Usage =
         "Usage: HeadlessClient --account=NAME [--password=PW] [options]\n" +
-        "  --server=HOST        server address (default 127.0.0.1)\n" +
+        "  --server=127.0.0.1   the only address allowed (the default); other addresses are refused\n" +
         "  --password=PW        or set DAOC_PASSWORD instead\n" +
         "  --character=NAME     character to enter the world with (default: the first one found)\n" +
         "  --login-only         stop after the character list (and --create, if given)\n" +
@@ -554,7 +554,10 @@ public sealed class Options
             string key = eq < 0 ? a : a[..eq], value = eq < 0 ? "" : a[(eq + 1)..];
             switch (key)
             {
-                case "--server": o.Server = value; break;
+                case "--server":
+                    if (value != "127.0.0.1")
+                        throw new ArgumentException("--server must be 127.0.0.1: this client only talks to the local test server");
+                    o.Server = value; break;
                 case "--account": o.Account = value; break;
                 case "--password": o.Password = value; break;
                 case "--character": o.Character = value; break;

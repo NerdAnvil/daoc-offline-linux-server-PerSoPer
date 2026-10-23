@@ -472,6 +472,16 @@ namespace DOL.Tests.Unit
         }
 
         [Test]
+        public void OnlyTheLocalTestServerIsAllowed()
+        {
+            Assert.That(Options.Parse(new[] { "--account=a" }, null).Server, Is.EqualTo("127.0.0.1"));
+            Assert.That(Options.Parse(new[] { "--account=a", "--server=127.0.0.1" }, null).Server, Is.EqualTo("127.0.0.1"));
+            foreach (string other in new[] { "192.168.1.5", "localhost", "example.com", "127.0.0.2", "127.0.0.1.evil.com", "" })
+                Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--server=" + other }, null), other);
+            Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--server" }, null));
+        }
+
+        [Test]
         public void RecordOptions()
         {
             Options o = Options.Parse(new[] { "--account=a", "--record=chat.txt", "--record-seconds=60", "--record-from=Persoper", "--overwrite" }, null);
