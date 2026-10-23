@@ -361,6 +361,34 @@ namespace DOL.UnitTests
                 "Raid support still obeys the actual song range; it is not a global speed cheat.");
         }
 
+        [TestCase("Group", 100, true)]
+        [TestCase("Group", 2100, false)]
+        [TestCase("Self", 100, false)]
+        [TestCase(null, 100, false)]
+        public void BotSkaldSkipsASongTypeAGroupmateIsAlreadySinging(string playerSongTarget, int playerX, bool covered)
+        {
+            Player player = Actor<Player>();
+            player.PositionX = playerX;
+            Bot skald = NewBot(typeof(ClassSkald));
+            var group = new Group(player);
+            Field(typeof(Group), group, "_groupMembers", new List<GameLiving> { player, skald });
+            player.Group = skald.Group = group;
+            if (playerSongTarget != null)
+                player.ActivePulseSpells[eSpellType.SpeedEnhancement] = new Spell(new DbSpell { SpellID = 2001,
+                    Type = "SpeedEnhancement", Target = playerSongTarget, Range = 2000, Value = 150, Pulse = 1, Duration = 6 }, 1);
+            var botSpeed = new Spell(new DbSpell { SpellID = 2002, Type = "SpeedEnhancement", Target = "Group",
+                Range = 2000, Value = 150, Pulse = 1, Duration = 6 }, 1);
+            var botRegen = new Spell(new DbSpell { SpellID = 2003, Type = "HealthRegenBuff", Target = "Group",
+                Range = 2000, Value = 5, Pulse = 1, Duration = 6 }, 1);
+
+            Assert.That(BotSongTwistPolicy.IsCoveredByGroupmate(skald, botSpeed), Is.EqualTo(covered));
+            Assert.That(BotSongTwistPolicy.IsCoveredByGroupmate(skald, botRegen), Is.False,
+                "Only the song type the groupmate is singing is skipped.");
+            skald.ActivePulseSpells[eSpellType.HealthRegenBuff] = botRegen;
+            Assert.That(BotSongTwistPolicy.IsCoveredByGroupmate(skald, botRegen), Is.False,
+                "The bot's own running song never blocks itself.");
+        }
+
         [TestCase(typeof(ClassMinstrel))] [TestCase(typeof(ClassBard))] [TestCase(typeof(ClassSkald))]
         public void TravelingPerformerPreflightFollowsDuringSongWithoutDuplicateMovement(Type type)
         {

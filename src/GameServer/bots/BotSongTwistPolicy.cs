@@ -63,6 +63,25 @@ namespace DOL.GS
             spell != null && spell.IsPulsing && !spell.IsHarmful && !spell.IsFocus &&
             BotBrain.IsMaintainableClassBuff(spell);
 
+        // A groupmate's running group song already covers this song type (for
+        // example a player Skald's speed chant). Starting ours would only
+        // overwrite theirs, so the bot skips that type while it lasts.
+        public static bool IsCoveredByGroupmate(GameLiving singer, Spell song)
+        {
+            if (singer?.Group == null || song == null)
+                return false;
+            foreach (GameLiving member in singer.Group.GetMembersInTheGroup())
+            {
+                if (member == null || member == singer || !member.IsAlive ||
+                    !member.ActivePulseSpells.TryGetValue(song.SpellType, out Spell theirs) || theirs == null ||
+                    theirs.IsHarmful || theirs.Target is not (eSpellTarget.GROUP or eSpellTarget.REALM))
+                    continue;
+                if (member.IsWithinRadius(singer, Math.Max(350, theirs.Range)))
+                    return true;
+            }
+            return false;
+        }
+
         public static bool HasMobileSongCast(GameLiving living)
         {
             if (living is not GameBot bot || bot.CharacterClass == null)
