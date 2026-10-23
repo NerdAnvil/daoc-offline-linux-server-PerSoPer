@@ -2179,6 +2179,7 @@ namespace DOL.AI.Brain
                 .Where(spell => spell != null && spell.IsPulsing && !spell.IsHarmful &&
                                 spell.Level <= bot.Level && IsMaintainableClassBuff(spell) &&
                                 bot.Mana >= bot.PowerCost(spell) &&
+                                !BotSongTwistPolicy.IsCoveredByGroupmate(bot, spell) &&
                                 (!ownerMoving || BotSongTwistPolicy.IsCompanionTravelSong(
                                     (eCharacterClass)bot.CharacterClass.ID, spell.SpellType)))
                 .DistinctBy(spell => spell.ID)
