@@ -82,7 +82,7 @@ in-game checks are separate.
 | Check | Result |
 |---|---|
 | Build | 0 errors (~650 pre-existing warnings) |
-| Tests | 3,013 passed, 0 failed (PerSoPer version 1, 2026-10-19) |
+| Tests | 3,147 passed, 0 failed (with the 33 named bots, 2026-10-23) |
 | World build | ~92 s, 67 MB; identical to Offline DAoC 0.37's pristine world (0 differing tables) |
 | Fresh release start | Ready in ~21 s; 99/99 navmeshes (measured at 0.33; not re-measured for 0.35's 103) |
 | Bot logins | 9 new bots in the world in about 1 s; full AI active within 30 s; 0 errors |

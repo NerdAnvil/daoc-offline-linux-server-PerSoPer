@@ -69,6 +69,7 @@ status | server stop
 bots list [--realm alb|mid|hib] [--online]
 bots create [--realm alb|mid|hib|all] [--count N] [--level 1|50] [--class NAME]
 bots delete <name|id> | bots delete-all --yes
+bots named list | bots named on|off <name|type>   (the 33 named personality bots; `bots create --personality <name>` remakes one)
 population | population on | off | max <N>
 accounts list | show <name> | create <name> <password> | set-role <name> player|gm|admin
 options | options set <key> on|off|<number>

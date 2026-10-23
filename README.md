@@ -13,6 +13,9 @@ AI, and remembers who she is between summons.
 
 Version 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, checked in game:
 
+- **33 named personality bots**, on by default: one of each of 11 types in each realm, every
+  one with its own name, class, voice, memory and patience (see
+  [The 33 named bots](#the-33-named-bots)).
 - **Persoper**, a summoned healer companion (`/persoper`): greets you, reacts to fights, deaths
   and loot, takes heal requests, keeps her own surname and memory between summons, fights
   back when you die, and resurrects fallen group members.
@@ -21,10 +24,13 @@ Version 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, 
   Leeroy): their own chat voice, memory, patience, emotes and small habits.
 - **Patience:** personality bots grumble, warn, and can rage-quit and sulk if you annoy them.
 - **Group commands** that work with bots: `/pull`, `/grind`, `/aggressive`, `/defensive`.
+- **Dialogue in text files:** the bots' lines live in `.dlg` files (one per type) that are
+  built into the server, so the writing can be changed without touching the code.
 - Everything is plain C# rules and phrase lists inside the server: no AI model, no internet.
 
-**Not in version 1:** free conversation, relationships between bots, the named personality bots
-and an AI model are goals, not built yet (see below).
+**Not in version 1:** free conversation, relationships between bots, the bigger behaviours in
+the named bots' characters (the Crafter's selling runs, the Homeowner's house, the Herbal
+Doctor's buff-and-smoke breaks) and an AI model are goals, not built yet (see below).
 
 ### Commands at a glance
 
@@ -35,17 +41,18 @@ and an AI model are goals, not built yet (see below).
 | Terminal | `./daoc-admin options` | List every PerSoPer setting with its value (also the **Options** tab) |
 | Terminal | `./daoc-admin bots create --realm mid --count 10 --personality-type mixed` | Add world bots with personality types |
 | Terminal | `./daoc-admin bots create --personality kobaldjovi --level 50` | Add Kobaldjovi |
+| Terminal | `./daoc-admin bots named list` | List the 33 named bots, their state and level |
+| Terminal | `./daoc-admin bots named off joker` / `on Shnacksize` | Turn a named bot (or a whole type) off or on |
 | In game | `/persoper` | Summon Persoper |
 | In game | "heal me", "big heal", "heal Bob" (group chat, tell or `/say`) | Ask a healer for a heal |
 | In game | `/pull`, `/grind`, `/aggressive`, `/defensive` | Order your bots |
 
 **Where it's going** (goals, not built yet):
-- natural conversation, memory of the players she meets, and relationships;
+- natural conversation, deeper memory of the players they meet, and relationships between bots;
+- the named bots' bigger behaviours: the Crafter chasing profitable drops, the Homeowner's
+  house and trophies, the Herbal Doctor's buff-then-smoke breaks;
 - optional replies from a locally hosted AI model, while the existing game AI keeps handling
-  combat;
-- expanding the code to many autonomous bots with different personality types: the hardcore
-  player, the casual, the min/maxer, male and female, the joker, the loner, and the Leeroy
-  Jenkins every server had before Leeroy was a thing.
+  combat.
 
 PerSoPer is built on the work of other projects: the server, world and bots come from them
 (see [Credits](#credits)). This repo adds the personalities and the Linux packaging around them.
@@ -129,6 +136,43 @@ him like any other bot:
 ```bash
 ./daoc-admin bots create --personality kobaldjovi --level 1
 ./daoc-admin bots delete Kobaldjovi
+```
+
+## The 33 named bots
+
+Eleven personality types, one named bot of each in every realm (11 x 3 = 33). A fresh server
+creates all 33 at level 1 on first start, and a server that has already been played gets them
+the first time it starts with this version. They level, loot and earn armour like any gamebot.
+Their names are reserved, so a player can't pick one. Each realm's version shares its type's
+character but has its own name, class, memory and patience.
+
+| Type | Midgard | Albion | Hibernia |
+|---|---|---|---|
+| Hardcore | xXxNataSehSxXx | xAxNataSehSxAx | xHxNataSehSxHx |
+| Casual | Shempenstein | Shempenshire | Shempenmore |
+| Leeroy | TheriousTham | TheriousThamm | TheriousThamh |
+| Loner | FemurTamer | Deaditetamer | Shroomtamer |
+| Min/maxer | Redtornader | Greenfogger | Sunrayder |
+| Joker | Shnacksize | Shnacksizer | Shnacksizey |
+| Crafter | Muckaduck | Muckaducke | Muckaduckeen |
+| Roleplayer | Hunterson | FitzHunter | MacHunter |
+| Homeowner | Barbalicious | Barbaliciouse | Barbalicioush |
+| Herbal Doctor | Spyburd | Spyburde | Spyburdagh |
+| Gruff Doc | Eaglefang | Eaglefange | Eaglefangh |
+
+Classes, races and characters are in [docs/BOT-PERSONALITIES.md](docs/BOT-PERSONALITIES.md).
+In short: the Joker talks about his homeland Swissland, the Roleplayer speaks his realm's
+old-fashioned tongue (and gets it a little wrong), the Homeowner brags about the house, the
+Herbal Doctor buffs and chills, and the Gruff Doc is a former field-hospital medic.
+
+Turn them off or on from the terminal or the server console. A bot that is off keeps its
+progress, and one that is off (or deleted) is not recreated on restart:
+
+```bash
+./daoc-admin bots named list              # the 33, their state and level
+./daoc-admin bots named off joker         # a whole type (all three realms)
+./daoc-admin bots named on Shnacksize     # one bot, by name
+./daoc-admin bots create --personality Shnacksize   # after a delete: starts again at level 1
 ```
 
 ---

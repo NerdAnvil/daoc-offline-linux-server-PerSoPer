@@ -4,7 +4,9 @@ The PerSoPer plan for named world-bot personalities: one per type per realm, 11 
 33 bots. Each works like Kobaldjovi: its own identity file, and its own distinct personality and
 behaviour (all 33, not a selection).
 
-Status: **agreed, not built yet.**
+Status: **built and active** (identity and voice, 2026-10-22). The bigger behaviours in the
+characters below (the Crafter selling, the Homeowner's house, the Herbal Doctor's breaks) are not
+built yet; see [NAMED-BOTS-DESIGN.md](NAMED-BOTS-DESIGN.md) for how it works.
 
 ## Rules for all 33
 
