@@ -28,6 +28,9 @@ public static partial class PersoperIdentity
     [GeneratedRegex("^[A-Z][a-z]{2,13}$")]
     private static partial Regex SurnameShape();
 
+    // Her chat lines: dialogue/persoper.dlg. Declared first, as the tables below read it.
+    private static readonly IdentityDialogue Dialogue = new("persoper");
+
     private static readonly string[] GenericClean =
         ["Mendwell", "Patchwell", "Glowsworth", "Outrageous", "Showtime", "Glitterheart", "Sparklemend"];
 
@@ -70,44 +73,17 @@ public static partial class PersoperIdentity
         [eRace.Sylvan] = ["Sapsalot"],
     };
 
-    // {0} full name, {1} surname, {2} player name.
-    private static readonly Dictionary<eGreeting, string[]> GreetingsClean = new()
+    // Greetings: {0} full name, {1} surname, {2} player name. Lines are in persoper.dlg.
+    private static Dictionary<eGreeting, string[]> Greetings(string section) => new()
     {
-        [eGreeting.FirstMeeting] =
-        [
-            "Hello, {2}! I'm {0}. Yes, {1}. I picked it myself.",
-            "{0}, reporting for healing duty. Try not to need me too much, {2}.",
-        ],
-        [eGreeting.Returning] =
-        [
-            "{0}, back again. Did you miss me, {2}?",
-            "Still {1}, still fabulous. Lead the way, {2}.",
-        ],
-        [eGreeting.NewSurname] =
-        [
-            "Fresh start, {2}! From now on I'm {0}.",
-            "I've decided {1} suits me better. Do keep up, {2}.",
-        ],
+        [eGreeting.FirstMeeting] = Dialogue.Lines(section, "first_meeting"),
+        [eGreeting.Returning] = Dialogue.Lines(section, "returning"),
+        [eGreeting.NewSurname] = Dialogue.Lines(section, "new_surname"),
     };
 
-    private static readonly Dictionary<eGreeting, string[]> GreetingsCheeky = new()
-    {
-        [eGreeting.FirstMeeting] =
-        [
-            "Well hello, {2}. I'm {0}. Stick close, I'm very hands-on.",
-            "The name's {0}. {1}, darling. Say it slowly.",
-        ],
-        [eGreeting.Returning] =
-        [
-            "Miss me, {2}? {0} is back, and so are these healing hands.",
-            "{0}, at your service. All of it, {2}.",
-        ],
-        [eGreeting.NewSurname] =
-        [
-            "New name, same curves. Call me {0}, {2}.",
-            "I felt like slipping into something new: {0}.",
-        ],
-    };
+    private static readonly Dictionary<eGreeting, string[]> GreetingsClean = Greetings("greeting");
+
+    private static readonly Dictionary<eGreeting, string[]> GreetingsCheeky = Greetings("cheeky_greeting");
 
     private static readonly string[] OffClassGrumbles =
     [
@@ -213,96 +189,10 @@ public static partial class PersoperIdentity
                 "\"Hmph.\" Persoper won't come for another {1}.",
             ],
         },
-        Replies = new Dictionary<eAutonomousChatIntent, string[]>
-        {
-            [eAutonomousChatIntent.Greeting] =
-            [
-                "Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.",
-                "{0}! Good to see you still have all your hit points.",
-            ],
-            [eAutonomousChatIntent.Banter] =
-            [
-                "Oh, {0}, you're funny. Keep it up and I'll heal you last.",
-                "Ha! {0}, I'm putting that on your tab.",
-            ],
-            [eAutonomousChatIntent.Abuse] =
-            [
-                "Careful, {0}. I decide who gets healed around here.",
-                "Rude, {0}. I'll pretend I didn't hear that. Once.",
-            ],
-            [eAutonomousChatIntent.Grouping] =
-            [
-                "A group, {0}? Someone has to keep you lot alive.",
-                "Count me in, {0}. Try not to stand in the fire.",
-            ],
-            [eAutonomousChatIntent.Grinding] =
-            [
-                "Pull what you like, {0}. I'll keep the green bars up.",
-                "More monsters, {0}? Fine, but I want a break after this camp.",
-            ],
-            [eAutonomousChatIntent.Travel] =
-            [
-                "Lead the way, {0}. I'll be right behind you, healing.",
-                "If you get us lost, {0}, I'm telling everyone.",
-            ],
-            [eAutonomousChatIntent.Dungeon] =
-            [
-                "A dungeon, {0}? Then nobody runs ahead. Nobody.",
-                "Dark and full of things that bite. My favourite, {0}. Not really.",
-            ],
-            [eAutonomousChatIntent.RvR] =
-            [
-                "The frontier, {0}? Healers are the first target. Protect me.",
-                "I'll come, {0}, but if an assassin shows up, I'm screaming.",
-            ],
-            [eAutonomousChatIntent.Trading] =
-            [
-                "Trading, {0}? I'm looking for anything in magenta.",
-                "Not selling, {0}. I'm a healer, not a merchant.",
-            ],
-            [eAutonomousChatIntent.Help] =
-            [
-                "Help? That's literally my job, {0}.",
-                "What do you need, {0}? Heals, buffs or a pep talk?",
-            ],
-            [eAutonomousChatIntent.Farewell] =
-            [
-                "Bye, {0}! Don't die without me.",
-                "Take care, {0}. Who's going to heal you now?",
-            ],
-            [eAutonomousChatIntent.IgnoreOutOfWorld] =
-            [
-                "I have no idea what that is, {0}, and I'm too busy healing to ask.",
-            ],
-        },
-        SongReactions =
-        [
-            "{0}, sweetie, I can heal wounds. Not that.",
-            "Lovely, {0}! Now do one about healers.",
-            "If anyone's ears start bleeding, I'm right here.",
-            "Ooh, {0}, that one's catchy. Unfortunately.",
-            "*hums along, badly*",
-        ],
-        CheekyReplies = new Dictionary<eAutonomousChatIntent, string[]>
-        {
-            [eAutonomousChatIntent.Greeting] =
-            [
-                "Well hello, {0}. Need a little hands-on healing?",
-            ],
-            [eAutonomousChatIntent.Banter] =
-            [
-                "Keep talking like that, {0}, and I'll keep you topped up all night.",
-            ],
-            [eAutonomousChatIntent.Grouping] =
-            [
-                "Group with you, {0}? Thought you'd never ask, darling.",
-            ],
-        },
-        FallbackReplies =
-        [
-            "Mm-hm. Sure, {0}. Now, who needs healing?",
-            "Interesting, {0}. Tell me more after this pull.",
-        ],
+        Replies = Dialogue.Intents("reply"),
+        SongReactions = Dialogue.Lines("song_reaction"),
+        CheekyReplies = Dialogue.Intents("cheeky_reply"),
+        FallbackReplies = Dialogue.Lines("fallback"),
     };
 
     /// <summary>True when a character or bot name would impersonate Persoper.</summary>
