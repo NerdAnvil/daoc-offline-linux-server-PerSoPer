@@ -5,8 +5,15 @@ using System.Text.RegularExpressions;
 
 namespace DOL.GS;
 
-/// <summary>One "~ name argument [if condition]" section of a dialogue file and its lines.</summary>
-public sealed record DialogueSection(string Name, string Argument, string Condition, IReadOnlyList<string> Lines, int LineNumber);
+/// <summary>One "-> key: reply" row of an ask section: what the player may answer and what the bot says back.</summary>
+public sealed record DialogueAnswer(string Key, string Reply);
+
+/// <summary>
+/// One "~ name argument [if condition]" section of a dialogue file and its lines. An ask section
+/// has its question as the only line and its "-> key: reply" rows as <paramref name="Answers"/>
+/// (null in every other section).
+/// </summary>
+public sealed record DialogueSection(string Name, string Argument, string Condition, IReadOnlyList<string> Lines, int LineNumber, IReadOnlyList<DialogueAnswer> Answers = null);
 
 /// <summary>
 /// A bot dialogue file (*.dlg), a small format borrowed from Dialogue Manager (Nathan Hoad):
@@ -19,6 +26,10 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// ~ cheeky [if tone_down off]      a section with a condition
 /// \# a line that starts with #     a backslash keeps a leading #, ~, = or \ as text
 /// Hold still! [if player_dead] [once]   a line with rules (see DialogueRule), reply sections only
+/// ~ ask fav_music                  a question: one line, then "-> answer: reply" rows, "other" required
+/// What do you listen to, {0}?
+/// -> metal: A person of taste!
+/// -> other: Never heard of it.
 /// </code>
 /// Blank lines are ignored. Problems are collected in <see cref="Errors"/> as "file:line: what".
 /// A line's tags are taken off its text; <see cref="RuleFor"/> finds them again by the text.
@@ -36,6 +47,15 @@ public sealed partial class DialogueFile
 
     /// <summary>Nicknames per block at most.</summary>
     public const int MaxNames = 8;
+
+    /// <summary>The section that holds a question and its branching replies.</summary>
+    public const string AskSection = "ask";
+
+    /// <summary>The answer that catches everything the other answers don't.</summary>
+    public const string OtherAnswer = "other";
+
+    /// <summary>Answers per question at most (the "other" answer counts).</summary>
+    public const int MaxAnswers = 8;
 
     private readonly Dictionary<string, List<DialogueSection>> _blocks = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, List<string>> _names = new(StringComparer.OrdinalIgnoreCase);
@@ -76,16 +96,27 @@ public sealed partial class DialogueFile
         string section = null, argument = null, condition = null;
         int sectionRow = 0;
         List<string> lines = null;
+        List<DialogueAnswer> answers = null;
 
         void Close()
         {
             if (section != null)
             {
+                bool ask = section == AskSection;
                 if (lines.Count == 0)
-                    file.Error(sectionRow, $"section '{section}' has no lines");
+                    file.Error(sectionRow, ask ? "an ask has no question line" : $"section '{section}' has no lines");
                 else if (section == "fallback" && lines.All(line => file._rules.GetValueOrDefault(line)?.Conditions.Count > 0))
                     file.Error(sectionRow, "every fallback line has [if ...]; keep at least one without");
-                block.Add(new DialogueSection(section, argument, condition, lines, sectionRow));
+                if (ask)
+                {
+                    if (argument == null)
+                        file.Error(sectionRow, "an ask needs a name: '~ ask fav_music'");
+                    if (answers.Count == 0)
+                        file.Error(sectionRow, "an ask needs '-> answer: reply' rows");
+                    else if (!answers.Any(answer => answer.Key == OtherAnswer))
+                        file.Error(sectionRow, $"an ask needs a '-> {OtherAnswer}: reply' row for answers it doesn't know");
+                }
+                block.Add(new DialogueSection(section, argument, condition, lines, sectionRow, ask ? answers : null));
             }
             section = null;
         }
@@ -138,7 +169,17 @@ public sealed partial class DialogueFile
                         file.Error(number, $"section '{section} {argument}' appears twice in this block");
                     sectionRow = number;
                     lines = [];
+                    answers = [];
                 }
+                continue;
+            }
+
+            if (row.StartsWith("->", StringComparison.Ordinal))
+            {
+                if (section != AskSection)
+                    file.Error(number, $"'->' answers only work in '~ {AskSection}' sections (use \\-> for text)");
+                else
+                    file.ReadAnswer(row[2..], number, lines.Count, answers);
                 continue;
             }
 
@@ -156,6 +197,11 @@ public sealed partial class DialogueFile
                 row = row[1..];
             if (row.Length == 0)
                 continue;
+            if (section == AskSection && lines.Count > 0)
+            {
+                file.Error(number, "an ask has one question line; answers start with '->'");
+                continue;
+            }
             var tagErrors = new List<string>();
             (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors);
             foreach (string tagError in tagErrors)
@@ -179,6 +225,31 @@ public sealed partial class DialogueFile
     }
 
     private void Error(int row, string message) => _errors.Add($"{FileName}:{row}: {message}");
+
+    /// <summary>One "key: reply" answer of an ask; <paramref name="questions"/> is how many question lines the ask has so far.</summary>
+    private void ReadAnswer(string text, int row, int questions, List<DialogueAnswer> answers)
+    {
+        if (questions == 0)
+        {
+            Error(row, "an ask's question line comes before its answers");
+            return;
+        }
+        int colon = text.IndexOf(':');
+        string key = (colon < 0 ? text : text[..colon]).Trim().ToLowerInvariant();
+        string reply = colon < 0 ? string.Empty : text[(colon + 1)..].Trim();
+        if (colon < 0)
+            Error(row, "an answer reads '-> key: reply'");
+        else if (!Name().IsMatch(key))
+            Error(row, $"bad answer '{key}' (lower-case letters, digits, _ or -, one word)");
+        else if (reply.Length == 0)
+            Error(row, $"answer '{key}' has no reply");
+        else if (answers.Any(answer => answer.Key == key))
+            Error(row, $"answer '{key}' appears twice");
+        else if (answers.Count >= MaxAnswers)
+            Error(row, $"more than {MaxAnswers} answers; the rest are ignored");
+        else
+            answers.Add(new DialogueAnswer(key, reply));
+    }
 
     private List<string> ReadNames(string list, int row)
     {
