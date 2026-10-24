@@ -20,8 +20,10 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// Well, if it isn't {0}!           one line per row; {0} and {zone} etc. are kept as written
 /// ~ cheeky [if tone_down off]      a section with a condition
 /// \# a line that starts with #     a backslash keeps a leading #, ~, = or \ as text
+/// Hold still! [if player_dead] [once]   a line with rules (see DialogueRule), reply sections only
 /// </code>
 /// Blank lines are ignored. Problems are collected in <see cref="Errors"/> as "file:line: what".
+/// A line's tags are taken off its text; <see cref="RuleFor"/> finds them again by the text.
 /// </summary>
 public sealed partial class DialogueFile
 {
@@ -31,13 +33,24 @@ public sealed partial class DialogueFile
     /// <summary>The conditions a section may carry.</summary>
     public static readonly IReadOnlySet<string> KnownConditions = new HashSet<string> { "tone_down off", "tone_down on" };
 
+    /// <summary>The sections whose lines may carry rules (for now: the chat replies).</summary>
+    public static readonly IReadOnlySet<string> RuleSections = new HashSet<string> { "reply", "cheeky_reply", "fallback" };
+
     private readonly Dictionary<string, List<DialogueSection>> _blocks = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _errors = [];
+    private readonly Dictionary<string, DialogueRule> _rules = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _texts = new(StringComparer.Ordinal);
 
     public string FileName { get; }
     public IReadOnlyList<string> Errors => _errors;
     public IEnumerable<string> BlockNames => _blocks.Keys;
     public int LineCount => _blocks.Values.Sum(sections => sections.Sum(section => section.Lines.Count));
+
+    /// <summary>The lines that have rules, by their text without the tags.</summary>
+    public IReadOnlyDictionary<string, DialogueRule> Rules => _rules;
+
+    /// <summary>The rule of a line by its text, or null when it has none.</summary>
+    public DialogueRule RuleFor(string text) => _rules.GetValueOrDefault(text ?? string.Empty);
 
     private DialogueFile(string fileName) => FileName = fileName;
 
@@ -63,6 +76,8 @@ public sealed partial class DialogueFile
             {
                 if (lines.Count == 0)
                     file.Error(sectionRow, $"section '{section}' has no lines");
+                else if (section == "fallback" && lines.All(line => file._rules.GetValueOrDefault(line)?.Conditions.Count > 0))
+                    file.Error(sectionRow, "every fallback line has [if ...]; keep at least one without");
                 block.Add(new DialogueSection(section, argument, condition, lines, sectionRow));
             }
             section = null;
@@ -122,8 +137,25 @@ public sealed partial class DialogueFile
             }
             if (row[0] == '\\')
                 row = row[1..];
-            if (row.Length > 0)
-                lines.Add(row);
+            if (row.Length == 0)
+                continue;
+            var tagErrors = new List<string>();
+            (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors);
+            foreach (string tagError in tagErrors)
+                file.Error(number, tagError);
+            if (rule != null && !RuleSections.Contains(section))
+            {
+                file.Error(number, $"rules only work in {string.Join(", ", RuleSections)} sections for now");
+                rule = null;
+            }
+            // Rules are found by text, so a tagged line's text must be unique in its file.
+            bool seen = !file._texts.Add(lineText);
+            if (seen && (rule != null || file._rules.ContainsKey(lineText)))
+                file.Error(number, "a line with tags must not appear twice in a file; change its text");
+            else if (rule != null)
+                file._rules[lineText] = rule;
+            if (lineText.Length > 0)
+                lines.Add(lineText);
         }
         Close();
         return file;
@@ -143,12 +175,29 @@ public static class DialogueLibrary
 {
     private static readonly Logger Log = LoggerManager.Create(MethodBase.GetCurrentMethod().DeclaringType);
     private static readonly Lazy<IReadOnlyDictionary<string, DialogueFile>> Files = new(Load, true);
+    private static readonly Lazy<IReadOnlyDictionary<string, DialogueRule>> Rules = new(LoadRules, true);
 
     /// <summary>All loaded files, keyed by file name without ".dlg" ("joker").</summary>
     public static IReadOnlyDictionary<string, DialogueFile> All => Files.Value;
 
     /// <summary>A file by name ("joker"), or null.</summary>
     public static DialogueFile For(string name) => Files.Value.GetValueOrDefault(name ?? string.Empty);
+
+    /// <summary>
+    /// The rule of a line by its text, from any file, or null when it has none. Pools mix lines
+    /// from several blocks, so the text is what ties a line to its tags.
+    /// </summary>
+    public static DialogueRule RuleFor(string text) => Rules.Value.GetValueOrDefault(text ?? string.Empty);
+
+    private static IReadOnlyDictionary<string, DialogueRule> LoadRules()
+    {
+        var rules = new Dictionary<string, DialogueRule>(StringComparer.Ordinal);
+        foreach (DialogueFile file in Files.Value.Values)
+            foreach ((string text, DialogueRule rule) in file.Rules)
+                if (!rules.TryAdd(text, rule) && Log.IsErrorEnabled)
+                    Log.Error($"Dialogue: {file.FileName}: the tagged line '{text}' is also in another file; only the first one's tags count");
+        return rules;
+    }
 
     private static IReadOnlyDictionary<string, DialogueFile> Load()
     {

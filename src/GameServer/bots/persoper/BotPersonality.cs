@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DOL.GS;
 
@@ -45,13 +46,23 @@ public sealed record BotPersonality
     /// <summary>The personality type this is a copy of ("joker"), or null for a unique personality.</summary>
     public string TypeKey { get; init; }
 
-    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random)
+    /// <summary>
+    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (bot to bot, tests)
+    /// lines with conditions are left out; [once], cooldowns and recent lines still count.
+    /// </summary>
+    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null)
     {
         random ??= Random.Shared;
         string[] lines = Replies.GetValueOrDefault(intent) ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
-        return string.Format(lines[random.Next(lines.Length)], string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+        string botKey = facts?.BotId ?? Key;
+        DateTime now = DateTime.UtcNow;
+        string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? DialoguePicker.Shared.Pick(FallbackReplies, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? FallbackReplies.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
+            ?? lines[random.Next(lines.Length)];
+        return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
 }
 

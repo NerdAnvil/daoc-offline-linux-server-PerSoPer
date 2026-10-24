@@ -58,8 +58,14 @@ Players can address the bot by any of these; other bots may use them too.
 Help with what, {0}?
 Hold still, {0}, I'm coming! [if player_dead]
 Again, {0}? That's three today. [if player_dead, deaths_today >= 3]
-I'd sing you back to life, but that's not how it works. [if player_dead, mood happy] [once]
+I'd sing you back to life, but that's not how it works. [if player_dead, mood warm] [once]
+Ooh, shiny! Save some for me, {0}? [if recent loot] [cooldown 11m]
 ```
+Conditions are split by commas and are about the player the bot is talking to. Forms:
+`[if player_dead]`, `[if not in_combat]`, `[if health < 30]`, `[if mood warm]`,
+`[if zone camelot city]`. A cooldown takes seconds, minutes or hours (`30s`, `11m`, `2h`, at most
+24h). For now, rules work in `reply`, `cheeky_reply` and `fallback` sections; `[once]`, cooldowns
+and recent events are kept in memory and start fresh when the server restarts.
 
 **Swap-in parts** (defined once per block, used inside lines):
 ```
@@ -107,6 +113,12 @@ Every step has a fixed cap (lines per section, parts per line, nested parts), as
 Alive or dead, zone, time of day, health, mood, relationship level, recent events (death, kill,
 loot, level-up), who is nearby, group size, in combat, deaths today, and saved player answers.
 More can be added later; the checker rejects unknown facts.
+
+Names in step 1: `player_dead`, `in_combat` (yes/no); `health` (percent), `group_size`,
+`deaths_today` (numbers); `mood` (warm, neutral, cool; this is also the relationship level for
+now); `time_of_day` (morning, day, evening, night, by the game clock); `recent` (death, kill,
+loot, level_up, within 5 minutes); `zone` and `nearby` (a name). Saved player answers come with
+step 5.
 
 ## Player names
 

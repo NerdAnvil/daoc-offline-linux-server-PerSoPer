@@ -72,6 +72,10 @@ Not selling, {0}. I'm a healer, not a merchant.
 ~ reply help
 Help? That's literally my job, {0}.
 What do you need, {0}? Heals, buffs or a pep talk?
+Asking me for help, {0}? How sweet. I'll remember this. [once]
+Hold still, {0}, I'm coming! [if player_dead]
+Dead again, {0}? That's three today. I'm keeping count. [if player_dead, deaths_today >= 3]
+Ooh, shiny! Did you save some for your healer, {0}? [if recent loot] [cooldown 11m]
 
 ~ reply farewell
 Bye, {0}! Don't die without me.

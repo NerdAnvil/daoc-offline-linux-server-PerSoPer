@@ -4509,6 +4509,7 @@ namespace DOL.GS
         /// <param name="previouslevel"></param>
         public virtual void OnLevelUp(int previouslevel)
         {
+            PlayerEventLog.Note(this, PlayerEventLog.eEvent.LevelUp);
             IsLevelSecondStage = false;
             int isHardcore = 0;
             int realm = 0;
@@ -5794,6 +5795,7 @@ namespace DOL.GS
         {
             // Personality bots that mind it (Persoper) lose patience with players who keep dying.
             PersonalityAnnoyance.OnPlayerDeath(this);
+            PlayerEventLog.Note(this, PlayerEventLog.eEvent.Death);
 
             // Ambient trigger upon killing player
             if (killer is GameNPC)
@@ -6105,6 +6107,7 @@ namespace DOL.GS
                 }
             }
 
+            PlayerEventLog.Note(this, PlayerEventLog.eEvent.Kill);
             base.EnemyKilled(enemy);
         }
 
@@ -9780,6 +9783,7 @@ namespace DOL.GS
             Message.SystemToOthers(this, LanguageMgr.GetTranslation(Client.Account.Language, "GamePlayer.PickupObject.GroupMemberPicksUp", Name, item.Item.GetName(1, false)), eChatType.CT_System);
             InventoryLogging.LogInventoryAction("(ground)", this, eInventoryActionType.Loot, item.Item.Template, item.Item.IsStackable ? item.Item.Count : 1);
             item.RemoveFromWorld();
+            PlayerEventLog.Note(this, PlayerEventLog.eEvent.Loot);
             return TryPickUpResult.Success;
 
             static bool GiveItem(GamePlayer player, DbInventoryItem item)

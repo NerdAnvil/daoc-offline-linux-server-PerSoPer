@@ -245,7 +245,7 @@ public static class AutonomousBotChatCoordinator
         string reply = PersonalitySpecialReply(bot, player, message, intent, true)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
-                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)));
+                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
         Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reply));
         return true;
     }
@@ -660,7 +660,7 @@ public static class AutonomousBotChatCoordinator
                 : hasKnowledge
                 ? knowledge
                 : personality != null
-                    ? MoodTinted(responder, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared))
+                    ? MoodTinted(responder, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(responder, player)))
                     : directed
                         ? GenerateDirectedReply(message)
                         : faction ? GenerateFactionReply(message) : GenerateLocalReply(responder, message);
