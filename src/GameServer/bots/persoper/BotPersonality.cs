@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DOL.GS;
 
@@ -11,18 +12,35 @@ namespace DOL.GS;
 /// </summary>
 public sealed record BotPersonality
 {
+    private readonly IReadOnlyList<string> _nicknames = [];
+    private readonly IReadOnlyDictionary<eAutonomousChatIntent, string[]> _replies = new Dictionary<eAutonomousChatIntent, string[]>();
+    private readonly string[] _fallbackReplies = [];
+    private readonly string[] _songReactions;
+    private readonly IReadOnlyDictionary<eAutonomousChatIntent, string[]> _cheekyReplies;
+    private readonly string[] _ambient;
+
     public required string Name { get; init; }
+
+    /// <summary>
+    /// Where its chat lines come from (its dialogue file). Asked on every use, so a dialogue reload
+    /// takes effect at once. When set, it gives Nicknames, Replies, FallbackReplies, SongReactions,
+    /// CheekyReplies and Ambient; when null, those are the values set directly.
+    /// </summary>
+    public Func<TypeTalk> Talk { get; init; }
+
+    /// <summary>Other names players may call it by ("Jovi", "KJ"), from its dialogue file.</summary>
+    public IReadOnlyList<string> Nicknames { get => Talk != null ? Talk().Nicknames : _nicknames; init => _nicknames = value; }
     /// <summary>Stable lowercase id used in saved memories ("persoper", "kobaldjovi").</summary>
     public required string Key { get; init; }
     public required Func<GameBot, bool> Matches { get; init; }
-    public required IReadOnlyDictionary<eAutonomousChatIntent, string[]> Replies { get; init; }
-    public required string[] FallbackReplies { get; init; }
+    public IReadOnlyDictionary<eAutonomousChatIntent, string[]> Replies { get => Talk != null ? Talk().Replies : _replies; init => _replies = value; }
+    public string[] FallbackReplies { get => Talk != null ? Talk().FallbackReplies : _fallbackReplies; init => _fallbackReplies = value; }
 
     /// <summary>How it reacts when Kobaldjovi sings nearby; {0} is his name. Null uses the plain-bot lines.</summary>
-    public string[] SongReactions { get; init; }
+    public string[] SongReactions { get => Talk != null ? Talk().SongReactions : _songReactions; init => _songReactions = value; }
 
     /// <summary>Extra lines mixed in only when tone-down is off.</summary>
-    public IReadOnlyDictionary<eAutonomousChatIntent, string[]> CheekyReplies { get; init; }
+    public IReadOnlyDictionary<eAutonomousChatIntent, string[]> CheekyReplies { get => Talk != null ? Talk().CheekyReplies : _cheekyReplies; init => _cheekyReplies = value; }
 
     /// <summary>How it talks about players it remembers. Null: it remembers no one.</summary>
     public MemoryVoice Memory { get; init; }
@@ -37,7 +55,7 @@ public sealed record BotPersonality
     public PatienceProfile Patience { get; init; }
 
     /// <summary>Lines it starts conversations with (personality types). Null: none of its own.</summary>
-    public string[] Ambient { get; init; }
+    public string[] Ambient { get => Talk != null ? Talk().Ambient : _ambient; init => _ambient = value; }
 
     /// <summary>How often it speaks up, 0-100 (personality types; Loner low, Joker high).</summary>
     public int Chattiness { get; init; }
@@ -45,13 +63,23 @@ public sealed record BotPersonality
     /// <summary>The personality type this is a copy of ("joker"), or null for a unique personality.</summary>
     public string TypeKey { get; init; }
 
-    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random)
+    /// <summary>
+    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (bot to bot, tests)
+    /// lines with conditions are left out; [once], cooldowns and recent lines still count.
+    /// </summary>
+    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null)
     {
         random ??= Random.Shared;
         string[] lines = Replies.GetValueOrDefault(intent) ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
-        return string.Format(lines[random.Next(lines.Length)], string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+        string botKey = facts?.BotId ?? Key;
+        DateTime now = DateTime.UtcNow;
+        string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? DialoguePicker.Shared.Pick(FallbackReplies, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? FallbackReplies.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
+            ?? lines[random.Next(lines.Length)];
+        return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
 }
 

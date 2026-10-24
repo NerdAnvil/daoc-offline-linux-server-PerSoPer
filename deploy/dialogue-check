@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# dialogue-check - check the bot chat lines in dialogue/ before reloading them.
+#   ./dialogue-check                         check every file in dialogue/
+#   ./dialogue-check dialogue/joker.dlg      check one file
+#   ./dialogue-check --preview KJ thank      what Kobaldjovi could answer to a thank, right now
+#   ./dialogue-check help                    all options
+# Then, with the server running: ./daoc-admin dialogue reload (or /dialogue reload in game).
+set -uo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export DAOC_DIALOGUE_DIR="${DAOC_DIALOGUE_DIR:-$HERE/dialogue}"
+exec "$HERE/bin/DialogueCheck" "$@"

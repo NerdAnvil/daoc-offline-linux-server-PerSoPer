@@ -1,0 +1,10 @@
+# Words and phrases that sort what a player says into an intent. Format: see IntentPhrases.cs.
+# Commas split phrases. A phrase counts when its words appear in a row; the longest one wins.
+# Rude and real-world words are checked before this file, so "thanks, idiot" stays rude.
+# Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
+# farewell, ignoreoutofworld, thank. Bots answer in their "~ reply <intent>" section.
+=== intents
+
+~ intent thank
+thanks, thank, thankyou, thx, thnx, ty, tyvm, cheers, ta
+appreciate it, much appreciated, many thanks, you're the best, you are the best, lifesaver

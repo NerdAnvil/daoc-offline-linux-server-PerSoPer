@@ -288,6 +288,7 @@ namespace DOL.GS
 			try
 			{
 				AutonomousBotGoalPolicy.Initialize(Configuration.RootDirectory);
+				DialogueLibrary.Initialize(Path.Combine(Configuration.RootDirectory, "dialogue"));
 				//Manually set ThreadPool min thread count.
 				ThreadPool.GetMinThreads(out int minWorkerThreads, out int minIOCThreads);
 				ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxIOCThreads);

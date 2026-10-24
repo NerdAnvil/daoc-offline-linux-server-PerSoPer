@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using DOL.Logging;
 
 namespace DOL.GS;
 
@@ -16,12 +13,15 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// <code>
 /// # a comment
 /// === joker                        a block: one speaker (a type, later a named bot)
+/// names: Jovi, KJ                  nicknames, right after the block line (optional)
 /// ~ reply greeting                 a section: name, optional argument
 /// Well, if it isn't {0}!           one line per row; {0} and {zone} etc. are kept as written
 /// ~ cheeky [if tone_down off]      a section with a condition
 /// \# a line that starts with #     a backslash keeps a leading #, ~, = or \ as text
+/// Hold still! [if player_dead] [once]   a line with rules (see DialogueRule), reply sections only
 /// </code>
 /// Blank lines are ignored. Problems are collected in <see cref="Errors"/> as "file:line: what".
+/// A line's tags are taken off its text; <see cref="RuleFor"/> finds them again by the text.
 /// </summary>
 public sealed partial class DialogueFile
 {
@@ -31,19 +31,38 @@ public sealed partial class DialogueFile
     /// <summary>The conditions a section may carry.</summary>
     public static readonly IReadOnlySet<string> KnownConditions = new HashSet<string> { "tone_down off", "tone_down on" };
 
+    /// <summary>The sections whose lines may carry rules (for now: the chat replies).</summary>
+    public static readonly IReadOnlySet<string> RuleSections = new HashSet<string> { "reply", "cheeky_reply", "fallback" };
+
+    /// <summary>Nicknames per block at most.</summary>
+    public const int MaxNames = 8;
+
     private readonly Dictionary<string, List<DialogueSection>> _blocks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, List<string>> _names = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _errors = [];
+    private readonly Dictionary<string, DialogueRule> _rules = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _texts = new(StringComparer.Ordinal);
 
     public string FileName { get; }
     public IReadOnlyList<string> Errors => _errors;
     public IEnumerable<string> BlockNames => _blocks.Keys;
     public int LineCount => _blocks.Values.Sum(sections => sections.Sum(section => section.Lines.Count));
 
+    /// <summary>The lines that have rules, by their text without the tags.</summary>
+    public IReadOnlyDictionary<string, DialogueRule> Rules => _rules;
+
+    /// <summary>The rule of a line by its text, or null when it has none.</summary>
+    public DialogueRule RuleFor(string text) => _rules.GetValueOrDefault(text ?? string.Empty);
+
     private DialogueFile(string fileName) => FileName = fileName;
 
     /// <summary>The sections of one block, in file order; empty when the block is missing.</summary>
     public IReadOnlyList<DialogueSection> Block(string name) =>
         _blocks.TryGetValue(name ?? string.Empty, out List<DialogueSection> sections) ? sections : [];
+
+    /// <summary>The nicknames of one block ("names: Jovi, KJ"); empty when it has none.</summary>
+    public IReadOnlyList<string> Names(string block) =>
+        _names.TryGetValue(block ?? string.Empty, out List<string> names) ? names : [];
 
     public static DialogueFile Parse(string text, string fileName)
     {
@@ -53,6 +72,7 @@ public sealed partial class DialogueFile
             file.Error(MaxRows, $"more than {MaxRows} rows; the rest is ignored");
 
         List<DialogueSection> block = null;
+        string blockName = null;
         string section = null, argument = null, condition = null;
         int sectionRow = 0;
         List<string> lines = null;
@@ -63,6 +83,8 @@ public sealed partial class DialogueFile
             {
                 if (lines.Count == 0)
                     file.Error(sectionRow, $"section '{section}' has no lines");
+                else if (section == "fallback" && lines.All(line => file._rules.GetValueOrDefault(line)?.Conditions.Count > 0))
+                    file.Error(sectionRow, "every fallback line has [if ...]; keep at least one without");
                 block.Add(new DialogueSection(section, argument, condition, lines, sectionRow));
             }
             section = null;
@@ -84,6 +106,16 @@ public sealed partial class DialogueFile
                 else if (file._blocks.ContainsKey(name))
                     file.Error(number, $"block '{name}' appears twice");
                 block = file._blocks.TryGetValue(name, out List<DialogueSection> existing) ? existing : file._blocks[name] = [];
+                blockName = name;
+                continue;
+            }
+
+            if (section == null && block != null && row.StartsWith("names:", StringComparison.OrdinalIgnoreCase))
+            {
+                if (block.Count > 0 || file._names.ContainsKey(blockName))
+                    file.Error(number, "'names:' comes once, right after the '=== block' line");
+                else
+                    file._names[blockName] = file.ReadNames(row["names:".Length..], number);
                 continue;
             }
 
@@ -122,8 +154,25 @@ public sealed partial class DialogueFile
             }
             if (row[0] == '\\')
                 row = row[1..];
-            if (row.Length > 0)
-                lines.Add(row);
+            if (row.Length == 0)
+                continue;
+            var tagErrors = new List<string>();
+            (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors);
+            foreach (string tagError in tagErrors)
+                file.Error(number, tagError);
+            if (rule != null && !RuleSections.Contains(section))
+            {
+                file.Error(number, $"rules only work in {string.Join(", ", RuleSections)} sections for now");
+                rule = null;
+            }
+            // Rules are found by text, so a tagged line's text must be unique in its file.
+            bool seen = !file._texts.Add(lineText);
+            if (seen && (rule != null || file._rules.ContainsKey(lineText)))
+                file.Error(number, "a line with tags must not appear twice in a file; change its text");
+            else if (rule != null)
+                file._rules[lineText] = rule;
+            if (lineText.Length > 0)
+                lines.Add(lineText);
         }
         Close();
         return file;
@@ -131,44 +180,34 @@ public sealed partial class DialogueFile
 
     private void Error(int row, string message) => _errors.Add($"{FileName}:{row}: {message}");
 
+    private List<string> ReadNames(string list, int row)
+    {
+        var names = new List<string>();
+        foreach (string part in list.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (names.Count >= MaxNames)
+            {
+                Error(row, $"more than {MaxNames} names; the rest are ignored");
+                break;
+            }
+            if (!Nickname().IsMatch(part))
+                Error(row, $"bad name '{part}' (2 to 24 letters or digits, starting with a letter)");
+            else if (names.Contains(part, StringComparer.OrdinalIgnoreCase))
+                Error(row, $"name '{part}' appears twice");
+            else
+                names.Add(part);
+        }
+        if (names.Count == 0)
+            Error(row, "'names:' has no names");
+        return names;
+    }
+
     [GeneratedRegex(@"^[a-z0-9_-]+$")]
     private static partial Regex Name();
 
+    [GeneratedRegex(@"^[A-Za-z][A-Za-z0-9]{1,23}$")]
+    private static partial Regex Nickname();
+
     [GeneratedRegex(@"^~\s*(?<name>[A-Za-z_]+)(?:\s+(?<arg>[A-Za-z0-9_-]+))?(?:\s*\[if\s+(?<cond>[^\]]+)\])?\s*$")]
     private static partial Regex Header();
-}
-
-/// <summary>The dialogue files built into the server (bots/persoper/dialogue/*.dlg), read once.</summary>
-public static class DialogueLibrary
-{
-    private static readonly Logger Log = LoggerManager.Create(MethodBase.GetCurrentMethod().DeclaringType);
-    private static readonly Lazy<IReadOnlyDictionary<string, DialogueFile>> Files = new(Load, true);
-
-    /// <summary>All loaded files, keyed by file name without ".dlg" ("joker").</summary>
-    public static IReadOnlyDictionary<string, DialogueFile> All => Files.Value;
-
-    /// <summary>A file by name ("joker"), or null.</summary>
-    public static DialogueFile For(string name) => Files.Value.GetValueOrDefault(name ?? string.Empty);
-
-    private static IReadOnlyDictionary<string, DialogueFile> Load()
-    {
-        Assembly assembly = typeof(DialogueLibrary).Assembly;
-        var files = new Dictionary<string, DialogueFile>(StringComparer.OrdinalIgnoreCase);
-        foreach (string resource in assembly.GetManifestResourceNames().Where(name => name.EndsWith(".dlg", StringComparison.Ordinal)))
-        {
-            string name = resource[..^4];
-            name = name[(name.LastIndexOf('.') + 1)..];
-            using Stream stream = assembly.GetManifestResourceStream(resource);
-            using var reader = new StreamReader(stream);
-            DialogueFile file = DialogueFile.Parse(reader.ReadToEnd(), name + ".dlg");
-            files[name] = file;
-            foreach (string error in file.Errors)
-                if (Log.IsErrorEnabled)
-                    Log.Error($"Dialogue: {error}");
-        }
-        int errors = files.Values.Sum(file => file.Errors.Count);
-        if (Log.IsInfoEnabled)
-            Log.Info($"Dialogue: loaded {files.Count} files, {files.Values.Sum(file => file.LineCount)} lines, {errors} errors.");
-        return files;
-    }
 }

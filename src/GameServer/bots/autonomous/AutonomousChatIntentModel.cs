@@ -20,6 +20,8 @@ public enum eAutonomousChatIntent
     Help,
     Farewell,
     IgnoreOutOfWorld,
+    // Added last so the others keep their numbers. Found only by the words in intents.dlg.
+    Thank,
 }
 
 /// <summary>
@@ -105,6 +107,8 @@ public static partial class AutonomousChatIntentModel
             return eAutonomousChatIntent.IgnoreOutOfWorld;
         if (tokens.Any(HardAbuse.Contains))
             return eAutonomousChatIntent.Abuse;
+        if (IntentPhrases.Shared.Match(tokens) is { } phrased)
+            return phrased;
         foreach ((eAutonomousChatIntent intent, HashSet<string> signals) in StrongGameSignals)
         {
             if (tokens.Any(signals.Contains))
@@ -158,7 +162,7 @@ public static partial class AutonomousChatIntentModel
         return new(counts, totals, documents, vocabulary, Training.Length);
     }
 
-    private static IEnumerable<string> Tokens(string text) => TokenRegex().Matches(text?.ToLowerInvariant() ?? string.Empty).Cast<Match>()
+    internal static IEnumerable<string> Tokens(string text) => TokenRegex().Matches(text?.ToLowerInvariant() ?? string.Empty).Cast<Match>()
         .Select(match => match.Value)
         .Where(token => token.Length > 1);
 

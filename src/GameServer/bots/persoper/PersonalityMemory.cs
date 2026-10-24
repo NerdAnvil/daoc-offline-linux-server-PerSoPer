@@ -153,6 +153,7 @@ public static class PersonalityMemory
             case eAutonomousChatIntent.Greeting:
             case eAutonomousChatIntent.Farewell:
             case eAutonomousChatIntent.Banter:
+            case eAutonomousChatIntent.Thank:
                 memory.NiceCount++;
                 break;
         }

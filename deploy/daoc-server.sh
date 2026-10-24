@@ -17,6 +17,8 @@
 #   data/       opendaoc.sqlite3.db: the world and all saves (yours; kept on upgrade). Created on
 #               first start from defaults/world.sqlite, a fresh Classic + SI world.
 #   navmesh/    zone*.nav, from ./navmesh-install.sh                  (kept on upgrade)
+#   dialogue/   bot chat lines (*.dlg; yours to edit, kept on upgrade). Missing files are copied
+#               from defaults/dialogue/ at start; check edits with ./dialogue-check
 #   logs/  run/
 set -euo pipefail
 
@@ -62,6 +64,11 @@ start() {
   fi
   for f in serverconfig.xml logconfig.xml invalidnames.txt; do
     [[ -e $DAOC_HOME/config/$f ]] || cp "$DAOC_HOME/defaults/$f" "$DAOC_HOME/config/"
+  done
+  # Bot chat lines: a file you edited stays; one a new release adds is copied in.
+  mkdir -p "$DAOC_HOME/dialogue"
+  for f in "$DAOC_HOME"/defaults/dialogue/*.dlg; do
+    if [[ -e $f && ! -e $DAOC_HOME/dialogue/${f##*/} ]]; then cp "$f" "$DAOC_HOME/dialogue/"; fi
   done
   ! port_in_use || die "port $(game_port) is already in use (another server is running; see <Port> in config/serverconfig.xml)"
 

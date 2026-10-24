@@ -129,13 +129,13 @@ public static partial class PersonalityTypes
                                PersonalityTypeVoices.NamedOnly.TryGetValue(entry.TypeKey, out template)))
             return null;
         string key = PersonalityLines.NamedKey(entry);
-        TypeTalk talk = PersonalityLines.NamedTalkFor(key) ?? PersonalityLines.TalkFor(entry.TypeKey);
+        string typeKey = entry.TypeKey;
         return template with
         {
             Name = entry.Name,
             Key = key,
             TypeKey = entry.TypeKey,
-            Ambient = talk.Ambient, Replies = talk.Replies, CheekyReplies = talk.CheekyReplies, FallbackReplies = talk.FallbackReplies,
+            Talk = () => PersonalityLines.NamedTalkFor(key) ?? PersonalityLines.TalkFor(typeKey),
         };
     }
 

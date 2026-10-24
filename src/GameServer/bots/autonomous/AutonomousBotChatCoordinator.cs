@@ -186,8 +186,8 @@ public static class AutonomousBotChatCoordinator
     }
 
     /// <summary>
-    /// The online personality bot a /send names, by full name or personality name
-    /// ("Kobaldjovi", "Persoper"), in the sender's realm; null when none matches.
+    /// The online personality bot a /send names, by full name, personality name or nickname
+    /// ("Kobaldjovi", "Persoper", "Jovi"), in the sender's realm; null when none matches.
     /// </summary>
     public static GameBot FindPersonalityBot(string typedName, eRealm realm)
     {
@@ -196,14 +196,15 @@ public static class AutonomousBotChatCoordinator
         return AutonomousBotRegistry.Snapshot().Where(Eligible)
             .Concat(PersonalityCompanions())
             .FirstOrDefault(bot => bot.Realm == realm && BotPersonalities.For(bot) is { } personality &&
-                IsPersonalityName(bot.Name, personality.Name, typedName));
+                IsPersonalityName(bot.Name, personality.Name, typedName, personality.Nicknames));
     }
 
-    /// <summary>True when what a player typed names this bot: its full name or its personality name.</summary>
-    public static bool IsPersonalityName(string botName, string personalityName, string typedName) =>
+    /// <summary>True when what a player typed names this bot: its full name, its personality name or a nickname.</summary>
+    public static bool IsPersonalityName(string botName, string personalityName, string typedName, IReadOnlyList<string> nicknames = null) =>
         !string.IsNullOrWhiteSpace(typedName) &&
         (string.Equals(typedName.Trim(), botName, StringComparison.OrdinalIgnoreCase) ||
-         string.Equals(typedName.Trim(), personalityName, StringComparison.OrdinalIgnoreCase));
+         string.Equals(typedName.Trim(), personalityName, StringComparison.OrdinalIgnoreCase) ||
+         (nicknames ?? []).Any(nickname => string.Equals(typedName.Trim(), nickname, StringComparison.OrdinalIgnoreCase)));
 
     /// <summary>A player's group message: one personality bot in the group answers, the one named if any.</summary>
     public static void OnPlayerGroupChat(GamePlayer player, string message)
@@ -245,7 +246,7 @@ public static class AutonomousBotChatCoordinator
         string reply = PersonalitySpecialReply(bot, player, message, intent, true)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
-                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared)));
+                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
         Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reply));
         return true;
     }
@@ -543,6 +544,7 @@ public static class AutonomousBotChatCoordinator
             eAutonomousChatIntent.Dungeon => "A careful group should clear one pull at a time on the way inside.",
             eAutonomousChatIntent.Grinding => "Share the camp and level if you are looking for company.",
             eAutonomousChatIntent.Farewell => "Safe travels. Until next time.",
+            eAutonomousChatIntent.Thank => "Glad to help. Good hunting.",
             eAutonomousChatIntent.IgnoreOutOfWorld => "Let us keep faction chat focused on the realm.",
             _ => FactionReplies[random.Next(FactionReplies.Length)],
         };
@@ -581,6 +583,7 @@ public static class AutonomousBotChatCoordinator
             eAutonomousChatIntent.Trading => "I will check my real inventory and the Realm Exchange when I return to town.",
             eAutonomousChatIntent.Grinding => $"I am focused on {target} at the moment.",
             eAutonomousChatIntent.Farewell => "Safe travels. I will keep working here.",
+            eAutonomousChatIntent.Thank => "You are welcome. I will keep working here.",
             eAutonomousChatIntent.IgnoreOutOfWorld => "Let us keep the conversation focused on the realm.",
             _ => random.Next(3) switch
             {
@@ -660,7 +663,7 @@ public static class AutonomousBotChatCoordinator
                 : hasKnowledge
                 ? knowledge
                 : personality != null
-                    ? MoodTinted(responder, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared))
+                    ? MoodTinted(responder, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(responder, player)))
                     : directed
                         ? GenerateDirectedReply(message)
                         : faction ? GenerateFactionReply(message) : GenerateLocalReply(responder, message);
@@ -787,7 +790,8 @@ public static class AutonomousBotChatCoordinator
     }
 
     private static bool IsMentioned(string message, GameBot bot) =>
-        ContainsMention(message, bot.Name) || BotPersonalities.For(bot) is { } personality && ContainsMention(message, personality.Name);
+        ContainsMention(message, bot.Name) || BotPersonalities.For(bot) is { } personality &&
+        (ContainsMention(message, personality.Name) || personality.Nicknames.Any(nickname => ContainsMention(message, nickname)));
 
     private static IEnumerable<GameBot> PersonalityCompanions()
     {
@@ -928,6 +932,7 @@ public static class AutonomousBotChatCoordinator
         return AutonomousChatIntentModel.Predict(incoming) switch
         {
             eAutonomousChatIntent.Greeting => "Greetings. How can I help?",
+            eAutonomousChatIntent.Thank => "You are welcome.",
             eAutonomousChatIntent.Abuse => "Let us keep the conversation helpful.",
             eAutonomousChatIntent.IgnoreOutOfWorld => "Let us keep the conversation focused on the realm.",
             _ => Random.Shared.Next(3) switch { 0 => "What did you need?", 1 => "Perhaps after this task.", _ => "Yes?" },

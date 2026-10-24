@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+        <BaseIntermediateOutputPath>..\build\DialogueCheck\$(Configuration)\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+    <!-- dialogue-check: checks bot dialogue files (*.dlg) and previews what a bot would say. Uses the server's own reader. -->
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>DialogueCheck</AssemblyName>
+        <RootNamespace>DaocServer.DialogueCheck</RootNamespace>
+        <IntermediateOutputPath>..\build\DialogueCheck\$(Configuration)\obj\</IntermediateOutputPath>
+        <OutputPath>..\build\DialogueCheck\$(Configuration)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\GameServer\GameServer.csproj" />
+    </ItemGroup>
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>
