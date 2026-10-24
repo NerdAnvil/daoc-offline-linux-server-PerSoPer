@@ -126,6 +126,21 @@ public static class AdminText
                     r.Objectives.Select(o => new[] { o.Kind, o.Name, o.Owner, o.State, o.Location }));
                 return $"{battlegrounds}\n\n{objectives}\nAs of {r.UpdatedUtc.ToLocalTime():HH:mm:ss}.";
             }
+            case AdminOps.DialogueStatus:
+            case AdminOps.DialogueReload:
+            {
+                var d = AdminJson.To<DialogueInfo>(result)!;
+                var text = new StringBuilder();
+                text.AppendLine($"Dialogue load {d.Version}: {d.FromFolder.Count} files from {d.Folder ?? "(no folder)"}, {d.BuiltIn.Count} built in, {d.Lines} lines.");
+                if (d.FromFolder.Count > 0)
+                    text.AppendLine($"From the folder: {string.Join(", ", d.FromFolder)}");
+                if (d.BuiltIn.Count > 0)
+                    text.AppendLine($"Built in:        {string.Join(", ", d.BuiltIn)}");
+                text.AppendLine(d.Problems.Count == 0 ? "No problems." : $"{d.Problems.Count} problems:");
+                foreach (string problem in d.Problems)
+                    text.AppendLine("  " + problem);
+                return text.ToString().TrimEnd();
+            }
             default:
                 return result?.ToJsonString() ?? "OK";
         }

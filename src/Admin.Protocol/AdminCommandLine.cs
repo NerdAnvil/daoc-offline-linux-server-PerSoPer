@@ -40,11 +40,13 @@ public static class AdminCommandLine
           goals set <1-19|20-49|50> <solo> <group> <rvr> <battlegrounds>
                                           percentages adding up to 100
           rvr                             battlegrounds, keeps, relics and raids
+          dialogue                        where the bot dialogue files came from, and their problems
+          dialogue reload                 read the dialogue folder again (no restart)
         """;
 
     /// <summary>First words that the server console treats as admin commands.</summary>
     public static readonly IReadOnlySet<string> Groups =
-        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "status", "server", "bots", "population", "accounts", "options", "goals", "rvr" };
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "status", "server", "bots", "population", "accounts", "options", "goals", "rvr", "dialogue" };
 
     public static AdminRequest Parse(IReadOnlyList<string> args)
     {
@@ -77,6 +79,8 @@ public static class AdminCommandLine
             ("goals", "" or "show") => Request(AdminOps.GoalsGet),
             ("goals", "set") => GoalsSet(rest),
             ("rvr", "") => Request(AdminOps.RvrStatus),
+            ("dialogue", "" or "status") => Request(AdminOps.DialogueStatus),
+            ("dialogue", "reload") => Request(AdminOps.DialogueReload),
             _ => throw new AdminUsageException($"Unknown command: {string.Join(' ', args)}\n\n{Usage}"),
         };
     }

@@ -272,7 +272,11 @@ namespace DOL.GS
         {
             if (string.IsNullOrWhiteSpace(botName))
                 return null;
-            return ActiveBots.Values.FirstOrDefault(bot => bot.Realm == realm && string.Equals(bot.Name, botName, StringComparison.OrdinalIgnoreCase));
+            // Companion bots first, then the bots living in the world (Kobaldjovi, the named bots, world bots),
+            // so "/invite Kobaldjovi" reaches a bot of your realm wherever it is.
+            return ActiveBots.Values.FirstOrDefault(bot => bot.Realm == realm && string.Equals(bot.Name, botName, StringComparison.OrdinalIgnoreCase))
+                ?? AutonomousBotRegistry.Snapshot().FirstOrDefault(bot => bot.Realm == realm && bot.ObjectState == GameObject.eObjectState.Active &&
+                    string.Equals(bot.Name, botName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

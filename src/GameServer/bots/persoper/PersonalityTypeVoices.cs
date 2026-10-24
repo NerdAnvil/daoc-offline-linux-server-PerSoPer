@@ -38,8 +38,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Hardcore() => new()
     {
         Name = "Hardcore", Key = "hardcore", Matches = _ => false, Chattiness = 55,
-        Ambient = Talk("hardcore").Ambient, Replies = Talk("hardcore").Replies,
-        CheekyReplies = Talk("hardcore").CheekyReplies, FallbackReplies = Talk("hardcore").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("hardcore"),
         Memory = Voice(
             warm: ["{0}! My favourite pull partner.", "That's the {1} time we've teamed up, {0}. Efficient."],
             cool: ["Oh. {0}. The one who wastes time.", "Last time you said \"{3}\". Still out-levelled you."],
@@ -61,8 +60,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Casual() => new()
     {
         Name = "Casual", Key = "casual", Matches = _ => false, Chattiness = 60,
-        Ambient = Talk("casual").Ambient, Replies = Talk("casual").Replies,
-        CheekyReplies = Talk("casual").CheekyReplies, FallbackReplies = Talk("casual").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("casual"),
         Memory = Voice(
             warm: ["{0}!! hey buddy", "oh it's {0}, nice. that's like the {1} time"],
             cool: ["oh {0}. hi I guess", "you said \"{3}\" last time {0}. not cool"],
@@ -84,8 +82,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality MinMaxer() => new()
     {
         Name = "Min/maxer", Key = "minmaxer", Matches = _ => false, Chattiness = 50,
-        Ambient = Talk("minmaxer").Ambient, Replies = Talk("minmaxer").Replies,
-        CheekyReplies = Talk("minmaxer").CheekyReplies, FallbackReplies = Talk("minmaxer").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("minmaxer"),
         Memory = Voice(
             warm: ["{0}! The one person who listens about caps.", "That's the {1} time we've grouped, {0}. Your DPS improved."],
             cool: ["{0}. Still running that template?", "You said \"{3}\", {0}. I logged it. In a spreadsheet."],
@@ -107,8 +104,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Joker() => new()
     {
         Name = "Joker", Key = "joker", Matches = _ => false, Chattiness = 80,
-        Ambient = Talk("joker").Ambient, Replies = Talk("joker").Replies,
-        CheekyReplies = Talk("joker").CheekyReplies, FallbackReplies = Talk("joker").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("joker"),
         Memory = Voice(
             warm: ["{0}! My favourite audience!", "That's the {1} time, {0}. You must like my jokes."],
             cool: ["Oh, {0}. The heckler.", "You said \"{3}\", {0}. I'm putting it in my act."],
@@ -130,8 +126,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Loner() => new()
     {
         Name = "Loner", Key = "loner", Matches = _ => false, Chattiness = 12,
-        Ambient = Talk("loner").Ambient, Replies = Talk("loner").Replies,
-        CheekyReplies = Talk("loner").CheekyReplies, FallbackReplies = Talk("loner").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("loner"),
         Memory = Voice(
             warm: ["{0}. You again. Fine.", "{1} time, {0}. You're tolerable."],
             cool: ["{0}. Go away.", "You said \"{3}\". I remember."],
@@ -152,8 +147,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Leeroy() => new()
     {
         Name = "Leeroy", Key = "leeroy", Matches = _ => false, Chattiness = 70,
-        Ambient = Talk("leeroy").Ambient, Replies = Talk("leeroy").Replies,
-        CheekyReplies = Talk("leeroy").CheekyReplies, FallbackReplies = Talk("leeroy").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("leeroy"),
         Memory = Voice(
             warm: ["{0}!! My charge buddy!", "{1} time together, {0}! We only died most of those!"],
             cool: ["{0}. You slowed me down last time.", "You said \"{3}\", {0}! Fight me!"],
@@ -177,8 +171,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Crafter() => new()
     {
         Name = "Crafter", Key = "crafter", Matches = _ => false, Chattiness = 55,
-        Ambient = Talk("crafter").Ambient, Replies = Talk("crafter").Replies,
-        CheekyReplies = Talk("crafter").CheekyReplies, FallbackReplies = Talk("crafter").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("crafter"),
         Memory = Voice(
             warm: ["{0}! My favourite customer. Not that I take orders.", "That's the {1} time we've grouped, {0}. I'd craft you something, but, you know."],
             cool: ["Oh. {0}. The one who keeps asking me to craft.", "You said \"{3}\", {0}. I'm too rich for that."],
@@ -200,8 +193,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Roleplayer() => new()
     {
         Name = "Roleplayer", Key = "roleplayer", Matches = _ => false, Chattiness = 60,
-        Ambient = Talk("roleplayer").Ambient, Replies = Talk("roleplayer").Replies,
-        CheekyReplies = Talk("roleplayer").CheekyReplies, FallbackReplies = Talk("roleplayer").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("roleplayer"),
         Memory = Voice(
             warm: ["{0}! My fellow adventurer. You always play along.", "That's the {1} time our tales have crossed, {0}. A fine saga."],
             cool: ["Oh. {0}. The one who laughs at my accent.", "You said \"{3}\", {0}. Very out of character."],
@@ -223,8 +215,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality Homeowner() => new()
     {
         Name = "Homeowner", Key = "homeowner", Matches = _ => false, Chattiness = 60,
-        Ambient = Talk("homeowner").Ambient, Replies = Talk("homeowner").Replies,
-        CheekyReplies = Talk("homeowner").CheekyReplies, FallbackReplies = Talk("homeowner").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("homeowner"),
         Memory = Voice(
             warm: ["Well, {0}! You betcha, c'mon over to the house again.", "That's the {1} time we've grouped, {0}. Dontcha know, you're welcome for dinner."],
             cool: ["Oh. {0}. Ope. Not sure I'll invite you over.", "You said \"{3}\", {0}. Uff da. Wipe your feet next time."],
@@ -246,8 +237,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality HerbalDoctor() => new()
     {
         Name = "Herbal Doctor", Key = "herbaldoctor", Matches = _ => false, Chattiness = 50,
-        Ambient = Talk("herbaldoctor").Ambient, Replies = Talk("herbaldoctor").Replies,
-        CheekyReplies = Talk("herbaldoctor").CheekyReplies, FallbackReplies = Talk("herbaldoctor").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("herbaldoctor"),
         Memory = Voice(
             warm: ["{0}, bub! You get buffing. Rare.", "That's the {1} time we've grouped, {0}. Buffs on me, bub."],
             cool: ["Oh. {0}. The one who doesn't get buffing.", "You said \"{3}\", {0}. Not chill, bub."],
@@ -269,8 +259,7 @@ public static partial class PersonalityTypeVoices
     private static BotPersonality GruffDoc() => new()
     {
         Name = "Gruff Doc", Key = "gruffdoc", Matches = _ => false, Chattiness = 45,
-        Ambient = Talk("gruffdoc").Ambient, Replies = Talk("gruffdoc").Replies,
-        CheekyReplies = Talk("gruffdoc").CheekyReplies, FallbackReplies = Talk("gruffdoc").FallbackReplies,
+        Talk = () => PersonalityLines.TalkFor("gruffdoc"),
         Memory = Voice(
             warm: ["{0}. Still alive. Good. Don't make me patch you.", "That's the {1} time we've grouped, {0}. Not bad. Not bad at all."],
             cool: ["Hm. {0}. You again. Sit still.", "You said \"{3}\", {0}. I'd remember that."],
@@ -287,9 +276,6 @@ public static partial class PersonalityTypeVoices
             quits: ["I'm out, {0}. Take care of yourself.", "That's it. Good luck, {0}. You'll need it."],
             makeUps: ["...Fine, {0}. Coming back. Don't read into it.", "Hmph. Rejoining, {0}. Stay safe."]),
     };
-
-    /// <summary>A type's ambient lines and replies, from its dialogue file.</summary>
-    private static TypeTalk Talk(string key) => PersonalityLines.TalkFor(key);
 
     private static MemoryVoice Voice(string[] warm, string[] cool, string[] neutral, string recall, string warmMood,
         string coolMood, string neutralMood, string coolTint, string warmTint) => new()

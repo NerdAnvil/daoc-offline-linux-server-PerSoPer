@@ -31,6 +31,8 @@ public static class AdminOps
     public const string GoalsGet = "goals.get";
     public const string GoalsSet = "goals.set";
     public const string RvrStatus = "rvr.status";
+    public const string DialogueStatus = "dialogue.status";
+    public const string DialogueReload = "dialogue.reload";
 }
 
 public static class AdminErrorCodes
@@ -178,3 +180,6 @@ public sealed record BattlegroundInfo(
 
 /// <summary>The server's RvR snapshot (refreshed every 30 s): keeps, relics, raids and battlegrounds.</summary>
 public sealed record RvrInfo(DateTime UpdatedUtc, IReadOnlyList<RvrObjectiveInfo> Objectives, IReadOnlyList<BattlegroundInfo> Battlegrounds);
+
+/// <summary>The last load of the bot dialogue files: which came from the folder, which are built in, and the problems found.</summary>
+public sealed record DialogueInfo(int Version, string Folder, IReadOnlyList<string> FromFolder, IReadOnlyList<string> BuiltIn, IReadOnlyList<string> Problems, int Lines);

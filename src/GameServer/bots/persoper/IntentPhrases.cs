@@ -23,11 +23,11 @@ public sealed class IntentPhrases
     public const int MaxWords = 6;
 
     private static readonly Logger Log = LoggerManager.Create(typeof(IntentPhrases));
-    private static readonly Lazy<IntentPhrases> Loaded = new(Load, true);
+    private static readonly DialogueCache<IntentPhrases> Loaded = new(Load);
 
     private readonly List<(string[] Words, eAutonomousChatIntent Intent)> _phrases = [];
 
-    /// <summary>The phrases from the built-in intents.dlg; none when the file is missing.</summary>
+    /// <summary>The phrases from intents.dlg (read again after a dialogue reload); none when the file is missing.</summary>
     public static IntentPhrases Shared => Loaded.Value;
 
     /// <summary>Problems found while reading, as "file:line: what".</summary>

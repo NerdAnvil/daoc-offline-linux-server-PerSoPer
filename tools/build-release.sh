@@ -41,6 +41,11 @@ echo "== Publishing daoc-admin (TUI + CLI)"
 "$DOTNET" publish "$REPO/src/DaocAdmin/DaocAdmin.csproj" -c Release -r linux-x64 --self-contained true \
   -o "$OUT/bin" -nologo -v quiet -clp:ErrorsOnly
 
+# dialogue-check (the bot chat line checker) shares bin/ the same way.
+echo "== Publishing dialogue-check"
+"$DOTNET" publish "$REPO/src/DialogueCheck/DialogueCheck.csproj" -c Release -r linux-x64 --self-contained true \
+  -o "$OUT/bin" -nologo -v quiet -clp:ErrorsOnly
+
 echo "== Building native pathing library"
 cmake -S "$REPO/src/Pathing/Detour" -B "$REPO/src/Pathing/Detour/build" -DCMAKE_BUILD_TYPE=Release >/dev/null
 cmake --build "$REPO/src/Pathing/Detour/build" >/dev/null
@@ -66,10 +71,14 @@ rm -rf "$OUT/bin/config"
 ln -s ../config "$OUT/bin/config"
 ln -s ../navmesh "$OUT/bin/navmesh"
 ln -s ../logs "$OUT/bin/logs"
+# Bot chat lines: the server reads dialogue/ (copied from defaults/dialogue/ at start; see daoc-server.sh).
+ln -s ../dialogue "$OUT/bin/dialogue"
+mkdir -p "$OUT/defaults/dialogue"
+cp "$REPO"/src/GameServer/bots/persoper/dialogue/*.dlg "$OUT/defaults/dialogue/"
 
 cp "$REPO/deploy/serverconfig.template.xml" "$OUT/defaults/serverconfig.xml"
 cp "$REPO/src/GameServer/config/logconfig.xml" "$REPO/src/GameServer/config/invalidnames.txt" "$OUT/defaults/"
-cp "$REPO/deploy/daoc-server.sh" "$REPO/deploy/daoc-admin" "$REPO/deploy/navmesh-install.sh" "$REPO/deploy/release.conf" "$OUT/"
+cp "$REPO/deploy/daoc-server.sh" "$REPO/deploy/daoc-admin" "$REPO/deploy/dialogue-check" "$REPO/deploy/navmesh-install.sh" "$REPO/deploy/release.conf" "$OUT/"
 cp "$REPO/deploy/README-release.md" "$OUT/README.md"
 echo "$VERSION" > "$OUT/VERSION"
 

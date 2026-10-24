@@ -23,9 +23,9 @@ public static class KobaldjoviIdentity
     // Songs and asides: dialogue/kobaldjovi.dlg. Original lines only, no real lyrics; he names artists and genres, never quotes them.
     private static readonly IdentityDialogue Dialogue = new("kobaldjovi");
 
-    private static readonly string[] Songs = Dialogue.Lines("song");
+    private static string[] Songs => Dialogue.Lines("song");
 
-    private static readonly string[] Asides = Dialogue.Lines("aside");
+    private static string[] Asides => Dialogue.Lines("aside");
 
     // {0} is whoever spoke to him.
     public static readonly BotPersonality Personality = new()
@@ -111,9 +111,7 @@ public static class KobaldjoviIdentity
                 "I'm over it, {0}. Send an invite when you're ready.",
             ],
         },
-        Nicknames = Dialogue.Names,
-        Replies = Dialogue.Intents("reply"),
-        FallbackReplies = Dialogue.Lines("fallback"),
+        Talk = () => Dialogue.Talk,
     };
 
     /// <summary>Chance that someone nearby reacts to one of his songs.</summary>
@@ -123,9 +121,9 @@ public static class KobaldjoviIdentity
     public const double ThanksChance = 0.5;
 
     // How a plain bot reacts to a song ({0} is his name), and his answer to a reaction ({0} is whoever reacted).
-    private static readonly string[] PlainReactions = Dialogue.Lines("plain_reaction");
+    private static string[] PlainReactions => Dialogue.Lines("plain_reaction");
 
-    private static readonly string[] Thanks = Dialogue.Lines("thanks");
+    private static string[] Thanks => Dialogue.Lines("thanks");
 
     /// <summary>A reaction to his song: the reactor's own line if it has a personality, else a plain one.</summary>
     public static string SongReaction(BotPersonality reactor, Random random)

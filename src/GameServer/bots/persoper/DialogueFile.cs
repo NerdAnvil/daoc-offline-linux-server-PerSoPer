@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using DOL.Logging;
 
 namespace DOL.GS;
 
@@ -213,56 +210,4 @@ public sealed partial class DialogueFile
 
     [GeneratedRegex(@"^~\s*(?<name>[A-Za-z_]+)(?:\s+(?<arg>[A-Za-z0-9_-]+))?(?:\s*\[if\s+(?<cond>[^\]]+)\])?\s*$")]
     private static partial Regex Header();
-}
-
-/// <summary>The dialogue files built into the server (bots/persoper/dialogue/*.dlg), read once.</summary>
-public static class DialogueLibrary
-{
-    private static readonly Logger Log = LoggerManager.Create(MethodBase.GetCurrentMethod().DeclaringType);
-    private static readonly Lazy<IReadOnlyDictionary<string, DialogueFile>> Files = new(Load, true);
-    private static readonly Lazy<IReadOnlyDictionary<string, DialogueRule>> Rules = new(LoadRules, true);
-
-    /// <summary>All loaded files, keyed by file name without ".dlg" ("joker").</summary>
-    public static IReadOnlyDictionary<string, DialogueFile> All => Files.Value;
-
-    /// <summary>A file by name ("joker"), or null.</summary>
-    public static DialogueFile For(string name) => Files.Value.GetValueOrDefault(name ?? string.Empty);
-
-    /// <summary>
-    /// The rule of a line by its text, from any file, or null when it has none. Pools mix lines
-    /// from several blocks, so the text is what ties a line to its tags.
-    /// </summary>
-    public static DialogueRule RuleFor(string text) => Rules.Value.GetValueOrDefault(text ?? string.Empty);
-
-    private static IReadOnlyDictionary<string, DialogueRule> LoadRules()
-    {
-        var rules = new Dictionary<string, DialogueRule>(StringComparer.Ordinal);
-        foreach (DialogueFile file in Files.Value.Values)
-            foreach ((string text, DialogueRule rule) in file.Rules)
-                if (!rules.TryAdd(text, rule) && Log.IsErrorEnabled)
-                    Log.Error($"Dialogue: {file.FileName}: the tagged line '{text}' is also in another file; only the first one's tags count");
-        return rules;
-    }
-
-    private static IReadOnlyDictionary<string, DialogueFile> Load()
-    {
-        Assembly assembly = typeof(DialogueLibrary).Assembly;
-        var files = new Dictionary<string, DialogueFile>(StringComparer.OrdinalIgnoreCase);
-        foreach (string resource in assembly.GetManifestResourceNames().Where(name => name.EndsWith(".dlg", StringComparison.Ordinal)))
-        {
-            string name = resource[..^4];
-            name = name[(name.LastIndexOf('.') + 1)..];
-            using Stream stream = assembly.GetManifestResourceStream(resource);
-            using var reader = new StreamReader(stream);
-            DialogueFile file = DialogueFile.Parse(reader.ReadToEnd(), name + ".dlg");
-            files[name] = file;
-            foreach (string error in file.Errors)
-                if (Log.IsErrorEnabled)
-                    Log.Error($"Dialogue: {error}");
-        }
-        int errors = files.Values.Sum(file => file.Errors.Count);
-        if (Log.IsInfoEnabled)
-            Log.Info($"Dialogue: loaded {files.Count} files, {files.Values.Sum(file => file.LineCount)} lines, {errors} errors.");
-        return files;
-    }
 }

@@ -29,9 +29,10 @@ On first start the folder creates:
 | `config/` | `serverconfig.xml`, `logconfig.xml`, `invalidnames.txt`, `admins.json` | **yours** |
 | `data/` | `opendaoc.sqlite3.db`: the world, accounts, characters, bots, economy | **yours** |
 | `navmesh/` | `zone*.nav` plus `MANIFEST.sha256` | **yours** |
+| `dialogue/` | Bot chat lines (`*.dlg`); missing files are copied from `defaults/dialogue/` at start | **yours** |
 | `logs/` | `server.log`, `error.log`, `warn.log`, `console.out` (this run), `console.prev.out` | |
 | `run/` | `server.pid`, `admin.sock` | |
-| `daoc-server.sh`, `daoc-admin`, `navmesh-install.sh`, `release.conf`, `README.md`, `VERSION` | Scripts and info | replaced |
+| `daoc-server.sh`, `daoc-admin`, `dialogue-check`, `navmesh-install.sh`, `release.conf`, `README.md`, `VERSION` | Scripts and info | replaced |
 
 ## Start and stop
 
@@ -85,6 +86,20 @@ How it works:
 - Code: `src/GameServer/admin/` (server side), `src/DaocAdmin` (client), `src/Admin.Protocol`
   (shared).
 
+### Bot chat lines
+
+The bots' chat lines are text files in `dialogue/` (format: `docs/DIALOGUE-DESIGN.md`). To change them
+while the server runs:
+
+1. Edit a file in `dialogue/`.
+2. `./dialogue-check` reports mistakes as `file:line: what`; `./dialogue-check --preview KJ thank
+   player_dead` shows what a bot could answer in that situation.
+3. `./daoc-admin dialogue reload` (or `/dialogue reload` in game, GM and up). `dialogue` alone shows
+   which files came from the folder and any problems.
+
+A file with a mistake is not used: the problems go to `logs/server.log` and the built-in copy of
+that file stays, so a bot never goes silent.
+
 ## Connecting a client
 
 The client is a separate install. Point it at this machine on port 10300. With the Offline DAoC
@@ -108,7 +123,8 @@ forward **TCP 10300** and **UDP 10400** on your router.
 4. Copy its `bin/`, `defaults/` and scripts over the old folder.
 5. Start.
 
-`config/`, `data/` and `navmesh/` stay.
+`config/`, `data/`, `navmesh/` and `dialogue/` stay. A file you never edited in `dialogue/` still holds the
+old release's lines: delete it before starting and the new one is copied in.
 
 **World changes don't reach an existing `data/`.** The world is copied into `data/` only on first
 start, so a release with new world data (the 0.35 sync: quests, spawns, server properties) needs a

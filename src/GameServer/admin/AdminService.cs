@@ -68,6 +68,8 @@ namespace DOL.GS.Admin
                         request.GetInt("rvr") ?? 0,
                         request.GetInt("battlegrounds") ?? 0),
                     AdminOps.RvrStatus => OptionsAdmin.Rvr(),
+                    AdminOps.DialogueStatus => ToInfo(DialogueLibrary.LastLoad),
+                    AdminOps.DialogueReload => ToInfo(DialogueLibrary.Reload()),
                     _ => throw new AdminException(AdminErrorCodes.Invalid, $"Unknown operation '{request.Op}'."),
                 };
                 return AdminResponse.Success(request.Id, result);
@@ -123,6 +125,9 @@ namespace DOL.GS.Admin
             DOLDB<DbAccount>.FindObjectByKey(name)
             ?? throw new AdminException(AdminErrorCodes.NotFound,
                 $"Account '{name}' not found. Accounts are created on first login, or with: accounts create {name} <password>");
+
+        private static DialogueInfo ToInfo(DialogueLoadReport report) =>
+            new(report.Version, report.Folder, report.FromFolder, report.BuiltIn, report.Errors, report.Lines);
 
         private static AccountInfo ToInfo(DbAccount account)
         {

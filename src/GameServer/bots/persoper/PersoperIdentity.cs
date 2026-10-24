@@ -81,9 +81,9 @@ public static partial class PersoperIdentity
         [eGreeting.NewSurname] = Dialogue.Lines(section, "new_surname"),
     };
 
-    private static readonly Dictionary<eGreeting, string[]> GreetingsClean = Greetings("greeting");
+    private static Dictionary<eGreeting, string[]> GreetingsClean => Greetings("greeting");
 
-    private static readonly Dictionary<eGreeting, string[]> GreetingsCheeky = Greetings("cheeky_greeting");
+    private static Dictionary<eGreeting, string[]> GreetingsCheeky => Greetings("cheeky_greeting");
 
     private static readonly string[] OffClassGrumbles =
     [
@@ -189,11 +189,7 @@ public static partial class PersoperIdentity
                 "\"Hmph.\" Persoper won't come for another {1}.",
             ],
         },
-        Nicknames = Dialogue.Names,
-        Replies = Dialogue.Intents("reply"),
-        SongReactions = Dialogue.Lines("song_reaction"),
-        CheekyReplies = Dialogue.Intents("cheeky_reply"),
-        FallbackReplies = Dialogue.Lines("fallback"),
+        Talk = () => Dialogue.Talk,
     };
 
     /// <summary>True when a character or bot name would impersonate Persoper.</summary>
