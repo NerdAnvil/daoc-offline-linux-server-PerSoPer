@@ -4,10 +4,12 @@ namespace DOL.GS.Commands
 {
     /// <summary>
     /// The bot dialogue files from in game: "/dialogue" shows where they came from and their
-    /// problems, "/dialogue reload" reads the release folder's dialogue/ again (DialogueLibrary).
+    /// problems, "/dialogue reload" reads the release folder's dialogue/ again (DialogueLibrary),
+    /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
     /// </summary>
-    [CmdAttribute("&dialogue", ePrivLevel.GM, "Shows or reloads the bot dialogue files", "/dialogue [reload]")]
+    [CmdAttribute("&dialogue", ePrivLevel.GM, "Shows or reloads the bot dialogue files, or plays a scene",
+        "/dialogue [reload]", "/dialogue scene <pair> <scene>   (e.g. /dialogue scene joker-loner knock-knock)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
     {
         /// <summary>Problems listed in chat at most; the rest are in server.log and daoc-admin.</summary>
@@ -19,6 +21,11 @@ namespace DOL.GS.Commands
                 return;
 
             string verb = args.Length > 1 ? args[1].ToLowerInvariant() : "status";
+            if (verb == "scene" && args.Length == 4)
+            {
+                ChatUtil.SendSystemMessage(client, PersonalityScenes.PlayNamedScene(client.Player.Realm, args[2], args[3]));
+                return;
+            }
             if (verb is not ("status" or "reload"))
             {
                 DisplaySyntax(client);

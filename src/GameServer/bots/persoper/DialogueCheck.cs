@@ -25,6 +25,8 @@ public static class DialogueCheck
             if (phrases.Count == 0)
                 problems.Add($"{file.FileName}: no phrases");
         }
+        else if (name == PairScenes.FileName)
+            problems.AddRange(PairScenes.Check(file));
         else if (IdentityDialogue.FileNames.Contains(name))
             problems.AddRange(IdentityDialogue.Check(file, name));
 

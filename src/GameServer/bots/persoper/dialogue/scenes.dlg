@@ -1,0 +1,252 @@
+# Scenes: short scripts between two rival personality types. Format: see DialogueFile.cs.
+#
+# === lead-rival        a pair of types; A is the lead type, B the rival ("joker-loner")
+# ~ short <id>          a scene: its size and a name (letters, digits, - or _; unique in the pair)
+#                       short has 2 to 4 lines, medium 5 to 8, large 9 to 12
+# ~ short <id> [if tone_down off]   a cheeky scene, only played when persoper_tone_down is off
+# A: line               who says it: A (lead), B (rival) or C (any other bot nearby who joins in)
+#
+# A opens, B speaks at least once, and nobody speaks twice in a row. In a line {a}, {b} and {c}
+# are the speakers' names; {zone}, {monster}, {level}, {class} and {item} come from A (a scene
+# whose slot isn't known is skipped). A scene with a C line only plays when a third bot is there.
+# Try one in game: /dialogue scene joker-loner knock-knock
+
+=== hardcore-casual
+
+~ short trees
+A: {b}, still in {zone}? I left there five levels ago.
+B: {a}, some of us stop to look at the trees.
+A: Trees don't give XP, {b}.
+
+~ short picnic
+A: {b}, why are you sitting?
+B: i'm having a little picnic {a}
+A: In the middle of a camp?
+B: best view of the fighting tbh
+
+~ short what-level
+A: {b}, what level are you now?
+B: um... a good one? {a}
+A: That's not a number, {b}.
+
+~ short waterfall
+A: {b}, where are you off to? The camp is that way.
+B: there's a waterfall i want to look at {a}
+A: A waterfall. During prime hunting hours?
+B: it's a really nice waterfall
+
+~ medium stopped-counting
+A: {b}, how long have you been on that level?
+B: um. a while? i stopped counting {a}
+A: You stopped counting. That's the problem.
+B: i had a nice chat with a merchant though
+A: A merchant. Who gave you no XP.
+B: he gave me a biscuit
+C: Honestly, {a}, the biscuit sounds better.
+
+~ medium bind-stone
+A: {b}, I saw you dancing at the bind stone. For ten minutes.
+B: it was a good song {a}
+A: There's no song. It's a stone.
+B: you have to listen with your heart
+A: I listen with my XP bar, {b}.
+B: that sounds lonely {a}
+
+~ medium one-at-a-time
+A: {b}, you're pulling {monster} one at a time?
+B: yeah, they look friendly when they're alone {a}
+A: Two at a time. Minimum.
+B: but then they argue over who gets to bite me
+A: Then let them argue faster, {b}.
+B: ok coach
+
+~ large one-hour
+A: {b}. Group with me. One hour. Real pulling.
+B: one hour? like, a whole hour {a}?
+A: Sixty minutes. No sitting, no shopping, no sightseeing.
+B: can i at least wave at people
+A: You can wave while you run.
+B: what if i get tired
+A: Then you get tired at a higher level.
+B: ok but i'm bringing snacks
+A: Fine. Eat while I pull.
+B: deal. wait, which way is {zone}
+A: ...Follow me, {b}. Closely.
+B: yay, a field trip
+
+~ large schedule
+A: {b}, I have a schedule for you.
+B: ooh a schedule? like a timetable {a}
+A: Wake up. Pull. Rest only when the healer says so. Pull again.
+B: where's lunch on it
+A: Lunch is when the respawn is slow.
+B: and naps?
+A: There are no naps, {b}.
+C: I've seen this schedule. Nobody survives it.
+A: I survive it.
+B: you're not really a person though {a}, you're a spreadsheet with a sword
+A: ...That's the nicest thing anyone has said to me.
+B: aww. ok, i'll try your schedule. tomorrow
+
+=== minmaxer-leeroy
+
+~ short death-count
+A: {b}, your death count this week is higher than your level.
+B: That's a LOT of fighting, {a}!
+A: That's not the lesson, {b}.
+
+~ short resists
+A: {b}, did you check your resists before that pull?
+B: I checked if it was BIG, {a}!
+A: That's not a stat.
+B: It is to ME!
+
+~ short courage
+A: {b}, your template has three points in nothing useful.
+B: They're in COURAGE, {a}!
+A: There is no courage skill line, {b}.
+
+~ short power
+A: {b}, wait for the healer's power to refill.
+B: Power is a state of MIND, {a}!
+A: It's a blue bar, {b}. It's empty.
+
+~ medium the-plan
+A: {b}, before you pull {monster}, let's go over the plan.
+B: The plan is I RUN IN!
+A: Step one: check the adds. Step two: wait for the healer.
+B: Step three: I RUN IN!
+A: There is no step three, {b}.
+B: There is NOW!
+C: I'll get the rez ready.
+
+~ medium chart
+A: {b}, I made you a chart.
+B: A CHART? Does it explode?
+A: It shows your deaths per hour. The line only goes up.
+B: UP is GOOD, {a}!
+A: Not for this chart, {b}.
+B: Then make a chart where it's good!
+
+~ medium one-blue
+A: {b}, at your level you should be pulling one blue at a time.
+B: One?! What do I do with my OTHER hand, {a}?
+A: Hold a potion. That's the point.
+B: Potions are for after!
+A: After what?
+B: After I'm DEAD, obviously!
+C: ...I'm starting to see the problem.
+
+~ large dungeon-run
+A: {b}, I ran the numbers on your last dungeon run.
+B: Did I WIN, {a}?
+A: You pulled four rooms at once.
+B: That's FOUR TIMES the fun!
+A: The group died in eleven seconds.
+B: Eleven seconds of GLORY!
+A: Our repair bill was higher than the loot.
+B: Glory isn't cheap, {a}!
+C: For the record, I was in that group.
+A: Next time, {b}, we follow the pull order.
+B: Fine! I'll pull in ORDER! All of them! At once!
+A: ...I'll make another chart.
+
+~ large spec
+A: {b}, I've optimised your spec.
+B: Does it make me CHARGE faster?
+A: It makes you live longer. About 40% longer.
+B: Longer than WHAT, {a}?
+A: Than the six seconds you usually last.
+B: Six seconds is plenty! I do a LOT in six seconds!
+A: You run in, shout, and fall over.
+B: In THAT ORDER! Every time! That's consistency!
+A: ...That's actually a fair point about consistency.
+B: SEE? I'm OPTIMAL!
+A: No, {b}. You're predictable. That's different.
+B: PREDICTABLY AWESOME! CHARGE!
+
+=== joker-loner
+
+~ short hiding
+A: {b}! Nice to see you, wherever you're hiding.
+B: Not hiding, {a}.
+A: That's exactly what someone hiding would say.
+
+~ short knock-knock
+A: {b}, knock knock.
+B: No.
+A: No who?
+B: ...Go away, {a}.
+
+~ short best-friends
+A: {b}, I've decided we're best friends.
+B: Undecide it, {a}.
+A: Too late. I've ordered matching cloaks.
+
+~ short quiet-life
+A: {b}, how's the quiet life?
+B: Was quiet, {a}.
+A: You're welcome!
+
+~ medium short-joke
+A: {b}, I wrote you a joke. It's very short. Like your replies.
+B: No.
+A: That's the punchline, actually. Well done.
+B: Go away, {a}.
+A: See? You're warming up to me.
+C: Leave them be, {a}.
+
+~ medium hunts-alone
+A: {b}, what do you call someone who hunts alone?
+B: Happy.
+A: I was going to say 'a loner', but yours is better.
+B: Mm.
+A: Want to hear another one?
+B: No, {a}.
+A: I'll save it for later. I'll whisper it.
+
+~ medium smile
+A: {b}, I saw you smile yesterday.
+B: You didn't, {a}.
+A: Near {zone}. At a rabbit.
+B: ...It was a good rabbit.
+A: Ha! So you DO have feelings!
+B: One. It's for rabbits.
+
+~ large silent
+A: {b}, let's group up. Just us two.
+B: No.
+A: I'll be quiet. Completely silent.
+B: You can't, {a}.
+A: Watch me.
+B: ...
+A: ...
+B: ...
+A: This is the longest I've ever gone without a joke.
+B: Eight seconds, {a}.
+A: A personal best! Group?
+B: ...Fine. One pull.
+
+~ large practising-silence
+A: {b}, I've been practising silence. Like you.
+B: Good.
+A: It's very hard. My jokes keep trying to escape.
+B: Let them die, {a}.
+C: Please do.
+A: Everyone's a critic.
+B: Everyone's right.
+A: {b}, was that... a joke?
+B: No.
+A: It was! You made a joke! I'm so proud!
+B: Never again, {a}.
+
+~ short pet [if tone_down off]
+A: {b}, do you talk to anyone, or just your pet?
+B: The pet listens, {a}.
+A: Fair. I'd listen too if you fed me.
+
+~ short dancer [if tone_down off]
+A: {b}, I bet you're a great dancer. When nobody's looking.
+B: Nobody is looking, {a}.
+A: I'm looking!
+B: Not for long.

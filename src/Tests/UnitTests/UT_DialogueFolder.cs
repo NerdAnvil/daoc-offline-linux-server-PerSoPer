@@ -150,6 +150,41 @@ public class UT_DialogueFolder
         Assert.That(DialogueCheck.Problems(file, name, null), Does.Contain(problem));
     }
 
+    [TestCase("=== joker-joker\n~ short a\nA: 1\nB: 2\n", "scenes.dlg:2: '=== joker-joker': a pair is two different types")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nB: 2\n=== loner-joker\n~ short a\nA: 1\nB: 2\n", "'=== loner-joker': this pair is already in the file the other way round")]
+    [TestCase("=== joker-loner\n~ tiny a\nA: 1\nB: 2\n", "scenes.dlg:2: '~ tiny a': a scene is '~ short', '~ medium' or '~ large'")]
+    [TestCase("=== joker-loner\n~ short\nA: 1\nB: 2\n", "'~ short': the scene needs a name")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nB: 2\n~ medium a\nA: 1\nB: 2\nA: 3\nB: 4\nA: 5\n", "scenes.dlg:5: '~ medium a': another scene in this pair has the name 'a'")]
+    [TestCase("=== joker-loner\n~ short a [if tone_down on]\nA: 1\nB: 2\n", "scenes only take [if tone_down off]")]
+    [TestCase("=== joker-loner\n~ medium a\nA: 1\nB: 2\n", "has 2 lines; a medium scene has 5 to 8")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nD: 2\n", "line 2 doesn't start with 'A:', 'B:' or 'C:' (D: 2)")]
+    [TestCase("=== joker-loner\n~ short a\nB: 1\nA: 2\n", "A says the first line")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nA: 2\nB: 3\n", "line 2: the same speaker twice in a row")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nC: 2\n", "B never speaks")]
+    [TestCase("=== joker-loner\n~ short a\nA: hi {0}\nB: 2\n", "line 1: unknown {0}")]
+    public void Checker_ReportsBrokenScenes(string text, string problem)
+    {
+        DialogueFile file = DialogueFile.Parse(text, "scenes.dlg");
+        Assert.That(DialogueCheck.Problems(file, "scenes", null), Has.Some.Contains(problem));
+    }
+
+    [Test]
+    public void ScenesFile_Edit_IsUsed_AndABrokenOneKeepsTheBuiltInScenes()
+    {
+        string builtIn = BuiltInText("scenes");
+        Assert.That(PairScenes.Find("loner-joker").Scenes.Single(scene => scene.Name == "knock-knock").Lines[0].Text, Is.EqualTo("{b}, knock knock."));
+
+        Write("scenes", builtIn.Replace("A: {b}, knock knock.", "A: {b}, knock knock. From the folder."));
+        Assert.That(DialogueLibrary.Initialize(_folder).Errors, Is.Empty);
+        Assert.That(PairScenes.Find("joker-loner").Scenes.Single(scene => scene.Name == "knock-knock").Lines[0].Text, Is.EqualTo("{b}, knock knock. From the folder."));
+
+        Write("scenes", builtIn.Replace("A: {b}, knock knock.", "D: {b}, knock knock."));
+        DialogueLoadReport report = DialogueLibrary.Reload();
+        Assert.That(report.Errors, Has.Some.Contains("doesn't start with 'A:', 'B:' or 'C:'"));
+        Assert.That(report.Errors, Does.Contain("scenes.dlg: not used; the built-in copy stays"));
+        Assert.That(PairScenes.Find("joker-loner").Scenes.Single(scene => scene.Name == "knock-knock").Lines[0].Text, Is.EqualTo("{b}, knock knock."));
+    }
+
     private static string VerdictOf(string[] facts, string line)
     {
         var errors = new System.Collections.Generic.List<string>();
