@@ -13,6 +13,8 @@ namespace DOL.GS;
 public sealed record BotPersonality
 {
     public required string Name { get; init; }
+    /// <summary>Other names players may call it by ("Jovi", "KJ"), from its dialogue file.</summary>
+    public IReadOnlyList<string> Nicknames { get; init; } = [];
     /// <summary>Stable lowercase id used in saved memories ("persoper", "kobaldjovi").</summary>
     public required string Key { get; init; }
     public required Func<GameBot, bool> Matches { get; init; }

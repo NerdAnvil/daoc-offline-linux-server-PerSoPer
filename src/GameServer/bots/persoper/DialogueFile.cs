@@ -16,6 +16,7 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// <code>
 /// # a comment
 /// === joker                        a block: one speaker (a type, later a named bot)
+/// names: Jovi, KJ                  nicknames, right after the block line (optional)
 /// ~ reply greeting                 a section: name, optional argument
 /// Well, if it isn't {0}!           one line per row; {0} and {zone} etc. are kept as written
 /// ~ cheeky [if tone_down off]      a section with a condition
@@ -36,7 +37,11 @@ public sealed partial class DialogueFile
     /// <summary>The sections whose lines may carry rules (for now: the chat replies).</summary>
     public static readonly IReadOnlySet<string> RuleSections = new HashSet<string> { "reply", "cheeky_reply", "fallback" };
 
+    /// <summary>Nicknames per block at most.</summary>
+    public const int MaxNames = 8;
+
     private readonly Dictionary<string, List<DialogueSection>> _blocks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, List<string>> _names = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _errors = [];
     private readonly Dictionary<string, DialogueRule> _rules = new(StringComparer.Ordinal);
     private readonly HashSet<string> _texts = new(StringComparer.Ordinal);
@@ -58,6 +63,10 @@ public sealed partial class DialogueFile
     public IReadOnlyList<DialogueSection> Block(string name) =>
         _blocks.TryGetValue(name ?? string.Empty, out List<DialogueSection> sections) ? sections : [];
 
+    /// <summary>The nicknames of one block ("names: Jovi, KJ"); empty when it has none.</summary>
+    public IReadOnlyList<string> Names(string block) =>
+        _names.TryGetValue(block ?? string.Empty, out List<string> names) ? names : [];
+
     public static DialogueFile Parse(string text, string fileName)
     {
         var file = new DialogueFile(fileName);
@@ -66,6 +75,7 @@ public sealed partial class DialogueFile
             file.Error(MaxRows, $"more than {MaxRows} rows; the rest is ignored");
 
         List<DialogueSection> block = null;
+        string blockName = null;
         string section = null, argument = null, condition = null;
         int sectionRow = 0;
         List<string> lines = null;
@@ -99,6 +109,16 @@ public sealed partial class DialogueFile
                 else if (file._blocks.ContainsKey(name))
                     file.Error(number, $"block '{name}' appears twice");
                 block = file._blocks.TryGetValue(name, out List<DialogueSection> existing) ? existing : file._blocks[name] = [];
+                blockName = name;
+                continue;
+            }
+
+            if (section == null && block != null && row.StartsWith("names:", StringComparison.OrdinalIgnoreCase))
+            {
+                if (block.Count > 0 || file._names.ContainsKey(blockName))
+                    file.Error(number, "'names:' comes once, right after the '=== block' line");
+                else
+                    file._names[blockName] = file.ReadNames(row["names:".Length..], number);
                 continue;
             }
 
@@ -163,8 +183,33 @@ public sealed partial class DialogueFile
 
     private void Error(int row, string message) => _errors.Add($"{FileName}:{row}: {message}");
 
+    private List<string> ReadNames(string list, int row)
+    {
+        var names = new List<string>();
+        foreach (string part in list.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (names.Count >= MaxNames)
+            {
+                Error(row, $"more than {MaxNames} names; the rest are ignored");
+                break;
+            }
+            if (!Nickname().IsMatch(part))
+                Error(row, $"bad name '{part}' (2 to 24 letters or digits, starting with a letter)");
+            else if (names.Contains(part, StringComparer.OrdinalIgnoreCase))
+                Error(row, $"name '{part}' appears twice");
+            else
+                names.Add(part);
+        }
+        if (names.Count == 0)
+            Error(row, "'names:' has no names");
+        return names;
+    }
+
     [GeneratedRegex(@"^[a-z0-9_-]+$")]
     private static partial Regex Name();
+
+    [GeneratedRegex(@"^[A-Za-z][A-Za-z0-9]{1,23}$")]
+    private static partial Regex Nickname();
 
     [GeneratedRegex(@"^~\s*(?<name>[A-Za-z_]+)(?:\s+(?<arg>[A-Za-z0-9_-]+))?(?:\s*\[if\s+(?<cond>[^\]]+)\])?\s*$")]
     private static partial Regex Header();

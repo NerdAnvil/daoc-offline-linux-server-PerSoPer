@@ -111,6 +111,7 @@ public static class KobaldjoviIdentity
                 "I'm over it, {0}. Send an invite when you're ready.",
             ],
         },
+        Nicknames = Dialogue.Names,
         Replies = Dialogue.Intents("reply"),
         FallbackReplies = Dialogue.Lines("fallback"),
     };

@@ -2,6 +2,7 @@
 # Lines that start with a tilde are songs, written \~ so they aren't read as sections.
 # His memory lines, build lines, patience and breakup messages stay in code.
 === kobaldjovi
+names: Jovi, KJ
 
 ~ song
 \~ Oh Jordheim, my frozen love, your snow falls soft as power ballads from above ~
@@ -89,6 +90,11 @@ Any old books for sale, {0}? I'm halfway through a saga and it's getting good.
 ~ reply help
 Help? Sure, {0}. Step one: hum something. Step two: improvise.
 I'm no trainer, {0}, but I know a song about it.
+
+~ reply thank
+No need to thank me, {0}. Applause works. So does coin.
+You're welcome, {0}! That one's going on the album notes.
+Thanks accepted, {0}. Encore later.
 
 ~ reply farewell
 \~ Fare thee well, {0}, the road is long, and I will write you a song ~

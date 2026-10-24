@@ -189,6 +189,7 @@ public static partial class PersoperIdentity
                 "\"Hmph.\" Persoper won't come for another {1}.",
             ],
         },
+        Nicknames = Dialogue.Names,
         Replies = Dialogue.Intents("reply"),
         SongReactions = Dialogue.Lines("song_reaction"),
         CheekyReplies = Dialogue.Intents("cheeky_reply"),

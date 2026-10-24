@@ -17,6 +17,9 @@ public sealed class IdentityDialogue
     private readonly string _name;
     private readonly IReadOnlyList<DialogueSection> _sections;
 
+    /// <summary>The bot's nicknames from "names:" in its block; empty when it has none.</summary>
+    public IReadOnlyList<string> Names { get; }
+
     public IdentityDialogue(string name)
     {
         _name = name;
@@ -24,6 +27,7 @@ public sealed class IdentityDialogue
         if (file == null && Log.IsErrorEnabled)
             Log.Error($"Dialogue: {name}.dlg is missing");
         _sections = file?.Block(name) ?? [];
+        Names = file?.Names(name) ?? [];
     }
 
     /// <summary>The lines of a section by name and argument ("song", "greeting first_meeting"); empty when missing.</summary>

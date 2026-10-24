@@ -80,9 +80,13 @@ Oi
 
 **Intents** (`intents.dlg`):
 ```
+=== intents
 ~ intent thank
 thanks, ty, cheers, appreciate it
 ```
+A phrase counts when its words appear in a row; the longest phrase wins. Rude and real-world
+words are checked first; text no phrase matches goes to the built-in classifier as before. A bot
+answers an intent from its `~ reply <intent>` section, or its fallback lines.
 
 **A question with branching replies** (one question, one reply):
 ```

@@ -77,6 +77,11 @@ Hold still, {0}, I'm coming! [if player_dead]
 Dead again, {0}? That's three today. I'm keeping count. [if player_dead, deaths_today >= 3]
 Ooh, shiny! Did you save some for your healer, {0}? [if recent loot] [cooldown 11m]
 
+~ reply thank
+You're welcome, {0}. Try to stay alive this time.
+Aw, {0}. Gratitude looks good on you.
+Anytime, {0}. Well, anytime I'm not busy being fabulous.
+
 ~ reply farewell
 Bye, {0}! Don't die without me.
 Take care, {0}. Who's going to heal you now?
