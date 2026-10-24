@@ -27,6 +27,20 @@ public class UT_PersonalityReactions
     }
 
     [Test]
+    public void MonsterName_TakesOnlyARealMonster()
+    {
+        Func<string, bool> monsters = name => name == "a grass snake";
+        Assert.That(PersonalityReactions.MonsterName("a grass snake", "Eirik", monsters), Is.EqualTo("a grass snake"));
+        // The speaker's own name, a player, bot or trainer, or nothing: unknown, so the line is skipped.
+        Assert.That(PersonalityReactions.MonsterName("Eirik", "Eirik", _ => true), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("Hildunarborg", "Eirik", monsters), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("", "Eirik", monsters), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("a grass snake", "Eirik", null), Is.Null);
+        var slots = new LineSlots(null, PersonalityReactions.MonsterName("Eirik", "Eirik", _ => true), 0, null, null);
+        Assert.That(PersonalityReactions.Fill("{0}, you're pulling {monster} one at a time?", slots, "Hild"), Is.Null);
+    }
+
+    [Test]
     public void EveryTypeVoice_HasLines()
     {
         Assert.That(PersonalityTypeVoices.All.Keys, Is.EquivalentTo(PersonalityLines.All.Keys));

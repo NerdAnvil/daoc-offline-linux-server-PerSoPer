@@ -170,10 +170,25 @@ public static class PersonalityReactions
 
     public static LineSlots SlotsFor(GameBot bot, int level, string item = null) => new(
         bot?.CurrentZone?.Description,
-        bot?.PersistentRecord?.TargetName,
+        MonsterFor(bot),
         level,
         bot?.ClassName,
         item ?? bot?.TempProperties.GetProperty<string>(LastLootKey));
+
+    /// <summary>
+    /// The bot's record TargetName if it is a real monster in its region, else null. That record
+    /// also holds trainers, merchants, enemy players, other bots and even the bot itself (what it
+    /// had targeted when it died, e.g. a healer on itself).
+    /// </summary>
+    private static string MonsterFor(GameBot bot) =>
+        bot == null ? null : MonsterName(bot.PersistentRecord?.TargetName, bot.Name, name =>
+            WorldMgr.GetNPCsByNameFromRegion(name, bot.CurrentRegionID, eRealm.None)
+                .Any(npc => npc is not GameBot && AutonomousWorldBotController.IsExperienceMonster(npc)));
+
+    /// <summary>name if it can fill {monster}: not blank, not the speaker's own name, and isMonster says yes.</summary>
+    public static string MonsterName(string name, string selfName, Func<string, bool> isMonster) =>
+        string.IsNullOrWhiteSpace(name) || string.Equals(name, selfName, StringComparison.OrdinalIgnoreCase) ||
+        isMonster?.Invoke(name) != true ? null : name;
 
     private static int NextLevel(GameBot bot) => bot != null && bot.Level < bot.MaxLevel ? bot.Level + 1 : 0;
 

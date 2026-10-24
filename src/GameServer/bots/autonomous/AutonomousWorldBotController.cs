@@ -4845,7 +4845,7 @@ namespace DOL.GS
         // Level 0 creatures are real XP targets (5 XP each; blue to a level 1
         // character), so they are no longer excluded. Pets, guards, service
         // NPCs and untargetable/peaceful objects remain excluded below.
-        private static bool IsExperienceMonster(GameNPC npc) =>
+        internal static bool IsExperienceMonster(GameNPC npc) =>
             npc?.ObjectState is GameObject.eObjectState.Active && npc.Realm == eRealm.None && npc.Brain != null &&
             (npc.Flags & (GameNPC.eFlags.PEACE | GameNPC.eFlags.CANTTARGET)) == 0 &&
             npc is not GameMerchant && npc is not GameGuard && npc is not GameTaxi &&
