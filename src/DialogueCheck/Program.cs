@@ -21,7 +21,7 @@ public static class Program
             Shows every line BOT could answer to INTENT and whether it would say it now.
             BOT:    persoper, kobaldjovi (or a nickname such as KJ), a type such as joker, or a named bot.
             INTENT: greeting, thank, help, farewell, banter, ...
-            FACT:   the situation, e.g. player_dead  health=20  mood=warm  recent=loot  nearby=kobaldjovi
+            FACT:   the situation, e.g. player_dead  health=20  mood=warm  recent=loot  nearby=kobaldjovi  player_likes=metal
             Uses the files in FOLDER (default: the release folder's dialogue/), with the built-in copy for any file that has problems.
         """;
 

@@ -109,7 +109,7 @@ public static class DialoguePreview
 
     /// <summary>
     /// The situation from words like "player_dead", "health=20", "mood=warm", "recent=loot",
-    /// "nearby=kobaldjovi", "zone=Camelot City". Unknown facts or values go to <paramref name="errors"/>.
+    /// "nearby=kobaldjovi", "player_likes=metal", "zone=Camelot City". Unknown facts or values go to <paramref name="errors"/>.
     /// </summary>
     public static DialogueFacts Facts(IEnumerable<string> words, List<string> errors)
     {
@@ -118,6 +118,7 @@ public static class DialoguePreview
         string mood = null, timeOfDay = null, zone = null;
         var recent = new HashSet<string>();
         var nearby = new HashSet<string>();
+        var likes = new HashSet<string>();
         foreach (string word in words.Take(DialogueRule.MaxConditions * 4))
         {
             int equals = word.IndexOf('=');
@@ -160,13 +161,15 @@ public static class DialoguePreview
                 zone = value;
             else if (fact == "nearby")
                 nearby.Add(value.ToLowerInvariant());
+            else if (fact == DialogueRule.LikesFact)
+                likes.Add(value.ToLowerInvariant());
             else
                 errors.Add($"'{word}': unknown fact '{fact}'");
         }
         return new DialogueFacts
         {
             BotId = "preview", PlayerId = "preview", PlayerDead = dead, InCombat = combat, Health = health, GroupSize = groupSize,
-            DeathsToday = deaths, Mood = mood, TimeOfDay = timeOfDay, Zone = zone, Recent = recent, Nearby = nearby,
+            DeathsToday = deaths, Mood = mood, TimeOfDay = timeOfDay, Zone = zone, Recent = recent, Nearby = nearby, Likes = likes,
         };
     }
 

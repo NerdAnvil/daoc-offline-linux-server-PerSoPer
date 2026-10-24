@@ -121,8 +121,9 @@ More can be added later; the checker rejects unknown facts.
 Names in step 1: `player_dead`, `in_combat` (yes/no); `health` (percent), `group_size`,
 `deaths_today` (numbers); `mood` (warm, neutral, cool; this is also the relationship level for
 now); `time_of_day` (morning, day, evening, night, by the game clock); `recent` (death, kill,
-loot, level_up, within 5 minutes); `zone` and `nearby` (a name). Saved player answers come with
-step 5.
+loot, level_up, within 5 minutes); `zone` and `nearby` (a name). Step 5 adds `player_likes`
+(`[if player_likes metal]`: the player's saved answer to some question is `metal`; `other` never
+counts).
 
 ## Player names
 

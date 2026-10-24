@@ -64,6 +64,43 @@ public class UT_DialogueAsk
     }
 
     [Test]
+    public void PlayerLikes_IsTrueOnlyForASavedAnswerWord()
+    {
+        var errors = new List<string>();
+        (_, DialogueRule rule) = DialogueRule.Split("Metalhead! [if player_likes Metal]", errors);
+        DialogueCondition likes = rule.Conditions.Single();
+
+        Assert.That(errors, Is.Empty);
+        Assert.That((likes.Fact, likes.Value), Is.EqualTo(("player_likes", "metal")));
+        Assert.That(new DialogueFacts { Likes = new HashSet<string> { "metal", "tea" } }.Holds(likes), Is.True);
+        Assert.That(new DialogueFacts { Likes = new HashSet<string> { "ballads" } }.Holds(likes), Is.False);
+        Assert.That(new DialogueFacts { Likes = new HashSet<string>() }.Holds(likes), Is.False);
+        Assert.That(new DialogueFacts().Holds(likes), Is.False);
+    }
+
+    [TestCase("x [if player_likes]", "'player_likes' needs a name, for example [if player_likes camelot city]")]
+    [TestCase("x [if player_likes other]", "'player_likes' needs one answer word from an ask (not 'other'), for example [if player_likes metal]")]
+    [TestCase("x [if player_likes heavy metal]", "'player_likes' needs one answer word from an ask (not 'other'), for example [if player_likes metal]")]
+    [TestCase("x [if not player_likes metal]", "'not' only works with player_dead, in_combat")]
+    public void PlayerLikes_RejectsBadUse(string line, string expected)
+    {
+        var errors = new List<string>();
+        DialogueRule.Split(line, errors);
+
+        Assert.That(errors, Does.Contain(expected));
+    }
+
+    [Test]
+    public void Preview_PlayerLikesWordSetsTheFact()
+    {
+        var errors = new List<string>();
+        DialogueFacts facts = DialoguePreview.Facts(["player_likes=Metal"], errors);
+
+        Assert.That(errors, Is.Empty);
+        Assert.That(facts.Likes, Is.EquivalentTo(new[] { "metal" }));
+    }
+
+    [Test]
     public void Check_PersoperMayAsk_NamedBotsNotYet()
     {
         Assert.That(DialogueCheck.Problems(DialogueFile.Parse(Good, "persoper.dlg"), "persoper", null), Is.Empty);

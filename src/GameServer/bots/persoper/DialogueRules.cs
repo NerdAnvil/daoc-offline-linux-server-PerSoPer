@@ -39,7 +39,10 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     };
 
     /// <summary>Facts with any text value: "[if zone camelot city]", "[if nearby kobaldjovi]".</summary>
-    public static readonly IReadOnlySet<string> TextFacts = new HashSet<string> { "zone", "nearby" };
+    public static readonly IReadOnlySet<string> TextFacts = new HashSet<string> { "zone", "nearby", LikesFact };
+
+    /// <summary>"[if player_likes metal]": the player's saved answer to some question is "metal" (see DialogueFile's ask).</summary>
+    public const string LikesFact = "player_likes";
 
     /// <summary>The most specific line wins: the one with the most conditions.</summary>
     public int Specificity => Conditions.Count;
@@ -136,6 +139,8 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
             string value = match.Groups["value"].Value.Trim();
             if (value.Length == 0 || match.Groups["op"].Success)
                 error = $"'{fact}' needs a name, for example [if {fact} camelot city]";
+            else if (fact == LikesFact && (value == DialogueFile.OtherAnswer || !LikedWord().IsMatch(value)))
+                error = $"'{fact}' needs one answer word from an ask (not '{DialogueFile.OtherAnswer}'), for example [if {fact} metal]";
             else
                 return new DialogueCondition(fact, false, null, 0, value);
         }
@@ -165,6 +170,9 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
 
     [GeneratedRegex(@"^(?<n>\d+)\s*(?<unit>[smh])$")]
     private static partial Regex Duration();
+
+    [GeneratedRegex(@"^[a-z0-9_-]{1,32}$")]
+    private static partial Regex LikedWord();
 }
 
 /// <summary>
@@ -189,6 +197,9 @@ public sealed class DialogueFacts
     public IReadOnlySet<string> Recent { get; init; }
     public IReadOnlySet<string> Nearby { get; init; }
 
+    /// <summary>The player's saved answers to the bots' questions, as the answer words ("metal"); never "other".</summary>
+    public IReadOnlySet<string> Likes { get; init; }
+
     public bool Holds(DialogueCondition condition) => condition.Fact switch
     {
         "player_dead" => PlayerDead is { } dead && dead != condition.Negated,
@@ -201,6 +212,7 @@ public sealed class DialogueFacts
         "zone" => string.Equals(Zone, condition.Value, StringComparison.OrdinalIgnoreCase),
         "recent" => Recent?.Contains(condition.Value) == true,
         "nearby" => Nearby?.Contains(condition.Value) == true,
+        DialogueRule.LikesFact => Likes?.Contains(condition.Value) == true,
         _ => false,
     };
 

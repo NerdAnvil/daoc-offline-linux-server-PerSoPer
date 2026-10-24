@@ -49,6 +49,11 @@ public static class DialogueFactSource
             Zone = player.CurrentZone?.Description,
             Recent = PlayerEventLog.Recent(playerId, now),
             Nearby = nearby,
+            Likes = Likes(playerId),
         };
     }
+
+    /// <summary>The player's saved answers as words; "other" (an answer nothing matched) says nothing about them.</summary>
+    private static HashSet<string> Likes(string playerId) =>
+        PlayerAnswers.Cache.For(playerId).Values.Where(answer => answer != DialogueFile.OtherAnswer).ToHashSet(StringComparer.Ordinal);
 }
