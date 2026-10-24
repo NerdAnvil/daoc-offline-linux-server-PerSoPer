@@ -297,6 +297,44 @@ public static class PersonalityScenes
         return Play(lines.Select(line => (bots[line.Speaker], line.Text)).ToList(), channel, bot.Group, firstDelayMs: 0);
     }
 
+    /// <summary>
+    /// For "/dialogue scene": plays one pair scene by name now, in the realm's faction chat, with
+    /// online bots of that realm (of the pair's types when there are some, else any that can talk).
+    /// Returns what happened, for chat.
+    /// </summary>
+    public static string PlayNamedScene(eRealm realm, string pairName, string sceneName)
+    {
+        if (PairScenes.Find(pairName) is not { } pair)
+            return $"No pair '{pairName}'. Pairs: {string.Join(", ", PairScenes.All.Select(found => found.Name))}.";
+        SceneScript script = pair.Scenes.FirstOrDefault(scene => string.Equals(scene.Name, sceneName, StringComparison.OrdinalIgnoreCase));
+        if (script == null)
+            return $"No scene '{sceneName}' in {pair.Name}. Scenes: {string.Join(", ", pair.Scenes.Select(scene => scene.Name))}.";
+        if (script.Cheeky && PersoperProperties.TONE_DOWN)
+            return $"'{script.Name}' is a cheeky scene; it only plays with persoper_tone_down off.";
+
+        var cast = PersonalityTypes.Online()
+            .Where(found => found.Bot.Realm == realm && AutonomousBotChatCoordinator.CanSpeakInScene(found.Bot))
+            .Take(MaxCandidates)
+            .OrderBy(_ => Random.Shared.Next())
+            .ToList();
+        GameBot a = cast.FirstOrDefault(found => found.Personality.TypeKey == pair.Lead).Bot ?? cast.FirstOrDefault().Bot;
+        GameBot b = cast.FirstOrDefault(found => found.Bot != a && found.Personality.TypeKey == pair.Rival).Bot ??
+            cast.FirstOrDefault(found => found.Bot != a).Bot;
+        GameBot c = cast.FirstOrDefault(found => found.Bot != a && found.Bot != b).Bot;
+        if (a == null || b == null || script.Speakers > 2 && c == null)
+            return $"Not enough bots of your realm can talk now ('{script.Name}' needs {script.Speakers}).";
+
+        GameBot[] bots = [a, b, c];
+        List<SceneLine> lines = FillScript(script, bots.Select(member => member?.Name).ToArray(),
+            PersonalityReactions.SlotsFor(a, a.Level < a.MaxLevel ? a.Level + 1 : 0));
+        if (lines == null)
+            return $"'{script.Name}' can't be filled in for {a.Name} now (a {{zone}} or other slot isn't known).";
+        if (!Play(lines.Select(line => (bots[line.Speaker], line.Text)).ToList(), eSceneChannel.Faction, null, firstDelayMs: 0))
+            return $"'{script.Name}' couldn't start.";
+        return $"Playing {pair.Name} '{script.Name}' in faction chat: A = {a.Name}, B = {b.Name}" +
+            (script.Speakers > 2 ? $", C = {c.Name}." : ".");
+    }
+
     private static SceneVoice Voice(GameBot bot, string typeKey) =>
         new(bot.Name, typeKey, PersonalityReactions.SlotsFor(bot, bot.Level < bot.MaxLevel ? bot.Level + 1 : 0));
 

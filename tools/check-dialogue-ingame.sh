@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # check-dialogue-ingame.sh - in-game check of the dialogue folder, reload, fallback and checker
-# (dialogue step 3), on a running test server. Run it yourself, outside any sandbox:
+# and scenes (dialogue steps 3 and 4), on a running test server. Run it yourself, outside any sandbox:
 #
 #   tools/check-dialogue-ingame.sh <server-folder> [character]     (asks for the password)
 #
@@ -8,9 +8,10 @@
 #   [character]      a level 1 test character in Kobaldjovi's realm (default Headlesstest)
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
-# It edits dialogue/kobaldjovi.dlg and dialogue/intents.dlg, reloads, and talks to Kobaldjovi with
-# the headless client (it teleports to him and invites him into the group, so he stands still and
-# isn't fighting). The two files are put back and reloaded at the end, whatever happens.
+# It edits dialogue/kobaldjovi.dlg, intents.dlg and scenes.dlg, reloads, and talks to Kobaldjovi
+# with the headless client (it teleports to him and invites him into the group, so he stands still
+# and isn't fighting). For scenes it plays one with /dialogue scene, which casts two online bots of
+# the character's realm. The three files are put back and reloaded at the end, whatever happens.
 # Prints PASS or FAIL per check; exits 0 only when every check passed.
 set -uo pipefail
 
@@ -33,7 +34,7 @@ if [[ -z ${DAOC_PASSWORD:-} ]]; then
   export DAOC_PASSWORD
 fi
 [[ -f $CLIENT && -f $CHECKER ]] || die "build first: dotnet build src/DaocServer.sln -c Release"
-[[ -f $DLG/kobaldjovi.dlg && -f $DLG/intents.dlg ]] || die "no $DLG/kobaldjovi.dlg or intents.dlg"
+[[ -f $DLG/kobaldjovi.dlg && -f $DLG/intents.dlg && -f $DLG/scenes.dlg ]] || die "no $DLG/kobaldjovi.dlg, intents.dlg or scenes.dlg"
 pid=$(cat "$SERVER/run/server.pid" 2>/dev/null || true)
 [[ $pid =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null || die "the server in $SERVER isn't running; start it first"
 login=$("$DOTNET" "$CLIENT" --account="$ACCOUNT" --login-only 2>&1) ||
@@ -42,9 +43,9 @@ grep -q " $CHARACTER, level" <<<"$login" || die "$ACCOUNT has no character $CHAR
 
 WORK="$(mktemp -d)"
 RECORDS="$SERVER/logs"   # the recordings stay there after the run
-cp "$DLG/kobaldjovi.dlg" "$DLG/intents.dlg" "$WORK/"
+cp "$DLG/kobaldjovi.dlg" "$DLG/intents.dlg" "$DLG/scenes.dlg" "$WORK/"
 restore() {
-  cp "$WORK/kobaldjovi.dlg" "$WORK/intents.dlg" "$DLG/"
+  cp "$WORK/kobaldjovi.dlg" "$WORK/intents.dlg" "$WORK/scenes.dlg" "$DLG/"
   "$SERVER/daoc-admin" dialogue reload >/dev/null 2>&1 || echo "note: couldn't reload after putting the files back; run: $SERVER/daoc-admin dialogue reload"
   rm -rf "$WORK"
 }
@@ -134,6 +135,43 @@ grep -q "$lines of $lines lines possible" <<<"$out" && pass "preview shows his $
 grep -q "not now: \[if player_dead\]" <<<"$("$DOTNET" "$CHECKER" --preview persoper help --folder "$DLG" 2>&1)" &&
   grep -q "YES  Hold still" <<<"$("$DOTNET" "$CHECKER" --preview persoper help player_dead --folder "$DLG" 2>&1)" &&
   pass "preview follows [if player_dead]" || fail "preview ignores [if player_dead]"
+
+echo "== 4. Scenes come from scenes.dlg"
+SCENE_LINE='knock knock. Straight from scenes.dlg.'
+SCENE_CMD='/dialogue scene joker-loner knock-knock'
+# Plays the scene; the server's messages go to $1. True when the edited first line was heard.
+scene() {
+  local record=$1 attempt
+  for attempt in 1 2; do
+    "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
+      --send="$SCENE_CMD" --record="$record" --record-seconds=12 --overwrite >"$record.log" 2>&1
+    grep -qF "$SCENE_LINE" "$record" && return 0
+    echo "      (scene line not heard on try $attempt; trying again)"
+  done
+  return 1
+}
+sed 's/^A: {b}, knock knock\.$/A: {b}, '"$SCENE_LINE"'/' "$WORK/scenes.dlg" > "$DLG/scenes.dlg"
+grep -qF "$SCENE_LINE" "$DLG/scenes.dlg" || die "couldn't edit $DLG/scenes.dlg (is the knock-knock scene there?)"
+out=$("$SERVER/daoc-admin" dialogue reload 2>&1)
+if grep -q "No problems." <<<"$out" && grep -q "From the folder: .*scenes" <<<"$out"; then
+  pass "daoc-admin dialogue reload: scenes.dlg from the folder, no problems"
+else
+  fail "daoc-admin dialogue reload said:"; echo "$out" | sed 's/^/      /'
+fi
+if scene "$RECORDS/dialogue-check-4.txt"; then
+  pass "\"$SCENE_CMD\" played the edited line"
+else
+  fail "the edited scene line wasn't heard; the server said:"
+  grep -E "Playing|No pair|No scene|Not enough|can't|couldn't" "$RECORDS/dialogue-check-4.txt" | head -3 | sed 's/^/      /'
+fi
+sed 's/^A: {b}, knock knock\.$/D: {b}, knock knock./' "$WORK/scenes.dlg" > "$DLG/scenes.dlg"
+out=$("$SERVER/daoc-admin" dialogue reload 2>&1)
+if grep -q "doesn't start with 'A:', 'B:' or 'C:'" <<<"$out" && grep -q "scenes.dlg: not used; the built-in copy stays" <<<"$out"; then
+  pass "a broken scenes.dlg is reported and the built-in scenes stay"
+else
+  fail "daoc-admin dialogue reload said:"; echo "$out" | sed 's/^/      /'
+fi
+cp "$WORK/scenes.dlg" "$DLG/"
 
 echo
 (( failures == 0 )) && echo "All checks passed." || echo "$failures check(s) failed."
