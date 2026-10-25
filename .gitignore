@@ -32,3 +32,6 @@ dist/
 
 # Claude Code per-project settings (local only)
 .claude/
+
+# Raw model drafts (tools/draft-lines.sh); only reviewed lines are committed
+drafts/out/

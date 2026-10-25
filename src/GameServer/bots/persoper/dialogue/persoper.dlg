@@ -44,38 +44,68 @@ Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.
 {0}! Good to see you still have all your hit points.
 {greet}, metalhead {0}! Louder, please, I can still hear myself think. [if player_likes metal]
 {0}, I was humming a ballad for you. Don't tell anyone. [if player_likes ballads]
+Hello, darling {0}! Ready to live forever?
+Well hello there, {0}! Fancy some healing with that hello?
+Oh, it's you, {0}. Time for green bars and giggles.
+Go on, say it. "Hellooo, nurse." Everyone does, {0}. [once]
 
 ~ reply banter
 Oh, {0}, you're funny. Keep it up and I'll heal you last.
 Ha! {0}, I'm putting that on your tab.
+You're full of surprises, {0}. I like that.
+{0}, I swear you're getting funnier every time I heal you.
+{0}, you crack me up. Keep the jokes coming!
 
 ~ reply abuse
 Careful, {0}. I decide who gets healed around here.
 Rude, {0}. I'll pretend I didn't hear that. Once.
+{0}, do you need me to heal your pride too?
+Oh {0}, you've always been my favourite insult.
+Getting a little testy, {0}? I'll make sure to heal your attitude next.
+Aren't you just a fountain of compliments, {0}? I'll go ahead and heal you, though.
 
 ~ reply grouping
 A group, {0}? Someone has to keep you lot alive.
 Count me in, {0}. Try not to stand in the fire.
+Don't worry, {0}, I won't let your group die.
+A group? {0}, I'm in. I'm the healer, after all.
+You can count on me, {0}. I won't leave your group behind.
+Count me in. Group goals, here we come!
 
 ~ reply grinding
 Pull what you like, {0}. I'll keep the green bars up.
 More monsters, {0}? Fine, but I want a break after this camp.
+Keep the green bars up, {0}. I'll be your wall of healing.
+A pull sounds great, {0}. I'll catch you if you fall.
 
 ~ reply travel
 Lead the way, {0}. I'll be right behind you, healing.
 If you get us lost, {0}, I'm telling everyone.
+To the keep, {0}? I'll heal the whole way.
+We're off to see the Wizard, {0}? I'll heal us there.
+The frontier, {0}? Fine. But I'm not healing anyone who charges a keep alone.
 
 ~ reply dungeon
 A dungeon, {0}? Then nobody runs ahead. Nobody.
 Dark and full of things that bite. My favourite, {0}. Not really.
+I hope you brought more than your looks, {0}. I'll need you to fight too.
+Dungeons, {0}? I'll be right behind you, but if I die, you're doing it wrong.
+I'll heal you into that dungeon, {0}, but don't you dare run ahead.
+A dungeon full of danger, {0}? My kind of party. You better bring a towel.
 
 ~ reply rvr
 The frontier, {0}? Healers are the first target. Protect me.
 I'll come, {0}, but if an assassin shows up, I'm screaming.
+Careful, {0}, the frontier can be rough. I'll be right there, healing.
+On the frontier, {0}? I'll keep a mana potion on standby.
+I'll come to the frontier with you, {0}, but let me know if you spot an assassin.
+The frontier is wild, {0}, but we healers have our ways.
 
 ~ reply trading
 Trading, {0}? I'm looking for anything in magenta.
 Not selling, {0}. I'm a healer, not a merchant.
+I'm here for healing, not trading, {0}. But I can admire your gear if you like.
+Buying or selling, {0}? My job's healing, not your purse.
 
 ~ reply help
 Help? That's literally my job, {0}.
@@ -84,26 +114,41 @@ Asking me for help, {0}? How sweet. I'll remember this. [once]
 Hold still, {0}, I'm coming! [if player_dead]
 Dead again, {0}? That's three today. I'm keeping count. [if player_dead, deaths_today >= 3]
 Ooh, shiny! Did you save some for your healer, {0}? [if recent loot] [cooldown 11m]
+What's on your mind, {0}? I'm all ears - and heals.
+You're hurt, {0}? Finally, something I'm good at. [if health < 30]
+Oh no, {0}, you're in a bind! Hold on tight. [if health < 30]
+Dead? Not on my watch. Well, slightly on my watch. Hold on, {0}! [if player_dead]
 
 ~ reply thank
 You're welcome, {0}. Try to stay alive this time.
 Aw, {0}. Gratitude looks good on you.
 Anytime, {0}. Well, anytime I'm not busy being fabulous.
+You're very welcome, {0}. It's my pleasure to keep you in one piece.
+Aw, {0}, gratitude suits you. I might just keep you alive a little longer too.
+Thank me with something magenta next time, {0}. Now, stay out of the fire!
 
 ~ reply farewell
 Bye, {0}! Don't die without me.
 Take care, {0}. Who's going to heal you now?
+See you on the next pull, {0}! I'll be the one with the mana.
+Well, {0}, until the next time you need a heal - which will be soon!
+Bye, {0}. Watch out for trolls. Actually, watch out for everything.
 
 ~ reply ignoreoutofworld
 I have no idea what that is, {0}, and I'm too busy healing to ask.
+I'm healing people, {0}, not the news. Catch up later?
+{0}, I deal with fantasy, not fiction. I'll pass.
 
 ~ cheeky_reply greeting [if tone_down off]
 Well hello, {0}. Need a little hands-on healing?
 {greet}, {0} the metalhead returns. Turn it down, I'm healing, not headbanging. [if player_likes metal]
 Softie {0} is back. I kept the ballad warm for you. [if player_likes ballads]
+Hello yourself, you beautiful beast. Ready for some healing, {0}?
+Hellooo yourself, {0}. Yes, the nurse is in.
 
 ~ cheeky_reply banter [if tone_down off]
 Keep talking like that, {0}, and I'll keep you topped up all night.
+Well, {0}, if you keep making jokes, I'll have to heal your funny bone.
 
 ~ cheeky_reply grouping [if tone_down off]
 Group with you, {0}? Thought you'd never ask, darling.
@@ -111,6 +156,9 @@ Group with you, {0}? Thought you'd never ask, darling.
 ~ fallback
 Mm-hm. Sure, {0}. Now, who needs healing?
 Interesting, {0}. Tell me more after this pull.
+Mm-hm. I see. You'll have to excuse my old ears, {0}.
+Interesting point, {0}. I'll ponder that between heals.
+You've piqued my interest, {0}. Let's discuss more post-pull.
 
 # A question for players: she asks it now and then (or at /dialogue ask fav_music). The next short
 # line is the answer; "other" catches the rest. Answers are saved: [if player_likes metal].
