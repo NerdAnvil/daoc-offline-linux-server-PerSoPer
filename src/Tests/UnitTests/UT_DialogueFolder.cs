@@ -75,19 +75,21 @@ public class UT_DialogueFolder
     [Test]
     public void CharacterFile_GivesAllThreeRealms_TheCharacterPlusTheirRealmFlavour()
     {
-        Write("eaglefang", "=== eaglefang\n~ ambient\nCharacter line.\n\n=== albion\n~ ambient\nAlbion line.\n");
+        // The built-in file plus one line in the character block and one in the Albion block.
+        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n(?:\r?\n)*~ ambient\r?\n)", "$1Character line.\n");
+        Write("eaglefang", Regex.Replace(text, @"(=== albion\r?\n~ ambient\r?\n)", "$1Albion line.\n"));
         DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
 
         Assert.That(report.Errors, Is.Empty);
         Assert.That(report.FromFolder, Is.EqualTo(new[] { "eaglefang" }));
         Assert.That(PersonalityLines.Errors, Is.Empty);
-        Assert.That(PersonalityLines.Own["named:eaglefang"].Talk.Ambient, Is.EqualTo(new[] { "Character line." }));
-        Assert.That(PersonalityLines.Own["named:eaglefange"].Talk.Ambient, Is.EqualTo(new[] { "Character line.", "Albion line." }));
-        Assert.That(PersonalityLines.Own["named:eaglefangh"].Talk.Ambient, Is.EqualTo(new[] { "Character line." }));
+        Assert.That(PersonalityLines.Own["named:eaglefang"].Talk.Ambient, Does.Contain("Character line.").And.No.Contain("Albion line."));
+        Assert.That(PersonalityLines.Own["named:eaglefange"].Talk.Ambient, Does.Contain("Character line.").And.Contain("Albion line."));
+        Assert.That(PersonalityLines.Own["named:eaglefangh"].Talk.Ambient, Does.Contain("Character line.").And.No.Contain("Albion line."));
         // Still mixed with the Gruff Doc type's lines.
         string[] mixed = PersonalityLines.NamedTalk["named:eaglefang"].Ambient;
-        Assert.That(mixed, Does.Contain("Character line.").And.Some.Not.EqualTo("Character line."));
-        // Other characters keep their blocks in their type files.
+        Assert.That(mixed, Does.Contain("Character line.").And.Contain("Sit down. Drink water. Doctor's orders."));
+        // Other characters are unaffected.
         Assert.That(PersonalityLines.Own["named:spyburd"].Talk.Ambient, Is.Not.Empty);
     }
 

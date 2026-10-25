@@ -2,7 +2,8 @@
 # The type block is the same doctor in every realm: a former army field-hospital medic, clipped
 # and blunt, who says "Sit still", "Walk it off" and "Don't make me patch you twice". Serious
 # when things go wrong, a softy underneath who hates admitting it. Gender is random, so no line
-# uses he or she; all lines speak as "I". The realm blocks below only add a little realm flavour.
+# uses he or she; all lines speak as "I". Its named character, with its realm flavour, is in
+# eaglefang.dlg.
 === gruffdoc
 
 ~ ambient
@@ -199,56 +200,3 @@ Don't move, {0}. I'm coming. Don't you dare die on me.
 {item}. Could be worse. Into the pouch.
 Found {item}. Bandages first, loot second.
 {item}! Hm. Well. Don't tell anyone I'm pleased.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): same doctor, a little flavour from their realm. ---
-
-# Midgard: Dwarf Healer. Stocky, stubborn, plain-spoken; patches people by the forge and the fire.
-=== eaglefang
-~ ambient
-Dwarf, healer, medic. Short, tough, stubborn. Like my patients should be.
-Forge's warm, bandages are boiled. Good day.
-Everyone's bigger than me. Everyone still comes to me. Funny.
-
-~ opener realm
-Midgard's cold. Wounds heal slow in the cold. Wear a scarf.
-Seen big warriors cry over a splinter. Don't tell them.
-
-~ reply greeting
-Hm. {0}. Come in by the fire. Let me look at you.
-
-~ drop
-{item}. Good solid thing. Dwarf-made, I'd wager.
-
-# Albion: Highlander Cleric. Plain, proud, a little dry; patches soldiers like it's a field hospital still.
-=== eaglefange
-~ ambient
-Cleric, medic, nuisance. In that order.
-Good wool, good boots, good sense. Three rules for the road.
-Highlands taught me to bandage in the wind. Hard to keep tidy.
-
-~ opener realm
-Albion folk say please a lot. Wounded ones say it more.
-Camelot's tidy. I'd still bandage a wall if it bled.
-
-~ reply greeting
-Good day, {0}. You look wobbly. Sit.
-
-~ drop
-{item}. Fine. Into the satchel.
-
-# Hibernia: Firbolg Druid. Big, quiet, tender with plants; hates admitting the herbs are the favourite part.
-=== eaglefangh
-~ ambient
-Druid, medic, nuisance. Herbs first, fuss later.
-Moss on a cut works better than people think.
-Tall folk fall hard. I've mended plenty.
-
-~ opener realm
-Hibernia's green. Plenty of herbs. Plenty of patients.
-Good shade, good water. Everything a medic wants.
-
-~ reply greeting
-Well met, {0}. Sit in the shade. Let me see that.
-
-~ drop
-{item}. Goes in with the herbs.
