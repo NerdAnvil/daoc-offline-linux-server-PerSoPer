@@ -9,7 +9,7 @@
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
 # Needs the test server's dialogue/persoper.dlg to be the new one. "New lines" are the reply lines that
-# persoper.dlg has now and didn't have at step 6 (commit 439205d).
+# persoper.dlg has now and didn't have after the step 7 pilot (commit 6cf5620).
 # Part 1 (no server needed) has the checker confirm the file and that the new greetings can be picked.
 # Part 2 summons her, says hello three times, thanks her twice and asks for help once, and checks that
 # at least one of her answers is a new line and that no raw {placeholder} or [tag] reached the chat.
@@ -26,7 +26,7 @@ DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
 CLIENT="$REPO/src/build/HeadlessClient/Release/HeadlessClient.dll"
 CHECKER="$REPO/src/build/DialogueCheck/Release/DialogueCheck.dll"
 DLG="src/GameServer/bots/persoper/dialogue/persoper.dlg"
-BASELINE=439205d   # step 6: lines added since then are the new ones
+BASELINE=6cf5620   # after the pilot: lines added since then (passes 4 on) are the new ones
 RECORDS="$SERVER/logs"   # the recordings stay there after the run
 
 die() { echo "check-lines-ingame: $*" >&2; exit 2; }
