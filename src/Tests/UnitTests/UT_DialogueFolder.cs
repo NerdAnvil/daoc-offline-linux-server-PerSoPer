@@ -73,6 +73,36 @@ public class UT_DialogueFolder
     }
 
     [Test]
+    public void CharacterFile_GivesAllThreeRealms_TheCharacterPlusTheirRealmFlavour()
+    {
+        Write("eaglefang", "=== eaglefang\n~ ambient\nCharacter line.\n\n=== albion\n~ ambient\nAlbion line.\n");
+        DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
+
+        Assert.That(report.Errors, Is.Empty);
+        Assert.That(report.FromFolder, Is.EqualTo(new[] { "eaglefang" }));
+        Assert.That(PersonalityLines.Errors, Is.Empty);
+        Assert.That(PersonalityLines.Own["named:eaglefang"].Talk.Ambient, Is.EqualTo(new[] { "Character line." }));
+        Assert.That(PersonalityLines.Own["named:eaglefange"].Talk.Ambient, Is.EqualTo(new[] { "Character line.", "Albion line." }));
+        Assert.That(PersonalityLines.Own["named:eaglefangh"].Talk.Ambient, Is.EqualTo(new[] { "Character line." }));
+        // Still mixed with the Gruff Doc type's lines.
+        string[] mixed = PersonalityLines.NamedTalk["named:eaglefang"].Ambient;
+        Assert.That(mixed, Does.Contain("Character line.").And.Some.Not.EqualTo("Character line."));
+        // Other characters keep their blocks in their type files.
+        Assert.That(PersonalityLines.Own["named:spyburd"].Talk.Ambient, Is.Not.Empty);
+    }
+
+    [Test]
+    public void CharacterFile_WithAnotherBlock_IsNotUsed()
+    {
+        Write("eaglefang", "=== eaglefang\n~ ambient\nCharacter line.\n\n=== spyburd\n~ ambient\nWrong bot.\n");
+        DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
+
+        Assert.That(report.FromFolder, Is.Empty);
+        Assert.That(report.Errors, Has.Some.Contains("block 'spyburd' is neither '=== eaglefang' nor a realm"));
+        Assert.That(PersonalityLines.Own["named:eaglefang"].Talk.Ambient, Is.Not.Empty.And.No.EqualTo("Character line."));
+    }
+
+    [Test]
     public void BrokenFile_IsReported_AndTheBuiltInCopyStays()
     {
         Write("kobaldjovi", KobaldjoviWithNewThanks() + "\n~ reply nonsense\nOops.\n");

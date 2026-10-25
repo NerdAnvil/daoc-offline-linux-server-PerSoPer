@@ -151,7 +151,9 @@ public class UT_NamedBotVoices
     {
         foreach (string key in PersonalityLines.TypeKeys)
         {
-            var expected = NamedBotLineup.All.Where(entry => entry.TypeKey == key).Select(PersonalityLines.BlockName).Append(key);
+            // A bot whose character has its own file has no block left in its type's file.
+            var expected = NamedBotLineup.All.Where(entry => entry.TypeKey == key && DialogueLibrary.For(PersonalityLines.CharacterKey(entry)) == null)
+                .Select(PersonalityLines.BlockName).Append(key);
             Assert.That(DialogueLibrary.For(key).BlockNames, Is.EquivalentTo(expected), key);
         }
     }

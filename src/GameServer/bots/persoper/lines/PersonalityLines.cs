@@ -62,8 +62,9 @@ public sealed record TypeTalk(
 /// <summary>
 /// Conversation content for the six personality types, keyed like PersonalityTypeVoices.
 /// The lines live in dialogue/&lt;type&gt;.dlg (see DialogueFile); all are original.
-/// Each named bot of these types (NamedBotLineup) has its own block in its type's file
-/// ("=== shnacksize"); its lines are mixed into its type's, see <see cref="Mix"/>.
+/// Each named bot of these types (NamedBotLineup) has its own lines: its character's file with its
+/// realm's flavour (spyburd.dlg, see <see cref="CharacterKey"/>), or else its block in its type's
+/// file ("=== shnacksize"). They are mixed into its type's, see <see cref="Mix"/>.
 /// PersonalityReactions puts them into chat.
 /// </summary>
 public static class PersonalityLines
@@ -109,6 +110,45 @@ public static class PersonalityLines
     /// <summary>The block holding a named bot's own lines in its type's file: its name in lower case.</summary>
     public static string BlockName(NamedBotLineup.Entry entry) => entry.Name.ToLowerInvariant();
 
+    /// <summary>
+    /// The file of a named bot's character, shared by its three realm versions: the Midgard
+    /// version's name, "spyburd" (spyburd.dlg). In it, "=== spyburd" holds the character's lines
+    /// and "=== midgard", "=== albion" and "=== hibernia" a little realm flavour each.
+    /// </summary>
+    public static string CharacterKey(NamedBotLineup.Entry entry) =>
+        BlockName(NamedBotLineup.All.First(found => found.TypeKey == entry.TypeKey && found.Realm == eRealm.Midgard));
+
+    /// <summary>The block in a character file with one realm's flavour: "midgard", "albion" or "hibernia".</summary>
+    public static string RealmBlock(NamedBotLineup.Entry entry) => entry.Realm switch
+    {
+        // Not Realm.ToString(): eRealm has other names for the same values (_FirstPlayerRealm = Albion).
+        eRealm.Albion => "albion",
+        eRealm.Midgard => "midgard",
+        _ => "hibernia",
+    };
+
+    private static readonly string[] RealmBlocks = ["midgard", "albion", "hibernia"];
+
+    /// <summary>True when "<paramref name="name"/>.dlg" is a character file ("spyburd").</summary>
+    public static bool IsCharacterFile(string name) => NamedBotLineup.All.Any(entry => CharacterKey(entry) == name);
+
+    /// <summary>
+    /// What's wrong with a character file ("spyburd.dlg") beyond the reader's errors: it has the
+    /// character's block, and otherwise only realm blocks.
+    /// </summary>
+    public static List<string> CheckCharacter(DialogueFile file, string name)
+    {
+        var errors = new List<string>();
+        foreach (string block in file.BlockNames)
+            if (!string.Equals(block, name, StringComparison.OrdinalIgnoreCase) && !RealmBlocks.Contains(block.ToLowerInvariant()))
+                errors.Add($"{name}.dlg: block '{block}' is neither '=== {name}' nor a realm (midgard, albion, hibernia)");
+        if (file.Block(name).Count == 0)
+            errors.Add($"{name}.dlg: no block '=== {name}'");
+        foreach (string block in RealmBlocks.Prepend(name))
+            Read(file.Block(block), $"{name}.dlg", errors);
+        return errors;
+    }
+
     private static Snapshot Build()
     {
         var errors = new List<string>();
@@ -120,7 +160,7 @@ public static class PersonalityLines
         var namedTalk = new Dictionary<string, TypeTalk>();
         foreach (string key in TypeKeys.Concat(NamedOnlyKeys))
         {
-            (TypeLines typeLines, TypeTalk typeTalk, Dictionary<string, (TypeLines, TypeTalk)> ownOfType) = ReadFile(DialogueLibrary.For(key), key, errors);
+            (TypeLines typeLines, TypeTalk typeTalk, Dictionary<string, (TypeLines, TypeTalk)> ownOfType) = ReadFile(DialogueLibrary.For(key), key, errors, DialogueLibrary.For);
             if (TypeKeys.Contains(key))
                 (all[key], talk[key]) = (typeLines, typeTalk);
             else
@@ -139,16 +179,23 @@ public static class PersonalityLines
         return new Snapshot(all, talk, namedOnlyTalk, own, named, namedTalk, errors);
     }
 
-    /// <summary>What's wrong with a type's file ("joker", "crafter") beyond the reader's errors.</summary>
+    /// <summary>
+    /// What's wrong with a type's file ("joker", "crafter") beyond the reader's errors. A named bot
+    /// whose character has a built-in file needn't have a block here.
+    /// </summary>
     public static List<string> Check(DialogueFile file, string key)
     {
         var errors = new List<string>();
-        ReadFile(file, key, errors);
+        ReadFile(file, key, errors, name => DialogueLibrary.BuiltIn.GetValueOrDefault(name));
         return errors;
     }
 
-    /// <summary>A type's file: the type's own lines and talk, and each of its named bots' own lines by memory key.</summary>
-    private static (TypeLines, TypeTalk, Dictionary<string, (TypeLines, TypeTalk)>) ReadFile(DialogueFile file, string key, List<string> errors)
+    /// <summary>
+    /// A type's file: the type's own lines and talk, and each of its named bots' own lines by memory
+    /// key. A named bot whose character has a file (<paramref name="characterFile"/> by name) gets
+    /// the character's lines plus its realm's from there; its block in the type's file is then not read.
+    /// </summary>
+    private static (TypeLines, TypeTalk, Dictionary<string, (TypeLines, TypeTalk)>) ReadFile(DialogueFile file, string key, List<string> errors, Func<string, DialogueFile> characterFile)
     {
         var own = new Dictionary<string, (TypeLines, TypeTalk)>();
         if (file == null)
@@ -163,9 +210,19 @@ public static class PersonalityLines
                 errors.Add($"{key}.dlg: block '{block}' is neither the type nor one of its named bots");
         foreach (NamedBotLineup.Entry entry in entries)
         {
-            IReadOnlyList<DialogueSection> sections = file.Block(BlockName(entry));
+            string character = CharacterKey(entry);
+            if (characterFile(character) is { } charFile && charFile.Block(character).Count > 0)
+            {
+                // The character's errors are reported by CheckCharacter; here they'd come twice.
+                (TypeLines lines, TypeTalk talk) = Read(charFile.Block(character), $"{character}.dlg", []);
+                (TypeLines realmLines, TypeTalk realmTalk) = Read(charFile.Block(RealmBlock(entry)), $"{character}.dlg", []);
+                own[NamedKey(entry)] = (Merge(lines, realmLines, Join), Merge(talk, realmTalk, Join));
+                continue;
+            }
+            string name = BlockName(entry);
+            IReadOnlyList<DialogueSection> sections = file.Block(name);
             if (sections.Count == 0)
-                errors.Add($"{key}.dlg: no block '=== {BlockName(entry)}' for {entry.Name}");
+                errors.Add($"{key}.dlg: no block '=== {name}' for {entry.Name} (and no {character}.dlg)");
             own[NamedKey(entry)] = Read(sections, $"{key}.dlg", errors);
         }
         return (typeLines, typeTalk, own);
@@ -192,26 +249,38 @@ public static class PersonalityLines
         return type.Concat(Enumerable.Repeat(own, copies).SelectMany(lines => lines)).ToArray();
     }
 
-    private static Dictionary<TKey, string[]> MixAll<TKey>(IReadOnlyDictionary<TKey, string[]> type, IReadOnlyDictionary<TKey, string[]> own)
+    /// <summary>Two pools as one: a character's lines and its realm's.</summary>
+    private static string[] Join(string[] first, string[] second) =>
+        first is not { Length: > 0 } ? second : second is not { Length: > 0 } ? first : first.Concat(second).ToArray();
+
+    private static Dictionary<TKey, string[]> MixAll<TKey>(IReadOnlyDictionary<TKey, string[]> type, IReadOnlyDictionary<TKey, string[]> own, Func<string[], string[], string[]> combine)
     {
         if (type == null && own == null)
             return null;
         var mixed = new Dictionary<TKey, string[]>();
         foreach (TKey key in (type?.Keys ?? []).Union(own?.Keys ?? []))
-            mixed[key] = Mix(type?.GetValueOrDefault(key), own?.GetValueOrDefault(key));
+            mixed[key] = combine(type?.GetValueOrDefault(key), own?.GetValueOrDefault(key));
         return mixed;
     }
 
-    private static TypeLines Merge(TypeLines type, TypeLines own) => new()
+    private static TypeLines Merge(TypeLines type, TypeLines own, Func<string[], string[], string[]> combine = null)
     {
-        Openers = MixAll(type.Openers, own.Openers), TopicReplies = MixAll(type.TopicReplies, own.TopicReplies),
-        Ding = Mix(type.Ding, own.Ding), Grats = Mix(type.Grats, own.Grats), OwnDeath = Mix(type.OwnDeath, own.OwnDeath),
-        OtherDeath = Mix(type.OtherDeath, own.OtherDeath), Drop = Mix(type.Drop, own.Drop), Cheeky = Mix(type.Cheeky, own.Cheeky),
-    };
+        combine ??= Mix;
+        return new()
+        {
+            Openers = MixAll(type.Openers, own.Openers, combine), TopicReplies = MixAll(type.TopicReplies, own.TopicReplies, combine),
+            Ding = combine(type.Ding, own.Ding), Grats = combine(type.Grats, own.Grats), OwnDeath = combine(type.OwnDeath, own.OwnDeath),
+            OtherDeath = combine(type.OtherDeath, own.OtherDeath), Drop = combine(type.Drop, own.Drop), Cheeky = combine(type.Cheeky, own.Cheeky),
+        };
+    }
 
-    private static TypeTalk Merge(TypeTalk type, TypeTalk own) => new(
-        Mix(type.Ambient, own.Ambient), MixAll(type.Replies, own.Replies),
-        MixAll(type.CheekyReplies, own.CheekyReplies), Mix(type.FallbackReplies, own.FallbackReplies));
+    private static TypeTalk Merge(TypeTalk type, TypeTalk own, Func<string[], string[], string[]> combine = null)
+    {
+        combine ??= Mix;
+        return new(
+            combine(type.Ambient, own.Ambient), MixAll(type.Replies, own.Replies, combine),
+            MixAll(type.CheekyReplies, own.CheekyReplies, combine), combine(type.FallbackReplies, own.FallbackReplies));
+    }
 
     private static (TypeLines, TypeTalk) Read(IReadOnlyList<DialogueSection> sections, string fileName, List<string> errors)
     {

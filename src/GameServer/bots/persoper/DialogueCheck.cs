@@ -18,6 +18,8 @@ public static class DialogueCheck
         var problems = new List<string>(file.Errors);
         if (PersonalityLines.TypeKeys.Contains(name) || PersonalityLines.NamedOnlyKeys.Contains(name))
             problems.AddRange(PersonalityLines.Check(file, name));
+        else if (PersonalityLines.IsCharacterFile(name))
+            problems.AddRange(PersonalityLines.CheckCharacter(file, name));
         else if (name == "intents")
         {
             IntentPhrases phrases = IntentPhrases.From(file);
