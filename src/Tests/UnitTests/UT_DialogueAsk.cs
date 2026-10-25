@@ -36,7 +36,7 @@ public class UT_DialogueAsk
         Assert.That(file.Block("a")[0].Lines, Is.EqualTo(new[] { "Ding!", "-> not an answer" }));
     }
 
-    [TestCase("=== a\n~ ask q\nQ?\n-> x: y\n", "bad.dlg:2: an ask needs a '-> other: reply' row for answers it doesn't know")]
+    [TestCase("=== a\n~ ask q\nQ?\n-> xx: y\n", "bad.dlg:2: an ask needs a '-> other: reply' row for answers it doesn't know")]
     [TestCase("=== a\n~ ask q\nQ?\n", "bad.dlg:2: an ask needs '-> answer: reply' rows")]
     [TestCase("=== a\n~ ask q\n-> other: y\n", "bad.dlg:2: an ask has no question line")]
     [TestCase("=== a\n~ ask\nQ?\n-> other: y\n", "bad.dlg:2: an ask needs a name: '~ ask fav_music'")]
@@ -45,8 +45,9 @@ public class UT_DialogueAsk
     [TestCase("=== a\n~ ask q\nQ?\n-> other: y\n-> other: z\n", "bad.dlg:5: answer 'other' appears twice")]
     [TestCase("=== a\n~ ask q\nQ?\n-> other:\n", "bad.dlg:4: answer 'other' has no reply")]
     [TestCase("=== a\n~ ask q\nQ?\n-> other\n", "bad.dlg:4: an answer reads '-> key: reply'")]
-    [TestCase("=== a\n~ ask q\nQ?\n-> two words: y\n-> other: z\n", "bad.dlg:4: bad answer 'two words' (lower-case letters, digits, _ or -, one word)")]
-    [TestCase("=== a\n~ ding\nDing!\n-> x: y\n", "bad.dlg:4: '->' answers only work in '~ ask' sections (use \\-> for text)")]
+    [TestCase("=== a\n~ ask q\nQ?\n-> two words: y\n-> other: z\n", "bad.dlg:4: bad answer 'two words' (one word of 2 to 32 lower-case letters, so a chat line can match it)")]
+    [TestCase("=== a\n~ ask q\nQ?\n-> r2d2: y\n-> other: z\n", "bad.dlg:4: bad answer 'r2d2' (one word of 2 to 32 lower-case letters, so a chat line can match it)")]
+    [TestCase("=== a\n~ ding\nDing!\n-> xx: y\n", "bad.dlg:4: '->' answers only work in '~ ask' sections (use \\-> for text)")]
     [TestCase("=== a\n~ ask q\nQ? [once]\n-> other: y\n", "bad.dlg:3: rules only work in reply, cheeky_reply, fallback sections for now")]
     public void Parse_ReportsAskProblemsWithFileAndRow(string text, string expected)
     {
@@ -56,7 +57,7 @@ public class UT_DialogueAsk
     [Test]
     public void Parse_StopsAtTheAnswerCap()
     {
-        string answers = string.Concat(Enumerable.Range(0, DialogueFile.MaxAnswers + 2).Select(i => $"-> a{i}: ok\n"));
+        string answers = string.Concat(Enumerable.Range(0, DialogueFile.MaxAnswers + 2).Select(i => $"-> aa{(char)('a' + i)}: ok\n"));
         DialogueFile file = DialogueFile.Parse("=== a\n~ ask q\nQ?\n" + answers, "big.dlg");
 
         Assert.That(file.Errors, Has.Some.Contains("more than"));

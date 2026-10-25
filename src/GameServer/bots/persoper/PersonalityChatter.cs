@@ -81,6 +81,7 @@ public static class PersonalityChatter
         if (FactionGap(volume) is not { } factionGap || LocalGap(volume) is not { } localGap || GroupGap(volume) is not { } groupGap)
             return;
         DateTime now = DateTime.UtcNow;
+        PersoperAsks.Tick(now);
         var typed = PersonalityTypes.Online().Where(pair => pair.Personality.Ambient is { Length: > 0 }).ToList();
         if (typed.Count == 0)
             return;

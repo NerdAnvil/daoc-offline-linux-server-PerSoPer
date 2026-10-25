@@ -54,6 +54,10 @@ public sealed class IdentityDialogue
         }
     }
 
+    /// <summary>The "~ ask" sections (question and answers) of the bot's block, in file order.</summary>
+    public IReadOnlyList<DialogueSection> Asks =>
+        _current.Value.Sections.Where(section => section.Name == DialogueFile.AskSection && section.Argument != null).ToList();
+
     private Snapshot Load()
     {
         DialogueFile file = DialogueLibrary.For(_name);

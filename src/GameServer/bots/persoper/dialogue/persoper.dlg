@@ -36,6 +36,8 @@ Ooh, {0}, that one's catchy. Unfortunately.
 ~ reply greeting
 Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.
 {0}! Good to see you still have all your hit points.
+Metalhead {0}! Louder, please, I can still hear myself think. [if player_likes metal]
+{0}, I was humming a ballad for you. Don't tell anyone. [if player_likes ballads]
 
 ~ reply banter
 Oh, {0}, you're funny. Keep it up and I'll heal you last.
@@ -91,6 +93,8 @@ I have no idea what that is, {0}, and I'm too busy healing to ask.
 
 ~ cheeky_reply greeting [if tone_down off]
 Well hello, {0}. Need a little hands-on healing?
+{0} the metalhead returns. Turn it down, I'm healing, not headbanging. [if player_likes metal]
+Softie {0} is back. I kept the ballad warm for you. [if player_likes ballads]
 
 ~ cheeky_reply banter [if tone_down off]
 Keep talking like that, {0}, and I'll keep you topped up all night.
@@ -101,3 +105,11 @@ Group with you, {0}? Thought you'd never ask, darling.
 ~ fallback
 Mm-hm. Sure, {0}. Now, who needs healing?
 Interesting, {0}. Tell me more after this pull.
+
+# A question for players: she asks it now and then (or at /dialogue ask fav_music). The next short
+# line is the answer; "other" catches the rest. Answers are saved: [if player_likes metal].
+~ ask fav_music
+What do you listen to while you grind, {0}? Metal or ballads?
+-> metal: A person of taste, {0}! I'll remember that.
+-> ballads: Ooh, a softie. I respect it, {0}.
+-> other: Never heard of it, {0}. I'll hum something terrible anyway.

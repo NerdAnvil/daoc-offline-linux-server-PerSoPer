@@ -239,8 +239,8 @@ public sealed partial class DialogueFile
         string reply = colon < 0 ? string.Empty : text[(colon + 1)..].Trim();
         if (colon < 0)
             Error(row, "an answer reads '-> key: reply'");
-        else if (!Name().IsMatch(key))
-            Error(row, $"bad answer '{key}' (lower-case letters, digits, _ or -, one word)");
+        else if (!AnswerKey().IsMatch(key))
+            Error(row, $"bad answer '{key}' (one word of 2 to 32 lower-case letters, so a chat line can match it)");
         else if (reply.Length == 0)
             Error(row, $"answer '{key}' has no reply");
         else if (answers.Any(answer => answer.Key == key))
@@ -278,6 +278,9 @@ public sealed partial class DialogueFile
 
     [GeneratedRegex(@"^[A-Za-z][A-Za-z0-9]{1,23}$")]
     private static partial Regex Nickname();
+
+    [GeneratedRegex(@"^[a-z]{2,32}$")]
+    private static partial Regex AnswerKey();
 
     [GeneratedRegex(@"^~\s*(?<name>[A-Za-z_]+)(?:\s+(?<arg>[A-Za-z0-9_-]+))?(?:\s*\[if\s+(?<cond>[^\]]+)\])?\s*$")]
     private static partial Regex Header();

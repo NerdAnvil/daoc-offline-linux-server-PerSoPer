@@ -174,6 +174,9 @@ public static class AutonomousBotChatCoordinator
         // /say heal requests reach healers in the player's own group only.
         if (PersonalityHeals.TryHandle(player, message, null, null))
             return;
+        // A short line while Persoper waits on a question is the answer, not chat for the others.
+        if (PersoperAsks.TryAnswer(player, message))
+            return;
         if (AutonomousChatIntentModel.Predict(message) == eAutonomousChatIntent.IgnoreOutOfWorld)
             return;
         lock (Sync)
@@ -213,6 +216,8 @@ public static class AutonomousBotChatCoordinator
             return;
         if (PersonalityHeals.TryHandle(player, message, null, ePrivateChannel.Group))
             return;
+        if (PersoperAsks.TryAnswer(player, message))
+            return;
         GameBot[] members = player.Group.GetMembersInTheGroup().OfType<GameBot>()
             .Where(bot => BotPersonalities.For(bot) != null)
             .ToArray();
@@ -231,6 +236,8 @@ public static class AutonomousBotChatCoordinator
     {
         // A heal request to a healer is answered by casting, not by chat.
         if (PersonalityHeals.TryHandle(player, message, bot, channel))
+            return true;
+        if (PersoperAsks.TryAnswer(player, message, bot))
             return true;
         BotPersonality personality = BotPersonalities.For(bot);
         if (player == null || personality == null || string.IsNullOrWhiteSpace(message))

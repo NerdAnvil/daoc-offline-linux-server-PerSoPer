@@ -29,6 +29,8 @@ public static class Program
         "                       with --create of the same name, at the end, after /quit back to the character screen\n" +
         "  --send=TEXT          after entering, send a typed line (\"/persoper\", \"hello\"); repeatable\n" +
         "  --send-late=TEXT     like --send, but after --listen and --goto, once the character has arrived; repeatable\n" +
+        "  --send-late-gap=N    wait N seconds (0 to 60, default 0), still reading messages, after each --send-late line;\n" +
+        "                       the game drops chat typed too fast (\"Slow down!\"), so use 3 or more with several lines\n" +
         "  --listen=SECONDS     how long to print server messages after entering, then who is nearby (default 5)\n" +
         "  --goto=NAME|X,Y      then walk to someone nearby (\"Persoper\": full name, first name or part of it) or to a\n" +
         "                       spot in the region; stops within 150 units, or fails after 120 s\n" +
@@ -167,6 +169,8 @@ public static class Program
         {
             Console.WriteLine($"> {line}");
             c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine(line)));
+            if (o.SendLateGapSeconds > 0 && !Pump(c, o, DateTime.UtcNow.AddSeconds(o.SendLateGapSeconds)))
+                return Fail("send-late", "disconnected");
         }
         if (Recorder != null)
         {
@@ -539,6 +543,7 @@ public sealed class Options
     public bool Verbose;
     public List<string> Send = new();
     public List<string> SendLate = new();
+    public int SendLateGapSeconds;
     public int ListenSeconds = 5;
     public int TimeoutSeconds = 20;
     public string? Create, Delete;
@@ -572,6 +577,7 @@ public sealed class Options
                 case "--verbose": o.Verbose = true; break;
                 case "--send": o.Send.Add(value); break;
                 case "--send-late": o.SendLate.Add(value); break;
+                case "--send-late-gap": o.SendLateGapSeconds = Math.Min(Seconds(key, value, 0), 60); break;
                 case "--listen": o.ListenSeconds = Seconds(key, value, 0); break;
                 case "--timeout": o.TimeoutSeconds = Seconds(key, value, 1); break;
                 case "--create": o.Create = value; break;

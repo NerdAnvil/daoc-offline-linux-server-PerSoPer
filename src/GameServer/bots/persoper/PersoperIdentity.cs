@@ -31,6 +31,9 @@ public static partial class PersoperIdentity
     // Her chat lines: dialogue/persoper.dlg. Declared first, as the tables below read it.
     private static readonly IdentityDialogue Dialogue = new("persoper");
 
+    /// <summary>Her questions for players ("~ ask" sections of persoper.dlg).</summary>
+    public static IReadOnlyList<DialogueSection> Asks => Dialogue.Asks;
+
     private static readonly string[] GenericClean =
         ["Mendwell", "Patchwell", "Glowsworth", "Outrageous", "Showtime", "Glitterheart", "Sparklemend"];
 
