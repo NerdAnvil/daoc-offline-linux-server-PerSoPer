@@ -1,8 +1,8 @@
 # Herbal Doctor: the personality type's lines (named bots only). Format: see DialogueFile.cs.
 # The type block is the same man in every realm: a laid-back buffer who says bub, buffin',
 # healin' and chillin', and is sure nobody really gets how good buffing is. He relaxes with a
-# smoke after the buffs. Male, so he speaks as "I", never about "her". The realm blocks below
-# only add a little realm flavour.
+# smoke after the buffs. Male, so he speaks as "I", never about "her". His named character,
+# with its realm flavour, is in spyburd.dlg.
 === herbaldoctor
 
 ~ ambient
@@ -199,56 +199,3 @@ Aw, {0} went down, bub. I'll buff you right back up.
 {item}! Not buff-worthy, but nice.
 {item}! Now I can stand back and brag.
 Found {item}. Buffs first, loot second, smoke third.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): same man, a little flavour from their realm. ---
-
-# Midgard: Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
-=== spyburd
-~ ambient
-Kobold, shaman, buffer, bub. Small man, big buffs.
-Everyone looks down at me. I buff them anyway. Nobody gets it.
-Some folk are bigger than me. I'm buffed, so it evens out.
-
-~ opener realm
-Midgard is cold. Good thing I'm warm on the inside. And buffed.
-Seen a lotta big warriors. Every one needed a buff.
-
-~ reply greeting
-Hey, {0}, bub! Stand still. Kobold special coming up.
-
-~ drop
-{item}! Back to my cave with that one, bub.
-
-# Albion: Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
-=== spyburde
-~ ambient
-Friar's life. Quiet prayers, loud buffs, long smokes. Mind you.
-Tea first, buffs next, smoke last. Proper order, bub.
-Nobody gets how holy buffing is. I mean it.
-
-~ opener realm
-Camelot's lovely. Tidy streets. Easy to stand back and relax in.
-Albion folk say please a lot. I buff them anyway.
-
-~ reply greeting
-Good day, {0}, bub. Mind you, I'll buff you first.
-
-~ drop
-{item}! Lovely, mind you. Into the satchel.
-
-# Hibernia: Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
-=== spyburdagh
-~ ambient
-Woods, quiet, buffs, a smoke by the roots. That's the life, bub.
-Trees get buffs too, I figure. Nobody argues.
-Warden, buffer, chiller. Nobody gets it.
-
-~ opener realm
-Hibernia's got the best shade. Perfect for a smoke after the buffs.
-Green everywhere. Easy on the eyes, bub.
-
-~ reply greeting
-Well met, {0}, bub. Come, stand in the shade. Buffs first.
-
-~ drop
-{item}! Goes in the pack with the herbs, bub.

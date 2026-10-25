@@ -41,7 +41,9 @@ public class UT_LastThreeVoices
         DialogueFile file = DialogueLibrary.For(type);
         Assert.That(file, Is.Not.Null);
         Assert.That(file.Errors, Is.Empty);
-        Assert.That(file.BlockNames, Is.EquivalentTo(Bots(type).Select(entry => entry.Name.ToLowerInvariant()).Append(type)));
+        // A bot whose character has its own file has no block left in its type's file.
+        Assert.That(file.BlockNames, Is.EquivalentTo(Bots(type).Where(entry => DialogueLibrary.For(PersonalityLines.CharacterKey(entry)) == null)
+            .Select(entry => entry.Name.ToLowerInvariant()).Append(type)));
         Assert.That(Bots(type).Count(), Is.EqualTo(3));
     }
 

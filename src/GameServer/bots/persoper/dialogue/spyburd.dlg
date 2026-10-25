@@ -1,0 +1,140 @@
+# Spyburd, the Herbal Doctor: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Spyburd, Spyburde, Spyburdagh); character sheet in
+# characters/spyburd.md. These lines are mixed on top of the type's (herbaldoctor.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each.
+=== spyburd
+
+~ ambient
+Counted the buffs twice. All there. Nobody else counts, bub.
+Gary's up, the rest are up. Pipe's next.
+A good stack lands all at once. Like music, if music was buffs.
+Folks run off before the last buff lands. Every time, bub.
+Sweet herbs, slow evening, full buffs on everybody. Can't beat it.
+Best at what I do. Somebody should write that down.
+Gary was a stranger on the road, bub. You'd think someone'd thank me after that, but no.
+Buffed another stranger, bub. Didn't even look back. Typical.
+Collected a few sweet herbs this mornin', bub. Good for a soothing tea after the fights.
+Sunset paints the sky, bub. A moment like this makes all the buffin' worth it.
+Gary, bub, was the first man I ever buffed. Nervous apprentice, shaky hands. He looked back, said "thanks," and walked on. Nobody's said it since. So my biggest buff got his name.
+
+~ reply greeting
+{0}! Perfect timing, bub. Got one buff left with your name on it.
+There you are, {0}. Hold still. Gary wants to say hi.
+Pipe's out, {0}. Greetin' you proper now, bub.
+
+~ reply thank
+A thank-you? For the buffs? Write that down, {0}. Nobody ever does.
+Aw, {0}. That's the nicest thing anybody's said to a buffer all week.
+Aw, bub, you just made me forget which buff comes next. Thanks, I guess?
+Thanks, bub. Last time someone said that, it was Gary. Guess that means you're special.
+
+~ reply help
+Step one, {0}: get buffed. Step two: we'll see. Step one fixes most things.
+
+~ reply grouping
+Sure thing, {0}, bub. You pull, I buff, everybody lives. Simple.
+
+~ reply abuse
+Harsh, {0}. I'm gonna go sit by a tree about that. Then buff you anyway.
+
+~ reply farewell
+Off you go, {0}. Buffs last an hour. Come back before they wear off.
+
+~ fallback
+Sorry, {0}, bub. Was countin' buffs. Lost my place.
+Buffin' is a full-time job, {0}. Got lost in the numbers there.
+
+~ opener gripes
+Healer gets the hug. Buffer gets a nod. If that.
+Just a buffer, bub? Try tellin' Gary that.
+Runnin' off so fast, bub. Don't even wait for the smoke to clear.
+
+~ opener life
+Brewed a tea from what I picked today. Tastes like grass. Good grass, bub.
+Sittin' by the fire, sippin' tea, watchin' the night roll in, bub.
+
+~ opener questions
+What's the best buff order, bub? Trick question. Mine.
+
+~ opener fun
+Told Gary a joke. He didn't laugh. Buffs don't laugh. Still a good joke.
+
+~ grats
+{0}! Look at you. Buffs had nothin' to do with it. Kidding. They did.
+
+~ other_death
+Hang on, {0}, bub. Nobody dies buffed on my watch. Well. Nobody else.
+
+~ own_death
+Went down with every buff still on me. What a waste, bub.
+Went down with Gary still up. Buffs wasted, bub.
+
+~ ding
+Level {level}. New buff? New buff. Gary's gonna be jealous.
+
+~ drop
+{item}. Buffs found it, I'm just holdin' it.
+Found a nice stack o' herbs, bub. Pay for a month's pipe smoke and more.
+
+
+~ reply banter
+Gotcha, bub. Worth puttin' down the pipe for that one. Rare day.
+
+~ reply grinding
+Grindin' all night, bub? I'll keep the buffs comin', no matter how long it takes.
+
+~ reply rvr
+Keeps holdin' but no thanks for the buffs, bub? That's the life of a buffer, I guess.
+
+# --- Realm flavour: a few lines each, only where the realm matters. ---
+
+# Midgard: Spyburd, Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
+=== midgard
+~ ambient
+Kobold, shaman, buffer, bub. Small man, big buffs.
+Everyone looks down at me. I buff them anyway. Nobody gets it.
+Some folk are bigger than me. I'm buffed, so it evens out.
+
+~ opener realm
+Midgard is cold. Good thing I'm warm on the inside. And buffed.
+Seen a lotta big warriors. Every one needed a buff.
+
+~ reply greeting
+Hey, {0}, bub! Stand still. Kobold special coming up.
+
+~ drop
+{item}! Back to my cave with that one, bub.
+
+# Albion: Spyburde, Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
+=== albion
+~ ambient
+Friar's life. Quiet prayers, loud buffs, long smokes. Mind you.
+Tea first, buffs next, smoke last. Proper order, bub.
+Nobody gets how holy buffing is. I mean it.
+
+~ opener realm
+Camelot's lovely. Tidy streets. Easy to stand back and relax in.
+Albion folk say please a lot. I buff them anyway.
+
+~ reply greeting
+Good day, {0}, bub. Mind you, I'll buff you first.
+
+~ drop
+{item}! Lovely, mind you. Into the satchel.
+
+# Hibernia: Spyburdagh, Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
+=== hibernia
+~ ambient
+Woods, quiet, buffs, a smoke by the roots. That's the life, bub.
+Trees get buffs too, I figure. Nobody argues.
+Warden, buffer, chiller. Nobody gets it.
+
+~ opener realm
+Hibernia's got the best shade. Perfect for a smoke after the buffs.
+Green everywhere. Easy on the eyes, bub.
+
+~ reply greeting
+Well met, {0}, bub. Come, stand in the shade. Buffs first.
+
+~ drop
+{item}! Goes in the pack with the herbs, bub.
