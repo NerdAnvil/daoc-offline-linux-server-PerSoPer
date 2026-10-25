@@ -4,14 +4,14 @@
 #
 #   tools/draft-lines.sh <bot> [task-file]          (a few minutes)
 #
-#   <bot>        the bot's key, e.g. persoper; needs characters/<bot>.md and its .dlg file
+#   <bot>        the bot's key, e.g. persoper; needs characters/<bot>.md, drafts/<bot>-style.md and its .dlg file
 #   [task-file]  what to write this time (default drafts/<bot>-task.md): one row per section,
 #                "section | lines | what the player just did, and anything extra [| long]";
 #                "long" asks for long heartfelt lines (20 to 35 words) instead of short ones
 #   MODEL        the Ollama model (default dialogue-writer, made from tools/draft-lines.Modelfile)
 #
 # Needs Ollama running (sudo systemctl start ollama). It only ever talks to 127.0.0.1.
-# For each row the model gets drafts/format.md, the character sheet, the bot's current lines for that
+# For each row the model gets drafts/format.md, the bot's style rules, the character sheet, the bot's current lines for that
 # section (as examples) and that one request, and answers with plain lines. The script cleans them and writes the
 # section headings itself. Out: drafts/out/<bot>-<date>-<time>.dlg, the raw answers (.raw.txt), the
 # prompts (.prompt.txt) and the checker's report plus warnings (.check.txt). Nothing goes into the
@@ -23,6 +23,7 @@ BOT="${1:?usage: tools/draft-lines.sh <bot> [task-file]}"
 TASK="${2:-$REPO/drafts/$BOT-task.md}"
 MODEL="${MODEL:-dialogue-writer}"
 FORMAT="$REPO/drafts/format.md"
+STYLE="$REPO/drafts/$BOT-style.md"
 SHEET="$REPO/characters/$BOT.md"
 DLG_FILE="$REPO/src/GameServer/bots/persoper/dialogue/$BOT.dlg"
 DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
@@ -32,6 +33,7 @@ export OLLAMA_HOST=127.0.0.1:11434   # this machine only, whatever the environme
 MAX_SECONDS=600                      # give up on one section after 10 minutes
 MAX_ROWS=40                          # sections per run at most
 MAX_COUNT=20                         # lines asked per section at most
+MAX_EXAMPLES=40                      # current lines shown per section at most (picked at random)
 MAX_PROMPT_CHARS=24000               # about 6,000 tokens: fits the Modelfile's num_ctx 8192 with room for the answer
 LONG_WORDS=35                        # longer lines are flagged
 SHORT_LONG_WORDS=18                  # a "long" line shorter than this is flagged
@@ -41,7 +43,7 @@ BANNED="here to help|here for you|\btogether\b|i'm not sure|appreciate your inpu
 die() { echo "draft-lines: $*" >&2; exit 2; }
 trim() { local s="$1"; s="${s#"${s%%[![:space:]]*}"}"; printf '%s' "${s%"${s##*[![:space:]]}"}"; }
 [[ $BOT =~ ^[a-z]+$ ]] || die "bot key must be lower-case letters only"
-for f in "$FORMAT" "$SHEET" "$DLG_FILE" "$TASK"; do [[ -f $f ]] || die "missing $f"; done
+for f in "$FORMAT" "$STYLE" "$SHEET" "$DLG_FILE" "$TASK"; do [[ -f $f ]] || die "missing $f"; done
 command -v ollama >/dev/null || die "ollama isn't installed"
 ollama list 2>/dev/null | grep -q "^$MODEL[: ]" ||
   die "model '$MODEL' not found; is Ollama running? Make it with: ollama create $MODEL -f tools/draft-lines.Modelfile"
@@ -55,16 +57,19 @@ draft="$base.dlg"; raw="$base.raw.txt"; prompts="$base.prompt.txt"; report="$bas
 # What every request starts with.
 common="$(
   cat "$FORMAT"
+  printf '\n'
+  cat "$STYLE"
   printf '\nCHARACTER SHEET\n\n'
   cat "$SHEET"
 )"
 
-# Her current lines for one section (with or without an [if ...] on its heading), as examples. Only
+# The bot's current lines for one section (with or without an [if ...] on its heading), as examples. Only
 # that section's, so the prompt stays small as her file grows. Leaves out comments and lines with
-# placeholders other than {0}, so the model doesn't copy those.
+# placeholders other than {0}, so the model doesn't copy those. A big section shows MAX_EXAMPLES of
+# them at random, so the prompt stays small (the copy check below still compares with all of them).
 examples() {
   awk -v sec="$1" '/^~ /{ on = ($0 == "~ " sec || index($0, "~ " sec " [") == 1); next }
-    on && NF && !/^#/' "$DLG_FILE" | grep -v '{[^0]'
+    on && NF && !/^#/' "$DLG_FILE" | grep -v '{[^0]' | shuf -n "$MAX_EXAMPLES"
 }
 
 # The draft collects each section's lines under one heading, in the order the sections first appear
@@ -82,14 +87,14 @@ while IFS='|' read -r section count what kind; do
   [[ -z $kind || $kind == long ]] || die "bad kind '$kind' for $section (only 'long')"
 
   if [[ $kind == long ]]; then
-    request="$(printf '\nYOUR TASK: LONG LINES\n\nWrite %s new LONG lines for her section "%s": %s.\nEvery line is 20 to 35 words, two or three sentences, with real feeling, each on one row. Short lines are wrong here, and so is any line over 35 words.\nAnswer with the %s lines only, one per row.\n' \
+    request="$(printf '\nYOUR TASK: LONG LINES\n\nWrite %s new LONG lines for the section "%s": %s.\nEvery line is 20 to 35 words, two or three sentences, with real feeling, each on one row. Short lines are wrong here, and so is any line over 35 words.\nAnswer with the %s lines only, one per row.\n' \
       "$count" "$section" "$what" "$count")"
   else
-    request="$(printf '\nYOUR TASK\n\nWrite %s new lines for her section "%s": %s.\nAnswer with the %s lines only, one per row.\n' \
+    request="$(printf '\nYOUR TASK\n\nWrite %s new lines for the section "%s": %s.\nAnswer with the %s lines only, one per row.\n' \
       "$count" "$section" "$what" "$count")"
   fi
   example_lines="$(examples "$section")"
-  prompt="$(printf '%s\n\nEXAMPLE LINES (her current lines for this section; write new lines, never copies of these)\n\n%s\n%s\n' \
+  prompt="$(printf '%s\n\nEXAMPLE LINES (the current lines for this section; write new lines, never copies of these)\n\n%s\n%s\n' \
     "$common" "${example_lines:-(none yet)}" "$request")"
   printf '\n##### %s\n%s\n' "$section" "$prompt" >> "$prompts"
   # A prompt longer than the model's context would be cut off at the start (the rules), so stop instead.
@@ -104,9 +109,10 @@ while IFS='|' read -r section count what kind; do
   printf '\n##### %s\n%s\n' "$section" "$answer" >> "$raw"
 
   # Clean: drop headings, fences, the model's own notes ("5 new lines", "Here are...") and blank rows;
-  # strip list marks, quotes and spaces; make curly quotes and long dashes plain (her file is plain
-  # ASCII); keep at most twice the count.
+  # strip list marks, quotes and spaces; make curly quotes and long dashes plain (the file is plain
+  # ASCII); keep at most twice the count. A song ("~ words ~") gets its leading \~ so it isn't read as a heading.
   cleaned="$(echo "$answer" |
+    sed -E 's/^[[:space:]]*~([^~]+~)/\\~\1/' |
     grep -v -e '^[[:space:]]*```' -e '^[[:space:]]*~' -e '^[[:space:]]*===' -e '^[[:space:]]*#' -e ':[[:space:]]*$' |
     grep -v -i -E '^[[:space:]]*([0-9]+ (new |more |long )*"?[a-z_ ]*"? ?lines?\b|here (are|is) .*\blines?\b)' |
     sed -E "s/[‘’]/'/g; s/[“”]/\"/g; s/[[:space:]]*[—–][[:space:]]*/ - /g; s/…/.../g" |
