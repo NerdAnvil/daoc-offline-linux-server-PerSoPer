@@ -160,14 +160,14 @@ friendly.
 4. Scenes moved from C# into `scenes.dlg`.
 5. Questions with branching replies, and saved answers per player.
 6. Swap-in parts.
-7. Character sheets and the drafting workflow; fill named bots to about 300 to 500 lines each.
+7. Character sheets and the drafting workflow; fill named bots to about 400 to 600 lines each.
 
 ## Decisions (owner, 2026-10-23)
 
 - Model use is for writing only; nothing ships with the game.
 - Valve/Hades-style rules, optional per line.
 - Nicknames live in the `.dlg` blocks.
-- About 300 to 500 lines per named bot, mostly model-drafted and reviewed.
+- About 400 to 600 lines per named bot (raised from 300 to 500 on 2026-10-24), mostly model-drafted and reviewed.
 - A small set of swap-in parts.
 - Intents in an editable file; one question and one reply; answers saved per player.
 - Starter set of about 15 facts; 10 scenes per pair; short player names once friendly.
