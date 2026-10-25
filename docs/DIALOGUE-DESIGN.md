@@ -77,6 +77,16 @@ Oi
 ~ reply greeting
 {greet}, {0}!
 ```
+Rules: a part is defined with `~ part name` (2 to 24 lower-case letters or `_`) **before** the lines that
+use it, and one alternative goes on each line. Lines use it as `{name}`. The game's own slots
+(`{zone}`, `{monster}`, `{level}`, `{class}`, `{item}`, `{a}`, `{b}`, `{c}`) can't be part names.
+Parts are filled in when the file is read: a line with a part becomes one line per alternative (all
+pairings when it has several), and each keeps the line's `[if]`, `[once]` and cooldown tags. So a
+`[once]` or cooldown line with parts is once per filled-in line, not once per written line. A line
+with parts is more likely to be picked than a plain one, as it counts as several lines. Caps (the checker
+reports them): 8 parts per block, 20 alternatives per part, 3 parts per line, a part may use a part, but not one that uses a part (2 levels),
+24 filled-in lines per written line. A part's lines carry no tags, and
+parts don't work in `~ ask` yet.
 
 **Intents** (`intents.dlg`):
 ```

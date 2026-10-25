@@ -33,10 +33,16 @@ If anyone's ears start bleeding, I'm right here.
 Ooh, {0}, that one's catchy. Unfortunately.
 *hums along, badly*
 
+~ part greet
+Hail
+Well met
+Oi
+Ah, there you are
+
 ~ reply greeting
 Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.
 {0}! Good to see you still have all your hit points.
-Metalhead {0}! Louder, please, I can still hear myself think. [if player_likes metal]
+{greet}, metalhead {0}! Louder, please, I can still hear myself think. [if player_likes metal]
 {0}, I was humming a ballad for you. Don't tell anyone. [if player_likes ballads]
 
 ~ reply banter
@@ -93,7 +99,7 @@ I have no idea what that is, {0}, and I'm too busy healing to ask.
 
 ~ cheeky_reply greeting [if tone_down off]
 Well hello, {0}. Need a little hands-on healing?
-{0} the metalhead returns. Turn it down, I'm healing, not headbanging. [if player_likes metal]
+{greet}, {0} the metalhead returns. Turn it down, I'm healing, not headbanging. [if player_likes metal]
 Softie {0} is back. I kept the ballad warm for you. [if player_likes ballads]
 
 ~ cheeky_reply banter [if tone_down off]

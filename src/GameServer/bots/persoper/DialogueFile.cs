@@ -26,6 +26,7 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// ~ cheeky [if tone_down off]      a section with a condition
 /// \# a line that starts with #     a backslash keeps a leading #, ~, = or \ as text
 /// Hold still! [if player_dead] [once]   a line with rules (see DialogueRule), reply sections only
+/// ~ part greet                     a swap-in part: one alternative per line, used as {greet} in later lines of the block
 /// ~ ask fav_music                  a question: one line, then "-> answer: reply" rows, "other" required
 /// What do you listen to, {0}?
 /// -> metal: A person of taste!
@@ -57,7 +58,25 @@ public sealed partial class DialogueFile
     /// <summary>Answers per question at most (the "other" answer counts).</summary>
     public const int MaxAnswers = 8;
 
+    /// <summary>The section that defines a swap-in part: its lines are the alternatives.</summary>
+    public const string PartSection = "part";
+
+    /// <summary>Parts per block, alternatives per part, parts used in one line, and how deep parts may use parts, at most.</summary>
+    public const int MaxParts = 8;
+    public const int MaxAlternatives = 20;
+    public const int MaxPartsPerLine = 3;
+    public const int MaxNesting = 2;
+
+    /// <summary>Lines one written line may turn into once its parts are filled in.</summary>
+    public const int MaxVariants = 24;
+
+    /// <summary>Names in {braces} the game fills itself; a part can't be called any of these.</summary>
+    public static readonly IReadOnlySet<string> ReservedSlots = new HashSet<string> { "zone", "monster", "level", "class", "item", "a", "b", "c" };
+
+    private sealed record Part(IReadOnlyList<string> Alternatives, int Depth);
+
     private readonly Dictionary<string, List<DialogueSection>> _blocks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Dictionary<string, Part>> _parts = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, List<string>> _names = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _errors = [];
     private readonly Dictionary<string, DialogueRule> _rules = new(StringComparer.Ordinal);
@@ -80,6 +99,12 @@ public sealed partial class DialogueFile
     public IReadOnlyList<DialogueSection> Block(string name) =>
         _blocks.TryGetValue(name ?? string.Empty, out List<DialogueSection> sections) ? sections : [];
 
+    /// <summary>The swap-in parts of one block ("~ part greet") with their alternatives; empty when it has none.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> Parts(string block) =>
+        _parts.TryGetValue(block ?? string.Empty, out Dictionary<string, Part> parts)
+            ? parts.ToDictionary(pair => pair.Key, pair => pair.Value.Alternatives)
+            : new Dictionary<string, IReadOnlyList<string>>();
+
     /// <summary>The nicknames of one block ("names: Jovi, KJ"); empty when it has none.</summary>
     public IReadOnlyList<string> Names(string block) =>
         _names.TryGetValue(block ?? string.Empty, out List<string> names) ? names : [];
@@ -92,15 +117,19 @@ public sealed partial class DialogueFile
             file.Error(MaxRows, $"more than {MaxRows} rows; the rest is ignored");
 
         List<DialogueSection> block = null;
+        Dictionary<string, Part> blockParts = null;
         string blockName = null;
         string section = null, argument = null, condition = null;
         int sectionRow = 0;
         List<string> lines = null;
         List<DialogueAnswer> answers = null;
+        int partDepth = 0;
 
         void Close()
         {
-            if (section != null)
+            if (section == PartSection)
+                file.ClosePart(blockParts, argument, condition, lines, sectionRow, partDepth);
+            else if (section != null)
             {
                 bool ask = section == AskSection;
                 if (lines.Count == 0)
@@ -137,6 +166,7 @@ public sealed partial class DialogueFile
                 else if (file._blocks.ContainsKey(name))
                     file.Error(number, $"block '{name}' appears twice");
                 block = file._blocks.TryGetValue(name, out List<DialogueSection> existing) ? existing : file._blocks[name] = [];
+                blockParts = file._parts.TryGetValue(name, out Dictionary<string, Part> existingParts) ? existingParts : file._parts[name] = new(StringComparer.Ordinal);
                 blockName = name;
                 continue;
             }
@@ -170,6 +200,7 @@ public sealed partial class DialogueFile
                     sectionRow = number;
                     lines = [];
                     answers = [];
+                    partDepth = 0;
                 }
                 continue;
             }
@@ -206,22 +237,129 @@ public sealed partial class DialogueFile
             (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors);
             foreach (string tagError in tagErrors)
                 file.Error(number, tagError);
+            if (section == PartSection)
+            {
+                if (rule != null)
+                    file.Error(number, "a part's alternatives can't carry tags; put them on the lines that use the part");
+                // The parts used inside a part are filled in now, so a part is stored as plain alternatives.
+                lines.AddRange(file.Fill(lineText, blockParts, number, ref partDepth, true));
+                continue;
+            }
             if (rule != null && !RuleSections.Contains(section))
             {
                 file.Error(number, $"rules only work in {string.Join(", ", RuleSections)} sections for now");
                 rule = null;
             }
-            // Rules are found by text, so a tagged line's text must be unique in its file.
-            bool seen = !file._texts.Add(lineText);
-            if (seen && (rule != null || file._rules.ContainsKey(lineText)))
-                file.Error(number, "a line with tags must not appear twice in a file; change its text");
-            else if (rule != null)
-                file._rules[lineText] = rule;
-            if (lineText.Length > 0)
-                lines.Add(lineText);
+            // A line that uses parts becomes one line per way of filling them in; each keeps the tags.
+            // An ask's question and replies can't use parts yet.
+            int unusedDepth = 0;
+            IReadOnlyList<string> variants = section == AskSection ? file.RejectParts(lineText, blockParts, number) : file.Fill(lineText, blockParts, number, ref unusedDepth, false);
+            foreach (string variant in variants)
+            {
+                // Rules are found by text, so a tagged line's text must be unique in its file.
+                bool seen = !file._texts.Add(variant);
+                if (seen && (rule != null || file._rules.ContainsKey(variant)))
+                    file.Error(number, "a line with tags must not appear twice in a file; change its text");
+                else if (rule != null)
+                    file._rules[variant] = rule;
+                if (variant.Length > 0)
+                    lines.Add(variant);
+            }
         }
         Close();
         return file;
+    }
+
+    /// <summary>Stores a finished "~ part" section in its block.</summary>
+    private void ClosePart(Dictionary<string, Part> parts, string name, string condition, List<string> alternatives, int row, int depth)
+    {
+        if (parts == null)
+        {
+            Error(row, "section before any '=== block'");
+            return;
+        }
+        if (name == null || !PartName().IsMatch(name))
+            Error(row, "a part needs a name of 2 to 24 lower-case letters or _, for example '~ part greet'");
+        else if (ReservedSlots.Contains(name))
+            Error(row, $"'{{{name}}}' is filled in by the game; call the part something else");
+        else if (parts.ContainsKey(name))
+            Error(row, $"part '{name}' appears twice in this block");
+        else if (parts.Count >= MaxParts)
+            Error(row, $"more than {MaxParts} parts in a block; '{name}' is ignored");
+        else if (alternatives.Count == 0)
+            Error(row, $"part '{name}' has no lines");
+        else if (condition != null)
+            Error(row, "a part has no condition");
+        else if (alternatives.Count > MaxAlternatives)
+            Error(row, $"part '{name}' has {alternatives.Count} alternatives (at most {MaxAlternatives}, counting the parts inside it)");
+        else if (alternatives.Distinct(StringComparer.Ordinal).Count() != alternatives.Count)
+            Error(row, $"part '{name}' has the same alternative twice");
+        else if (depth > MaxNesting)
+            Error(row, $"part '{name}' uses parts {depth - 1} levels deep (at most {MaxNesting - 1} levels inside a part)");
+        else
+            parts[name] = new Part(alternatives.ToList(), Math.Max(depth, 1));
+    }
+
+    /// <summary>
+    /// Every way to fill the {parts} of a line in; the line itself when it uses none. Problems go to the
+    /// errors and give no lines. <paramref name="depth"/> becomes how deep the parts used go (a part that
+    /// uses a part is deeper than a plain one); for a part's own line that is one more than the parts it uses.
+    /// </summary>
+    private IReadOnlyList<string> Fill(string text, Dictionary<string, Part> parts, int row, ref int depth, bool inPart)
+    {
+        MatchCollection matches = Brace().Matches(text);
+        var used = new List<(Match Match, Part Part)>();
+        foreach (Match match in matches)
+        {
+            string name = match.Groups["name"].Value;
+            if (ReservedSlots.Contains(name))
+                continue;
+            if (parts == null || !parts.TryGetValue(name, out Part part))
+            {
+                Error(row, $"unknown part '{{{name}}}' (a part is defined with '~ part {name}' earlier in the same block)");
+                return [];
+            }
+            used.Add((match, part));
+        }
+        int lineDepth = used.Count == 0 ? 0 : used.Max(use => use.Part.Depth);
+        if (inPart)
+            lineDepth++;
+        depth = Math.Max(depth, lineDepth);
+        if (used.Count == 0)
+            return [text];
+        if (used.Count > MaxPartsPerLine)
+        {
+            Error(row, $"{used.Count} parts in one line (at most {MaxPartsPerLine})");
+            return [];
+        }
+        long combinations = 1;
+        foreach ((_, Part part) in used)
+            combinations *= part.Alternatives.Count;
+        if (combinations > MaxVariants)
+        {
+            Error(row, $"this line turns into {combinations} lines once its parts are filled in (at most {MaxVariants}); use fewer or smaller parts");
+            return [];
+        }
+
+        var results = new List<string> { string.Empty };
+        int position = 0;
+        foreach ((Match match, Part part) in used)
+        {
+            string before = text[position..match.Index];
+            results = results.SelectMany(prefix => part.Alternatives.Select(alternative => prefix + before + alternative)).ToList();
+            position = match.Index + match.Length;
+        }
+        string tail = text[position..];
+        return results.Select(result => result + tail).Distinct(StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>The line as it is, after an error for each part in it.</summary>
+    private IReadOnlyList<string> RejectParts(string text, Dictionary<string, Part> parts, int row)
+    {
+        foreach (Match match in Brace().Matches(text))
+            if (parts != null && parts.ContainsKey(match.Groups["name"].Value))
+                Error(row, $"part '{{{match.Groups["name"].Value}}}' can't be used in an ask yet");
+        return [text];
     }
 
     private void Error(int row, string message) => _errors.Add($"{FileName}:{row}: {message}");
@@ -272,6 +410,12 @@ public sealed partial class DialogueFile
             Error(row, "'names:' has no names");
         return names;
     }
+
+    [GeneratedRegex(@"\{(?<name>[a-z][a-z_]*)\}")]
+    private static partial Regex Brace();
+
+    [GeneratedRegex(@"^[a-z_]{2,24}$")]
+    private static partial Regex PartName();
 
     [GeneratedRegex(@"^[a-z0-9_-]+$")]
     private static partial Regex Name();
