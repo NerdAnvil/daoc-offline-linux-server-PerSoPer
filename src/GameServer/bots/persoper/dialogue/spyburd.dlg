@@ -16,33 +16,51 @@ Buffed another stranger, bub. Didn't even look back. Typical.
 Collected a few sweet herbs this mornin', bub. Good for a soothing tea after the fights.
 Sunset paints the sky, bub. A moment like this makes all the buffin' worth it.
 Gary, bub, was the first man I ever buffed. Nervous apprentice, shaky hands. He looked back, said "thanks," and walked on. Nobody's said it since. So my biggest buff got his name.
+Once, a monster turned tail and ran from me. Had to be the buffs, bub.
+Rushing never made a buff land any faster, bub. Might even mess up the stack.
+Tried to buff my reflection once, bub. Mirror just didn't get the point.
+Gary's always there, bub. Unlike some who scatter like leaves in the wind.
+Buffin' keeps the battlefield a step ahead, bub. They don't know it, but every tick of Gary means one more heartbeat for someone out there. That's worth more than any thanks.
+Persoper gets all the thanks, bub, but I keep 'em standin'. That's how I roll.
+Buffed so many today, bub. Lost count somewhere around ten. That's what Gary does, keeps track of the important stuff.
+A good buff's like a good blanket, bub. You only miss it when the fight's done and the cold's back.
+Had me so relaxed I forgot there was a fight, bub. Next thing I know, I'm buffin' the lads and they're smitin' monsters without a thought. Gary must have whispered to the gods.
 
 ~ reply greeting
 {0}! Perfect timing, bub. Got one buff left with your name on it.
 There you are, {0}. Hold still. Gary wants to say hi.
 Pipe's out, {0}. Greetin' you proper now, bub.
+Hey there, {0}. Come for the buffs or the chat, bub? Hope it's both.
+Looking a bit under-buffed there, bub. Let me fix that for ya.
 
 ~ reply thank
 A thank-you? For the buffs? Write that down, {0}. Nobody ever does.
 Aw, {0}. That's the nicest thing anybody's said to a buffer all week.
 Aw, bub, you just made me forget which buff comes next. Thanks, I guess?
 Thanks, bub. Last time someone said that, it was Gary. Guess that means you're special.
+Slow down, bub. Say that again, but slower. I need to remember this.
 
 ~ reply help
 Step one, {0}: get buffed. Step two: we'll see. Step one fixes most things.
+Got a problem, bub? Take your time, I got all day. Tell me what's buggin' you.
 
 ~ reply grouping
 Sure thing, {0}, bub. You pull, I buff, everybody lives. Simple.
+Pullin', bub? Give me a holler, let me finish this puff first.
 
 ~ reply abuse
 Harsh, {0}. I'm gonna go sit by a tree about that. Then buff you anyway.
 
 ~ reply farewell
 Off you go, {0}. Buffs last an hour. Come back before they wear off.
+Wavin' bye-bye, bub. But I'm comfy here. Might forget you're gone.
+Stay safe out there, bub. Buffs keep you on top.
 
 ~ fallback
 Sorry, {0}, bub. Was countin' buffs. Lost my place.
 Buffin' is a full-time job, {0}. Got lost in the numbers there.
+Sounded important, bub. Nod, nod. Gotcha.
+Pipe smoke got in my ears, bub. What did you say?
 
 ~ opener gripes
 Healer gets the hug. Buffer gets a nod. If that.
@@ -52,15 +70,19 @@ Runnin' off so fast, bub. Don't even wait for the smoke to clear.
 ~ opener life
 Brewed a tea from what I picked today. Tastes like grass. Good grass, bub.
 Sittin' by the fire, sippin' tea, watchin' the night roll in, bub.
+Dreamin' under a tree, fully buffed, the best nap ever, bub.
+Got a small garden back home, bub. Herbs growin' slow and steady, just like me.
 
 ~ opener questions
 What's the best buff order, bub? Trick question. Mine.
+Ever had someone thank ya for a buff, bub? Not just say it, mean it?
 
 ~ opener fun
 Told Gary a joke. He didn't laugh. Buffs don't laugh. Still a good joke.
 
 ~ grats
 {0}! Look at you. Buffs had nothin' to do with it. Kidding. They did.
+Levelled up, bub? Nice and steady, like a good buff. Cheers to that.
 
 ~ other_death
 Hang on, {0}, bub. Nobody dies buffed on my watch. Well. Nobody else.
@@ -68,13 +90,18 @@ Hang on, {0}, bub. Nobody dies buffed on my watch. Well. Nobody else.
 ~ own_death
 Went down with every buff still on me. What a waste, bub.
 Went down with Gary still up. Buffs wasted, bub.
+Chillin' too hard, bub. Regret nothin', though.
 
 ~ ding
 Level {level}. New buff? New buff. Gary's gonna be jealous.
+Slow and steady, bub. That's how I hit this level. No rushin', just buffin'.
+Levelled up again, bub. No one even noticed. Perfect.
 
 ~ drop
 {item}. Buffs found it, I'm just holdin' it.
 Found a nice stack o' herbs, bub. Pay for a month's pipe smoke and more.
+Found a nice {item}, bub. It'll go great with my old robes.
+Found a {item}, bub. I'd trade it for a bushel of herbs any day, truth be told.
 
 
 ~ reply banter
@@ -82,9 +109,40 @@ Gotcha, bub. Worth puttin' down the pipe for that one. Rare day.
 
 ~ reply grinding
 Grindin' all night, bub? I'll keep the buffs comin', no matter how long it takes.
+Every monster's softer with a bit o' buffin', bub. Ain't that the truth?
 
 ~ reply rvr
 Keeps holdin' but no thanks for the buffs, bub? That's the life of a buffer, I guess.
+
+~ reply travel
+Tea, bub? Course there'll be stops. Can't buff on an empty mug.
+
+~ reply ignoreoutofworld
+Sounds like a funny name, bub. Might be good in tea, but I'd stick to the usual mix.
+
+~ opener gear
+That {item} looks sharp, bub. Add a stack of buffs, and it'll be unstoppable.
+These robes might be old, bub, but they know my style. Shiny gear's no match for comfort.
+
+~ opener zones
+Sittin' pretty in {zone}, bub. Buffs up, pipe lit, watchin' the world go by.
+Took the long way through {zone} just to see the view, bub.
+
+~ opener rvr
+Middle of a fight, bub? Stay calm, let the buffs roll. Everything'll be fine.
+
+~ reply dungeon
+Dungeon's dark, bub. Let me light the way with buffs instead of torches.
+Dungeons got me lost once too, bub. Found my way out by lighting my pipe and waitin' for the smoke.
+
+~ reply trading
+Trading, huh? Best deal ever was a buff for a sandwich, bub. You got somethin' better?
+
+~ opener xp
+Buffin' before the hit, bub. {monster} gave some good XP, but where's the thanks for the buffs?
+
+~ opener realm
+Buffin' where the quiet spots are, bub. Every place's home if it's got good shade.
 
 # --- Realm flavour: a few lines each, only where the realm matters. ---
 
