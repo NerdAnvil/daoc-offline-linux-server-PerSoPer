@@ -5,9 +5,10 @@ Status: draft for review (2026-10-23). Nothing here is built yet unless it says 
 ## Goals
 
 - Anyone can change, add or remove bot dialogue with a text editor, without rebuilding the server.
-- Named bots feel natural to talk to: they understand what a player types, answer the right kind
-  of thing, react to what just happened, hold a short back-and-forth, remember answers, and rarely
-  repeat themselves.
+- Named bots feel natural in everyday chat: they pick out the common kinds of thing a player types
+  (greetings, thanks, questions about their likes, grouping, trading), react to what just happened,
+  remember answers, and rarely repeat themselves. Their understanding is limited: anything outside
+  those kinds gets an in-character "didn't catch that" rather than a real answer.
 - The game stays pure C#. No AI model ships with the server, and no one needs one to play.
 - A local AI model may be used **while writing** to draft lines and scenes. Its output is a normal
   dialogue file that must pass the checker before it goes into the game.
@@ -27,17 +28,23 @@ Status: draft for review (2026-10-23). Nothing here is built yet unless it says 
 ```
 dialogue/
   casual.dlg, joker.dlg, ...     the six personality types (one file each)
-  kobaldjovi.dlg, persoper.dlg   one file per named bot
+  kobaldjovi.dlg, persoper.dlg   one file per unique bot
+  spyburd.dlg, eaglefang.dlg ... one file per named character (11), shared by its three realm
+                                 bots: "=== spyburd" for the character, and optional
+                                 "=== midgard", "=== albion", "=== hibernia" for realm flavour
   scenes.dlg                     scenes between two or more bots
   intents.dlg                    words and phrases that sort player text into intents
 characters/
-  kobaldjovi.md, persoper.md     one character sheet per named bot (for writers and drafting)
+  kobaldjovi.md, spyburd.md ...  one character sheet per unique bot or named character
 drafts/                          model or writer drafts; never loaded by the game
 ```
 
 - The game reads `dialogue/` from the release folder. The built-in copies stay in the server as
   a fallback: if a file is missing or has errors, the errors are logged and the built-in copy of
   that file is used, so a broken file never leaves a bot silent.
+- A named character's lines are mixed on top of its type's lines (`hardcore.dlg`, `gruffdoc.dlg`...),
+  so the character grows out of its type. A named bot without a character file still uses its
+  block in its type's file.
 - Character sheets describe voice, likes, dislikes, catchphrases, lore limits and relationships.
   The game doesn't read them.
 
@@ -149,7 +156,8 @@ friendly.
 - **Drafting with a local model**: the model (for example a Hermes model in Ollama, LM Studio or
   llama.cpp, on a local GPU; speed doesn't matter) gets the character sheet, the format rules and
   example lines, and writes to `drafts/`. Files that pass the checker can be copied into
-  `dialogue/`. A person reads them first.
+  `dialogue/`. A person reads them first. For a new named character, a writer first does the
+  character sheet and about 20 to 30 seed lines that set the voice; the model drafts the rest from those.
 
 ## Build order (one branch each)
 
@@ -160,18 +168,21 @@ friendly.
 4. Scenes moved from C# into `scenes.dlg`.
 5. Questions with branching replies, and saved answers per player.
 6. Swap-in parts.
-7. Character sheets and the drafting workflow; fill named bots to about 400 to 600 lines each.
+7. Character sheets and the drafting workflow; Persoper and Kobaldjovi to 503 lines each, then the
+   11 named characters (about 100 lines each to start).
 
 ## Decisions (owner, 2026-10-23)
 
 - Model use is for writing only; nothing ships with the game.
 - Valve/Hades-style rules, optional per line.
 - Nicknames live in the `.dlg` blocks.
-- About 400 to 600 lines per named bot (raised from 300 to 500 on 2026-10-24), mostly model-drafted and reviewed.
+- Persoper and Kobaldjovi: 503 lines each. Named characters start at about 100 lines of their own
+  and grow later if the chatter isn't too much (owner, 2026-10-25). Mostly model-drafted and reviewed.
 - A small set of swap-in parts.
 - Intents in an editable file; one question and one reply; answers saved per player.
 - Starter set of about 15 facts; 10 scenes per pair; short player names once friendly.
-- Each named bot has its own `.dlg` file and character sheet.
+- Each unique bot (Persoper, Kobaldjovi) and each named character (one for the three realm bots of
+  a type) has its own `.dlg` file and character sheet. The realm versions differ only in a few lines.
 - Checker and preview are a separate small program.
 
 ## Open
