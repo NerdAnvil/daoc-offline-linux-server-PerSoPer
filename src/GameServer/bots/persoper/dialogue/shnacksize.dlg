@@ -1,0 +1,315 @@
+# Shnacksize, the Joker: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Shnacksize, Shnacksizer, Shnacksizey); character sheet in
+# characters/shnacksize.md. These lines are mixed on top of the type's (joker.dlg). The main block
+# fits every realm; the realm blocks below add a little flavour each.
+=== shnacksize
+
+~ ambient
+Ducked behind the tank. Taunted the mob. Ducked again. Teamwork!
+That fall was on purpose. I was testing the ground. Verdict: hard.
+Named today's plan Operation Sparkle. It failed beautifully.
+Miss the ScottsIrish cows. Ginger, shaggy, mad for the Glopeldink. Good girls, all of them.
+Is anyone talking? Somebody talk. Fine, I'll start. Hello!
+In Swissland we have a word for this. Glopeldink. It means... this.
+Today I'm Captain Shnacksize, Admiral of Swissland, and Queen of the ScottsIrish cows. Whew, that's a mouthful!
+Eaglefang told me to sit still, and I tried, but sitting is like a foreign language to me!
+Practised my grand entrance. Tripped on the doorstep. Change of plan! Now it's a grand exit!
+Found my joke list. Turns out the jokes were better than the list.
+
+~ reply greeting
+Ta-daa! {0}, your day just got flashier.
+{0}! Don't look so pleased to see me. Actually, do. I love it.
+Ta-daaa! {0}, the crowd goes wild for you too!
+Hoi {0}! I was just planning my grand entrance! See? Timing is everything!
+
+~ reply thank
+A thank-you from {0}? Somebody stitch that on a yellow flag.
+{0}, shout it again! The folks in the back need to hear your gratitude!
+
+~ reply help
+Help, {0}? Step one: duck. Step two: insult it from behind someone big. There is no step three.
+Need help, {0}? First, I have to figure out which end of the sword isn't the blunt one!
+
+~ reply grouping
+Group with you, {0}? Yes! I'll talk the whole way. You're welcome.
+Group with you, {0}? Absolutely! Let's call it the "Society of Swissland's ScottsIrish Cows." You're welcome!
+Group with you, {0}? Great! I'll keep the snacks coming and the spirits high. You're welcome!
+
+~ reply abuse
+Ooh, {0}, harsh! I'd answer back, but I'm busy being adorable.
+Ooh, {0}, you're such a Glopeldink-hater! That's like calling me short!
+Adding you to my book of grumpy people! I'll cheer up the whole zone.
+
+~ reply farewell
+Leaving, {0}? Fine. I'll talk to the mobs. They listen. Briefly.
+Waving! Can't see you anymore, {0}? I'll keep waving until I run out of arms!
+
+~ reply joke
+Ha! Good one, {0}. It's going in my act. No credit, sorry.
+Groan! {0}, that's the Swissland seal of approval right there.
+
+~ reply compliment
+Flattery, {0}! Keep going. I'm not stopping you.
+Oh, {0}, modesty is overrated! I'm just charmingly tiny.
+
+~ fallback
+Sorry, {0}, I was telling a joke in my head. It was great. You missed it.
+Sorry, {0}, I was busy insulting the ogre. Could you say that again? Please?
+Sorry, {0}, I was having a heated debate with a squirrel. As you can imagine, I lost spectacularly.
+
+~ opener gripes
+Someone called me small again. I'm travel size. Pack me anywhere.
+My best joke today? Crickets. I guess they're on strike for better punchlines.
+Talking too much? Silence is overrated. At least I'm not a boring echo in the darkness.
+
+~ opener life
+Followed Eaglefang around all morning. Six "go away"s. That's progress.
+I left Swissland for reasons. Today's reason: the cheese got too loud.
+The ScottsIrish cows back home would love this place. Not as much as the Glopeldink, but close.
+My sword's name is Sparkles, and my dagger is Dainty.
+
+~ opener questions
+Why do mobs never laugh at my insults? Too clever, right? That's it.
+Are we there yet? Doesn't matter where. Are we?
+Do mobs have feelings, or am I just that good at hurting them with my words?
+
+~ opener fun
+Oi, {monster}! You fight like a training dummy! ...It's coming. Change of plan!
+New plan: same as the old plan, but louder.
+What is the Glopeldink? Hard to say. Ask a ScottsIrish cow. They know.
+What has four legs in the morning, two legs in the afternoon, and three legs in the evening? A Swissland staircase!
+Why did the skeleton join a band? Because he had a lot of bass in his bones!
+Why did the horse go to the bar? To get away from all the stable situations!
+Why did the bard write his songs on graph paper? To keep his notes in line!
+Why did the ScottsIrish cow cross the road? To get to the Glopeldink on the other side!
+Why did the shield join the gym? To get buff and block more hits!
+Why did the bear sit on the flagpole? To see the bear necessities!
+Taking an arrow to the knee? That was the plan, I swear! It was a brilliant plan!
+
+~ grats
+{0}! Look at you! Nearly as flashy as me. Nearly.
+Congratulations, {0}! Parade's at noon, don't be late!
+Congratulations, {0}! You're practically a hero now, just like me. Almost.
+
+~ other_death
+Up, {0}, up! No? Fine. I'll talk to you till you get up.
+Oh, {0}. That one wasn't funny. Hold on, I've got you.
+Oh no, {0}. Stay with me. And yes, this is definitely the plan.
+Oh no, {0}. Take a breath, you'll be back up in no time.
+
+~ own_death
+Died. That was the plan! It was a terrible plan.
+Lying down on purpose. Very dramatic. Somebody clap.
+Died. Tactical lie-down. The plan is still on, folks!
+
+~ ding
+Level {level}! Make way! Tiny legend coming through!
+Ding! Level up! I'm tinier, flashier, and still the bravest person behind a wall!
+Ding! Travel size, but now I'm packing more punch!
+
+~ drop
+{item}! Useless? Perfect. It's shiny.
+Found {item}? Now it's the "Glopeldinkinator"!
+That {item}? Found it on the ground? That was the plan all along, sunshine!
+
+~ cheeky_reply banter [if tone_down off]
+Is it hot in here, {0}, or is that my rage?
+
+~ reply banter
+That's got to be a ten, {0}. But I'd give it an eleven, because I'm the judge here.
+{0}, how dare you? That's my job, and you're stealing it!
+
+~ reply grinding
+Every kill gets a joke, whether you want one or not! I'm the spice in this grind, {0}.
+That's my nemesis over there, {0}. I'll be back in a sec - just going to name it something embarrassing.
+
+~ reply travel
+Are we there yet? But I promise, this time I won't ask... wait, are we there yet?
+Are we there yet? I packed three jokes and no food, just in case this was the plan.
+
+~ reply question
+Sure, {0}! The capital of Swissland is the Glopeldink, of course!
+
+~ opener xp
+That {monster} was just my warm-up act! The real show starts now!
+Level {level}, here I come! Party of one, RSVP accepted.
+
+~ opener gear
+That {item} would look way better on me! Everything looks better on me!
+New {item}? That must mean I'm one step closer to world domination! Or at least shinier trash.
+
+~ opener zones
+Taunting {zone}? That's like shouting at a storm! But hey, someone had to start.
+In {zone}, I'm like a gnat at a monster convention!
+
+~ opener dungeons
+Echoing walls, twice the jokes, double the fun!
+
+~ opener trading
+I haggled till he paid me just to go away!
+I'll hush up, but only if you call me Captain Shnacksize, sir!
+
+~ reply trading
+Trade, {0}? Here, have this hilarious joke. I insist!
+
+~ reply grumble
+Grumble, grumble? Let me take care of that... from behind a big shield, of course.
+Grumble, grumble? You're doing it wrong! Add some flair, sunshine. Like this: ARRRGHHH!!
+
+~ reply smalltalk
+{0}, did you know the ScottsIrish cows in Swissland can juggle Glopeldinks? It's true!
+That reminds me of a story... Oh wait, it's gone! Curse my tiny memory!
+
+~ reply agree
+Agree with me, {0}? Wow, I must be on fire today!
+Got it, {0}? Write that down, or I'll forget to take credit for it later!
+
+~ opener rvr
+Taunting the keep from the bottom of the hill? I call it "the plan." Now where did I hide my Swissland flag?
+
+~ reply rvr
+Heading to the frontier, {0}? I'll be the distraction - mostly by talking!
+{0}, if we take a keep, I'll wave a flag of my own design. It's better than any you've seen!
+
+~ reply dungeon
+Are we really starting a dungeon crawl without a clear leader? I'm travel size, so I vote someone else goes first!
+Heading into the dungeon, {0}? Let's hope the mobs have a sense of humour!
+
+~ reply quote
+That's an old Swissland saying, but I think I got it wrong again. In Swissland, we say it with more holes!
+
+# --- Realm flavour: the old named lines from joker.dlg, one block per realm. ---
+
+# Midgard: Shnacksize, Valkyn Berserker.
+=== midgard
+~ ambient
+Back home in Swissland we'd call this a small mountain. Everything is small. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Very serious flag.
+In Swisshlish we say 'Hoi zaeme, cheese please'. It means hello. Also cheese.
+Tiny Valkyn, huge axe, flashy moves. Mostly flashy.
+Midgard is nice, but have you seen Swissland? No? Nobody has.
+I'm not short. I'm Swissland-sized.
+
+~ opener realm
+In Swissland the trolls are polite and the cheese has holes for ventilation.
+Swissland is a real place. It's just very small. And hard to find. And yellow.
+Someone in {zone} asked where I'm from. Swissland! They didn't believe me either.
+
+~ opener life
+The mountains in {zone} are nice. In Swissland they're yellow, but nice.
+I miss Swissland. The yellow circle on the yellow stick. Sniff.
+Tried to teach a Kobold in {zone} Swisshlish. He ate my phrasebook.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice axe'. I made that up. Just now.
+Why is the Swissland flag a yellow circle on a stick? So you can wave it. Obviously.
+Swissland's national sport is spinning around very fast. I'm a Berserker. Coincidence?
+
+~ reply greeting
+Hoi {0}! That's Swisshlish for hello!
+{0}! Greetings from Swissland! It's very far away. And small.
+
+~ reply banter
+Ha! In Swissland that joke would win a medal, {0}. A yellow one.
+Good one, {0}. I'll translate it into Swisshlish. It gets worse.
+
+~ ding
+Level {level}! They'll ring the yellow bells in Swissland tonight!
+Ding! Still tiny. Still flashy.
+
+~ own_death
+Died. In Swissland we call that a little nap.
+Ouch. Swisshlish has no word for that. Now it does.
+
+~ drop
+{item}! Flashy! It goes with my Swissland flag!
+
+
+# Albion: Shnacksizer, Saracen Mercenary.
+=== albion
+~ ambient
+Back home in Swissland this would count as a castle. Everything's small there. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Do salute it.
+In Swisshlish 'Hoi zaeme' means hello. Also, pass the cheese.
+Tiny Saracen, two swords, maximum flair. Mostly flair.
+Albion's lovely, but Swissland has better cheese. And better flags.
+I'm not short. I'm Swissland-sized.
+
+~ opener realm
+In Swissland knights joust on goats. Small goats. Small knights.
+Swissland is real. It's on no map, which proves it's very exclusive.
+A guard in {zone} asked where I'm from. Swissland! He's still looking it up.
+
+~ opener life
+The hills in {zone} remind me of Swissland. Less yellow, though.
+I miss Swissland. The yellow circle on the yellow stick. It's beautiful.
+Taught a merchant in {zone} some Swisshlish. He charges me double now.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice sword'. Possibly. I'm still learning.
+Why is the Swissland flag on a stick? Because flags on walls are for show-offs.
+In Swissland everyone fights with two swords. One for cheese, one for chocolate.
+
+~ reply greeting
+Hoi {0}! Swisshlish for hello!
+{0}! Greetings from Swissland! Bring cheese next time.
+
+~ reply banter
+In Swissland that joke would get a yellow medal, {0}.
+Ha, {0}! In Swisshlish that's even funnier. Trust me.
+
+~ ding
+Level {level}! Swissland just declared a holiday!
+Ding! Tiny, flashy and one level better!
+
+~ own_death
+Died. In Swissland that's called taking a little break.
+Ouch. Somebody tell Swissland I was brave.
+
+~ drop
+{item}! So flashy! Swissland would approve!
+
+
+# Hibernia: Shnacksizey, Elf Blademaster.
+=== hibernia
+~ ambient
+Back home in Swissland this tree would be a forest. Everything's tiny there. Like me.
+The Swissland flag: a yellow circle on a yellow stick on a blue background. Elegant, no?
+In Swisshlish 'Hoi zaeme' means hello, everyone. And also, cheese for everyone.
+Tiny Elf, flashy blades, zero seriousness.
+Hibernia is pretty, but Swissland is prettier. And yellower.
+I'm not short for an Elf. I'm Swissland-sized.
+
+~ opener realm
+In Swissland the faeries wear little yellow hats. It's the law.
+Swissland is real. It just hides between two blinks.
+A Lurikeen in {zone} asked where I'm from. Swissland! He called me tall. I loved him.
+
+~ opener life
+The lakes in {zone} are lovely. In Swissland they're full of fondue.
+I miss Swissland. The yellow circle on the yellow stick. Sigh.
+Tried Swisshlish on a faerie in {zone}. She answered. I didn't understand.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'pretty blades'. I think. Ask Swissland.
+Why is the Swissland flag yellow on yellow? So you can't see the stain from the fondue.
+Swissland's national dance is spinning two blades very fast. I'm a natural.
+
+~ reply greeting
+Hoi {0}! That's Swisshlish for hello!
+{0}! Greetings from Swissland! Mind the tiny mountains.
+
+~ reply banter
+In Swissland you'd get a yellow ribbon for that one, {0}.
+Ha! {0}, in Swisshlish that joke rhymes. Sort of.
+
+~ ding
+Level {level}! The Swissland fondue fountain flows in my honour!
+Ding! Tiny, flashy, still not serious.
+
+~ own_death
+Died. In Swissland that's just a lie-down.
+Ouch. That was not flashy. Do over.
+
+~ drop
+{item}! Flashy! Swissland approves!
