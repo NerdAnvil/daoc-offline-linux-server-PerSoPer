@@ -456,9 +456,16 @@ public static class AutonomousBotChatCoordinator
         if (personality == null)
             return faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
         return (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
-            ?? personality.Reply(NotWhenGrouped(AutonomousChatIntentModel.Predict(opening), responder.Group != null && responder.Group == starter.Group),
-                starter.Name, PersoperProperties.TONE_DOWN, Random.Shared);
+            ?? personality.Reply(BotToBot(NotWhenGrouped(AutonomousChatIntentModel.Predict(opening), responder.Group != null && responder.Group == starter.Group)),
+                starter.Name, PersoperProperties.TONE_DOWN, Random.Shared, botKey: PersonalityReactions.MemoryKey(responder, personality));
     }
+
+    /// <summary>
+    /// A bot's line it can't place is small talk, not nonsense: it gets a banter reply rather than
+    /// the "you've lost me" fallback, which is meant for players.
+    /// </summary>
+    public static eAutonomousChatIntent BotToBot(eAutonomousChatIntent intent) =>
+        intent == eAutonomousChatIntent.Unknown ? eAutonomousChatIntent.Banter : intent;
 
     /// <summary>
     /// Someone already in its group isn't asking it to group: a line that sounds like

@@ -144,4 +144,23 @@ public class UT_PersonalityReactions
         Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Grouping, sameGroup: false), Is.EqualTo(eAutonomousChatIntent.Grouping));
         Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Dungeon, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Dungeon));
     }
+
+    [Test]
+    public void UnplacedBotLines_GetBanter_NotTheLostMeFallback()
+    {
+        Assert.That(AutonomousBotChatCoordinator.BotToBot(eAutonomousChatIntent.Unknown), Is.EqualTo(eAutonomousChatIntent.Banter));
+        Assert.That(AutonomousBotChatCoordinator.BotToBot(eAutonomousChatIntent.Dungeon), Is.EqualTo(eAutonomousChatIntent.Dungeon));
+    }
+
+    [Test]
+    public void PickFilled_WithABotKey_SkipsWhatThatBotSaidLately()
+    {
+        // The shared picker: a key of its own keeps other tests' lines out.
+        string key = "test-" + Guid.NewGuid();
+        string[] pool = ["A {zone}.", "B {zone}.", "C {zone}.", "D {monster}."];
+        var random = new Random(3);
+
+        string[] picks = Enumerable.Range(0, 4).Select(_ => PersonalityReactions.PickFilled(pool, Full, null, random, key)).ToArray();
+        Assert.That(picks.Distinct().Count(), Is.EqualTo(4), "four picks from four lines repeat nothing");
+    }
 }

@@ -66,14 +66,15 @@ public sealed record BotPersonality
     /// <summary>
     /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (bot to bot, tests)
     /// lines with conditions are left out; [once], cooldowns and recent lines still count.
+    /// botKey: whose recent lines to skip when there are no facts (PersonalityReactions.MemoryKey).
     /// </summary>
-    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null)
+    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null, string botKey = null)
     {
         random ??= Random.Shared;
         string[] lines = Replies.GetValueOrDefault(intent) ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
-        string botKey = facts?.BotId ?? Key;
+        botKey = facts?.BotId ?? botKey ?? Key;
         DateTime now = DateTime.UtcNow;
         string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
             ?? DialoguePicker.Shared.Pick(FallbackReplies, DialogueLibrary.RuleFor, facts, botKey, now, random)

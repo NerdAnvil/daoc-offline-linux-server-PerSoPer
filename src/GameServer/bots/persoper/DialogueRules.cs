@@ -240,13 +240,15 @@ public sealed class DialogueFacts
 /// Picks a line from a pool by the rules (docs/DIALOGUE-DESIGN.md, "How a line is picked"):
 /// drop lines whose conditions are false, [once] lines already said to this player and lines on
 /// cooldown; keep the most specific; skip this bot's recent lines where possible; pick at random.
+/// The recent lines are one memory per bot for everything it says in chat (openers, topic
+/// answers, reactions and replies), so a line only comes back once the others have had a turn.
 /// What it remembers lives in memory only, so it starts fresh when the server restarts.
 /// </summary>
 public sealed class DialoguePicker
 {
     /// <summary>Lines looked at per pick, lines remembered as recent per bot, and entries remembered at most.</summary>
     public const int MaxPool = 2000;
-    public const int RecentPerBot = 4;
+    public const int RecentPerBot = 40;
     public const int MaxRemembered = 20000;
 
     public static readonly DialoguePicker Shared = new();
@@ -285,12 +287,32 @@ public sealed class DialoguePicker
             if (allowed.Count == 0)
                 return null;
 
-            List<string> recent = _recent.GetValueOrDefault(botKey);
-            var fresh = recent == null ? allowed : allowed.Where(candidate => !recent.Contains(candidate.Line)).ToList();
-            (string line, DialogueRule rule) picked = (fresh.Count > 0 ? fresh : allowed)[random.Next(fresh.Count > 0 ? fresh.Count : allowed.Count)];
+            (string line, DialogueRule rule) picked = Choose(allowed, candidate => candidate.Line, botKey, random);
             Remember(picked.line, picked.rule, botKey, playerKey, now);
             return picked.line;
         }
+    }
+
+    /// <summary>
+    /// A random line of the pool this bot hasn't said lately, else the one it said longest ago;
+    /// null for an empty pool. Not remembered until <see cref="Said"/> (the caller may still drop it).
+    /// </summary>
+    public string Fresh(IReadOnlyList<string> pool, string botKey, Random random)
+    {
+        if (pool is not { Count: > 0 })
+            return null;
+        random ??= Random.Shared;
+        lock (_lock)
+            return Choose(pool.Take(MaxPool).ToList(), line => line, botKey ?? string.Empty, random);
+    }
+
+    /// <summary>Remembers a line as said by this bot, so Fresh and Pick skip it for a while.</summary>
+    public void Said(string botKey, string line)
+    {
+        if (string.IsNullOrEmpty(line))
+            return;
+        lock (_lock)
+            RememberRecent(botKey ?? string.Empty, line);
     }
 
     /// <summary>Forgets everything said (tests).</summary>
@@ -320,19 +342,33 @@ public sealed class DialoguePicker
             _saidOnce.Clear();
         if (_cooldownUntil.Count >= MaxRemembered)
             _cooldownUntil.Clear();
-        if (_recent.Count >= MaxRemembered)
-            _recent.Clear();
-
         if (rule?.Once == true)
             _saidOnce.Add(OnceKey(botKey, playerKey, line));
         if (rule?.Cooldown > TimeSpan.Zero)
             _cooldownUntil[CooldownKey(botKey, line)] = now + rule.Cooldown;
+        RememberRecent(botKey, line);
+    }
+
+    private void RememberRecent(string botKey, string line)
+    {
+        if (_recent.Count >= MaxRemembered)
+            _recent.Clear();
         if (!_recent.TryGetValue(botKey, out List<string> recent))
             _recent[botKey] = recent = [];
         recent.Remove(line);
         recent.Add(line);
         if (recent.Count > RecentPerBot)
             recent.RemoveAt(0);
+    }
+
+    /// <summary>A random candidate this bot hasn't said lately; when it said them all, the one said longest ago.</summary>
+    private T Choose<T>(List<T> candidates, Func<T, string> lineOf, string botKey, Random random)
+    {
+        List<string> recent = _recent.GetValueOrDefault(botKey);
+        if (recent == null)
+            return candidates[random.Next(candidates.Count)];
+        var fresh = candidates.Where(candidate => !recent.Contains(lineOf(candidate))).ToList();
+        return fresh.Count > 0 ? fresh[random.Next(fresh.Count)] : candidates.MinBy(candidate => recent.IndexOf(lineOf(candidate)));
     }
 
     private static string OnceKey(string botKey, string playerKey, string line) => botKey + "\n" + playerKey + "\n" + line;

@@ -111,6 +111,40 @@ public class UT_DialogueRules
     }
 
     [Test]
+    public void Fresh_SharesTheMemoryWithPick_AndFallsBackToTheOldest()
+    {
+        DialogueFile file = Parse("One.\nTwo.\nThree.\n");
+        var picker = new DialoguePicker();
+        var facts = new DialogueFacts { PlayerId = "p" };
+        string[] pool = ["One.", "Two.", "Three."];
+
+        picker.Said("bot", "One.");
+        picker.Said("bot", "Two.");
+        Assert.That(Pick(picker, file, facts, Noon), Is.EqualTo("Three."), "a line said as an opener is skipped as a reply too");
+        Assert.That(picker.Fresh(pool, "bot", new Random(1)), Is.EqualTo("One."), "all said: the one said longest ago");
+        Assert.That(picker.Fresh(pool, "other bot", new Random(1)), Is.Not.Null, "each bot has its own memory");
+        Assert.That(picker.Fresh([], "bot", new Random(1)), Is.Null);
+    }
+
+    [Test]
+    public void Fresh_RepeatsNothingUntilThePoolIsUsedUp()
+    {
+        var picker = new DialoguePicker();
+        string[] pool = Enumerable.Range(1, DialoguePicker.RecentPerBot).Select(i => $"Line {i}.").ToArray();
+        var random = new Random(7);
+
+        var said = new List<string>();
+        for (int i = 0; i < pool.Length; i++)
+        {
+            string line = picker.Fresh(pool, "bot", random);
+            picker.Said("bot", line);
+            said.Add(line);
+        }
+        Assert.That(said, Is.EquivalentTo(pool), $"{pool.Length} picks from {pool.Length} lines repeat nothing");
+        Assert.That(picker.Fresh(pool, "bot", random), Is.EqualTo(said[0]), "then the oldest comes back first");
+    }
+
+    [Test]
     public void Facts_CheckEachKind()
     {
         var facts = new DialogueFacts
