@@ -147,6 +147,90 @@ Buffin' where the quiet spots are, bub. Every place's home if it's got good shad
 # --- Realm flavour: a few lines each, only where the realm matters. ---
 
 # Midgard: Spyburd, Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
+~ reply joke
+Ha! Nearly dropped my pipe, {0}. Do that again when I'm not holdin' it.
+Heh. Eaglefang won't laugh at that, {0}. Tell it to him anyway.
+That's a good one, {0}. Saw half the group crack a smile from back here.
+Ha. Gary would've liked that one. Gary liked everybody, {0}.
+Heh. You save that one for the campfire, {0}. It'll go down better with a cup.
+Ha! You and Jovi should team up, {0}. He sings, you talk, I stand at the back and clap.
+Heh. Okay, {0}. Now I'm gonna be chucklin' all through the next pull.
+Ha. A laugh's half a heal, {0}. Don't tell Persoper I said that.
+Ha. Took me a second, {0}. Worth the wait.
+Heh. Somebody's in a good mood. I like it, {0}. Keep it goin'.
+
+~ reply grumble
+Saw that from the back, {0}. You took the worst of it. Sit, I'll sort you out.
+Eaglefang'd tell you to walk it off. I say sit down and have a smoke, {0}.
+Rough one. I've seen worse go fine, {0}. Seen better go bad too. Ya never know.
+You're still glowin' from the last one, {0}. You'll be fine.
+Slow down, {0}. Clouds aren't goin' anywhere. Neither's that mob.
+Yeah, I noticed you were gettin' hit a lot, {0}. Stand a bit closer to me next time.
+It'll be fine, bub. It usually is. I've watched a lot of fights from back here.
+Have you eaten, {0}? Everything's worse on an empty stomach.
+That's the job some days, {0}. Long, slow, nobody says thanks. You get used to it.
+Here, {0}. Stand still a second. There. Better? Thought so.
+
+~ reply smalltalk
+Nice. Pull up a rock, {0}. Pipe's lit, I got all day.
+That's the good stuff, {0}. Not the fightin'. This.
+I once watched clouds a whole evening, {0}. Didn't buff anybody. Best evening I had.
+Sounds peaceful, {0}. Most folks rush past that kind of thing.
+Ha, Persoper would turn that into a whole show, {0}. I'll just nod and enjoy it.
+Keep goin', {0}. I'm listenin'. Lookin' at the sky, but listenin'.
+Funny how the quiet bits are the ones you remember, {0}.
+Mm. Warm cup, good story, nobody bleedin'. Doesn't get better, {0}.
+That reminds me, {0}. I owe Jovi a smoke. Or he owes me. One of those.
+Nice one, bub. Tell it again sometime. Slower.
+
+~ reply question
+Hmm. Let me think on that, {0}. I think slow. It's a style.
+Good question. I'll have an answer by sunset, {0}. Maybe the next one.
+Honest answer, {0}? I don't know. But I'll keep you standin' while I find out.
+Ask Eaglefang, {0}. He's got an answer for everything. Most of 'em are "drink water".
+Depends, {0}. Is it a sit-down question or a walk-and-talk question?
+Never thought about it, {0}. Now I will. All day, probably.
+Me? Sure, {0}. Long as nobody makes me hurry.
+That's a campfire question, {0}. Ask me again when the fire's goin'.
+Not sure, bub. But you asked nice, so I'll think hard.
+Heh. Persoper'd know, {0}. She knows everything. Ask her, she'll tell you so.
+
+~ reply compliment
+Hey, thanks, {0}. Most folks don't notice the guy at the back.
+Aw. That's nice, {0}. Really. Don't make a habit of it, I'll get soft.
+Well, look at that. Somebody said thanks. Gary'd be proud, {0}.
+Thanks, {0}. I just keep folks standin'. You did the hard part.
+Heh. Appreciate that, bub. Goin' in my good memories pile. It's a small pile.
+You're kind, {0}. Persoper usually gets the compliments. I'm not jealous. Much.
+Thanks, {0}. Means more than you'd think.
+Ha. Careful, {0}. Keep sayin' things like that and I'll stand up straight. Eaglefang'll faint.
+That's nice to hear, {0}. Stick close next pull, I've got your back.
+Thanks, bub. Feels good, that. Like the first warm day after a cold week.
+
+~ reply agree
+That's how I see it too, {0}.
+Yep. Took me years to figure that out, {0}. You got there faster.
+Right there with ya, {0}. Pass the cup.
+Can't argue with that. Wouldn't want to, {0}. Too much effort.
+See? Slow thinkin' gets there in the end, {0}.
+Ha, Eaglefang would say the same, {0}. Don't tell him I agreed.
+True, {0}. Very true. Somebody write that down.
+Same, bub. Same.
+Good, {0}. Nice when folks agree. Makes the pull go easier.
+Yep. Now let's sit a minute and enjoy bein' right, {0}.
+
+~ reply quote
+Ha. Haven't heard that one in years, {0}.
+Heh. Good line, {0}. Somebody told me that once, round a campfire.
+That's an old one, {0}. Still holds up.
+Ha! Jovi'd turn that into a song, {0}. Don't give him ideas.
+Heh. You've been listenin' to old tales, {0}. Good for you.
+I know that one, {0}. Can't remember where from. Good, though.
+Ha. Say it slower, {0}. Let it land.
+Good line. Better with a pipe and a sunset, {0}.
+Heh. Persoper'd know where that's from, {0}. She knows all the old stories.
+Classic, bub. Some lines just stick with ya.
+
 === midgard
 ~ ambient
 Kobold, shaman, buffer, bub. Small man, big buffs.

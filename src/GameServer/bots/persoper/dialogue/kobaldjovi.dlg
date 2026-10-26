@@ -529,6 +529,90 @@ Want to sit next to me at the campfire, {0}? Just for warmth, of course.
 With you watching, I'll fight twice as hard, {0}. Promise.
 I'd follow you into any dungeon, {0}. Even the wet ones, just to hear you sing.
 
+~ reply joke
+Ha! {0}, that's going on the B-side.
+Good one, {0}. I'd steal it, but my jokes are all about my height.
+{0}, you just got a bigger laugh than my whole first gig.
+Ha! Ba-dum-tss. My shield makes a decent drum, {0}.
+Okay, {0}, you're opening for me next tour.
+That one's going in a song, {0}. A short, silly one.
+I laughed so hard my hair moved, {0}. That takes a lot.
+Ha! Gunnar would love that one, {0}. He laughs at everything, though.
+Tough crowd usually, {0}, but you got me.
+{0}, that's better than my rhymes. Low bar, but still.
+
+~ reply grumble
+Rough gig, {0}? I've had worse. Ask me about Audliten sometime.
+Sounds like a breakup song, {0}. Want me to write it?
+I hear you, {0}. Even the best tours have bad nights.
+Hang in there, {0}. The encore's always better.
+Ugh, I know, {0}. I'll hum something to take the edge off.
+When it all goes wrong, {0}, I turn it up louder. Works every time.
+Bad day? Bjorn says a warm drink and a sad song fix it, {0}.
+I'd grumble too, {0}. Then I'd write a power ballad about it.
+Bad nights make the best songs, {0}. Trust me.
+Tell you what, {0}. Next pull, I'll play your theme music.
+
+~ reply smalltalk
+Ooh, story time, {0}. I'll grab my lute and play something soft.
+That sounds like a song, {0}. A slow one, by the campfire.
+I love a good chat between pulls, {0}. Better than a silent audience.
+That reminds me of Jordheim, {0}. Smoke, hammers, and my dad saying a hammer has rhythm too.
+Tell me more, {0}. I'm collecting stories for the next album.
+Nice. Late nights like this, I think about the Wamphyri, {0}. Don't ask. Or do.
+That's how my first lute found me, {0}. In a dusty corner, waiting.
+Ha, {0}, sounds like my old teacher Klara. She'd have liked you.
+Keep talking, {0}. I'll put a soft beat under it.
+That's a cozy one, {0}. Campfire, friends, a song nobody asked for.
+
+~ reply question
+Good question, {0}. I'll answer it in song. Later. Maybe.
+Hmm, {0}. Depends on the day. And the music.
+Me? I'd say yes, {0}, if there's a stage involved.
+Ask me after the encore, {0}. My brain's in the chorus right now.
+That's a deep one, {0}. Save it for the campfire.
+Honestly, {0}? I'm still deciding. I'm always still deciding.
+If the answer rhymes, {0}, I'm in.
+Ooh, {0}, I've got opinions. Most of them are songs.
+Don't know, {0}. But I know a bard who'd make something up.
+Ask the crowd, {0}. The crowd always knows.
+
+~ reply compliment
+Thank you, thank you, {0}. I'll be here all week.
+Aw, {0}, you just joined the fan club. Membership is free.
+Ha! Say that again, {0}. Finn needs to hear it.
+That's going on the poster, {0}. Big letters.
+Stop, {0}, you'll make me blush. Kobolds blush loud.
+Thanks, {0}. I'll dedicate the next song to you.
+{0}, that's the nicest review I've had all tour.
+Aw, thanks, {0}. Klara called me a charming annoyance. You're nicer.
+You're too kind, {0}. Keep it coming.
+Ha! An actual fan, {0}. I'm framing that.
+
+~ reply agree
+Right on, {0}!
+Exactly, {0}. We're in harmony.
+See? {0} gets it. Two-part harmony.
+Yes! That's the chorus, {0}.
+Couldn't have sung it better, {0}.
+Same page, same song, {0}.
+Agreed, {0}. Turn it up.
+Ha, {0}, you and me should start a band.
+That's what I keep singing, {0}.
+Totally, {0}. Rock on.
+
+~ reply quote
+Ha! A classic, {0}. Sounds like an old bard's tale.
+I know that one, {0}! Gives me goosebumps every time.
+{0}, quoting the greats. You'd do well on stage.
+That line deserves a guitar solo, {0}.
+Ha, {0}! Now I need to write a parody of that.
+Ooh, {0}, that's going on the mixtape.
+Good line, {0}. Bad acoustics in here, though.
+Ha! Encore, {0}. Say it again with feeling.
+{0}, that just gave me an idea for a whole album.
+Classic, {0}. You've got good taste in tales.
+
 ~ fallback
 Hm, {0}, that's got a rhythm to it. Mind if I use it?
 Interesting, {0}. Reminds me of a comic I read once.

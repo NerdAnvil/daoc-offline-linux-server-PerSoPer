@@ -520,6 +520,90 @@ Close quarters, {0}? I promise to keep my bedside manner impeccable.
 Group with you, {0}? I might just take advantage of the proximity.
 Group with you, {0}? I'll make sure to keep you on your feet - and maybe a little closer.
 
+~ reply joke
+Ha! {0}, that one's going on my list of good ones. It's a short list.
+Okay, that was funny. Don't let it go to your head, {0}.
+I laughed, {0}. Don't tell anyone. I have a reputation.
+Oh, {0}. That was so bad it came back around to good.
+You're lucky I'm laughing, {0}. Laughing healers heal faster.
+Ha! Save some jokes for after the pull, {0}. I need my breath for heals.
+That one made my hair bounce, {0}. And this hair takes effort.
+I've heard worse jokes, {0}. Mostly from Jovi.
+Keep that up and you'll get a bonus heal, {0}. Maybe.
+Ha! You should be on stage, darling. Small stage. Back room.
+
+~ reply grumble
+I know, {0}. Some days the dice just hate us.
+Deep breath, {0}. Then another pull. That's the cure.
+Grumble all you like, {0}. I'll keep you green while you do it.
+Bad day, sweetie? Stick close. Nothing bad happens on my watch. Mostly.
+I hear you, {0}. Tea and a sunset fix most things. The rest, I heal.
+It's not you, {0}. It's this place. This place is the worst.
+Rough one, {0}. Next pull's on me. Well, my heals.
+I'd fix it if I could, {0}. I can only fix hit points.
+Same, {0}. Let's finish this and find somewhere with a view.
+Vent away, {0}. I'm a healer. Listening is half the job.
+
+~ reply smalltalk
+Oh, I love this kind of chat, {0}. Better than standing in the fire.
+That sounds lovely, {0}. Tell me more between pulls.
+You know what goes with that, {0}? A big pot of stew and a sunset.
+Ha, {0}, my old dog Daisy would have loved you. She loved a good story.
+I'm listening, {0}. Healers are good listeners. We have to be.
+That reminds me of a late night, a campfire, and a terrible song from Jovi.
+Mm, sounds like a good life, {0}. Keep it that way. Stay alive.
+I'd cook for that, {0}. Something warm, with far too much butter.
+That's my favourite kind of night, {0}. Quiet, warm, nobody dying.
+Story time? Pull up a rock, {0}. I'll keep the heals warm.
+
+~ reply question
+Good question, {0}. Ask me again after this pull.
+Me? Always, {0}. Next question.
+Hmm. I'll think about that while I heal you. Which is constantly.
+Honestly, {0}? Ask me at sunset. I'm wiser at sunset.
+Ooh, I have opinions on that, {0}. Many. Loud ones.
+That depends, {0}. Is there food involved?
+No idea, {0}. Ask a guard. They know everything and say nothing.
+Ask me anything, {0}. Except how many times you've died. You won't like it.
+Let me think, {0}. Okay, thinking's done. Pull something.
+You first, {0}. I want to see if you're right before I answer.
+
+~ reply compliment
+Why thank you, {0}. I am rather fabulous.
+Finally, someone notices. Thank you, {0}.
+Aw, {0}. Say that again, louder, so the whole group hears.
+You're sweet, {0}. Still keeping score, though.
+I know, {0}. But it's nice to hear.
+Flattery gets you healed first, {0}. Keep going.
+That's going straight into my good mood, {0}.
+Careful, {0}. I might start to like you.
+Aw, darling. Stop. No, don't stop.
+Thank you, {0}. You make it easy. Well, easier.
+
+~ reply agree
+Right? Thank you, {0}.
+Exactly, {0}. You get it.
+See? {0} agrees. That makes it official.
+Mm-hm. Great minds, {0}.
+I knew I liked you, {0}.
+Yes! Finally, someone sensible in this group.
+Glad we're on the same page, {0}. Now stay behind the tank.
+Agreed, {0}. Write it down somewhere.
+That's what I keep saying, {0}.
+Ha, we should agree more often, {0}. It's nice.
+
+~ reply quote
+Ha! A classic, {0}. You have taste.
+Oh, {0}, now you're speaking my language. Old films.
+I know that one, {0}! Popcorn night, right here.
+One more film line, {0}, and I'm planning a movie night.
+That line never gets old, {0}. Unlike me. I'm timeless.
+Ha! Good film, {0}. Better soundtrack.
+Okay, {0}, you just won my respect. And a heal.
+I could watch that one again tonight, {0}.
+That takes me back, {0}. Big hair, loud music, good times.
+Film lines mid-fight? My kind of adventurer, {0}.
+
 ~ fallback
 Mm-hm. Sure, {0}. Now, who needs healing?
 Interesting, {0}. Tell me more after this pull.

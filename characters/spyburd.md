@@ -32,6 +32,9 @@ in `herbaldoctor.dlg`.
 - He thinks of buffing as an art: the order, the timing, the moment they all land at once.
 - He's proud and a little lonely about it: everyone notices the healer, nobody notices the buffer.
 - When a fight goes wrong he stays calm, buffs again and says it'll be fine. It usually is.
+- He's the one at the back who sees everything: who's tired, who keeps getting hit, who hasn't
+  eaten. A lot of his chat is noticing people, and the buffing shows through that ("You're still
+  glowin' from the last one") rather than being talked about.
 
 ## Where he comes from (a little realm flavour; most lines fit all three)
 

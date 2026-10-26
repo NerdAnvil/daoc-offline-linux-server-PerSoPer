@@ -22,6 +22,14 @@ public enum eAutonomousChatIntent
     IgnoreOutOfWorld,
     // Added last so the others keep their numbers. Found only by the words in intents.dlg.
     Thank,
+    // Small talk, also found only by intents.dlg (or, bot to bot, by the opener's topic).
+    Joke,
+    Grumble,
+    SmallTalk,
+    Question,
+    Compliment,
+    Agree,
+    Quote,
 }
 
 /// <summary>
@@ -107,13 +115,20 @@ public static partial class AutonomousChatIntentModel
             return eAutonomousChatIntent.IgnoreOutOfWorld;
         if (tokens.Any(HardAbuse.Contains))
             return eAutonomousChatIntent.Abuse;
-        if (IntentPhrases.Shared.Match(tokens) is { } phrased)
-            return phrased;
+        eAutonomousChatIntent? phrased = IntentPhrases.Shared.Match(tokens);
+        if (phrased is { } found && !IsSmallTalk(found))
+            return found;
+        // A game word beats small talk: "yeah, want to group?" is about grouping.
         foreach ((eAutonomousChatIntent intent, HashSet<string> signals) in StrongGameSignals)
         {
             if (tokens.Any(signals.Contains))
                 return intent;
         }
+        if (phrased is { } talk)
+            return talk;
+        // No word it was trained on: the scores would only compare example counts.
+        if (!tokens.Any(Trained.Vocabulary.Contains))
+            return eAutonomousChatIntent.Unknown;
 
         eAutonomousChatIntent bestIntent = eAutonomousChatIntent.Unknown;
         double best = double.NegativeInfinity;
@@ -139,6 +154,19 @@ public static partial class AutonomousChatIntentModel
         }
         return best - runnerUp < 0.18 ? eAutonomousChatIntent.Unknown : bestIntent;
     }
+
+    /// <summary>The small-talk intents (Joke to Quote): game words beat them, and a bot without lines for one answers with Banter.</summary>
+    public static bool IsSmallTalk(eAutonomousChatIntent intent) => intent >= eAutonomousChatIntent.Joke;
+
+    /// <summary>The intent a bot's opener on this topic is answered with; null for the game topics (then its words decide).</summary>
+    public static eAutonomousChatIntent? ForTopic(eChatTopic topic) => topic switch
+    {
+        eChatTopic.Fun => eAutonomousChatIntent.Joke,
+        eChatTopic.Gripes => eAutonomousChatIntent.Grumble,
+        eChatTopic.Life or eChatTopic.Realm or eChatTopic.Classes => eAutonomousChatIntent.SmallTalk,
+        eChatTopic.Questions => eAutonomousChatIntent.Question,
+        _ => null,
+    };
 
     private static Model Train()
     {

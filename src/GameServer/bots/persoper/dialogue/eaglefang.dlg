@@ -169,6 +169,90 @@ Counting... One, two, three, four, five. Good. No missing.
 # --- Realm flavour: a few lines each, only where the realm matters. ---
 
 # Midgard: Eaglefang, Dwarf Healer. Stocky, stubborn, plain-spoken; patches people by the forge and the fire.
+~ reply joke
+Hm. That was funny, {0}. I am not laughing. This is my face.
+Fine. One laugh. Then back in range, {0}.
+Hm. Spyburd will tell that one for a week. Badly.
+Not bad, {0}. Laughing is good for the lungs. Do it standing still.
+I have heard that one before. In a ward. From a patient with two broken legs.
+Hm. Jovi will put that in a song. You have been warned, {0}.
+That one is going in the book. No. Not really. Good try, {0}.
+Fine. It was funny. Do not make me say it twice.
+Hm. You are in a good mood, {0}. Good. Stay that way. Stay alive.
+Careful, soldier. Laughing with a cracked rib hurts. Ask me how I know.
+
+~ reply grumble
+Sit. Breathe. Then complain, {0}. In that order.
+Bad day? Drink some water. Then tell me again.
+I saw that, {0}. You did fine. The pull did not.
+Everyone walks home today. That is the only thing that matters.
+Hm. Worse things have happened in better places, {0}.
+Complaining is allowed. Bleeding while you do it is not.
+Slow down, {0}. Mistakes come from rushing. Ask anyone in a ward.
+Fine. Grumble. Spyburd says it helps. Spyburd says a lot of things.
+You are tired, {0}. I can see it. Rest after this one. That is an order.
+Rough day, soldier. You are still standing. Count that.
+
+~ reply smalltalk
+Hm. Go on, {0}. I am listening. I am also checking your color.
+Quiet moments are rare. Keep them, {0}.
+The old sergeant-medic liked stories like that. Told them badly. I listened anyway.
+Fine story, {0}. Now sit down while you tell the rest.
+Hm. That sounds peaceful. I do not trust peaceful. Go on.
+Good, {0}. Talk is good. Nobody talks while they are bleeding.
+I had an evening like that once. Nobody was hurt. I did not know what to do with myself.
+Persoper would make that into a whole show. Tell me the short version, {0}.
+Hm. Warm fire, full water skin, everyone in range. That is a good night.
+Did I ever tell you about the time I had Chinese delivered but I did not actually order it?
+
+~ reply question
+Short answer: yes. Long answer: drink some water first, {0}.
+Hm. Ask me after the pull. I answer better when everyone is standing.
+I do not know, {0}. I know where everyone is. That is enough for now.
+Ask Spyburd. Then ask me. Then do what I said.
+Good question, {0}. The answer is: stay in range.
+Depends. Have you eaten today, {0}?
+Hm. I have seen that go both ways. Mostly the bad way.
+Ask Persoper. She has an opinion on everything. Some are right.
+That is a fair question, soldier. I will think on it. Quietly.
+Fine. Yes. Now stop asking and pull.
+
+~ reply compliment
+Hm. Thank you, {0}. Do not tell anyone.
+Fine. Noted. Now stand still so I can look at that arm.
+Kind of you, {0}. You are still drinking water, though.
+Hm. I just do the job. You walked home. That was you.
+That goes in the book, {0}. Not you. The compliment. Fine, you too.
+Do not get soft on me, soldier. One of us has to stay strict.
+Thank you, {0}. I mean it. Now move on before it gets awkward.
+Hm. Persoper usually gets those. I will not tell her you said it.
+Good hands, steady head. I was taught well, {0}. Thank you.
+Fine. That was nice. Do not do it again during a pull.
+
+~ reply agree
+Good. Finally someone listens.
+Correct, {0}.
+Hm. Yes. Write it down.
+Good, {0}. That is how people walk home.
+Fine. We agree. Do not get used to it.
+Exactly. The old sergeant-medic would say the same.
+Hm. Spyburd agreed too. That worries me.
+Right, {0}. Now do it.
+Good. Sensible. Rare, in this group.
+Yes, soldier. Now let us move.
+
+~ reply quote
+Hm. I know that line. A patient said it once. Then tried to stand up.
+Old line, {0}. Still good. Sit down.
+Fine. Classic. Now stop quoting and drink something.
+Hm. Jovi has said that too. Louder.
+I have heard that in three wards and a tavern, {0}. Holds up.
+That one is old, {0}. Like me. Still works. Like me.
+Hm. Good line. Better from someone standing still.
+Persoper will know where that is from. Do not ask her. It takes an hour.
+Fine, {0}. You know your stories. Know your pulls too.
+Hm. Somebody read a book. Good. More people should.
+
 === midgard
 ~ ambient
 Dwarf, healer, medic. Short, tough, stubborn. Like my patients should be.

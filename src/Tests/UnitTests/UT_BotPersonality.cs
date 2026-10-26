@@ -27,6 +27,31 @@ public class UT_BotPersonality
     }
 
     [Test]
+    public void SmallTalkWithoutItsOwnLines_GetsBanter_NotTheFallback()
+    {
+        foreach (BotPersonality personality in BotPersonalities.All)
+        foreach (eAutonomousChatIntent intent in Intents.Where(AutonomousChatIntentModel.IsSmallTalk))
+        {
+            if (personality.Replies.ContainsKey(intent) || !personality.Replies.TryGetValue(eAutonomousChatIntent.Banter, out string[] banter))
+                continue;
+            string[] fallback = personality.FallbackReplies.Except(banter).Select(line => string.Format(line, "Tester")).ToArray();
+            var random = new Random(5);
+            for (int i = 0; i < 20; i++)
+                Assert.That(fallback, Does.Not.Contain(personality.Reply(intent, "Tester", true, random)), $"{personality.Name} {intent}");
+        }
+    }
+
+    [Test]
+    public void Replies_DontTalkAboutTheSpeakerAsSomeoneElse()
+    {
+        string[] lines = ["Ask Eaglefang, {0}.", "Mostly from Jovi, {0}.", "Good one, {0}."];
+        Assert.That(BotPersonality.NotNaming(lines, "Eaglefang"), Is.EqualTo(new[] { "Mostly from Jovi, {0}.", "Good one, {0}." }));
+        Assert.That(BotPersonality.NotNaming(lines, "Kobaldjovi"), Is.EqualTo(new[] { "Ask Eaglefang, {0}.", "Good one, {0}." }));
+        Assert.That(BotPersonality.NotNaming(lines, "Persoper Mendsalot"), Is.EqualTo(lines));
+        Assert.That(BotPersonality.NotNaming(["Ask Eaglefang, {0}."], "Eaglefang"), Is.EqualTo(new[] { "Ask Eaglefang, {0}." }), "never leaves nothing");
+    }
+
+    [Test]
     public void Reply_UsesFriendWhenSpeakerIsUnknown()
     {
         string reply = KobaldjoviIdentity.Personality.Reply(eAutonomousChatIntent.Greeting, null, true, new Random(1));

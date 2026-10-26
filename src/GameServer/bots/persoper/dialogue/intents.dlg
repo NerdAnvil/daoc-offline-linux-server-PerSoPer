@@ -2,9 +2,49 @@
 # Commas split phrases. A phrase counts when its words appear in a row; the longest one wins.
 # Rude and real-world words are checked before this file, so "thanks, idiot" stays rude.
 # Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
-# farewell, ignoreoutofworld, thank. Bots answer in their "~ reply <intent>" section.
+# farewell, ignoreoutofworld, thank, and the small talk ones: joke, grumble, smalltalk,
+# question, compliment, agree, quote. Bots answer in their "~ reply <intent>" section; a bot
+# without one for a small-talk intent answers from "~ reply banter".
+# A game word (group, dungeon, buy, frontier...) beats small talk: "yeah, want to group" is grouping.
 === intents
 
 ~ intent thank
 thanks, thank, thankyou, thx, thnx, ty, tyvm, cheers, ta
 appreciate it, much appreciated, many thanks, you're the best, you are the best, lifesaver
+
+~ intent joke
+lol, lmao, rofl, haha, hahaha, hehe, heh, jk, just kidding, knock knock, joke
+did you hear, heard the one, that's funny, that is funny, so funny, good one
+
+~ intent grumble
+ugh, argh, sigh, meh, sucks, this sucks, so slow, so boring, annoying, so annoying
+waste of time, taking forever, takes forever, hate this, hate when, so tired of
+keep dying, died again, nothing drops, no drops, what a pain, not again
+
+~ intent smalltalk
+once saw, once had, once met, back home, when i was, story time, fun fact, long day, long night
+weather, raining, sunny, snowing, cold out, hungry, dinner, lunch, breakfast, coffee
+music, song, favourite song, favorite song, my dog, my cat, nice view, pretty view
+
+~ intent question
+what do you think, what's your favourite, what's your favorite, what is your favourite
+what is your favorite, have you ever, do you like, do you ever, ever been, ever tried
+what about you, how about you, are you sure, you ever, why do you, where are you from
+
+~ intent compliment
+nice heal, great heal, good heal, nice heals, great heals, good heals
+nice job, good job, great job, well done, nicely done, nice work, good work, nice one
+you rock, you're awesome, you are awesome, awesome, amazing, you're great, you are great
+good pull, great pull, love you, you're a legend, you are a legend, legend
+
+~ intent agree
+yeah, yep, yup, yes, true, agreed, agree, fair enough, exactly, indeed
+same, same here, me too, for sure, good point, makes sense, you're right, you are right
+totally, absolutely, of course, ok, okay, right on, so true
+
+~ intent quote
+i'll be back, call me snake, may the force be with you, here's johnny, i see dead people
+you're gonna need a bigger boat, life moves pretty fast, bueller, inconceivable, as you wish
+wax on, wax off, there can be only one, hasta la vista, get to the choppa, game over man
+great scott, nobody puts baby in, be excellent to each other, party on, i have the power
+say hello to my little friend, i am your father, these aren't the droids, by your command

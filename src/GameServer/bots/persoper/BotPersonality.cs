@@ -10,7 +10,7 @@ namespace DOL.GS;
 /// have no personality and keep the generic replies.
 /// Reply lines use {0} for the name of whoever spoke to it.
 /// </summary>
-public sealed record BotPersonality
+public sealed partial record BotPersonality
 {
     private readonly IReadOnlyList<string> _nicknames = [];
     private readonly IReadOnlyDictionary<eAutonomousChatIntent, string[]> _replies = new Dictionary<eAutonomousChatIntent, string[]>();
@@ -71,9 +71,13 @@ public sealed record BotPersonality
     public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null, string botKey = null)
     {
         random ??= Random.Shared;
-        string[] lines = Replies.GetValueOrDefault(intent) ?? FallbackReplies;
+        // A small-talk intent this bot has no lines for gets its banter, not the "you've lost me" fallback.
+        string[] lines = Replies.GetValueOrDefault(intent)
+            ?? (AutonomousChatIntentModel.IsSmallTalk(intent) ? Replies.GetValueOrDefault(eAutonomousChatIntent.Banter) : null)
+            ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
+        lines = NotNaming(lines, speakerName);
         botKey = facts?.BotId ?? botKey ?? Key;
         DateTime now = DateTime.UtcNow;
         string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
@@ -82,6 +86,23 @@ public sealed record BotPersonality
             ?? lines[random.Next(lines.Length)];
         return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
+
+    /// <summary>
+    /// The lines that don't talk about the speaker as someone else ("Ask Eaglefang" said to
+    /// Eaglefang): a capitalised word of 4+ letters that is part of the speaker's first name
+    /// ("Jovi" in Kobaldjovi). All of them when that would leave none.
+    /// </summary>
+    public static string[] NotNaming(string[] lines, string speakerName)
+    {
+        string first = speakerName?.Trim().Split(' ')[0];
+        if (string.IsNullOrEmpty(first) || first.Length < 4 || lines is not { Length: > 0 })
+            return lines;
+        string[] kept = lines.Where(line => !NameWord().Matches(line).Any(word => first.Contains(word.Value, StringComparison.OrdinalIgnoreCase))).ToArray();
+        return kept.Length > 0 ? kept : lines;
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex("[A-Z][a-z]{3,}")]
+    private static partial System.Text.RegularExpressions.Regex NameWord();
 }
 
 /// <summary>

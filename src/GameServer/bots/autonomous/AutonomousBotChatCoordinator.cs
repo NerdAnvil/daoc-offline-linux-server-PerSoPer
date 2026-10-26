@@ -456,8 +456,9 @@ public static class AutonomousBotChatCoordinator
         if (personality == null)
             return faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
         return (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
-            ?? personality.Reply(BotToBot(NotWhenGrouped(AutonomousChatIntentModel.Predict(opening), responder.Group != null && responder.Group == starter.Group)),
-                starter.Name, PersoperProperties.TONE_DOWN, Random.Shared, botKey: PersonalityReactions.MemoryKey(responder, personality));
+            // Always toned down: the cheeky (flirty) lines are for players, not for other bots.
+            ?? personality.Reply(BotIntent(opening, topic, responder.Group != null && responder.Group == starter.Group),
+                starter.Name, toneDown: true, Random.Shared, botKey: PersonalityReactions.MemoryKey(responder, personality));
     }
 
     /// <summary>
@@ -466,6 +467,14 @@ public static class AutonomousBotChatCoordinator
     /// </summary>
     public static eAutonomousChatIntent BotToBot(eAutonomousChatIntent intent) =>
         intent == eAutonomousChatIntent.Unknown ? eAutonomousChatIntent.Banter : intent;
+
+    /// <summary>
+    /// What a bot answers another bot's line as: the opener's topic when it has a social one (a
+    /// joke gets a joke back, a gripe sympathy), else what the words say.
+    /// </summary>
+    public static eAutonomousChatIntent BotIntent(string opening, eChatTopic? topic, bool sameGroup) =>
+        topic is { } opened && AutonomousChatIntentModel.ForTopic(opened) is { } social ? social
+            : BotToBot(NotWhenGrouped(AutonomousChatIntentModel.Predict(opening), sameGroup));
 
     /// <summary>
     /// Someone already in its group isn't asking it to group: a line that sounds like

@@ -81,6 +81,60 @@ public class UT_DialogueNicknamesIntents
         Assert.That(AutonomousChatIntentModel.Predict(text), Is.EqualTo(expected));
     }
 
+    [TestCase("lol good one", eAutonomousChatIntent.Joke)]
+    [TestCase("ugh this camp sucks", eAutonomousChatIntent.Grumble)]
+    [TestCase("not again, nothing drops here", eAutonomousChatIntent.Grumble)]
+    [TestCase("it's raining here, I need coffee", eAutonomousChatIntent.SmallTalk)]
+    [TestCase("have you ever been to Camelot?", eAutonomousChatIntent.Question)]
+    [TestCase("lol nice heal", eAutonomousChatIntent.Compliment)]
+    [TestCase("well done Persoper", eAutonomousChatIntent.Compliment)]
+    [TestCase("yeah, agreed", eAutonomousChatIntent.Agree)]
+    [TestCase("I'll be back", eAutonomousChatIntent.Quote)]
+    [TestCase("call me snake", eAutonomousChatIntent.Quote)]
+    public void IntentModel_FindsSmallTalk(string text, eAutonomousChatIntent expected)
+    {
+        Assert.That(AutonomousChatIntentModel.Predict(text), Is.EqualTo(expected));
+    }
+
+    [TestCase("yeah, want to group?", eAutonomousChatIntent.Grouping)]
+    [TestCase("lol that dungeon", eAutonomousChatIntent.Dungeon)]
+    [TestCase("ugh, anyone selling a sword? I'll buy", eAutonomousChatIntent.Trading)]
+    [TestCase("yeah you're an idiot", eAutonomousChatIntent.Abuse)]
+    public void IntentModel_GameAndRudeWordsBeatSmallTalk(string text, eAutonomousChatIntent expected)
+    {
+        Assert.That(AutonomousChatIntentModel.Predict(text), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void BotOpeners_AreAnsweredByTheirSocialTopic()
+    {
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Told Gary a joke.", eChatTopic.Fun, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Joke));
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Got a problem, bub?", eChatTopic.Gripes, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Grumble));
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Mended a stranger, drank some tea.", eChatTopic.Life, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.SmallTalk));
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Anyone know where Annark is?", eChatTopic.Questions, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Question));
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Want to group up?", eChatTopic.Xp, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Banter), "a game topic: the words decide");
+        Assert.That(AutonomousBotChatCoordinator.BotIntent("Zzzz", null, sameGroup: false), Is.EqualTo(eAutonomousChatIntent.Banter), "no topic, unplaced words: banter");
+    }
+
+    [Test]
+    public void SmallTalkIntents_AreTheNewOnesOnly()
+    {
+        eAutonomousChatIntent[] small = Enum.GetValues<eAutonomousChatIntent>().Where(AutonomousChatIntentModel.IsSmallTalk).ToArray();
+        Assert.That(small, Is.EqualTo(new[]
+        {
+            eAutonomousChatIntent.Joke, eAutonomousChatIntent.Grumble, eAutonomousChatIntent.SmallTalk, eAutonomousChatIntent.Question,
+            eAutonomousChatIntent.Compliment, eAutonomousChatIntent.Agree, eAutonomousChatIntent.Quote,
+        }));
+        Assert.That((int)eAutonomousChatIntent.Thank, Is.EqualTo(13), "the old intents keep their numbers");
+    }
+
+    [TestCase("Zzzz")]
+    [TestCase("Gary Gotar Annark")]
+    public void IntentModel_UnknownWordsAreUnknown(string text)
+    {
+        Assert.That(AutonomousChatIntentModel.Predict(text), Is.EqualTo(eAutonomousChatIntent.Unknown));
+    }
+
     [TestCase("thanksgiving is coming")]
     [TestCase("tackle the target")]
     public void IntentModel_MatchesWholeWordsOnly(string text)
