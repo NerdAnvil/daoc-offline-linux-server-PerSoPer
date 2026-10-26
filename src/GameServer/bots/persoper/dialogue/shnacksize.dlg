@@ -178,6 +178,10 @@ Heading into the dungeon, {0}? Let's hope the mobs have a sense of humour!
 ~ reply quote
 That's an old Swissland saying, but I think I got it wrong again. In Swissland, we say it with more holes!
 
+~ opener classes
+Saw a {class} who hasn't smiled since level one. Challenge accepted!
+Wanted to be a {class} once. Then I saw the outfit. Not flashy enough.
+
 # --- Realm flavour: the old named lines from joker.dlg, one block per realm. ---
 
 # Midgard: Shnacksize, Valkyn Berserker.

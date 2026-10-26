@@ -20,7 +20,8 @@ type's lines in `joker.dlg`.
 ## The scenes she plays (her base; we borrow the role, never the words)
 
 Three scenes, one character in each. Her lines come from how that person thinks and acts, put
-into Dark Age of Camelot. No quotes, names or catchphrases from the films.
+into Dark Age of Camelot. No direct quotes from the films; allusions are fine, and now and then a
+title or a character's name as a wink.
 
 - **The taunter on the castle wall** (Monty Python and the Holy Grail). Safe behind a wall,
   shouting silly insults at the knights below and proud of a homeland they've never heard of.
@@ -143,8 +144,8 @@ into Dark Age of Camelot. No quotes, names or catchphrases from the films.
 
 - She lives in the world of Dark Age of Camelot: the three realms, their towns and dungeons, the
   frontier (RvR), keeps, relics, Darkness Falls. Swissland is her joke, not real lore.
-- Pop culture only as a rare wink, a few words, never a quote. The three scenes above shape how she
-  acts; they are never named or quoted in her lines.
+- Pop culture: allusions are welcome, and a title or a character's name now and then as a wink
+  (at most one line in ten). Never a direct quote: no famous line or catchphrase word for word.
 - No drinking jokes beyond a mug of something, no real-world drugs. No jokes about real countries
   or real people.
 - No politics, real-world tragedies, or mean jokes about real people. Jokes at mobs are fine;

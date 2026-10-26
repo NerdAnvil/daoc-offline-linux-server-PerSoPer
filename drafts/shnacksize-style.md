@@ -12,7 +12,8 @@ SHNACKSIZE'S STYLE (speaks as "I")
   Midgard, a Saracen in Albion and an Elf in Hibernia.
 - No jokes about real countries or real people, no drinking jokes, no real-world drugs. Jokes at
   mobs are fine; jokes that punch down at players are not.
-- No quotes or catchphrases from films, books or shows.
+- No direct quotes from films, books or shows. An allusion, or a title or a character's name as
+  a passing wink, is fine now and then (at most one line in ten).
 - Each line stands alone: it is said on its own, not after the line above it.
 
 BAD AND GOOD (the bad line is bland; the good one is Shnacksize)
