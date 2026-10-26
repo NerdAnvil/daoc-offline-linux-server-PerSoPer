@@ -74,15 +74,20 @@ public static class PersonalityReactions
         if (pool == null || pool.Count == 0)
             return null;
         random ??= Random.Shared;
+        if (botKey != null)
+        {
+            // Only lines it can fill now: a line waiting on an unknown slot ({monster}) is never said, so it
+            // would stay "fresh" and crowd out the lines it can say, and the bot would go quiet.
+            List<string> fillable = pool.Take(DialoguePicker.MaxPool).Where(template => Fill(template, slots, otherName) != null).ToList();
+            if (DialoguePicker.Shared.Fresh(fillable, botKey, random) is not { } picked)
+                return null;
+            DialoguePicker.Shared.Said(botKey, picked);
+            return Fill(picked, slots, otherName);
+        }
         for (int attempt = 0; attempt < MaxFillTries; attempt++)
         {
-            string template = Any(pool, random, botKey);
-            if (Fill(template, slots, otherName) is { } line)
-            {
-                if (botKey != null)
-                    DialoguePicker.Shared.Said(botKey, template);
+            if (Fill(pool[random.Next(pool.Count)], slots, otherName) is { } line)
                 return line;
-            }
         }
         return null;
     }

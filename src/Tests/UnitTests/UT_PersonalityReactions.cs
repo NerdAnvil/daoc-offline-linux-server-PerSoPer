@@ -163,4 +163,21 @@ public class UT_PersonalityReactions
         string[] picks = Enumerable.Range(0, 4).Select(_ => PersonalityReactions.PickFilled(pool, Full, null, random, key)).ToArray();
         Assert.That(picks.Distinct().Count(), Is.EqualTo(4), "four picks from four lines repeat nothing");
     }
+
+    [Test]
+    public void PickFilled_WithABotKey_StaysTalking_WhenMostLinesNeedAnUnknownSlot()
+    {
+        // Lines it can't fill now were never said, so they stayed "fresh" and crowded out the
+        // two it could say: after those two, every pick came back empty.
+        string key = "test-" + Guid.NewGuid();
+        string[] pool = ["A {zone}.", "B {zone}.", "C {monster}.", "D {monster}.", "E {monster}.", "F {monster}.",
+            "G {monster}.", "H {monster}.", "I {monster}.", "J {monster}."];
+        var noMonster = Full with { Monster = null };
+        var random = new Random(5);
+
+        string[] picks = Enumerable.Range(0, 20).Select(_ => PersonalityReactions.PickFilled(pool, noMonster, null, random, key)).ToArray();
+
+        Assert.That(picks, Has.None.Null);
+        Assert.That(picks.Distinct(), Is.SubsetOf(new[] { "A Myrkwood Forest.", "B Myrkwood Forest." }));
+    }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DOL.Database;
 using DOL.Database.Attributes;
+using DOL.Logging;
 
 namespace DOL.GS;
 
@@ -28,10 +29,13 @@ public sealed class PlayerAnswerRecord : DataObject
 /// <summary>
 /// The saved answers of the players the bots met, kept in memory so rules can check them for every
 /// line without a database read. Loading and saving are handed in, so it is unit tested without a
-/// database. Safe to call from several threads.
+/// database. Safe to call from several threads. It runs in chat, so a failed load or save (a busy
+/// database) is logged, never thrown and never kept: the next look reads the database again.
 /// </summary>
 public sealed partial class PlayerAnswerCache(Func<string, IReadOnlyDictionary<string, string>> load, Action<string, string, string> save)
 {
+    private static readonly Logger Log = LoggerManager.Create(typeof(PlayerAnswerCache));
+
     /// <summary>Players kept in memory at most; past that the cache starts over and reloads from the database.</summary>
     public const int MaxPlayers = 500;
 
@@ -59,7 +63,10 @@ public sealed partial class PlayerAnswerCache(Func<string, IReadOnlyDictionary<s
             return Entry(playerId).GetValueOrDefault(question);
     }
 
-    /// <summary>Saves an answer (a new one replaces the old). False when an id or word is bad or the player is at the cap.</summary>
+    /// <summary>
+    /// Saves an answer (a new one replaces the old). False when an id or word is bad, the player is at
+    /// the cap, or the save failed (then it is still remembered until the server restarts).
+    /// </summary>
     public bool Set(string playerId, string question, string answer)
     {
         if (string.IsNullOrEmpty(playerId) || !Word().IsMatch(question ?? string.Empty) || !Word().IsMatch(answer ?? string.Empty))
@@ -70,8 +77,17 @@ public sealed partial class PlayerAnswerCache(Func<string, IReadOnlyDictionary<s
             if (!answers.ContainsKey(question) && answers.Count >= MaxAnswersPerPlayer)
                 return false;
             answers[question] = answer;
-            save(playerId, question, answer);
-            return true;
+            try
+            {
+                save(playerId, question, answer);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                if (Log.IsErrorEnabled)
+                    Log.Error($"PLAYER_ANSWER_SAVE_FAILED player={playerId} question={question}", exception);
+                return false;
+            }
         }
     }
 
@@ -79,9 +95,20 @@ public sealed partial class PlayerAnswerCache(Func<string, IReadOnlyDictionary<s
     {
         if (_players.TryGetValue(playerId, out Dictionary<string, string> answers))
             return answers;
+        IReadOnlyDictionary<string, string> loaded;
+        try
+        {
+            loaded = load(playerId);
+        }
+        catch (Exception exception)
+        {
+            // Not stored: an empty entry would read as "answered nothing" until the cache starts over.
+            if (Log.IsErrorEnabled)
+                Log.Error($"PLAYER_ANSWER_LOAD_FAILED player={playerId}", exception);
+            return new Dictionary<string, string>(StringComparer.Ordinal);
+        }
         if (_players.Count >= MaxPlayers)
             _players.Clear();
-        IReadOnlyDictionary<string, string> loaded = load(playerId);
         return _players[playerId] = loaded == null ? [] : new Dictionary<string, string>(loaded.Take(MaxAnswersPerPlayer), StringComparer.Ordinal);
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -131,5 +132,28 @@ public class UT_PlayerAnswers
         ((Dictionary<string, string>)cache.For("p1")).Clear();
 
         Assert.That(cache.Get("p1", "q"), Is.EqualTo("a"));
+    }
+
+    [Test]
+    public void AFailedLoad_IsNotThrownOrKept_TheNextLookReadsAgain()
+    {
+        bool busy = true;
+        _database["p1"] = new() { ["fav_music"] = "metal" };
+        var cache = new PlayerAnswerCache(
+            id => busy ? throw new InvalidOperationException("database is locked") : _database.GetValueOrDefault(id),
+            (_, _, _) => { });
+
+        Assert.That(cache.Get("p1", "fav_music"), Is.Null, "busy: no answer, no exception");
+        busy = false;
+        Assert.That(cache.Get("p1", "fav_music"), Is.EqualTo("metal"), "the failure wasn't kept as 'answered nothing'");
+    }
+
+    [Test]
+    public void AFailedSave_IsNotThrown_AndTheAnswerIsStillRemembered()
+    {
+        var cache = new PlayerAnswerCache(_ => null, (_, _, _) => throw new InvalidOperationException("database is locked"));
+
+        Assert.That(cache.Set("p1", "fav_music", "metal"), Is.False);
+        Assert.That(cache.Get("p1", "fav_music"), Is.EqualTo("metal"));
     }
 }
