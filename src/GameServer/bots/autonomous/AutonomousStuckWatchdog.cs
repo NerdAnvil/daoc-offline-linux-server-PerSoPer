@@ -178,6 +178,18 @@ public static class AutonomousStuckWatchdog
         isAlive && !inPlayerLedGroup && !protectedStableTravel && !isRvrRoaming &&
         nowUtc - lastGoalProgressUtc >= GoalProgressThreshold;
 
+    /// <summary>
+    /// An invalid live position in a human's party is repaired beside the
+    /// leader only while that leader can receive it: alive in the world, in
+    /// the same party and region. Anything else keeps the capital recovery.
+    /// </summary>
+    public static bool ShouldReturnToPlayerLeader(
+        bool inPlayerLedGroup,
+        bool leaderInWorld,
+        bool sameGroup,
+        bool sameRegion) =>
+        inPlayerLedGroup && leaderInWorld && sameGroup && sameRegion;
+
     public static bool CountsAsGoalProgress(eAutonomousProgressKind kind) => kind is
         eAutonomousProgressKind.SiegeParticipation or
         eAutonomousProgressKind.Combat or
@@ -313,7 +325,13 @@ public static class AutonomousStuckWatchdog
             bool movementStalled = Observations.TryGetValue(bot.DatabaseID, out Observation observed) &&
                 now - observed.LastMovementUtc >= StuckThreshold;
             if (!verticalOnly || movementStalled)
+            {
+                // A bot in a human's party goes back beside its leader; the
+                // capital move would also drop it from the party.
+                if (TryReturnToPlayerLeader(bot, now, invalidReason))
+                    return true;
                 return RelocateToSafeCapital(bot, now, $"live position invalid: {invalidReason}", true);
+            }
         }
 
         Observation current = CurrentFor(bot, now, out Observation previous);
@@ -524,6 +542,37 @@ public static class AutonomousStuckWatchdog
             bot.MarkAutonomousStateDirty();
             AutonomousBotStatusPersistence.Queue(bot);
         }
+        return true;
+    }
+
+    private static bool TryReturnToPlayerLeader(GameBot bot, DateTime now, string reason)
+    {
+        GamePlayer leader = bot.PlayerGroupLeader;
+        if (!ShouldReturnToPlayerLeader(
+                bot.IsPlayerLedGroup,
+                leader is { IsAlive: true, ObjectState: GameObject.eObjectState.Active, CurrentZone: not null },
+                bot.Group != null && bot.Group == leader?.Group,
+                leader != null && leader.CurrentRegionID == bot.CurrentRegionID))
+            return false;
+
+        Vector3 point = TemporaryGroupStableTravel.FormationPoint(leader, bot.ObjectID % 6);
+        ushort regionId = leader.CurrentRegionID;
+        int oldX = bot.X, oldY = bot.Y, oldZ = bot.Z;
+        bot.StopFollowing();
+        bot.StopMovingOnPath();
+        bot.StopMoving();
+        if (!bot.MoveTo(regionId, (int)Math.Round(point.X), (int)Math.Round(point.Y),
+                (int)Math.Round(point.Z), leader.Heading))
+            return false;
+
+        bot.TryConsumeAutonomousPathFailure(out _, out _);
+        bot.ForcePathReplot();
+        Log.Warn($"AUTONOMOUS_LEADER_RECOVERY bot=\"{ForLog(bot.Name)}\" id={bot.DatabaseID} " +
+                 $"region={regionId} from={oldX},{oldY},{oldZ} to={bot.X},{bot.Y},{bot.Z} " +
+                 $"leader=\"{ForLog(leader.Name)}\" reason=\"live position invalid: {ForLog(reason)}\"");
+        MarkProgress(bot, eAutonomousProgressKind.Recovery, now);
+        bot.MarkAutonomousStateDirty();
+        AutonomousBotStatusPersistence.Queue(bot);
         return true;
     }
 

@@ -17,6 +17,16 @@ public sealed class UT_AutonomousStuckWatchdog
     }
 
     [Test]
+    public void InvalidPositionInAHumanPartyReturnsToTheLeaderOnlyWhenTheLeaderCanReceiveIt()
+    {
+        Assert.That(AutonomousStuckWatchdog.ShouldReturnToPlayerLeader(true, true, true, true), Is.True);
+        Assert.That(AutonomousStuckWatchdog.ShouldReturnToPlayerLeader(false, true, true, true), Is.False, "no human leader");
+        Assert.That(AutonomousStuckWatchdog.ShouldReturnToPlayerLeader(true, false, true, true), Is.False, "leader dead or gone");
+        Assert.That(AutonomousStuckWatchdog.ShouldReturnToPlayerLeader(true, true, false, true), Is.False, "different party");
+        Assert.That(AutonomousStuckWatchdog.ShouldReturnToPlayerLeader(true, true, true, false), Is.False, "different region");
+    }
+
+    [Test]
     public void StablemasterHorseTravelNeverCountsAsStuckTime()
     {
         DateTime now = new(2026, 8, 28, 12, 0, 0, DateTimeKind.Utc);

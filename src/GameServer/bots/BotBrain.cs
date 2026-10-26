@@ -1153,11 +1153,55 @@ namespace DOL.AI.Brain
                 _ambientWanderMovement = ambientWander;
                 if (companionTravel && !ambientWander)
                     Body.PathTo(destination, speed);
-                else
+                else if (ambientWander || !TryFollowLeaderAcrossZoneSeam(destination, speed))
                     Body.WalkTo(destination, speed);
             }
             else if (!Body.IsMoving)
                 _ambientWanderMovement = false;
+        }
+
+        private AutonomousZoneBoundaryRouting.Step? _leaderSeamStep;
+        private Zone _leaderSeamFrom, _leaderSeamTo;
+
+        // GameBot.WalkTo only uses the navmesh inside the bot's own zone. A
+        // persistent bot in a human's party whose leader is in another zone
+        // crosses at a validated zone seam, as its own routes do; the straight
+        // walk took it over hills and zone gaps, off the mesh, and the stuck
+        // watchdog then pulled it out of the party.
+        private bool TryFollowLeaderAcrossZoneSeam(Point3D destination, short speed)
+        {
+            if (BotBody is not { IsAutonomousWorldBot: true, IsPlayerLedGroup: true } bot)
+                return false;
+            Zone from = bot.CurrentZone;
+            Zone to = bot.CurrentRegion?.GetZone(destination.X, destination.Y);
+            if (from == null || to == null || from == to)
+                return false;
+
+            Vector3 current = new(bot.X, bot.Y, bot.Z);
+            Vector3 goal = new(destination.X, destination.Y, destination.Z);
+            if (!_leaderSeamStep.HasValue || _leaderSeamFrom != from || _leaderSeamTo != to)
+            {
+                // Failed and solved steps are remembered by the itinerary, so a
+                // repeat on the next follow turn is a cache lookup.
+                _leaderSeamStep = null;
+                if (!AutonomousZoneItinerary.TryNextStep(bot.CurrentRegion, from, to, current, goal,
+                        PathfindingProvider.Instance, out var resolved,
+                        zone => AutonomousRealmBoundary.Allows(bot.Realm, bot.CurrentRegionID, zone.ID)))
+                    return false;
+                _leaderSeamStep = resolved;
+                _leaderSeamFrom = from;
+                _leaderSeamTo = to;
+            }
+
+            AutonomousZoneBoundaryRouting.Step step = _leaderSeamStep.Value;
+            if (Vector3.DistanceSquared(current, step.Inside) <= 96 * 96)
+                bot.WalkTo(step.Outside, speed);
+            else if (bot.movementComponent is NpcMovementComponent mover)
+                mover.PathAcrossValidatedSeam(step.Inside, step.Outside,
+                    to == bot.CurrentRegion.GetZone((int)step.Outside.X, (int)step.Outside.Y) ? goal : null, speed);
+            else
+                bot.PathTo(step.Inside, speed);
+            return true;
         }
 
         private void MaybeIdleRoleplay()
