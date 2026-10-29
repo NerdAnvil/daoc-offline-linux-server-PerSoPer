@@ -53,7 +53,10 @@ public class UT_RoleplayerVoice
         DialogueFile file = DialogueLibrary.For("roleplayer");
         Assert.That(file, Is.Not.Null);
         Assert.That(file.Errors, Is.Empty);
-        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(name => name.ToLowerInvariant()).Append("roleplayer")));
+        // A bot whose character has its own file has no block left in its type's file.
+        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(NamedBotLineup.FindByName)
+            .Where(entry => DialogueLibrary.For(PersonalityLines.CharacterKey(entry)) == null)
+            .Select(entry => entry.Name.ToLowerInvariant()).Append("roleplayer")));
     }
 
     [TestCase("Hunterson")]
@@ -95,11 +98,14 @@ public class UT_RoleplayerVoice
     {
         string[] spoken = OwnSpoken("MacHunter");
         Assert.That(spoken.Count(line => Gaelic.IsMatch(line)), Is.GreaterThanOrEqualTo(10));
-        TypeTalk talk = PersonalityLines.Own["named:machunter"].Talk;
-        foreach (eAutonomousChatIntent intent in new[] { eAutonomousChatIntent.Greeting, eAutonomousChatIntent.Farewell })
+        // His realm's own greetings and farewells; the character's plain-speech ones are mixed in for all three realms.
+        IReadOnlyList<DialogueSection> realm = DialogueLibrary.For("hunterson").Block("hibernia");
+        foreach (string intent in new[] { "greeting", "farewell" })
         {
-            Assert.That(talk.Replies[intent], Has.Some.Matches<string>(line => Blessing.IsMatch(line)), intent.ToString());
-            Assert.That(talk.Replies[intent], Has.All.Matches<string>(line => Gaelic.IsMatch(line)), intent.ToString());
+            string[] lines = realm.Where(section => section.Name == "reply" && section.Argument == intent).SelectMany(section => section.Lines).ToArray();
+            Assert.That(lines, Is.Not.Empty, intent);
+            Assert.That(lines, Has.Some.Matches<string>(line => Blessing.IsMatch(line)), intent);
+            Assert.That(lines, Has.All.Matches<string>(line => Gaelic.IsMatch(line)), intent);
         }
     }
 
