@@ -45,7 +45,8 @@ drafts/                          model or writer drafts; never loaded by the gam
 - A named character's lines are mixed on top of its type's lines (`hardcore.dlg`, `gruffdoc.dlg`...),
   so the character grows out of its type. A named bot without a character file still uses its
   block in its type's file.
-- Character sheets describe voice, likes, dislikes, catchphrases, lore limits and relationships.
+- Character sheets describe voice, likes, dislikes, catchphrases, lore limits and relationships,
+  plus a short backstory rolled from `drafts/backstory-rolls.md` and then edited by hand.
   The game doesn't read them.
 
 ## Format additions
