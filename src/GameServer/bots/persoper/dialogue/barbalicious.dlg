@@ -1,0 +1,206 @@
+# Barbalicious, the Homeowner: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Barbalicious, Barbaliciouse, Barbalicioush); character
+# sheet in characters/barbalicious.md. These lines are mixed on top of the type's (homeowner.dlg).
+# Gender is random, so every line stays gender-neutral. The main block fits every realm; the
+# realm blocks below add a little flavour each, and are the only place for their class, race,
+# weapon kind and towns.
+=== barbalicious
+names: Barb
+
+~ ambient
+Mowed the yard before we left. Diagonal stripes. Nobody's seen them yet.
+Used to catch rats for a living. Not one in my house. Not one. I check.
+My dad wanted me running the family shop. I bought a house instead. He's come round. Mostly.
+Snake got into the garden once. Took a week to find it. I still check under the porch.
+Trying to eat better. Then somebody brings a hotdish. What are you gonna do.
+Measure twice, pull once. Same with monsters as with shelves.
+Planning to put up a new fence this season. Should keep the rats out completely.
+The porch needs a fresh coat of paint. I've picked a nice sky blue.
+Ope, mind the footing. Ladders are safest when someone holds the base.
+Working on the trophy wall. Every hero needs a record of their deeds.
+This is Gerald's little brother, Stanley. Always at my side.
+Your armour is as well-tended as a good lawn. Real nice.
+The lawn's looking sharp. Now if the neighbours could just keep their weeds on their side.
+Well, that's a heck of a thing. Did anyone bring a lunch? Might as well eat while we can.
+Snake gave me a funny look earlier. I haven't forgotten.
+
+~ reply greeting
+Well hey, {0}! You should come by the house. I'll show you the porch.
+Oh, hi {0}. Wipe your feet. Habit. We're outside, I know.
+Hi there, {0}! Come take a look at the trophy wall. Real nice.
+Hi there, {0}! How's the housekeeping going at your place?
+
+~ reply grouping
+Oh, for sure, {0}. Let me just check my gloves are on. Okay. Ready.
+Oh, for sure, {0}. Just let me know who's bringing the snacks, okay?
+
+~ reply abuse
+Well, that's a heck of a thing to say, {0}. I'll pretend I didn't hear it.
+Well, now. I hope you find somewhere friendlier, {0}. The porch is a bit quiet, but at least it's peaceful.
+
+~ reply joke
+Ha! Oh, that's a good one, {0}. I'm gonna tell that one at the barbecue.
+Ha, {0}, that's a doozy. I'll tell it to the neighbours tomorrow.
+
+~ reply compliment
+Oh, stop it, {0}. You haven't even seen the porch yet.
+Oh, well now, {0}. Thank you. It's just a house.
+
+~ reply help
+Sure thing, {0}. Hold on, let me get the right tool for it.
+
+~ reply travel
+Lead the way, {0}. I'll count the turns. So we can find the way back.
+
+~ reply banter
+Rush in, {0}? Maybe not. Let's think about it a minute first.
+Well, now. Take a step back and let's look at the best way to tackle this, {0}.
+Ope! Last week I reorganised the tool shed. Found a wrench I thought was lost. That's fun for me, {0}.
+
+~ reply farewell
+Bye now, {0}! Door's always open. Boots off, though.
+Well, that was a real nice night, {0}. The house feels a bit quieter without you. The hotdish is waiting, and I'll pretend it's a diet success this time.
+Well, that was a night, {0}. My dad wanted me to run the family shop. I bought a house instead. I think it turned out all right. Now, where'd I put that hotdish?
+
+~ opener life
+Forgot my cousin's birthday again. Sent a card late. Real nice card, though.
+Named my weapon Gerald. Gerald's been very good this week.
+Put up a new shelf. Level on the first try. Didn't tell anybody. Well, now I have.
+Ope, brb. The cat just hacked up something on the rug.
+It's two in the morning and I'm still up. Again. Real nice.
+Rats know which houses to avoid, and mine is one of them.
+Afraid of getting lost and not finding my way back. But I always find my way home, one way or another.
+
+~ opener gear
+Gloves first, then everything else. You can't fix a fence without your fingers.
+A good roof is like solid armour: not fancy, but it keeps the rain out and the comfort in.
+
+~ ding
+Level {level}! Gonna put a little plaque up by the door.
+Level {level}. Time for some home improvement. The house always needs a little something.
+Ope, that's one more board down. Real nice.
+
+~ grats
+Grats, {0}! Come by the house, we'll have bars to celebrate.
+Grats, {0}! Come by the house and I'll hang your portrait on the trophy wall.
+Grats, {0}! Swing by the house and I'll add your name to the guestbook.
+
+~ own_death
+Ope. Down. Shoulda measured twice.
+Ope. Well, that's a heck of a thing. Guess it's time for a hotdish when I get back.
+Ope. Not on my floors, at least. The new planks are still too shiny to stain.
+
+~ other_death
+Oh, {0}! Okay. Deep breath. Let's get you back up, nice and easy.
+Ope, {0}. Down, but not out. I'll have a warm bed ready at the house.
+Ope, {0}. You should've worn gloves. It's a slippery world out there.
+Ope, {0}. The floor's no place for you. Up and at 'em, now.
+
+~ drop
+{item}! That's going on the wall. I've got just the spot.
+Got a spot on the trophy wall for {item}. Gerald will have company.
+Ope, found {item}. Well made, that one. Built to last.
+{item}, huh? That'd make a real nice housewarming gift for someone.
+
+~ reply rvr
+Sure thing, {0}. Just hope nobody messes with my place while I'm gone.
+
+~ opener xp
+Building a house, one board at a time. Same as levelling up.
+Every board I nail down is another level under my belt. No shortcuts here.
+
+~ opener zones
+The view from {zone} is real nice, but the wind? Uff da, it likes to play tricks on ya.
+{zone} is real nice, but I'd want to check the drainage first.
+
+~ opener dungeons
+Dungeons could use better lighting and a handrail.
+Dungeons are fine for adventuring, but I'd never live in one. The damp would ruin my floors.
+
+~ opener fun
+Fixing the fence on a quiet Saturday, now that's my idea of fun.
+A quiet barbecue with everyone sounds nice. No dying involved. Uff da.
+
+~ opener questions
+Anybody know a good way to keep moss off a roof? I've tried everything, but it keeps coming back.
+Do you folks remember whose birthday is this week? I feel like it's somebody's.
+
+~ opener classes
+Every {class} should own a house, dontcha know. It settles you right down.
+
+~ cheeky_reply banter [if tone_down off]
+Ope! Well. Let's talk about my fence instead. It's really something, dontcha know.
+
+~ reply thank
+You betcha, {0}. That's what neighbours do.
+
+~ reply dungeon
+Let's go, {0}, but take it slow. Nobody needs a tumble in there.
+
+~ reply grinding
+Grinding's like mowing on a nice summer day, {0}. Takes a while, but it's steady work.
+
+~ opener rvr
+Well, now. I should be focused on the fight, but did I leave the stove on back home?
+
+~ opener trading
+I only buy things built to last, like a solid porch.
+
+~ opener gripes
+Ope. That neighbour's dog has been digging up my flower bed again. Real nice.
+
+
+
+# Midgard: Barbalicious, Troll Savage, from Fort Atla. Big, rough, gentle underneath; house is a cosy hall in Jordheim housing.
+=== midgard
+~ ambient
+Grew up in Fort Atla. Cold, windy, real nice. Built the hall with the door a little taller, though.
+Hall's got a good fire going. Come on in, dontcha know. Duck at the door.
+Got a boar's head over the hearth. Real nice. Its eyes follow you.
+Big hands, small house. Ope, watch the mead cups.
+
+~ opener realm
+Jordheim housing's quiet. Bit of snow, bit of mead. Perfect.
+Midgard has the best halls. Mine's the cosiest one.
+
+~ reply greeting
+Skol, {0}! Oh, you betcha, come see the hall!
+
+~ drop
+{item}! Over the hearth it goes. Next to the boar.
+
+# Albion: Barbaliciouse, Inconnu Reaver, from Llyn Barfog. A bit dark and brooding, but invites tea; house in Albion housing.
+=== albion
+~ ambient
+Grew up by Llyn Barfog. Misty lake, good fishing. The cottage has a lake view. A puddle view. Close enough.
+Kettle's on, parlour's warm. Come on over, dontcha know.
+Mounted a nice pair of antlers by the window. Ope, mind your head.
+Nice cottage. Crooked chimney. Real nice, though.
+
+~ opener realm
+Camelot's housing is lovely. Neat hedges, nice neighbours.
+Albion's got the best tea. And my parlour has the best chairs.
+
+~ reply greeting
+Well hello, {0}! You oughta come for tea. Oh, you betcha.
+
+~ drop
+{item}! For the parlour wall. Real nice.
+
+# Hibernia: Barbalicioush, Firbolg Valewalker, from Mag Mell. Gentle and green, garden-minded; house in Hibernia housing.
+=== hibernia
+~ ambient
+Grew up in Mag Mell. Everybody had a garden there. Mine's still the best one, dontcha know.
+Garden's coming along real nice. Come see the roses. Dontcha know.
+Put a stag's skull over the door. Gives the house character.
+Ope, the moss is growing on the porch again. It's lovely.
+
+~ opener realm
+Tir na Nog housing is green and quiet. My kinda place.
+Hibernia's got the best gardens. Mine's the best of those.
+
+~ reply greeting
+Hi there, {0}! Come see the garden, you betcha.
+
+~ drop
+{item}! For the hall by the garden. Real nice.
