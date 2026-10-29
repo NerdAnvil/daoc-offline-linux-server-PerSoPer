@@ -1,0 +1,215 @@
+# Redtornader, the Min/maxer: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Redtornader, Greenfogger, Sunrayder); character sheet
+# in characters/redtornader.md. These lines are mixed on top of the type's (minmaxer.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each, and are the only place
+# his spell (the red tornado, the green fog, Sun Ray) and his pet are named.
+=== redtornader
+names: Cannon, SirBlowsitup
+
+~ ambient
+Every spec point placed. Every cap reached. Fully optimised. Ask me how.
+Used to light lamps for a living. Now I light up monsters. Better pay.
+Bears. One stole my kill once. I remember its face. I have its numbers.
+Saved another forty pennies today. No idea what for. It's optimal anyway.
+Tham out-damaged me last fight. By luck. I'm not upset. I'm recalculating.
+Glass cannon. Emphasis on cannon.
+I did 1,247 points of damage on that last mob. That's 7% more than anyone else here.
+Respec points in my head. Just for fun. Fully optimised, of course.
+Paper armour, as calculated. It's meant to break.
+
+~ reply greeting
+{0}! Perfect timing. I was just about to tell someone my numbers.
+Hello, {0}. Fully optimised and ready. You?
+Hello, {0}. How's your damage today? I hope it's less than mine.
+
+~ reply grouping
+Group, {0}? Yes. Stand behind me. Not too close, I'm fragile.
+I'll join, {0}. You'll want to watch the damage meter. It's mostly me.
+
+~ reply compliment
+Well done? Me? ...I mean, yes. As calculated. Thank you, {0}.
+
+~ reply thank
+You're welcome, {0}. It was nothing, really. Just 24% of my spec, though.
+
+~ reply trading
+Looking to trade, {0}? I only take items that add to my damage. Let's see what you've got.
+
+~ reply rvr
+Enemy players? The best trophies, indeed, {0}. Let's see if they can withstand my spec.
+
+~ reply banter
+More damage? {0}, show me the numbers. I did 4% better last time I checked.
+
+~ reply abuse
+Rude, {0}. Low damage, though. I checked.
+Rude, {0}. My damage is the only opinion that matters.
+
+~ reply help
+Help, {0}? I do 30% more damage than anyone here. That's help.
+Sure thing, {0}. I'll help, but I need to stay at the back and deal the damage.
+
+~ reply joke
+That joke had a 12% crit chance, {0}. It didn't crit.
+
+~ reply travel
+Lead the way, {0}. I've worked out the fastest route, but go on.
+Sure, {0}. Lead the way, but if a bear shows up, I'm not splitting that trophy.
+
+~ reply farewell
+Bye, {0}. Tell people about my numbers.
+Good night, {0}. I did the damage, but you kept me alive, and that's 12% of a trophy. Don't tell anyone, but you were a better group than I thought.
+
+~ opener xp
+Leveling's an art. I can get you to level 20 in 3 hours, 17 minutes flat. Not a second more.
+
+~ opener gear
+I'd trade any armour for one more point of damage.
+
+~ opener zones
+{zone} has the biggest health bars, and that's where my trophies come from.
+
+~ opener dungeons
+Every boss is just a trophy that hasn't fallen over yet.
+
+~ opener fun
+My idea of fun is watching a big health bar go down faster than anyone else's.
+
+~ opener questions
+Why would you waste a point on anything but damage?
+
+~ opener classes
+Every {class} I meet has their spec wrong. I could fix it, but where's the fun in that?
+
+~ opener life
+Chickens give me the jitters, even the tame ones.
+My parents think I'm still a lamplighter. I haven't found a way to tell them.
+Got a box of boss teeth at home. Sorted by size. It's not weird. It's a collection.
+Chased the same rare drop for months. I have the drop rate. It doesn't care.
+# Off-game (the player): own lines, for a later [ooc] switch.
+Back at launch this took twice as long. You lot have it easy.
+
+~ ding
+Level {level}. Three more points, and I already know where they go.
+
+~ grats
+Grats, {0}. Now spend those points properly. I'll send you a list.
+
+~ own_death
+Dead. That was calculated. The calculation was wrong.
+Top damage, but dead. Glass cannon, emphasis on cannon.
+
+~ other_death
+{0}'s down. I'd have healed you, but I put zero points in that. Sorry.
+{0} fell. I'll avenge them with a big hit and keep the trophy. As calculated.
+Without you, I'm next on the list, {0}.
+
+~ drop
+{item}! That's going on the wall.
+{item}? Hmm, no damage boost. Figures.
+
+~ cheeky_reply banter [if tone_down off]
+{0}, I'm going to pretend you didn't say that. My spreadsheet won't.
+
+# Midgard: Redtornader, Norseman Spiritmaster, from Audliten. The red tornado; a spirit pet he mostly forgets about.
+=== midgard
+~ ambient
+My red tornado is fully optimised. Every spec point. Ask me how.
+Red tornado, red tornado, red tornado. That's the rotation. It's perfect.
+Nobody spins a red tornado like me. I have the numbers.
+Need a new trophy for my wall. Something with a big health bar.
+Spiritmaster spec: maxed. Red tornado damage: maxed. Patience: not maxed.
+Audliten raised me on long nights and cold wind. Now I make my own wind. Red.
+
+~ opener fun
+Cast my red tornado forty times in {zone}. Forty. Counted. Logged.
+Someone asked why my tornado is red. Because red is 4% more efficient.
+My red tornado has a spreadsheet. The spreadsheet has a fan club.
+
+~ opener trading
+Every trophy I own came from a red tornado. Every single one.
+Bought nothing today. Bought a better red tornado, mentally.
+
+~ reply greeting
+Hello, {0}. My red tornado says hi. Loudly.
+
+~ reply banter
+Cute, {0}. My red tornado does 30% more than that joke.
+
+~ ding
+Level {level}. Red tornado damage: up. As calculated.
+
+~ own_death
+I died mid-tornado. The tornado kept going. Respect.
+Forgot my spirit pet was there. It forgot me too. We both died.
+
+~ drop
+{item}. Does it boost my red tornado? Then it stays.
+
+# Albion: Greenfogger, Briton Cabalist, from Camelot City. The green Matter DoT fog; a simulacrum pet he built and optimised.
+=== albion
+~ ambient
+My green fog is fully optimised. Every matter point. Ask me.
+Green fog, then more green fog. That's the template. It's flawless.
+Nobody fogs like me. The numbers agree.
+Need a new trophy. Preferably something my fog melted.
+Cabalist spec: maxed. Matter ticks: maxed. Patience: rounding error.
+Camelot City has a statue on every corner. None of them are me. Yet.
+
+~ opener fun
+Fogged half of {zone} green today. Every tick logged.
+Someone asked why my fog is green. It's 3% more toxic. Probably.
+Built my simulacrum myself. Optimised it too. It still walks into walls.
+
+~ opener trading
+Every trophy I own died in my green fog. Slowly. Efficiently.
+
+~ reply greeting
+{0}! Mind the green fog. It's mine.
+Hello, {0}. You smell that? That's optimal damage.
+
+~ reply banter
+Funny, {0}. My fog is funnier. It keeps ticking.
+
+~ ding
+Level {level}. Green fog ticks harder. As predicted.
+
+~ own_death
+Dead. The fog's still ticking. Worth it.
+
+~ drop
+{item}. If it boosts the green fog, it's best in slot.
+
+# Hibernia: Sunrayder, Elf Enchanter, from Tir na Nog. Sun Ray, and almost nothing else; an underhill pet.
+=== hibernia
+~ ambient
+My Sun Ray is fully optimised. Every spec point. Ask me.
+Sun Ray, Sun Ray, Sun Ray. That's not spam, it's a rotation.
+Nobody rays the sun like me. I've graphed it.
+Need a new trophy. Something big that my Sun Ray melted.
+Enchanter spec: maxed. Sun Ray damage: maxed. Patience: minimal.
+Tir na Nog has the finest halls in Hibernia. My trophy shelf is catching up.
+
+~ opener fun
+Sun Rayed everything in {zone}. Even the clouds. Statistically justified.
+Someone asked if I cast anything but Sun Ray. Why would I?
+My Sun Ray has a spreadsheet. The spreadsheet has sunglasses.
+
+~ opener trading
+Every trophy I own got a Sun Ray to the face first.
+
+~ reply greeting
+{0}! Shield your eyes. Sun Ray incoming.
+Hello, {0}. Want to see my Sun Ray numbers?
+
+~ reply banter
+Cute, {0}. My Sun Ray crits harder than that.
+
+~ ding
+Level {level}. Sun Ray just got brighter. As calculated.
+
+~ own_death
+Dead. Sun Ray was on cooldown. It's never on cooldown.
+
+~ drop
+{item}. If it boosts the Sun Ray, it's mine forever.
