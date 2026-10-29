@@ -192,12 +192,13 @@ Rise, {0}! Valhalla isn't ready for you.
 # consonant, thy before a vowel, "is thy"), and a modern word slips into the odd grand speech.
 === albion
 ~ ambient
-Prydwen Keep, mine own home, hath the stoutest walls in Albion. Thy walls are fine too.
-Forsooth, the road to Camelot is long, and my boots are most sore.
+Prydwen Keep, mine own home. I copied writs there for ten years. Hereby, forsooth, I am free. The writs disagree.
+Hark! A wisp. No, a ghost. No, a wisp. Forsooth, I hate them both equally, which is to say very much.
 Hark! Doth any good knight seek a Scout for thine quest?
 Verily, the arrow flieth true when the archer's heart is pure. And the wind is, like, chill.
-Forsooth, Albion shall stand forever, m'lords and m'ladies!
+Forsooth, I wrote thee a sonnet. It hath eleven lines. Sonnets want fourteen. I ran out of ink. And rhymes. And courage.
 Lay down thine weapons, foul beasts, for FitzHunter hath arrived!
+A decree: all who enter this camp shall be dubbed Sir. Or Dame. Or Sir Dame, if unsure. I am unsure of most things.
 Keep thine eyes on the treeline and thy hand on thy bow. Scout's rule, forsooth.
 This longbow and I have seen many a battle. Most of them were, like, totally epic.
 
@@ -205,25 +206,28 @@ This longbow and I have seen many a battle. Most of them were, like, totally epi
 In Camelot the king's feast was, forsooth, a total vibe.
 Cotswold is the fairest village in all thy realm. Mine too. Ours, forsooth.
 Hark, the walls of Camelot! I hath never seen walls so wall-like.
+In Camelot they dance beneath the moon. I watched from behind a pillar. Learned one step. It was the wrong step.
 
 ~ opener fun
 Forsooth, a riddle: what hath four legs and smelleth of mead? My horse, after the tavern.
 Prithee, who took mine arrows? Forsooth, 'twas me. I left them in a wolf.
 
 ~ opener rvr
-Forsooth, the brutes of Midgard shall taste my arrows!
-To the frontier, m'lords! For Albion, for honour, for thine loot!
+To the frontier, m'lords! For Albion! For honour! For... I've forgotten the third one. For lunch?
 
 ~ opener life
 The tavern's mead is most fine, forsooth. Ten out of ten, would quaff again.
+My horse coughs most piteously. I bought her lozenges. She ate the bag. Forsooth, she is better and I am poorer.
+A letter from mine mother sits unopened. 'Tis sealed with wax. Thine seal is very official, Mother.
 
 ~ opener zones
-Forsooth, {zone} is a land most fair, and most full of things that bite.
+{zone}, a land most fair. Chapter title: The Scout Who Went In. Sequel: The Scout Who Came Out Rather Quickly.
 
 ~ reply greeting
 Well met, {0}! Forsooth, thy coming gladdens my heart.
 Hail and good morrow, {0}! How fareth thou upon thine journey?
 M'lord {0}! Or m'lady. Forsooth, the helm makes it hard to tell.
+Well met, {0}! Forsooth, I practised that all morning. Well met. Well met! Well, met.
 
 ~ reply farewell
 Fare thee well, {0}. May thine aim be true and thy quiver full.
@@ -231,42 +235,41 @@ Godspeed, {0}. Forsooth, I shall miss thee. Hit me up later.
 
 ~ reply banter
 Ha! Thou art a jester most fine, {0}. Forsooth, I nearly fell off my horse.
-Thy wit is sharp, {0}, but mine is sharper. Forsooth.
+Thy wit is sharp, {0}. I shall write it down, and in thine absence claim it as mine own.
 
 ~ reply abuse
-Thou knave, {0}! I shall not break character for the likes of thee.
+Thou knave, {0}! I shall not break character. I am breaking a little. Give me a moment.
 Forsooth, {0}, such words are most unknightly. Also kind of rude, dude.
 
 ~ reply grouping
-Aye, {0}! My bow is thy. Lead on, forsooth.
+Aye, {0}! My bow is thy. Wait. Thine. Thy? Mine bow is thine. Lead on, before I correct myself again.
 A quest, {0}! Let us ride forth, as soon as I find my horse.
 
 ~ reply help
 Fear not, {0}! FitzHunter shall aid thee, for thy cause is mine own.
-Ask, {0}, and thou shalt receive. Unless it be gold. Forsooth, I have none.
+Ask, {0}. I can make any plea sound like a royal writ. Hereby, prithee, thou art helped. Probably.
 
 ~ fallback
-Forsooth, {0}? Speak plainer, I prithee.
+Forsooth, {0}? I prithee, say it again, slowly. I'm writing it down.
 Verily, {0}. Verily indeed. Wait, what?
 
 ~ ding
-Forsooth! Level {level}! My bow arm groweth stronger.
-Hark! {level}! Thine faithful Scout riseth!
+Forsooth! Level {level}! My bow arm groweth stronger...eth.
+Hark! Level {level}! Chapter title: The Scout Ascendant. Or Scout Two: The Re-Scouting. Hm. Ascendant.
 
 ~ grats
-Huzzah, {0}! Forsooth, thou art most mighty!
-Well done, {0}! Thine glory is great.
+Huzzah, {0}! Kneel. I've a quill and a scroll. Thy title shall be ready by morning, spelled right this time.
 
 ~ own_death
-Alas! I am slain! Forsooth, that was most uncool.
-I perish! Tell the king... tell him that wolf was totally cheating.
+Alas! I am slain! Forsooth, that was most uncool. Ow...
+Alas, slain! 'Twas not a retreat. 'Twas a strategic lie-down. Forsooth... ow.
+I perish! Tell the king... tell him that wolf was totally cheating. Ow, ow...
 
 ~ other_death
 Alas, {0}! Thou hast fallen most nobly. Kind of.
 
 ~ drop
-Forsooth! {item}! A treasure fit for thine king.
-{item}! Verily, fortune smileth upon this humble Scout.
+{item}! Fit for thine king. I shall log it in triplicate, as is proper.
 
 # Hibernia: MacHunter, Celt Ranger, from Ardagh. The old tongue of the Celtic myths. Blessings, curses and the fair folk, with
 # Gaelic-sounding words everywhere, some real (beannacht, slainte, a chara), some invented
