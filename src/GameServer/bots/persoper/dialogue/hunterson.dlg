@@ -64,7 +64,7 @@ My mount's cough worries me. It sounds like a chapter title for a sad ending.
 A decree: tonight the camp is a kingdom, and everyone gets a title. Mine is King.
 
 ~ opener dungeons
-Down below, I always go in first. Bravely. And come out first. Strategically.
+Down below, I always go in first. Bravely. And come out first. Strategerically.
 Every dungeon has its hero and its moment of retreat. Let us find both today.
 
 ~ ding
@@ -262,7 +262,7 @@ Huzzah, {0}! Kneel. I've a quill and a scroll. Thy title shall be ready by morni
 
 ~ own_death
 Alas! I am slain! Forsooth, that was most uncool. Ow...
-Alas, slain! 'Twas not a retreat. 'Twas a strategic lie-down. Forsooth... ow.
+Alas, slain! 'Twas not a retreat. 'Twas a strategeric lie-down. Forsooth... ow.
 I perish! Tell the king... tell him that wolf was totally cheating. Ow, ow...
 
 ~ other_death
@@ -279,7 +279,8 @@ Alas, {0}! Thou hast fallen most nobly. Kind of.
 Ardagh is home, a chara. My ma still leaves a candle in the window. I should write. Slainte, ma.
 Beannacht na sidhe ort, whoever is listening. That's a blessing. Mostly.
 The fair folk danced in the glen last night. I heard their pipes. Or a very drunk bard.
-Slainte to the hills, slainte to the mists, slainte to whoever is buying.
+The fair folk dance in rings under the moon. I tried to join. They said my feet were "very honest." That's not a compliment, is it, a chara?
+A wisp. In the glen. Glowing at me. Och, I don't trust anything that glows on purpose. Except the moon. And candles. And... och, fine, just wisps.
 My grandmother's grandmother saw a pooka. It stole her shoe and her good spoon.
 May the rath-rinna guard this road. The rath-rinna is a spirit. I'm fairly sure.
 Tir na nOg calls to me. It says: come home, and bring bread.
@@ -289,6 +290,7 @@ Go mbeannai Lugh do bhogha! Lugh bless your bow. I think that's what it means.
 Tir na nOg is the land of youth. I visited once. Came back with a cold.
 The sidhe ride at Samhain. Lock your doors, and your pantry.
 Every Hibernian knows the tale of Fionn and the salmon. I know three versions. All mine.
+They say the sidhe can't abide iron, salt or bad poetry. I've been reciting all night. The camp's never been safer.
 
 ~ opener fun
 Why don't the fair folk play cards? Too many tricks up their sleeves. Ah, sure.
@@ -300,6 +302,7 @@ To the frontier, a chairde! The banshee sings for our enemies, not us. I asked.
 
 ~ opener life
 Stew for supper, blessed by the hearth-sprite Mairgreadoon. She likes extra salt.
+My horse has a cough. The herb-wife says honey. The horse says more honey. Slainte, horse.
 
 ~ opener zones
 {zone} has a fairy ring. Don't step in it. Trust me.
@@ -323,7 +326,7 @@ Mallacht ort, {0}! A curse on you. A mild one. Your bread will go stale.
 May the pooka take your left boot, {0}. Only the left.
 
 ~ reply grouping
-A fian! A war-band! I'm with you, {0}, by Nuada's silver hand.
+A war-band! I'm with you, {0}. I'll take the rear. Not cowardice, a chara. Strategery. Very brave strategery.
 Aye, {0}, I'll come. The druids say the omens are good. They always say that.
 
 ~ reply help
@@ -332,19 +335,19 @@ The old tales hold every answer, {0}. Pity I forgot most of them.
 
 ~ fallback
 As the old ones say, {0}: dorcha an oiche, glas an bhrionnach. I'm not sure what it means either.
-Och, {0}. Is that so.
+Och, {0}, I was listening, honestly. I was just also composing a verse. About listening. It's going well.
 
 ~ ding
-Level {level}! Lugh be praised, and the Dagda, and my old ma!
+Level {level}! Chapter title: The Ranger and the Rising Mist. Or The Ranger Who Got Lost in the Mist. Och, that one's just true.
 {level}! The sidhe sang for me. Or the wind. Both lovely.
 
 ~ grats
-Comhghairdeas, {0}! Blessings of the nine hills on you!
+Comhghairdeas, {0}! I'll write it up proper, in my best hand, with a little sidhe in the margin. She'll be badly drawn.
 Grats, {0}! May the fair folk fill your cup and leave your purse alone.
 
 ~ own_death
 I'm slain! The banshee warned me. I thought she was just singing.
-Dead. Mallacht! A curse on that beast's whole family tree.
+Dead. Mallacht! A curse on that beast's whole family tree. And its cousins... ow.
 
 ~ other_death
 Rest easy, {0}. The sidhe will mind you till you're back.
@@ -352,4 +355,4 @@ Och, {0}! A blessing on your poor bones.
 
 ~ drop
 {item}! A gift from the fair folk. Or a trap. Taking it anyway.
-{item}! Beannacht! The old gods are generous today.
+{item}! Beannacht! Wrapped in moss, smelling of... is that a dimpled stone? Och, no. Just a toad. Grand.
