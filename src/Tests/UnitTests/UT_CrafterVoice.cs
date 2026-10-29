@@ -35,7 +35,10 @@ public class UT_CrafterVoice
         DialogueFile file = DialogueLibrary.For("crafter");
         Assert.That(file, Is.Not.Null);
         Assert.That(file.Errors, Is.Empty);
-        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(name => name.ToLowerInvariant()).Append("crafter")));
+        // A bot whose character has its own file has no block left in its type's file.
+        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(NamedBotLineup.FindByName)
+            .Where(entry => DialogueLibrary.For(PersonalityLines.CharacterKey(entry)) == null)
+            .Select(entry => entry.Name.ToLowerInvariant()).Append("crafter")));
     }
 
     [TestCase("Muckaduck")]

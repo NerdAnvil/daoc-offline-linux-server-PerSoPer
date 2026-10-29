@@ -1,0 +1,216 @@
+# Muckaduck, the Crafter: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Muckaduck, Muckaducke, Muckaduckeen); character sheet
+# in characters/muckaduck.md. These lines are mixed on top of the type's (crafter.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each, and are the only place
+# her class and its magic (runes, fire and ice, the void) are named.
+=== muckaduck
+names: Moneybags, Duchess
+
+~ ambient
+Pressed the button four hundred times today. Lovely. Very fulfilling.
+I remember my very first coin. I still have it. It's in a smaller pouch, inside the big pouch.
+Used to taste for a brewer. They called it tasting too much. I called it quality control.
+Boars. They trample everything and drop nothing worth selling. Rude animals.
+Rule four: if it glitters, it sells. Rule five: if it doesn't, it still sells.
+One has standards. Mine are expensive.
+Twelve, thirteen, fourteen... One simply loses track of numbers when one is this rich. Back to one.
+One simply doesn't dive into gold, but if I could, I would. Just once.
+One simply doesn't discuss such matters in polite company. Oh, there it goes! That's worth a small fortune!
+Can't wait to get back to pressing the button. Such a soothing sound, the click of crafting.
+
+~ reply greeting
+{0}! Lovely to see you. Are you carrying anything that sells?
+Good day, {0}. Do call me Lady. Well. Not yet. But practise saying it.
+
+~ reply grouping
+I'll join, {0}. I take the loot that sells. You take the experience. Fair, isn't it?
+Group with you, {0}? Of course, if the monsters drop something worth selling. My queue will wait.
+
+~ reply trading
+Craft it for you, {0}? My queue is full. It has been full since I started crafting.
+Craft it for you, {0}? The celestial alignment is off. One simply cannot craft during an imbalance.
+
+~ reply abuse
+Careful, {0}. I could buy this whole conversation and throw it away.
+
+~ reply joke
+Very good, {0}. I'd laugh, but laughing is free, and I don't do free.
+Ah, laughter's a currency none of us can mint. That joke, {0}, would sell for a copper at best.
+
+~ reply compliment
+A compliment, {0}? Most people only ask me for a loan. Thank you. Truly.
+Compliments, {0}? Such generosity should have witnesses. Would you say it again in front of my vault?
+
+~ reply help
+Help, {0}? My fee is pure profit, but I'll waive it just this once. Just this once, mind you.
+
+~ reply banter
+{0}, being thrifty is not greed. It's sound investment strategy.
+
+~ reply travel
+Lead on, {0}. As long as the road doesn't go near deep water.
+
+~ reply farewell
+Goodbye, {0}. Do call me Duchess when you tell people about me.
+Goodnight, {0}. I admit, the company was more profitable than the loot tonight. Or was it just the company? I'll let you guess which one sold better.
+
+~ opener xp
+Levels are lovely, but coins whisper my name.
+
+~ opener dungeons
+A boss is just a walking treasure chest, waiting to be looted.
+
+~ opener fun
+My idea of fun is spotting a rare drop, and knowing it'll be worth more by tomorrow.
+
+~ opener classes
+Every {class} ought to dabble in crafting, for pure profit. My advice is available, at a fee, of course.
+
+~ opener life
+Three roommates and one sink. Nobody ever washes the pot. It's always the pot.
+Started whittling. A duck, it was meant to be. It's a lump. A crafter's lump.
+I'd love a title. Any title. I've the gold for it. Nobody's selling.
+Wore my lucky sock for the big sale today. Never washed. Never fails.
+Tried to lend a coin to a roommate and asked for it back the same day. They never return, do they?
+# Off-game (the player): own lines, for a later [ooc] switch.
+Sorry, missed that. Headset's only got one ear left, and it's the wrong one.
+
+~ ding
+Level {level}. My prices just went up with me.
+Congratulations to me, of course. My rates will reflect the increased demand. One simply can't be too careful with profit.
+
+~ grats
+Grats, {0}! Now, what will you spend it on? I'm selling.
+
+~ own_death
+Dead. My purse is fine. My pride is not.
+A lady should never be found sprawled like this. My purse is intact, at least.
+
+~ other_death
+{0}! Get up, you were carrying my share.
+{0} fell? I'll guard your loot, naturally, for a modest consideration. It's pure profit, you see.
+{0} fell. Up you get, and here, have this potion on the house. Just this once, you lucky duck.
+
+~ drop
+{item}! Sell it in town, or sell it to someone who doesn't know the price? Decisions.
+Ah, the {item}! Pure profit. That sells, you know. I can name the merchant who'll snap it up.
+{item}? That sells for almost nothing. One simply can't keep a full vault on such losses.
+
+~ cheeky_reply banter [if tone_down off]
+{0}, a lady doesn't answer that. A lady sends a bill.
+{0}, really? That sounds like an absolute loss. How much did you waste on that foolishness?
+
+# Midgard: Muckaduck, Norseman Runemaster, from Jordheim. Runes; she likes how the rune lines look, like a ledger.
+=== midgard
+~ ambient
+Runes are a fine craft. I've carved a fortune from them. Not for you, though.
+Another rune cut, another coin earned. I've lost count of both.
+Craft requests? I'd love to. The runes say no. They're very firm.
+My coin pouch is the size of a Norse shield now. Hard to carry. Easy to love.
+Jordheim has the finest market in Midgard. I know every stall. They know my prices.
+Midgard winters are cold. My gold keeps me warm.
+
+~ opener realm
+In Midgard the dwarves forge the best. I forge the best profit.
+A Runemaster who crafts. Rich as a jarl, and twice as busy.
+
+~ opener fun
+I carved my own rune once. It meant: pay me. It worked.
+The best spell I know is: invoice.
+
+~ opener trading
+Midgard prices are the most honest. Mostly honest.
+
+~ reply greeting
+Hail, {0}! I'd carve you a hello, but I'm out of runes.
+
+~ reply trading
+A rune order, {0}? Out of stock. I'm always out of stock. It's very prestigious.
+Sorry, {0}. The Runemaster doesn't do commissions. Just profits.
+
+~ reply help
+Crafting help, {0}? A Norse vow forbids it. I invented the vow.
+
+~ ding
+Ding, {level}! A new rune, a new fortune!
+
+~ own_death
+Died. The runes should have warned me. I'll ask for a refund.
+
+~ drop
+{item}! Norse gold if I ever saw it.
+
+# Albion: Muckaducke, Briton Wizard, from Ludlow. Fire and ice bolts; she wants a bigger house in Camelot City.
+=== albion
+~ ambient
+Camelot has the finest guilds. I've paid every one of them. Twice.
+A Wizard who crafts: dangerous, wealthy and very busy.
+Craft requests? I'd love to. The spellbook says no. In very small print.
+I could tell you how rich I am, but the King might hear and ask for a loan.
+Ludlow is lovely. Small, but lovely. Only until the manor in Camelot is ready.
+
+~ opener realm
+In Albion the knights wear the armour. The rest of us wear the profit.
+Camelot is lovely. I've bought a piece of it. A small piece. A very expensive piece.
+
+~ opener fun
+My spellbook has a page for gold. It's the only page I read.
+I conjure coins. Don't ask how. Don't ask how many.
+
+~ reply greeting
+Good day, {0}! No orders today. I'm terribly sorry. I'm rich.
+Hail, {0}! Welcome to Albion's most expensive forge.
+
+~ reply trading
+A commission, {0}? The guild forbids it. I am the guild. It's a strict guild.
+Sorry, {0}. The Wizard can't craft today. Or tomorrow. It's a longstanding condition.
+
+~ reply help
+Can't help, {0}. Wizards have an exemption. I wrote it.
+
+~ ding
+{level}! Camelot will hear of this. I'll make sure it costs them.
+
+~ own_death
+Died. Even rich Wizards run out of hit points.
+
+~ drop
+{item}! The vault has room. The vault always has room.
+
+# Hibernia: Muckaduckeen, Elf Eldritch, from Tir na mBeo. Void and light nukes; Elves, she says, are born for business.
+=== hibernia
+~ ambient
+Back home in Tir na mBeo they call me the richest Elf in town. They're right.
+An Eldritch who crafts: pretty, powerful and very, very rich.
+Craft requests? I'd love to. The fae said no. They always say no.
+Hibernian markets glitter. Mine glitter and clink.
+The mists are lovely. The profits are lovelier.
+
+~ opener realm
+In Hibernia the druids hold the old magic. I hold the new money.
+Tir na Nog has the finest vendors. I know all their prices. They hate it.
+
+~ opener fun
+Why do fae never haggle? They already know my price.
+
+~ opener trading
+Hibernian prices are the most poetic. They rhyme with 'ouch'.
+
+~ reply greeting
+Fair day, {0}! Welcome to my glittering forge. No orders today.
+
+~ reply trading
+A commission, {0}? Booked until the next mist. Always the next mist.
+Sorry, {0}. The Eldritch doesn't do orders. Just wealth.
+
+~ reply help
+Crafting help, {0}? The old magic forbids it. Forbidden by me, just now.
+
+~ ding
+{level}! The fae approve. They've asked for a cut. I said no.
+
+~ own_death
+Died. The mist let me down. I'll bill it.
+
+~ drop
+{item}! The mist brought me a gift. I'll sell it.
