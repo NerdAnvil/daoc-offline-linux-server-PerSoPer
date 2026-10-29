@@ -35,10 +35,24 @@ public class UT_DialogueRules
     [TestCase("x [if player_dead 3]", "rules.dlg:3: 'player_dead' takes no value: [if player_dead] or [if not player_dead]")]
     [TestCase("x [cooldown soon]", "rules.dlg:3: bad cooldown 'soon' (use for example 30s, 11m or 2h, at most 24h)")]
     [TestCase("x [twice]", "rules.dlg:3: unknown tag '[twice]'")]
+    [TestCase("x [allow pirate]", "rules.dlg:3: unknown allow 'pirate' (known: gaelic, knightly, norse)")]
     [TestCase("x [once]\nx [once]", "rules.dlg:4: a line with tags must not appear twice in a file; change its text")]
     public void Parse_ReportsBadTags(string lines, string error)
     {
         Assert.That(Parse(lines + "\nplain\n").Errors, Does.Contain(error));
+    }
+
+    [Test]
+    public void Parse_AllowTag_IsANoteForTheVoiceTests_InAnySection()
+    {
+        DialogueFile file = DialogueFile.Parse("=== bot\n~ ambient\nHark? [allow knightly]\nPlain.\n~ reply greeting\nHi! [once] [allow norse]\n", "rules.dlg");
+
+        Assert.That(file.Errors, Is.Empty);
+        Assert.That(file.AllowsFor("Hark?"), Is.EquivalentTo(new[] { "knightly" }));
+        Assert.That(file.RuleFor("Hark?"), Is.Null, "an allow tag alone is not a rule");
+        Assert.That(file.AllowsFor("Plain."), Is.Empty);
+        Assert.That(file.AllowsFor("Hi!"), Is.EquivalentTo(new[] { "norse" }));
+        Assert.That(file.RuleFor("Hi!").Once, Is.True);
     }
 
     [Test]

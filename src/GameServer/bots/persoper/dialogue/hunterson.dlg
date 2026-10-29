@@ -112,12 +112,10 @@ Every {class} carries a noble saga within, if only they'd speak the old tongue p
 # wrong (horned helmets, Odin's eyes).
 === midgard
 ~ ambient
-Mularn is a small town. Every saga starts in a small town. Mine has wolves.
-Hail, sons of Odin and daughters of Frigg! The hunt calls.
+Mularn, a town of wolves and clerks. I was a clerk. Now I hunt wolves, they're less aggressive than the paperwork
+Hail? Hark? Lark? wait. Is that a lark over there? In Pear tree?? Where'd a pear tree come from.... wtf [allow knightly]
 My horned helm gleams in the sun. The skalds say we never wore them. The skalds are wrong.
 The whale-road is calm today. I mean the sea. I call it the whale-road.
-Skol! A horn of mead for every wolf I've felled. I'm very thirsty.
-Thor's hammer guards this camp. So does my dog. Mostly my dog.
 By Odin's eye! Or both eyes. How many did he keep again?
 When I fall, the Valkyries will carry me to Valhalla. I've asked them to mind my bow.
 
@@ -131,26 +129,27 @@ Why did Thor bring a ladder to the feast? The mead was on the high table. Ha!
 Loki stole my boots once. Or I left them by the fire. It was Loki.
 
 ~ opener rvr
-Albion's knights clank like a smithy in a storm. I hear them a mile off.
+Albion's knights clank like a smithy in a storm. Do they clank on purpose? Is it a scheme? I'm writing this down.
 The Hibernians say their trees are magic. Our trees have wolves. Better trees.
 
 ~ opener life
 Herring for breakfast, herring for lunch. Tonight, something new: smoked herring.
 
 ~ opener zones
-{zone} would make a fine saga. Chapter one: wolves.
+{zone} would make a fine saga. Chapter one: wolves. Chapter two: more wolves. Chapter three: paperwork.
 
 ~ reply greeting
 Hail, {0}! Sit by my fire, drink my mead, hear my saga. It is long.
 Skol, {0}! May your axe be sharp and your beard well braided.
 Well met, {0}, ring-giver! I have no rings. I just like the word.
+Hail, {0}! Or hi. Oh. hi. oh. hi. oh.... and Ohio was the states name-ooh!
 
 ~ reply farewell
-Fare well, {0}. May the Norns spin you a long thread.
+Fare well, {0}. May the Norns spin you a long thread. Mine is mostly knots. Is that bad? Don't answer that.
 Go with Odin, {0}. Or with Thor. Thor is more fun.
 
 ~ reply banter
-Ha! {0}, you'd make a fine skald. A bad one, but fine.
+Ha! {0}, you'd make a fine skald. A bad one. Wait, I'm a bad skald. Are we both bad? We could start a guild.
 By Loki's grin, {0}, that's a good one.
 
 ~ reply abuse
@@ -158,34 +157,35 @@ Nithing! {0}, you speak like a troll with a toothache.
 Mind your tongue, {0}, or I'll tell the skalds. They'll make a mean song of it.
 
 ~ reply grouping
-A shield-wall! I'm in, {0}. Point me at the foe.
+A shield-wall! I'm in, {0}. Point me at the foe. Not that one, that's a ghost. Point me at a different one.
 Aye, {0}! We'll go a-viking. On foot. My longship is in the shop.
 
 ~ reply help
-Ask, {0}. The old runes know much, and I know some runes.
+Ask, {0}. I know some runes, and I can make any sentence sound official. Hereby, an answer: probably.
 
 ~ fallback
-As the Allfather says, {0}: hm. He doesn't say much.
-Aye, {0}. Ja. Truly.
+As the Allfather says, {0}: ...what was I saying? Oh, right, agreeing. Hm. Yes. Truly.
+Hm. A deep question, {0}. I shall write it in the saga and answer in the next chapter.
 
 ~ ding
-Level {level}! The skalds will sing of this! Quietly.
+Level {level}! Chapter title: The Wolf Who Wouldn't Die... hm. no. The Wolf Who Kept Coming Back! eh. no. I know! The Vulf Who Came Back Grasping his Nards in Pain!
 {level}! Odin sees all, and today he saw that.
 
 ~ grats
 Skol, {0}! A horn of mead for you!
-Well fought, {0}! Valhalla will keep you a seat. Not yet, though.
+Well fought, {0}! Valhalla will keep you a seat. Not yet, though. I'll write the invitation in my best hand.
 
 ~ own_death
-I fall! Valkyries, take me to Valhalla! ...They're late.
+I fall! Valkyries, take me to Valhalla! ...They're late. Is it a long way? Do they take bookings?
+A ghost did it. A ghost. Write down wolves. Nobody writes down ghosts.
 Dead. Not a glorious saga death. A small one.
 
 ~ other_death
 Rise, {0}! Valhalla isn't ready for you.
-{0} has fallen! I'll carve you a rune-stone. A small one.
+{0} has fallen! I'll carve you a rune-stone. Small. Neat. Not dimpled. Flat. Flat, please.
 
 ~ drop
-{item}! Plunder fit for a jarl!
+{item}! Plunder fit for a jarl. I'll log it under L for loot. Or P for plunder. Hm.
 {item}! Odin's ravens must have dropped it.
 
 # Albion: FitzHunter, Briton Scout, from Prydwen Keep. Arthurian knightly English. Mixes up thy and thine on purpose (thine before a

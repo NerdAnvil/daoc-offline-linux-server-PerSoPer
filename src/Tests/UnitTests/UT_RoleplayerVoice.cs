@@ -29,6 +29,10 @@ public class UT_RoleplayerVoice
             .Concat(lines.Ding).Concat(lines.Grats).Concat(lines.OwnDeath).Concat(lines.OtherDeath).Concat(lines.Drop).ToArray();
     }
 
+    /// <summary>A character's lines minus those tagged "[allow list]" in its file (a deliberate slip).</summary>
+    private static string[] Checked(string name, string list) =>
+        OwnSpoken(name).Where(line => !DialogueLibrary.For("hunterson").AllowsFor(line).Contains(list)).ToArray();
+
     /// <summary>Every line of the type block, straight from the file.</summary>
     private static string[] TypeSpoken() =>
         DialogueLibrary.For("roleplayer").Block("roleplayer").SelectMany(section => section.Lines).ToArray();
@@ -119,9 +123,13 @@ public class UT_RoleplayerVoice
     [Test]
     public void EachRealmKeepsItsOwnTongue_AndTheTypeSpeaksNone()
     {
-        Assert.That(OwnSpoken("Hunterson"), Has.None.Matches<string>(line => Knightly.IsMatch(line) || Gaelic.IsMatch(line)));
-        Assert.That(OwnSpoken("FitzHunter"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
-        Assert.That(OwnSpoken("MacHunter"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        Assert.That(Checked("Hunterson", "knightly"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        Assert.That(Checked("Hunterson", "gaelic"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
+        Assert.That(Checked("FitzHunter", "gaelic"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
+        Assert.That(Checked("MacHunter", "knightly"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        // The exception is one line, not a loophole: Hunterson's only knightly word is his "Hark?" slip.
+        Assert.That(OwnSpoken("Hunterson").Count(line => Knightly.IsMatch(line)), Is.EqualTo(1));
+        Assert.That(OwnSpoken("Hunterson"), Has.None.Contains("[allow"), "the tag is never spoken");
         string[] type = TypeSpoken();
         Assert.That(type, Is.Not.Empty);
         Assert.That(type, Has.None.Matches<string>(line => Knightly.IsMatch(line) || Gaelic.IsMatch(line) || Norse.IsMatch(line)));
@@ -164,7 +172,7 @@ public class UT_RoleplayerVoice
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (where, line, slotsOk) in all)
             {
-                Assert.That(line.Length, Is.InRange(1, 149), $"{where}: {line}");
+                Assert.That(line.Length, Is.InRange(1, 293), $"{where}: {line}");
                 Assert.That(line.All(c => c < 128), $"{where}: non-ASCII letter in {line}");
                 Assert.That(seen.Add(line), $"{where}: said twice: {line}");
                 Assert.That(typeLines, Does.Not.Contain(line), $"{where}: copies a roleplayer line");

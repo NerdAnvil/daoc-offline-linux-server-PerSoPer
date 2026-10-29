@@ -44,6 +44,12 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     /// <summary>"[if player_likes metal]": the player's saved answer to some question is "metal" (see DialogueFile's ask).</summary>
     public const string LikesFact = "player_likes";
 
+    /// <summary>
+    /// Word lists a voice test checks a character's lines against. "[allow knightly]" lets one line
+    /// use such a word anyway (a deliberate slip); every other line is still checked.
+    /// </summary>
+    public static readonly IReadOnlySet<string> KnownAllows = new HashSet<string> { "knightly", "gaelic", "norse" };
+
     /// <summary>The most specific line wins: the one with the most conditions.</summary>
     public int Specificity => Conditions.Count;
 
@@ -51,23 +57,42 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     /// Splits the tags off the end of a line. Returns the plain text and the rule (null when the line
     /// has no tags). Problems go to <paramref name="errors"/> as plain messages.
     /// </summary>
-    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors)
+    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors) => Split(line, errors, out _);
+
+    /// <summary>
+    /// As <see cref="Split(string, List{string})"/>, and also returns the line's "[allow ...]" tags
+    /// (empty when it has none). An allow tag is a note for the voice tests, not a rule, so it never
+    /// makes a rule on its own and may go on a line in any section.
+    /// </summary>
+    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors, out IReadOnlySet<string> allows)
     {
         var conditions = new List<DialogueCondition>();
+        var allowed = new HashSet<string>(StringComparer.Ordinal);
+        allows = allowed;
         bool once = false;
         TimeSpan cooldown = TimeSpan.Zero;
         bool tagged = false;
+        bool anyTag = false;
         string text = line;
         for (int i = 0; i < 4; i++)
         {
             Match tag = TrailingTag().Match(text);
             if (!tag.Success)
                 break;
-            tagged = true;
+            anyTag = true;
             text = text[..tag.Index].TrimEnd();
             string body = tag.Groups["body"].Value.Trim();
             string keyword = body.Split(' ', 2)[0].ToLowerInvariant();
             string rest = body.Length > keyword.Length ? body[keyword.Length..].Trim() : string.Empty;
+            if (keyword == "allow")
+            {
+                if (KnownAllows.Contains(rest.ToLowerInvariant()))
+                    allowed.Add(rest.ToLowerInvariant());
+                else
+                    errors.Add($"unknown allow '{rest}' (known: {string.Join(", ", KnownAllows.Order())})");
+                continue;
+            }
+            tagged = true;
             switch (keyword)
             {
                 case "if" when conditions.Count > 0: errors.Add("more than one [if ...]; put all conditions in one, split by commas"); break;
@@ -80,9 +105,9 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
         }
         if (TrailingTag().IsMatch(text))
             errors.Add("more than 4 tags on one line");
-        if (tagged && text.Length == 0)
+        if (anyTag && text.Length == 0)
             errors.Add("a line with tags but no text");
-        return tagged ? (text, new DialogueRule(conditions, once, cooldown)) : (line, null);
+        return (anyTag ? text : line, tagged ? new DialogueRule(conditions, once, cooldown) : null);
     }
 
     private static IEnumerable<DialogueCondition> ParseConditions(string text, List<string> errors)

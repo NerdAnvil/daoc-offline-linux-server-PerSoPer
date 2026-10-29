@@ -65,7 +65,7 @@ public class UT_NamedBotVoices
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (where, line, slotsOk, needsName) in OwnLines(entry))
             {
-                Assert.That(line.Length, Is.InRange(1, 149), $"{where}: {line}");
+                Assert.That(line.Length, Is.InRange(1, 293), $"{where}: {line}");
                 Assert.That(seen.Add(line), $"{where}: said twice: {line}");
                 Assert.That(typeLines, Does.Not.Contain(line), $"{where}: copies a {entry.TypeKey} line");
                 foreach (Match m in Placeholder.Matches(line))

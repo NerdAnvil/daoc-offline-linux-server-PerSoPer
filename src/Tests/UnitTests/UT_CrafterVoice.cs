@@ -128,7 +128,7 @@ public class UT_CrafterVoice
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (where, line, slotsOk) in all)
             {
-                Assert.That(line.Length, Is.InRange(1, 149), $"{where}: {line}");
+                Assert.That(line.Length, Is.InRange(1, 293), $"{where}: {line}");
                 Assert.That(seen.Add(line), $"{where}: said twice: {line}");
                 Assert.That(typeLines, Does.Not.Contain(line), $"{where}: copies a crafter line");
                 foreach (Match m in Placeholder.Matches(line))

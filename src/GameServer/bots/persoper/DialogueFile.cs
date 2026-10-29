@@ -26,6 +26,7 @@ public sealed record DialogueSection(string Name, string Argument, string Condit
 /// ~ cheeky [if tone_down off]      a section with a condition
 /// \# a line that starts with #     a backslash keeps a leading #, ~, = or \ as text
 /// Hold still! [if player_dead] [once]   a line with rules (see DialogueRule), reply sections only
+/// Hark? [allow knightly]          a note for the voice tests: this line may use that word list (any section)
 /// ~ part greet                     a swap-in part: one alternative per line, used as {greet} in later lines of the block
 /// ~ ask fav_music                  a question: one line, then "-> answer: reply" rows, "other" required
 /// What do you listen to, {0}?
@@ -81,6 +82,7 @@ public sealed partial class DialogueFile
     private readonly List<string> _errors = [];
     private readonly Dictionary<string, DialogueRule> _rules = new(StringComparer.Ordinal);
     private readonly HashSet<string> _texts = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, HashSet<string>> _allows = new(StringComparer.Ordinal);
 
     public string FileName { get; }
     public IReadOnlyList<string> Errors => _errors;
@@ -92,6 +94,10 @@ public sealed partial class DialogueFile
 
     /// <summary>The rule of a line by its text, or null when it has none.</summary>
     public DialogueRule RuleFor(string text) => _rules.GetValueOrDefault(text ?? string.Empty);
+
+    /// <summary>The "[allow ...]" tags of a line by its text; empty when it has none.</summary>
+    public IReadOnlySet<string> AllowsFor(string text) =>
+        _allows.TryGetValue(text ?? string.Empty, out HashSet<string> allows) ? allows : new HashSet<string>();
 
     private DialogueFile(string fileName) => FileName = fileName;
 
@@ -234,12 +240,12 @@ public sealed partial class DialogueFile
                 continue;
             }
             var tagErrors = new List<string>();
-            (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors);
+            (string lineText, DialogueRule rule) = DialogueRule.Split(row, tagErrors, out IReadOnlySet<string> allows);
             foreach (string tagError in tagErrors)
                 file.Error(number, tagError);
             if (section == PartSection)
             {
-                if (rule != null)
+                if (rule != null || allows.Count > 0)
                     file.Error(number, "a part's alternatives can't carry tags; put them on the lines that use the part");
                 // The parts used inside a part are filled in now, so a part is stored as plain alternatives.
                 lines.AddRange(file.Fill(lineText, blockParts, number, ref partDepth, true));
@@ -262,6 +268,12 @@ public sealed partial class DialogueFile
                     file.Error(number, "a line with tags must not appear twice in a file; change its text");
                 else if (rule != null)
                     file._rules[variant] = rule;
+                if (allows.Count > 0)
+                {
+                    if (!file._allows.TryGetValue(variant, out HashSet<string> known))
+                        file._allows[variant] = known = new HashSet<string>(StringComparer.Ordinal);
+                    known.UnionWith(allows);
+                }
                 if (variant.Length > 0)
                     lines.Add(variant);
             }
