@@ -255,50 +255,63 @@ Hm. Somebody read a book. Good. More people should.
 
 === midgard
 ~ ambient
-Dwarf, healer, medic. Short, tough, stubborn. Like my patients should be.
-Forge's warm, bandages are boiled. Good day.
-Everyone's bigger than me. Everyone still comes to me. Funny.
+Everyone's bigger than me, yet everyone still comes to me. Funny, that...
+A smith in Jordheim burned a hand on the forge today. Sat the smith down, cooled it, wrapped it. Then I was asked to look at a sword as well. I am a healer. I do not do swords. Hm. Fine. It was a good sword.
+Snow in Myrkwood again. Cold feet lose fights. Two pairs of socks, soldier. Dry ones. I will check.
 
 ~ opener realm
-Midgard's cold. Wounds heal slow in the cold. Wear a scarf.
-Seen big warriors cry over a splinter. Don't tell them.
+Midgard's cold, and wounds heal slow in the cold. So wear a scarf, soldier. I mean it.
+Spyburd says the cold keeps a kobold young. He also sleeps in the snow without a blanket. Found him blue at dawn, pipe still lit. Sat him by the fire and said nothing. Into the book. Barely.
+
+~ opener fun
+Dwarves do not get taller with levels. I checked, every level, against the same doorpost in Jordheim. Still the same notch. The innkeeper has started charging me for the wear on the post.
 
 ~ reply greeting
-Hm. {0}. Come in by the fire. Let me look at you.
+Hm, {0}. Come in by the fire, and let me have a look at you.
+
+~ own_death
+Och. Ow. Dead... on frozen ground, of all places. Somebody pick me up before I stick to it.
 
 ~ drop
-{item}. Good solid thing. Dwarf-made, I'd wager.
+{item}. Good solid thing, that. Dwarf-made, I'd wager.
+{item}. Wrap it in oilcloth, soldier. Damp gets into everything up here. Even dwarves.
 
 # Albion: Eaglefange, Highlander Cleric. Plain, proud, a little dry; patches soldiers like it's a field hospital still.
 === albion
 ~ ambient
-Cleric, medic, nuisance. In that order.
-Good wool, good boots, good sense. Three rules for the road.
-Highlands taught me to bandage in the wind. Hard to keep tidy.
+Good wool, good boots and good sense. Those are the three rules for the road, and I've yet to need a fourth.
+The Highlands taught me to bandage in the wind. It's hard to keep things tidy when the cloth wants to fly off to Camelot.
+Spyburde tried to bless my bandages today. Friars bless everything, so I let him, then boiled them anyway. He saw. Now we're not speaking. Well, he is. I'm not.
 
 ~ opener realm
-Albion folk say please a lot. Wounded ones say it more.
-Camelot's tidy. I'd still bandage a wall if it bled.
+Albion folk say please a lot, and the wounded ones say it even more. Polite to the last, that lot.
+Camelot City has a healer on every corner, and still nobody sits still long enough to be healed. I stood in the market square and counted. Not one, soldier.
 
 ~ reply greeting
-Good day, {0}. You look wobbly. Sit.
+{0}. Wipe your boots and come in out of the wind, then let me see your hands.
+
+~ own_death
+Ow. Down in the heather, and the wind's still blowing. Somebody tie my cloak down before it carries me home without the rest of me.
 
 ~ drop
-{item}. Fine. Into the satchel.
+{item}. Into the satchel, under the bandages. Bandages always go on top, soldier. A cleric who has to dig for one has already lost the argument.
 
 # Hibernia: Eaglefangh, Firbolg Druid. Big, quiet, tender with plants; hates admitting the herbs are the favourite part.
 === hibernia
 ~ ambient
-Druid, medic, nuisance. Herbs first, fuss later.
-Moss on a cut works better than people think.
-Tall folk fall hard. I've mended plenty.
+Moss on a cut works better than people think, and it's free, and it literally grows on trees. Don't tell the merchants.
+Firbolgs are tall, so I've learned to kneel for everybody. My knees don't thank me for it. A patient once offered to stand on a stump so I wouldn't have to. Sweet, that. I said no, and knelt anyway.
+Picked a handful of meadowsweet by Lough Derg for the pack. Only for the fevers, soldier. Not because it smells nice. Don't look at me like that.
 
 ~ opener realm
-Hibernia's green. Plenty of herbs. Plenty of patients.
-Good shade, good water. Everything a medic wants.
+Hibernia's green, so there are plenty of herbs. Mind you, that means plenty of patients too.
+Spyburdagh walks the woods of Connacht like they're his own back garden. He knows every herb by name, I'll give him that. Pity he says them all out loud, slowly, while somebody bleeds.
 
 ~ reply greeting
-Well met, {0}. Sit in the shade. Let me see that.
+Sit in the shade, {0}, and let me see that. No, the other arm. The one you're hiding.
+
+~ own_death
+Ow. All that height, and every bit of it hit the ground at once. Somebody fetch the moss. And mind my herbs.
 
 ~ drop
-{item}. Goes in with the herbs.
+{item}. Wrap it and pack it in with the herbs. It'll smell of mint for a week, and that's no bad thing.
