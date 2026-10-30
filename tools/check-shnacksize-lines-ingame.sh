@@ -2,16 +2,17 @@
 # check-shnacksize-lines-ingame.sh - in-game check of Shnacksize's new reviewed lines (dialogue step 7) on a running
 # test server. The sibling of check-eaglefang-lines-ingame.sh. Run it yourself, outside any sandbox:
 #
-#   tools/check-shnacksize-lines-ingame.sh <server-folder> [character]       (about 4 minutes)
+#   tools/check-shnacksize-lines-ingame.sh <server-folder> [character] [bot]       (about 4 minutes)
 #
 #   <server-folder>  a test copy of dist/daoc-server, with the server running (never a live one)
 #   [character]      a level 1 GM test character in Shnacksize's realm, Midgard (default Headlesstest)
+#   [bot] or BOT     Shnacksize (default), Shnacksizer or Shnacksizey; the character must be in that realm
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
 # Needs the test server's dialogue/shnacksize.dlg and dialogue/joker.dlg to be the repo's. "New lines"
 # are the lines the character file has that the old blocks in joker.dlg didn't (commit 2ad8ac2).
 # Part 1 (no server needed) has the checker confirm the file and that a new greeting can be picked.
-# Part 2 teleports to Shnacksize and invites her (so she stands still and aren't fighting), says hello three times,
+# Part 2 teleports to Shnacksize and invites her (so she stands still and isn't fighting), says hello three times,
 # thanks them twice and asks for help once, and checks that at least one of their answers is a new line and
 # that no raw {placeholder} or [tag] reached the chat.
 # Their own lines are mixed with the Joker type's and picked at random, so a run where they happen to
@@ -20,11 +21,11 @@
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SERVER="${1:?usage: tools/check-shnacksize-lines-ingame.sh <server-folder> [character]}"
+SERVER="${1:?usage: tools/check-shnacksize-lines-ingame.sh <server-folder> [character] [bot]}"
 SERVER="$(cd "$SERVER" && pwd)"
 CHARACTER="${2:-Headlesstest}"
 ACCOUNT="${DAOC_ACCOUNT:-persopertest}"
-BOT=Shnacksize
+BOT="${3:-${BOT:-Shnacksize}}"   # or Shnacksizer (Albion) or Shnacksizey (Hibernia), with a character in that realm
 DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
 CLIENT="$REPO/src/build/HeadlessClient/Release/HeadlessClient.dll"
 CHECKER="$REPO/src/build/DialogueCheck/Release/DialogueCheck.dll"
@@ -54,7 +55,7 @@ fail() { echo "FAIL  $*"; failures=$((failures + 1)); }
 
 # Dialogue rows only (no comments, sections, blank rows or ask answers), with their tags taken off.
 rows() { grep -v -e '^#' -e '^~' -e '^===' -e '^->' -e '^names:' -e '^[[:space:]]*$' |
-  sed -E 's/[[:space:]]*\[(if|once|cooldown)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
+  sed -E 's/[[:space:]]*\[(if|once|cooldown|allow)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
 new_lines=$(comm -13 <(git -C "$REPO" show "$BASELINE:$DIR/joker.dlg" | rows) <(rows < "$REPO/$DIR/shnacksize.dlg") |
   sed "s/{0}/$CHARACTER/g")
 [[ -n $new_lines ]] || die "no new lines since $BASELINE"
@@ -72,14 +73,14 @@ echo "== 2. In game they answer with new lines (about 3 minutes)"
 f="$RECORDS/shnacksize-lines-check-1.txt"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/tele $BOT" --send="/invite $BOT" --listen=6 --goto="$BOT" --follow="$BOT" --send-late-gap=11 \
-  --send-late="Shnacksize, hello" --send-late="Shnacksize, thanks" --send-late="Shnacksize, hello again" \
-  --send-late="Shnacksize, help" --send-late="Shnacksize, thank you" --send-late="Shnacksize, hello there" \
+  --send-late="$BOT, hello" --send-late="$BOT, thanks" --send-late="$BOT, hello again" \
+  --send-late="$BOT, help" --send-late="$BOT, thank you" --send-late="$BOT, hello there" \
   --record="$f" --record-seconds=85 --overwrite >"$f.log" 2>&1
 # Their replies are "Shnacksize: "..."" in party chat once grouped, or "Shnacksize says, "..."" in /say.
 # A line counts as new when it contains a new line, so a mood word added before or after doesn't hide it.
 said=$(sed -nE "s/.*\\] $BOT[^:\"]*: \"(.*)\"\$/\\1/p; s/.*\\] $BOT( [A-Za-z]+)? says, \"(.*)\"\$/\\2/p" "$f")
 if [[ -z $said ]]; then
-  fail "$BOT said nothing; see $f (is $CHARACTER in Midgard, is Shnacksize turned on, and did the /tele and /invite work?)"
+  fail "$BOT said nothing; see $f (is $CHARACTER in $BOT's realm, is $BOT turned on, and did the /tele and /invite work?)"
 else
   heard=$(grep -cFf <(printf '%s\n' "$new_lines") <<<"$said")
   (( heard >= 1 )) && pass "they said $heard new line(s)" ||

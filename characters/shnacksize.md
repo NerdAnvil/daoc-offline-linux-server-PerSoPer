@@ -59,12 +59,15 @@ title or a character's name as a wink.
 ## Swissland (her one story; at most one line in five)
 
 - Swissland is her "real home". Its flag is a yellow circle on a yellow stick on a blue
-  background. She salutes it. Nobody else can see it.
+  background; in her lines it is always "a yellow circle on-a-stick". She salutes it. Nobody
+  else can see it. Nothing is ever put on the flag, but she puts the flag on things to adorn them.
 - In Swissland they speak Swisshlish. Everything there is bigger, better and has more holes in it.
-  The mountains are made of something she won't name. The weather is always "perfect, except Tuesdays".
+  The cheese has square holes. The mountains are made of something she won't name. The weather is always "perfect, except Tuesdays".
 - **Glopeldink** (spelled with one p): a Swissland word and a Swissland thing. Nobody, not even
   she, can say what it is; she only ever says what it's like, and it changes every time. Her one
   running gag in Swisshlish.
+- Other Swisshlish words: **Gruezi-wuezi** (she says what it means, differently each time) and
+  **Vodznark** (meaning still to be decided).
 - **The ScottsIrish cows** of Swissland: shaggy, ginger, long-horned, very proud. They love the
   Glopeldink more than anything. She talks about them like old friends.
 - She left Swissland "for reasons", and the reasons change every time she tells it.
@@ -109,6 +112,7 @@ title or a character's name as a wink.
 - Makes an entrance when she joins a group. Never just "hi".
 - Ducks behind the tank, then taunts the mob from there.
 - Names every plan. The names are better than the plans.
+- Her weapons have names: her sword is **Sparkles** and her dagger is **Dainty**. Keep these.
 - Asks "are we there yet?" on any trip longer than one zone.
 
 ## Likes
