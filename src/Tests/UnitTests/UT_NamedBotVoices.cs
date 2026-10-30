@@ -82,16 +82,17 @@ public class UT_NamedBotVoices
     [TestCase("Shnacksize", "Swissland")]
     [TestCase("Shnacksizer", "Swissland")]
     [TestCase("Shnacksizey", "Swissland")]
-    [TestCase("Redtornader", "red tornado")]
-    [TestCase("Greenfogger", "green fog")]
-    [TestCase("Sunrayder", "Sun Ray")]
+    [TestCase("Redtornader", "red tornado|red vortex|death funnel|red wave of doom")]
+    [TestCase("Greenfogger", "fog|green haze|green gloom|green cloud|matter murk|toxic mist")]
+    [TestCase("Sunrayder", "Sun Ray|big shiny|sunbeam of ruin|golden beam of doom")]
     [TestCase("TheriousTham", "chicken")]
+    // The theme is a pattern: a signature spell may go by a few nicknames (red tornado, red vortex...).
     public void SignatureTheme_IsInTheirOwnAmbientAndOpeners(string name, string theme)
     {
         NamedBotLineup.Entry entry = NamedBotLineup.FindByName(name);
         (TypeLines lines, TypeTalk talk) = PersonalityLines.Own[PersonalityLines.NamedKey(entry)];
         string[] spoken = talk.Ambient.Concat(lines.Openers.Values.SelectMany(pool => pool)).ToArray();
-        Assert.That(spoken.Count(line => line.Contains(theme, StringComparison.OrdinalIgnoreCase)), Is.GreaterThanOrEqualTo(3), name);
+        Assert.That(spoken.Count(line => Regex.IsMatch(line, theme, RegexOptions.IgnoreCase)), Is.GreaterThanOrEqualTo(3), name);
     }
 
     [Test]

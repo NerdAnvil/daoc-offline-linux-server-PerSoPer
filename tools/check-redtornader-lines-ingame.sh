@@ -2,10 +2,11 @@
 # check-redtornader-lines-ingame.sh - in-game check of Redtornader's new reviewed lines (dialogue step 7) on a running
 # test server. The sibling of check-femurtamer-lines-ingame.sh. Run it yourself, outside any sandbox:
 #
-#   tools/check-redtornader-lines-ingame.sh <server-folder> [character]       (about 4 minutes)
+#   tools/check-redtornader-lines-ingame.sh <server-folder> [character] [bot]     (about 4 minutes)
 #
 #   <server-folder>  a test copy of dist/daoc-server, with the server running (never a live one)
 #   [character]      a level 1 GM test character in Redtornader's realm, Midgard (default Headlesstest)
+#   [bot] or BOT     Redtornader (default), Greenfogger or Sunrayder; the character must be in that realm
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
 # Needs the test server's dialogue/redtornader.dlg and dialogue/minmaxer.dlg to be the repo's. "New lines"
@@ -24,7 +25,7 @@ SERVER="${1:?usage: tools/check-redtornader-lines-ingame.sh <server-folder> [cha
 SERVER="$(cd "$SERVER" && pwd)"
 CHARACTER="${2:-Headlesstest}"
 ACCOUNT="${DAOC_ACCOUNT:-persopertest}"
-BOT=Redtornader
+BOT="${3:-${BOT:-Redtornader}}"   # or Greenfogger (Albion) or Sunrayder (Hibernia), with a character in that realm
 DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
 CLIENT="$REPO/src/build/HeadlessClient/Release/HeadlessClient.dll"
 CHECKER="$REPO/src/build/DialogueCheck/Release/DialogueCheck.dll"
@@ -54,7 +55,7 @@ fail() { echo "FAIL  $*"; failures=$((failures + 1)); }
 
 # Dialogue rows only (no comments, sections, blank rows or ask answers), with their tags taken off.
 rows() { grep -v -e '^#' -e '^~' -e '^===' -e '^->' -e '^names:' -e '^[[:space:]]*$' |
-  sed -E 's/[[:space:]]*\[(if|once|cooldown)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
+  sed -E 's/[[:space:]]*\[(if|once|cooldown|allow)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
 new_lines=$(comm -13 <(git -C "$REPO" show "$BASELINE:$DIR/minmaxer.dlg" | rows) <(rows < "$REPO/$DIR/redtornader.dlg") |
   sed "s/{0}/$CHARACTER/g")
 [[ -n $new_lines ]] || die "no new lines since $BASELINE"
@@ -72,14 +73,14 @@ echo "== 2. In game they answer with new lines (about 3 minutes)"
 f="$RECORDS/redtornader-lines-check-1.txt"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/tele $BOT" --send="/invite $BOT" --listen=6 --goto="$BOT" --follow="$BOT" --send-late-gap=11 \
-  --send-late="Redtornader, hello" --send-late="Redtornader, thanks" --send-late="Cannon, hello again" \
-  --send-late="Redtornader, help" --send-late="Redtornader, thank you" --send-late="Redtornader, hello there" \
+  --send-late="$BOT, hello" --send-late="$BOT, thanks" --send-late="Cannon, hello again" \
+  --send-late="$BOT, help" --send-late="$BOT, thank you" --send-late="$BOT, hello there" \
   --record="$f" --record-seconds=85 --overwrite >"$f.log" 2>&1
 # Their replies are "Redtornader: "..."" in party chat once grouped, or "Redtornader says, "..."" in /say.
 # A line counts as new when it contains a new line, so a mood word added before or after doesn't hide it.
 said=$(sed -nE "s/.*\\] ([Tt]he )?$BOT[^:\"]*: \"(.*)\"\$/\\2/p; s/.*\\] ([Tt]he )?$BOT( [A-Za-z]+)? says, \"(.*)\"\$/\\3/p" "$f")
 if [[ -z $said ]]; then
-  fail "$BOT said nothing; see $f (is $CHARACTER in Midgard, is Redtornader turned on, and did the /tele and /invite work?)"
+  fail "$BOT said nothing; see $f (is $CHARACTER in $BOT's realm, is $BOT turned on, and did the /tele and /invite work?)"
 else
   heard=$(grep -cFf <(printf '%s\n' "$new_lines") <<<"$said")
   (( heard >= 1 )) && pass "they said $heard new line(s)" ||
