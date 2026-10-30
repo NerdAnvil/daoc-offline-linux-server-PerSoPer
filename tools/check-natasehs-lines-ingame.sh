@@ -2,16 +2,17 @@
 # check-natasehs-lines-ingame.sh - in-game check of NataSehS's new reviewed lines (dialogue step 7) on a running
 # test server. The sibling of check-therioustham-lines-ingame.sh. Run it yourself, outside any sandbox:
 #
-#   tools/check-natasehs-lines-ingame.sh <server-folder> [character]       (about 4 minutes)
+#   tools/check-natasehs-lines-ingame.sh <server-folder> [character] [bot]     (about 4 minutes)
 #
 #   <server-folder>  a test copy of dist/daoc-server, with the server running (never a live one)
 #   [character]      a level 1 GM test character in NataSehS's realm, Midgard (default Headlesstest)
+#   [bot] or BOT     xXxNataSehSxXx (default), xAxNataSehSxAx or xHxNataSehSxHx; the character must be in that realm
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
 # Needs the test server's dialogue/xxxnatasehsxxx.dlg and dialogue/hardcore.dlg to be the repo's. "New lines"
 # are the lines the character file has that the old blocks in hardcore.dlg didn't (commit ca09c30).
 # Part 1 (no server needed) has the checker confirm the file and that a new greeting can be picked.
-# Part 2 teleports to xXxNataSehSxXx and invites her (so she stands still and isn't fighting), says hello three times,
+# Part 2 teleports to the bot and invites her (so she stands still and isn't fighting), says hello three times,
 # thanks them twice and asks for help once, and checks that at least one of their answers is a new line and
 # that no raw {placeholder} or [tag] reached the chat.
 # Their own lines are mixed with the Hardcore type's and picked at random, so a run where they happen to
@@ -24,7 +25,7 @@ SERVER="${1:?usage: tools/check-natasehs-lines-ingame.sh <server-folder> [charac
 SERVER="$(cd "$SERVER" && pwd)"
 CHARACTER="${2:-Headlesstest}"
 ACCOUNT="${DAOC_ACCOUNT:-persopertest}"
-BOT=xXxNataSehSxXx
+BOT="${3:-${BOT:-xXxNataSehSxXx}}"   # or xAxNataSehSxAx (Albion) or xHxNataSehSxHx (Hibernia), with a character in that realm
 DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
 CLIENT="$REPO/src/build/HeadlessClient/Release/HeadlessClient.dll"
 CHECKER="$REPO/src/build/DialogueCheck/Release/DialogueCheck.dll"
@@ -54,7 +55,7 @@ fail() { echo "FAIL  $*"; failures=$((failures + 1)); }
 
 # Dialogue rows only (no comments, sections, blank rows or ask answers), with their tags taken off.
 rows() { grep -v -e '^#' -e '^~' -e '^===' -e '^->' -e '^names:' -e '^[[:space:]]*$' |
-  sed -E 's/[[:space:]]*\[(if|once|cooldown)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
+  sed -E 's/[[:space:]]*\[(if|once|cooldown|allow)[^]]*\]//g; s/[[:space:]]+$//' | sort -u; }
 new_lines=$(comm -13 <(git -C "$REPO" show "$BASELINE:$DIR/hardcore.dlg" | rows) <(rows < "$REPO/$DIR/xxxnatasehsxxx.dlg") |
   sed "s/{0}/$CHARACTER/g")
 [[ -n $new_lines ]] || die "no new lines since $BASELINE"
@@ -72,15 +73,15 @@ echo "== 2. In game they answer with new lines (about 3 minutes)"
 f="$RECORDS/natasehs-lines-check-1.txt"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/tele $BOT" --send="/invite $BOT" --listen=6 --goto="$BOT" --follow="$BOT" --send-late-gap=11 \
-  --send-late="xXxNataSehSxXx, hello" --send-late="xXxNataSehSxXx, thanks" --send-late="Natas, hello again" \
-  --send-late="xXxNataSehSxXx, help" --send-late="xXxNataSehSxXx, thank you" --send-late="xXxNataSehSxXx, hello there" \
+  --send-late="$BOT, hello" --send-late="$BOT, thanks" --send-late="Natas, hello again" \
+  --send-late="$BOT, help" --send-late="$BOT, thank you" --send-late="$BOT, hello there" \
   --record="$f" --record-seconds=85 --overwrite >"$f.log" 2>&1
-# Their replies are "xXxNataSehSxXx: "..."" in party chat once grouped, or "xXxNataSehSxXx says, "..."" in /say.
+# Their replies are "$BOT: "..."" in party chat once grouped, or "$BOT says, "..."" in /say.
 # A line counts as new when it contains a new line, so a mood word added before or after doesn't hide it.
 # Her name starts with a small letter, so the game puts "the" or "The" before it (as it does for mobs).
 said=$(sed -nE "s/.*\\] ([Tt]he )?$BOT[^:\"]*: \"(.*)\"\$/\\2/p; s/.*\\] ([Tt]he )?$BOT( [A-Za-z]+)? says, \"(.*)\"\$/\\3/p" "$f")
 if [[ -z $said ]]; then
-  fail "$BOT said nothing; see $f (is $CHARACTER in Midgard, is xXxNataSehSxXx turned on, and did the /tele and /invite work?)"
+  fail "$BOT said nothing; see $f (is $CHARACTER in $BOT's realm, is $BOT turned on, and did the /tele and /invite work?)"
 else
   heard=$(grep -cFf <(printf '%s\n' "$new_lines") <<<"$said")
   (( heard >= 1 )) && pass "they said $heard new line(s)" ||
