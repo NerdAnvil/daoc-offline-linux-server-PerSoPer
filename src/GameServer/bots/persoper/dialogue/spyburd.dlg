@@ -233,50 +233,63 @@ Classic, bub. Some lines just stick with ya.
 
 === midgard
 ~ ambient
-Kobold, shaman, buffer, bub. Small man, big buffs.
-Everyone looks down at me. I buff them anyway. Nobody gets it.
-Some folk are bigger than me. I'm buffed, so it evens out.
+Kobold, shaman, buffer, bub. I'm a small man, but these are big buffs, and the big folk all line up for 'em.
+Everyone looks down at me, bub, so I buff 'em anyway, from down here. Nobody gets it, but they all stand a little taller after.
+Slept out in the snow near Mularn, bub. Woke up by Eaglefang's fire with his blanket on me. He says he never touched me. Gary says thanks, Eaglefang. Gary means it.
+Cast the Big G on a whole warband in Myrkwood, bub. Old Gary, the Gare-bear, the big fella. Forty Norsemen glowin' at once. Not one thanks. Gary didn't mind. Gary never minds.
 
 ~ opener realm
-Midgard is cold. Good thing I'm warm on the inside. And buffed.
-Seen a lotta big warriors. Every one needed a buff.
+Midgard's cold, bub, but I'm warm on the inside. And buffed. Mostly buffed.
+Buffed a troll in Jordheim today, bub. Took three goes to reach his shoulder. He never noticed, but he hit like a falling tree after, so I'm callin' it a win.
 
 ~ reply greeting
 Hey, {0}, bub! Stand still. Kobold special coming up.
 
+~ own_death
+Ow. Face down in the snow, bub. Small fella, cold ground, buffs done gone and gone. Somebody dig me out before Eaglefang sees.
+
 ~ drop
-{item}! Back to my cave with that one, bub.
+{item}! Back to my cave with that one, bub. Goes on the shelf next to the herbs.
 
 # Albion: Spyburde, Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
 === albion
 ~ ambient
-Friar's life. Quiet prayers, loud buffs, long smokes. Mind you.
-Tea first, buffs next, smoke last. Proper order, bub.
-Nobody gets how holy buffing is. I mean it.
+A friar's life, bub, mind you: quiet prayers, loud buffs and long smokes. In that order, most days.
+Tea first, then the buffs, then the smoke. That's the proper order, bub, and I'll not be hearing otherwise.
+Nobody gets how holy buffin' is, bub. It's a blessing that lasts an hour, mind you. Most blessings don't come with a timer.
+Blessed Eaglefange's bandages this mornin', bub. He boiled 'em after, right in front of me. Now he's not speakin' to me. I'm speakin' to him, mind you. Lots.
+Cast Sir Gary on a squire outside Camelot, bub. Poor lad thought he'd been knighted. Didn't have the heart to tell him. Gary's like that, makes everybody feel a bit grand.
 
 ~ opener realm
-Camelot's lovely. Tidy streets. Easy to stand back and relax in.
-Albion folk say please a lot. I buff them anyway.
+Camelot's lovely, bub. Tidy streets, a bench on every corner, and nobody minds a friar standin' back with his pipe.
+Stopped at the inn in Cotswold for a hot cup, bub. Buffed the whole common room while the kettle boiled. Innkeeper said thanks. Turned out he meant for the coin. Close, though.
 
 ~ reply greeting
 Good day, {0}, bub. Mind you, I'll buff you first.
 
+~ own_death
+Ow. Down in the mud, bub, and in my good robe, too. Mind you, the tea's still warm. Somebody fetch it before it isn't.
+
 ~ drop
-{item}! Lovely, mind you. Into the satchel.
+{item}! Lovely, mind you. Into the robe pocket, next to the tea leaves.
 
 # Hibernia: Spyburdagh, Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
 === hibernia
 ~ ambient
-Woods, quiet, buffs, a smoke by the roots. That's the life, bub.
-Trees get buffs too, I figure. Nobody argues.
-Warden, buffer, chiller. Nobody gets it.
+Woods, quiet, buffs all round, and a smoke by the roots of an old oak. That's the life, bub, and I'm not tradin' it.
+Trees get buffs too, I figure, bub. Nobody's argued yet. Then again, the trees haven't said thanks either, so they're no better than the rest of ya.
+Showed Eaglefangh the herbs round Connacht, bub. Said every name slow, so he'd remember. He says I took too long. Fella was bleedin' a little, sure, but he was buffed.
+Cast Gary of the Glen on a whole row of rangers in Tir na Nog, bub. They glowed green as moss. Gary's an outdoors fella when he's over here, you see.
 
 ~ opener realm
-Hibernia's got the best shade. Perfect for a smoke after the buffs.
-Green everywhere. Easy on the eyes, bub.
+Hibernia's got the best shade, bub. Buffs up, find an old tree, sit by the roots, pipe lit. Perfect.
+Found an old oak out past Ardee with roots like armchairs, bub. Buffed the group, sat down, and stayed till the moon came up. Best pull I never went on.
 
 ~ reply greeting
 Well met, {0}, bub. Come, stand in the shade. Buffs first.
 
+~ own_death
+Ow. Down among the roots, bub. Comfy, honestly. Leave me a minute, then somebody rez me before the moss gets ideas.
+
 ~ drop
-{item}! Goes in the pack with the herbs, bub.
+{item}! Wrapped it in a dock leaf, bub. Everything I carry ends up smellin' of mint and pipe smoke anyway.
