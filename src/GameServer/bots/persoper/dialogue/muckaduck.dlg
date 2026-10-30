@@ -105,74 +105,75 @@ Ah, the {item}! Pure profit. That sells, you know. I can name the merchant who'l
 ~ ambient
 Runes are a fine craft. I've carved a fortune from them. Not for you, though.
 Another rune cut, another coin earned. I've lost count of both.
-Craft requests? I'd love to. The runes say no. They're very firm.
 My coin pouch is the size of a Norse shield now. Hard to carry. Easy to love.
 Jordheim has the finest market in Midgard. I know every stall. They know my prices.
-Midgard winters are cold. My gold keeps me warm.
+Rune lines look just like a ledger, you know. Neat little columns. I cast my bolts, then I read them back, and every single one adds up to pure profit.
+Somebody in Jordheim called me Jarl Muckaduck today. He was being sarcastic. I've decided not to know that, and I'm having it painted on a little sign anyway.
+Every road in Midgard ends at a fjord. Deep, cold, dark water, all of it. I'd pay a dwarf a fortune to build me a bridge. Well. A modest sum. A sum.
+Wore my lucky sock to the Jordheim market. Sold everything by noon. The stallholders kept their distance, but I put that down to respect.
 
 ~ opener realm
 In Midgard the dwarves forge the best. I forge the best profit.
 A Runemaster who crafts. Rich as a jarl, and twice as busy.
+Barbalicious keeps inviting me round to see her house. Mine's in Jordheim, being decorated. It's been being decorated for a very long time. Rune by rune.
 
 ~ opener fun
 I carved my own rune once. It meant: pay me. It worked.
-The best spell I know is: invoice.
+Redtornader counts his vortices, I count my coins. We stood in Jordheim comparing numbers for an hour. I asked what his trophies would sell for. He hasn't spoken to me since.
 
 ~ opener trading
-Midgard prices are the most honest. Mostly honest.
+A troll in Jordheim paid me double for a boar tusk once. I didn't correct him. Rule eleven: when a boar is finally good for something, don't ask questions.
 
 ~ reply greeting
 Hail, {0}! I'd carve you a hello, but I'm out of runes.
 
 ~ reply trading
 A rune order, {0}? Out of stock. I'm always out of stock. It's very prestigious.
-Sorry, {0}. The Runemaster doesn't do commissions. Just profits.
 
 ~ reply help
 Crafting help, {0}? A Norse vow forbids it. I invented the vow.
 
 ~ ding
-Ding, {level}! A new rune, a new fortune!
+Level {level}! Is there a title that comes with this? Lady of Jordheim? No? Then what exactly have I been paying for?
 
 ~ own_death
 Died. The runes should have warned me. I'll ask for a refund.
+Ow. Dead in the snow, and a boar is standing on my purse. Of all the beasts to lose to. It isn't even going to drop anything worth selling.
 
 ~ drop
-{item}! Norse gold if I ever saw it.
+{item}! That'll fetch a pretty price in Jordheim. The stall by the... no, I'm not telling you which stall. Rule six.
 
 # Albion: Muckaducke, Briton Wizard, from Ludlow. Fire and ice bolts; she wants a bigger house in Camelot City.
 === albion
 ~ ambient
 Camelot has the finest guilds. I've paid every one of them. Twice.
-A Wizard who crafts: dangerous, wealthy and very busy.
-Craft requests? I'd love to. The spellbook says no. In very small print.
+Fire bolt, ice bolt, fire bolt. Hot, cold, hot. It's like the bath at home, only nobody's left the dishes in this one.
+Llyn Barfog. Lovely name, lovely views, and a lake in the middle of it, very deep. One admires it from the road. One does not go in. One does not even look for too long.
+Walked past the houses in Camelot again today and picked one out. Then I saw the price and picked a smaller one. Then a window box. I'll start with the window box.
 I could tell you how rich I am, but the King might hear and ask for a loan.
 Ludlow is lovely. Small, but lovely. Only until the manor in Camelot is ready.
 
 ~ opener realm
-In Albion the knights wear the armour. The rest of us wear the profit.
+Camelot has titles the way Ludlow has boars. Sir this, Lady that. I asked at the palace whether they sell them. They gave me a very long look, and no price.
 Camelot is lovely. I've bought a piece of it. A small piece. A very expensive piece.
 
 ~ opener fun
-My spellbook has a page for gold. It's the only page I read.
-I conjure coins. Don't ask how. Don't ask how many.
+Shempenshire sold a perfectly good drop to the first merchant in Cotswold for three coppers. Three. I had to sit down. I bought it back for five and sold it for a fortune. Somebody has to.
+
+~ opener trading
+Rule twenty: a Ludlow price and a Camelot price are two different prices, and the difference is mine.
 
 ~ reply greeting
 Good day, {0}! No orders today. I'm terribly sorry. I'm rich.
-Hail, {0}! Welcome to Albion's most expensive forge.
 
 ~ reply trading
 A commission, {0}? The guild forbids it. I am the guild. It's a strict guild.
-Sorry, {0}. The Wizard can't craft today. Or tomorrow. It's a longstanding condition.
-
-~ reply help
-Can't help, {0}. Wizards have an exemption. I wrote it.
 
 ~ ding
 {level}! Camelot will hear of this. I'll make sure it costs them.
 
 ~ own_death
-Died. Even rich Wizards run out of hit points.
+Ow. Face down on the Salisbury Plains with my purse underneath me. Good. Nobody's getting at it. I'll just lie here and guard it, then.
 
 ~ drop
 {item}! The vault has room. The vault always has room.
@@ -181,36 +182,31 @@ Died. Even rich Wizards run out of hit points.
 === hibernia
 ~ ambient
 Back home in Tir na mBeo they call me the richest Elf in town. They're right.
-An Eldritch who crafts: pretty, powerful and very, very rich.
-Craft requests? I'd love to. The fae said no. They always say no.
+Void bolt, light bolt. Dark, bright, dark. Each one lands like a coin dropping into a pouch. I've started counting them as income. My accountant is me, and she agrees.
+Slipped a potion to a young Lurikeen outside Ardee today. He thanked me. I told him I'd no idea what he was talking about, and I'd thank him not to tell anyone.
 Hibernian markets glitter. Mine glitter and clink.
-The mists are lovely. The profits are lovelier.
 
 ~ opener realm
-In Hibernia the druids hold the old magic. I hold the new money.
+Barbalicioush showed me round her house again. Lovely. Small. I told her mine in Tir na Nog is being decorated, in the Elven style. It takes centuries.
 Tir na Nog has the finest vendors. I know all their prices. They hate it.
 
 ~ opener fun
-Why do fae never haggle? They already know my price.
+Sunrayder asked me what his trophies would sell for, before I could ask him. Somebody who thinks like me. I've never felt so threatened.
 
 ~ opener trading
 Hibernian prices are the most poetic. They rhyme with 'ouch'.
 
 ~ reply greeting
-Fair day, {0}! Welcome to my glittering forge. No orders today.
+Good day, {0}. Muckaduckeen, with the "een". People forget the "een". People who forget the "een" pay full price.
 
 ~ reply trading
 A commission, {0}? Booked until the next mist. Always the next mist.
-Sorry, {0}. The Eldritch doesn't do orders. Just wealth.
-
-~ reply help
-Crafting help, {0}? The old magic forbids it. Forbidden by me, just now.
 
 ~ ding
 {level}! The fae approve. They've asked for a cut. I said no.
 
 ~ own_death
-Died. The mist let me down. I'll bill it.
+Ow. Killed by a boar in Connacht. A boar. An Elf of my standing. If anyone asks, it was a dragon, a very large one, and it dropped nothing because it was embarrassed.
 
 ~ drop
 {item}! The mist brought me a gift. I'll sell it.
