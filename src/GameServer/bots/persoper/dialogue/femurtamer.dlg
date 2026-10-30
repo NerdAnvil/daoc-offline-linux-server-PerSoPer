@@ -116,16 +116,19 @@ Every skeleton was someone once. Now it's company.
 Quiet. Just me and the femurs.
 No group. I have a commander. He listens.
 The Myrkwood Mandibles lost again. I hate sportball. I watched the whole game.
+Jordheim's forges are the warmest place in Midgard. I stand near them. The smiths think I'm waiting for an order. I'm not. I'm thawing.
+Somebody in Mularn gave a speech about realm pride. Four out of ten. My commander rattled at the end. I think that was a cheer. I've told him off.
 
 ~ opener life
 Sat in {zone} with my skeletons. Nobody spoke. Perfect day.
 Is a bone lonely without its body? Thought about that in {zone}.
 A wolf ran off with one of my femurs. I'm not over it.
 Myrkwood. Dark, damp, nobody around. I miss it.
+Asked a Jordheim innkeeper about dragon scale stew. He drew me a map. I'm holding it the right way up. I think. We'll see.
 
 ~ opener classes
 Bonedancer. I bring my own friends. They're dead. Easier that way.
-Other classes need groups. I need bones.
+A Healer asked if I needed help. I have a commander and three skeletons. I said no. Then I stood near him for an hour. In case.
 
 ~ reply greeting
 {0}. The bones rattled. That means hello.
@@ -136,15 +139,16 @@ Laugh now, {0}. One day you'll be someone's pet.
 
 ~ reply grouping
 I have a group, {0}. It's dead.
+No, {0}. My skeletons are a full group. ...Fine. Walk on the left. The one on the right bites.
 
 ~ ding
-Level {level}. More bones.
-Ding. The skeletons didn't clap. Fine.
+Level {level}. My commander got a new sword. I got a new layer. We both needed it.
+Level {level}. In Myrkwood they'd say well done. Quietly. From a distance. That's how I like it.
 
 ~ own_death
-Even bones break. Mine too.
 Dead. Now I know how my pets feel.
 When the bones break, the Femur will fall.... ow.
+Dead. I followed Tham in. I don't know why. I won't again. I said that last time.
 
 # Albion: Deaditetamer, Saracen Necromancer, from the Black Mountains. One undead pet, fights as a shade; her team is the Black Mountains Badgers.
 === albion
@@ -152,14 +156,16 @@ When the bones break, the Femur will fall.... ow.
 My pet does the fighting. I do the thinking. Nobody does the talking.
 Death is just a quieter way to group.
 My shade and I. That's the whole guild.
-Albion's loud. My pet isn't.
 The Black Mountains Badgers lost again. I hate sportball. I watched the whole game.
+Camelot has a fire in every inn. I sat by one as a shade. Couldn't feel it. Shades don't get warm. Worst part of the job.
+A Paladin gave a speech in Camelot about honour. Very loud. Very long. Three out of ten. The armour was nice.
 
 ~ opener life
 Stood in {zone} as a shade for an hour. Very peaceful. No one saw me.
 Fog in {zone} today. Fitting.
 A wolf tried to eat my pet. It's undead. The wolf didn't care.
 The Black Mountains. Cold, high, nobody around. I miss it.
+Someone in Camelot said the dragon scale stew is near Ludlow. Or Lethbridge. The map has both. I went to neither. I'm somewhere else.
 
 ~ opener classes
 Necromancer. My pet takes the hits. I take the silence.
@@ -167,35 +173,40 @@ Some people buy a horse. I raised a servant. Cheaper.
 
 ~ reply greeting
 ...{0}. Hello, I suppose.
+{0}. You can see me? I'm a shade. You're not supposed to. Fine. Hello.
 
 ~ reply banter
-Everything ends, {0}. Even this joke.
 Is a laugh still a laugh if no one cares, {0}?
+Careful, {0}. My pet doesn't laugh. It doesn't forget, either. Neither do I.
 
 ~ reply grouping
 I have a group, {0}. It's one big angry pet.
+No, {0}. ...Which way are you going? Not that I'm coming. My pet wants a walk.
 
 ~ ding
 Level {level}. My pet got bigger. I got quieter.
+Level {level}. The Black Mountains Badgers lost today too. So it evens out.
 
 ~ own_death
-Died. My pet went with me. Loyal.
+Died. My pet came with me. I don't see a difference.
 Dead again. Death and I are on first-name terms.
 
 # Hibernia: Shroomtamer, Sylvan Animist, from Cruachan Gorge. Mushroom turrets; her team is the Cruachan Crows.
 === hibernia
 ~ ambient
-My mushrooms don't talk. Best company there is.
+Quiet. Just me and the shroomz.
 A mushroom grows alone in the dark and it's fine. So am I.
-Quiet. Just me and the turrets.
 No group needed. I plant my own.
 The Cruachan Crows lost again. I hate sportball. I watched the whole game.
+Tir na Nog has a smithy with a big forge. I stood next to it until the smith asked what my plan was. I left. I'm still cold.
+A Bard sang in Tir na Nog about friendship. Everyone clapped. Two out of ten. The mushrooms didn't clap either. We're in agreement.
 
 ~ opener life
 Planted shrooms in {zone}. Watched them grow. Didn't talk to anyone. Lovely.
 Does a mushroom know it's a mushroom? Wondered that all day in {zone}.
 A wolf dug up my mushrooms. I'm keeping score.
 Cruachan Gorge. Damp, deep, nobody around. I miss it.
+Heard the dragon scale stew is in Howth. Followed the map. I'm in a bog. I meant to come this way.
 
 ~ opener classes
 Animist. My friends grow from the ground. They stay where I put them.
@@ -210,10 +221,12 @@ Funny, {0}. The shrooms didn't laugh. Neither did I.
 
 ~ reply grouping
 I have a group, {0}. It's planted.
+No, {0}. My turrets don't move. ...I suppose I could plant them nearer you. For the view.
 
 ~ ding
-Level {level}. Bigger shrooms.
+Level {level}. Bigger shrooms. The Cruachan Crows still lost. Some things don't grow.
+Level {level}. Shempenstein said well done and then said nothing else. Best congratulations I've had.
 
 ~ own_death
-Stepped on. Like a mushroom.
+Stepped on like teh mushrom, spored everywhere till i dedded.
 Dead. Something will grow here.
