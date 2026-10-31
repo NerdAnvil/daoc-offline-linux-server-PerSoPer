@@ -7,16 +7,40 @@ HOW TO ANSWER
 
 - One line per row. Nothing else: no heading, no numbering, no dashes, no quotes around the line,
   no explanation before or after, no markdown.
+- Only the character's own lines. Never write what the player says, not even as a set-up for
+  the reply: the player's words are already in the task.
 - {0} stands for the name of the player the character is talking to. Write it exactly as {0}. Use
   no other words in curly braces.
-- Don't add tags in square brackets.
+- Square brackets only for the situation tags below.
 
 LENGTH
 
-- Lines are short: one or two sentences, at most 15 words.
-- Only when the task says LONG LINES: every line is 20 to 35 words, two or three sentences,
-  because the moment has real feeling. The character drops the act for a moment and means it,
-  then may end with a small joke. Never longer than 35 words.
+- A line can be up to 50 words (at most 290 characters), one to three sentences. Mix them: many
+  lines stay short and punchy, and some use the room when the moment has more to say, a story, a
+  build-up to the joke or a second thought. Never pad a line to make it longer.
+- Only when the task says LONG LINES: every line is in the word range the task gives, because the
+  moment has real feeling. The character drops the act for a moment and means it, then may end
+  with a small joke.
+
+SITUATION TAGS (optional)
+
+A line may end with tags that say when it fits. Use them for about one line in three, and only
+when the line itself mentions that situation (a line about the player being dead gets
+[if player_dead]). A line without tags fits any time.
+
+- [if player_dead] or [if not player_dead]
+- [if in_combat] or [if not in_combat]
+- [if health < 30] (the player's health in percent; any number from 1 to 99, also >)
+- [if group_size >= 4] or [if deaths_today >= 3] (any small number; <, >, <=, >= or =)
+- [if mood warm], [if mood neutral] or [if mood cool]: how much the character likes this player
+- [if time_of_day morning], day, evening or night
+- [if recent death], kill, loot or level_up: it happened in the last five minutes
+- Several conditions go in one tag, split by commas: [if recent loot, mood warm]
+- [once]: the character says this line to each player only once. Good for a line that would be odd twice.
+- [cooldown 30m]: not again for 30 minutes (s, m or h, at most 24h).
+- A line may have one [if ...] plus [once] or [cooldown ...], for example:
+  Again, {0}? That's three today. [if player_dead, deaths_today >= 3]
+  No other tags or words in square brackets.
 
 GENERAL RULES
 

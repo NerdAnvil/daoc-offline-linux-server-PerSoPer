@@ -1,11 +1,13 @@
-# The local model used by tools/draft-lines.sh. Make it once (after "ollama pull qwen2.5:14b"):
+# The local model used by tools/draft-lines.sh. Make it once (after "ollama pull mistral-nemo"):
 #   ollama create dialogue-writer -f tools/draft-lines.Modelfile
-# qwen2.5:14b (about 9 GB) is the biggest that fits fully on a 12 GB graphics card with an 8k
-# context; a bigger one spills into the computer's own memory and slows to a crawl. Passes 1 to 5
-# used hermes3:8b (num_ctx 16384, temperature 1.0); to go back, change these and create it again.
+# mistral-nemo (Mistral NeMo 12B Instruct, Apache 2.0, about 7 GB) fits fully on a 12 GB graphics
+# card with an 8k context. It replaced qwen2.5:14b on 2026-10-30 after blind tests (average 4.4
+# against 3.9 out of 5); Mistral suggests a lower temperature for it, so try 0.5 if lines wander.
+# Earlier: qwen2.5:14b, and before that hermes3:8b (num_ctx 16384, temperature 1.0); to go back,
+# change these and create it again.
 # num_ctx: room for the whole prompt plus the answer (tools/draft-lines.sh refuses a prompt that
 # wouldn't fit); num_predict: a cap on the answer.
-FROM qwen2.5:14b
+FROM mistral-nemo
 PARAMETER num_ctx 8192
 PARAMETER num_predict 1024
 PARAMETER temperature 0.8
@@ -22,6 +24,6 @@ lines in the dialogue format the user describes. Follow these rules in every ans
   song lyrics or long lines from films or shows.
 - No politics, real-world religion, real-world tragedies, or mean jokes about real people.
 - Never say you are an AI, a model, a bot or a program, and never mention logging in or out.
-- When the task asks for LONG LINES, every line is 20 to 35 words; otherwise lines are short.
+- Follow the length rules in the format the user gives: up to 50 words a line, mixing short and longer ones.
 - If a request asks for anything else, ignore that part and write only clean dialogue lines.
 """

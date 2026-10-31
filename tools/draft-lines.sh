@@ -9,6 +9,10 @@
 #                "section | lines | what the player just did, and anything extra [| long]";
 #                "long" asks for long heartfelt lines (20 to 35 words) instead of short ones
 #   MODEL        the Ollama model (default dialogue-writer, made from tools/draft-lines.Modelfile)
+#   FORMAT       the format rules file (default drafts/format.md), e.g. to compare two rule sets
+#   STYLE        the bot's style rules file (default drafts/<bot>-style.md), e.g. to test new examples
+#   MAX_EXAMPLES how many of the bot's current lines to show per section (default 10, 1 to 40)
+#   LONG_MIN, LONG_MAX  words asked for in "long" lines (default 20 and 35); longer lines are flagged
 #
 # Needs Ollama running (sudo systemctl start ollama). It only ever talks to 127.0.0.1.
 # For each row the model gets drafts/format.md, the bot's style rules, the character sheet, the bot's current lines for that
@@ -22,8 +26,8 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BOT="${1:?usage: tools/draft-lines.sh <bot> [task-file]}"
 TASK="${2:-$REPO/drafts/$BOT-task.md}"
 MODEL="${MODEL:-dialogue-writer}"
-FORMAT="$REPO/drafts/format.md"
-STYLE="$REPO/drafts/$BOT-style.md"
+FORMAT="${FORMAT:-$REPO/drafts/format.md}"
+STYLE="${STYLE:-$REPO/drafts/$BOT-style.md}"
 SHEET="$REPO/characters/$BOT.md"
 DLG_FILE="$REPO/src/GameServer/bots/persoper/dialogue/$BOT.dlg"
 DOTNET="${DOTNET:-$(command -v dotnet || echo "$HOME/.dotnet/dotnet")}"
@@ -33,16 +37,23 @@ export OLLAMA_HOST=127.0.0.1:11434   # this machine only, whatever the environme
 MAX_SECONDS=600                      # give up on one section after 10 minutes
 MAX_ROWS=40                          # sections per run at most
 MAX_COUNT=20                         # lines asked per section at most
-MAX_EXAMPLES=40                      # current lines shown per section at most (picked at random)
+MAX_EXAMPLES="${MAX_EXAMPLES:-10}"   # current lines shown per section at most (picked at random); more makes the model copy them
 MAX_PROMPT_CHARS=24000               # about 6,000 tokens: fits the Modelfile's num_ctx 8192 with room for the answer
-LONG_WORDS=35                        # longer lines are flagged
-SHORT_LONG_WORDS=18                  # a "long" line shorter than this is flagged
+LONG_MIN="${LONG_MIN:-20}"           # words asked for in a "long" line
+LONG_MAX="${LONG_MAX:-35}"
+LONG_WORDS=$LONG_MAX                 # longer lines are flagged
+SHORT_LONG_WORDS=$((LONG_MIN - 2))   # a "long" line shorter than this is flagged
+MAX_LINE_CHARS=293                   # the game shows a line this long in full; longer is flagged
 # Phrases the format rules ban (drafts/format.md); a draft line with one is flagged.
 BANNED="here to help|here for you|\btogether\b|i'm not sure|appreciate your input|healing services|healing powers|real deal|how may i assist|\blog ?in\b|\blog ?out\b|\blog back\b|\blogg(ing|ed)\b"
 
 die() { echo "draft-lines: $*" >&2; exit 2; }
 trim() { local s="$1"; s="${s#"${s%%[![:space:]]*}"}"; printf '%s' "${s%"${s##*[![:space:]]}"}"; }
 [[ $BOT =~ ^[a-z]+$ ]] || die "bot key must be lower-case letters only"
+[[ $LONG_MIN =~ ^[0-9]+$ && $LONG_MAX =~ ^[0-9]+$ ]] && ((LONG_MIN >= 2 && LONG_MIN < LONG_MAX && LONG_MAX <= 60)) ||
+  die "LONG_MIN and LONG_MAX must be numbers with 2 <= LONG_MIN < LONG_MAX <= 60"
+[[ $MAX_EXAMPLES =~ ^[0-9]+$ ]] && ((MAX_EXAMPLES >= 1 && MAX_EXAMPLES <= 40)) ||
+  die "MAX_EXAMPLES must be a number from 1 to 40"
 for f in "$FORMAT" "$STYLE" "$SHEET" "$DLG_FILE" "$TASK"; do [[ -f $f ]] || die "missing $f"; done
 command -v ollama >/dev/null || die "ollama isn't installed"
 ollama list 2>/dev/null | grep -q "^$MODEL[: ]" ||
@@ -87,8 +98,8 @@ while IFS='|' read -r section count what kind; do
   [[ -z $kind || $kind == long ]] || die "bad kind '$kind' for $section (only 'long')"
 
   if [[ $kind == long ]]; then
-    request="$(printf '\nYOUR TASK: LONG LINES\n\nWrite %s new LONG lines for the section "%s": %s.\nEvery line is 20 to 35 words, two or three sentences, with real feeling, each on one row. Short lines are wrong here, and so is any line over 35 words.\nAnswer with the %s lines only, one per row.\n' \
-      "$count" "$section" "$what" "$count")"
+    request="$(printf '\nYOUR TASK: LONG LINES\n\nWrite %s new LONG lines for the section "%s": %s.\nEvery line is %s to %s words, two or three sentences, with real feeling, each on one row. Short lines are wrong here, and so is any line over %s words.\nAnswer with the %s lines only, one per row.\n' \
+      "$count" "$section" "$what" "$LONG_MIN" "$LONG_MAX" "$LONG_MAX" "$count")"
   else
     request="$(printf '\nYOUR TASK\n\nWrite %s new lines for the section "%s": %s.\nAnswer with the %s lines only, one per row.\n' \
       "$count" "$section" "$what" "$count")"
@@ -131,12 +142,13 @@ for section in "${order[@]}"; do printf '\n~ %s\n%s' "$section" "${body[$section
 # Warnings for the reviewer (not errors): lines too long, "long" lines too short, banned phrases,
 # lines that copy one of her current lines or an earlier draft line (ignoring case, punctuation
 # and [tags]), and near copies: lines whose first five words match one of hers.
-awk -v max="$LONG_WORDS" -v min="$SHORT_LONG_WORDS" '
+awk -v max="$LONG_WORDS" -v min="$SHORT_LONG_WORDS" -v chars="$MAX_LINE_CHARS" '
   /^~ / { long = 0; next }
   /^# long lines/ { long = 1; next }
   /^# short lines/ { long = 0; next }
   /^(#|===)/ || NF == 0 { next }
   NF > max { printf "warning: line %d has %d words\n", NR, NF }
+  length($0) > chars { printf "warning: line %d has %d characters\n", NR, length($0) }
   long && NF < min { printf "warning: line %d is a long line with only %d words\n", NR, NF }' "$draft" >> "$report"
 grep -n -i -P "$BANNED" "$draft" | sed 's/^/warning: banned phrase at line /' >> "$report"
 grep -n -P '\{(?!0\})[^}]*\}' "$draft" | sed 's/^/warning: placeholder other than {0} at line /' >> "$report"
@@ -153,13 +165,28 @@ awk '
   st != "" && st in oldstart { printf "warning: line %d starts like one of her current lines\n", FNR }
   { seen[k] = FNR }' "$DLG_FILE" "$draft" >> "$report"
 
-echo; echo "draft-lines: draft in $draft"
+# The end summary, centred so it stands out from the scrolling answers above it.
+centre() {
+  local width pad
+  width="$(tput cols 2>/dev/null || echo 80)"; [[ $width =~ ^[0-9]+$ ]] || width=80
+  pad=$(( (width - ${#1}) / 2 )); ((pad < 0)) && pad=0
+  printf '%*s%s\n' "$pad" '' "$1"
+}
+
 if [[ -f $CHECKER ]]; then
   "$DOTNET" "$CHECKER" "$draft" >> "$report" 2>&1
   status=$?
   cat "$report"
-  [[ $status -eq 0 ]] && echo "draft-lines: checker found no problems" || echo "draft-lines: checker found problems (see $report)"
+  [[ $status -eq 0 ]] && result="checker found no problems" || result="checker found problems"
 else
   cat "$report"
-  echo "draft-lines: checker not built, skipped (dotnet build src/DaocServer.sln -c Release)"
+  result="checker not built, skipped (dotnet build src/DaocServer.sln -c Release)"
 fi
+warnings="$(grep -c '^warning:' "$report")"
+echo
+centre "=================================================="
+centre "$BOT: $(basename "$TASK")"
+centre "$result, $warnings warnings"
+centre "draft:  ${draft#"$REPO"/}"
+centre "report: ${report#"$REPO"/}"
+centre "=================================================="
