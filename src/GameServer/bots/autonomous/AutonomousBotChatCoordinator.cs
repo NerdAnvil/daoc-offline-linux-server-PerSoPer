@@ -694,6 +694,9 @@ public static class AutonomousBotChatCoordinator
         int count = directed || hasKnowledge || intent is eAutonomousChatIntent.IgnoreOutOfWorld or eAutonomousChatIntent.Abuse
             ? Math.Min(1, eligible.Length)
             : RollResponseCount(eligible.Length);
+        // Persoper answers her own owner in faction chat first, on top of the usual one or two.
+        if (faction && !directed && PersonalityCompanions().FirstOrDefault(bot => bot.Owner == player) is { } own && eligible.Contains(own))
+            (eligible, count) = CompanionFirst(eligible, own, count);
         HashSet<string> scheduledResponses = new(StringComparer.OrdinalIgnoreCase);
         int scheduledIndex = 0;
         for (int index = 0; index < count; index++)
@@ -719,6 +722,29 @@ public static class AutonomousBotChatCoordinator
                     responder.Say(response);
             });
         }
+    }
+
+    /// <summary>The responders with the companion first and then the first <paramref name="count"/> others: one more answer.</summary>
+    public static (T[] Responders, int Count) CompanionFirst<T>(T[] eligible, T companion, int count) where T : class
+    {
+        T[] others = eligible.Where(bot => bot != companion).ToArray();
+        int keep = Math.Clamp(count, 0, others.Length);
+        return (others.Take(keep).Prepend(companion).ToArray(), keep + 1);
+    }
+
+    /// <summary>
+    /// A personality bot's answer to a player's line, as in /say and faction chat: a special reply,
+    /// a known answer, or its own voice (mood-tinted). Null for a bot without a personality.
+    /// </summary>
+    public static string PersonalityAnswer(GameBot bot, GamePlayer player, string message)
+    {
+        if (BotPersonalities.For(bot) is not { } personality || player == null || string.IsNullOrWhiteSpace(message))
+            return null;
+        eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
+        return PersonalitySpecialReply(bot, player, message, intent, IsMentioned(message, bot))
+            ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
+                ? knowledge
+                : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
     }
 
     private static void ScheduleBotReplies(GameBot starter, string opening, bool faction, bool fromPlayer, eChatTopic? topic = null)

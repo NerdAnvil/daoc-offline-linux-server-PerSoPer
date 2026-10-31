@@ -332,12 +332,22 @@ namespace DOL.GS
         public static void OnPlayerGuildChat(GamePlayer player, string message)
         {
             Guild guild = player?.Guild;
-            if (guild == null || string.IsNullOrWhiteSpace(message) || !Members.Values.Any(m => m.GuildID == guild.GuildID)) return;
+            if (guild == null || string.IsNullOrWhiteSpace(message)) return;
+            // Persoper isn't a member, but she wears her owner's guild (ShownGuild) and answers there in her own voice.
+            GameBot companion = Commands.PersoperCommandHandler.Active is { } persoper && ShownGuild(persoper) == guild && CanTalk(persoper) ? persoper : null;
+            if (companion == null && !Members.Values.Any(m => m.GuildID == guild.GuildID)) return;
             long now = GameLoop.GameLoopTime;
             if (LastGuildReply.TryGetValue(guild.GuildID, out long last) && now - last < 10_000) return;
             LastGuildReply[guild.GuildID] = now;
             GameBot[] talkers = OnlineMembers(guild).Where(CanTalk).ToArray();
             GameBot named = talkers.FirstOrDefault(bot => AutonomousBotChatCoordinator.ContainsMention(message, bot.Name));
+            bool toCompanion = companion != null && AutonomousBotChatCoordinator.IsMentionedPublic(message, companion);
+            if (companion != null && named == null && (toCompanion || companion.Owner == player) &&
+                AutonomousBotChatCoordinator.PersonalityAnswer(companion, player, message) is { } answer)
+            {
+                ScheduleReply(companion, guild, answer, 1_400);
+                if (toCompanion) return;
+            }
             if (named != null)
             {
                 ScheduleReply(named, guild, AutonomousBotChatCoordinator.GenerateFactionReply(message), 1_400);
@@ -363,7 +373,7 @@ namespace DOL.GS
         {
             new ECSGameTimer(bot, _ =>
             {
-                if (CanTalk(bot) && GuildOf(bot.DatabaseID) == guild)
+                if (CanTalk(bot) && ShownGuild(bot) == guild)
                     SpeakInGuild(bot, guild, reply);
                 return 0;
             }, delay);
