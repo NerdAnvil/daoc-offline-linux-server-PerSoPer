@@ -9,6 +9,11 @@ some life to the in-game experience.
 way) and react to in-game events. She's summoned with `/persoper`, fights with the existing bot
 AI, and remembers who she is between summons.
 
+> **Work in progress: this `dialogue` branch is NOT finished.** It holds the new dialogue work
+> (named bots' own lines, scenes, situation rules, realm-correct names) while it's being built
+> and tested. It builds and its tests pass, but parts are unchecked in game and things may
+> change or break. For the stable version, use the `main` branch and its releases.
+
 ## Alpha 1: what works today
 
 Alpha 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, checked in game:
