@@ -180,6 +180,8 @@ That one is going in the book. No. Not really. Good try, {0}.
 Fine. It was funny. Do not make me say it twice.
 Hm. You are in a good mood, {0}. Good. Stay that way. Stay alive.
 Careful, soldier. Laughing with a cracked rib hurts. Ask me how I know.
+Hm, a dad joke. That means Shnacksize is within range, and I can always tell. [if nearby shnacksize] [cooldown 30m]
+That joke needs a medic, and as I AM said medic, I decline. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
 Sit. Breathe. Then complain, {0}. In that order.

@@ -250,6 +250,8 @@ I might just add a kazoo to the next song, just to see if anyone stops me.
 That joke had a killer hook, {0}. I'm stealing it for my next set.
 {0}, that joke was killer. I might just hire you as my opening act.
 Persoper would laugh at that, but she'd deny it to my face, {0}.
+Is it me, {0}, or is Shemp's armor getting snug? Didn't know a Valkyn could get chunky. [if nearby shempenstein] [cooldown 1h]
+I wrote Shemp a song. It's called "One More Sweetroll." He hasn't heard it yet. [if nearby shempenstein] [cooldown 1h]
 
 ~ reply abuse
 Harsh, {0}. I've had worse reviews. Mostly from my mother.
@@ -540,6 +542,9 @@ I laughed so hard my hair moved, {0}. That takes a lot.
 Ha! Gunnar would love that one, {0}. He laughs at everything, though.
 Tough crowd usually, {0}, but you got me.
 {0}, that's better than my rhymes. Low bar, but still.
+Ba-dum... no. I won't drum for that one. Shnacksize, is that you rubbing off on people? [if nearby shnacksize] [cooldown 30m]
+That's a dad joke, {0}. I can hear Shnacksize laughing at it already. Only her, mind. [if nearby shnacksize] [cooldown 30m]
+I'd put that in a song, but I'd have to rhyme it with "groan". Thanks, Shnacksize. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
 Rough gig, {0}? I've had worse. Ask me about Audliten sometime.

@@ -118,6 +118,8 @@ Is it hot in here, {0}, or is that my rage?
 ~ reply banter
 That's got to be a ten, {0}. But I'd give it an eleven, because I'm the judge here.
 {0}, how dare you? That's my job, and you're stealing it!
+Is Shemp putting on weight, or is the ground just leaning towards him? Ha! [if nearby shempenstein] [cooldown 1h]
+Shemp says it's his aunt's sweater. {0}, that sweater has been eating very well. [if nearby shempenstein] [cooldown 1h]
 
 ~ reply grinding
 Every kill gets a joke, whether you want one or not! I'm the spice in this grind, {0}.
@@ -210,6 +212,7 @@ Heya, {0}! Hold my axe, I'm making an entrance. ...Okay, give it back now. Wait,
 ~ reply banter
 Ha! In Swissland that joke would win a medal, {0}. A yellow one, on a yellow ribbon, handed over by a very proud ScottsIrish cow. Highest honour there is!
 Ha, {0}! That one was so cold it could freeze a fjord. Good thing I'm a Zerker, because I run hot!
+I'm a Valkyn too, {0}, and I didn't know we could get chunky. Shemp found a way! [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Level {level}! Tonight they'll ring the yellow bells in Swissland, all of them, even the ones with holes in. You can't hear them from Midgard, but trust me, they're loud.
@@ -250,6 +253,7 @@ Ta-daa, {0}! Shnacksizer, at your service, for a very reasonable fee. The first 
 ~ reply banter
 That joke would get a yellow medal in Swissland, {0}, and the cows would stamp their hooves for you. Well, one cow. Old Ginger. She stamps for everything.
 Ha, {0}! That one's got more bite than a wolf on the Salisbury Plains, and I'd know, because I've been bitten by all of them.
+A chunky Saracen! Shemp, they're built for the desert, not the dessert! [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Level {level}! Swissland just declared a holiday. Everybody gets the day off, the cows get extra Glopeldink, and somebody polishes the flag. It's a yellow circle on-a-stick, so that takes a while.
@@ -291,6 +295,7 @@ Ta-daa, {0}! A spin, a bow and a wink. That's the full Shnacksizey entrance, and
 ~ reply banter
 In Swissland you'd get a yellow ribbon for that one, {0}, and the cows would tie it round your horns. You haven't got horns? We'll work something out.
 Ooh, {0}, that pun was so bad the trees in Connacht dropped their leaves. Do another one. I'm collecting them.
+A chunky Sylvan! Shemp, you're meant to grow tall, not wide! [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Level {level}! The Swissland fondue fountain flows in my honour tonight, and the cows get first dip. Then me. Then the cows again, because they push.

@@ -189,6 +189,10 @@ The best part? When you don't see it coming, dear.
 ~ cheeky_reply smalltalk [if tone_down off]
 Positioning, dear. Size doesn't matter half as much as where you stand.
 
+~ reply banter
+Shemp's on my list, {0}. Not for killing. For eating my rations. [if nearby shempenstein] [cooldown 1h]
+I hide in shadows, {0}, and Shemp hides behind snack bags. The snacks are losing. [if nearby shempenstein] [cooldown 1h]
+
 # Midgard: xXxNataSehSxXx, Kobold Shadowblade.
 === midgard
 ~ ambient
@@ -217,6 +221,7 @@ Hello, {0}. You walked past me twice in Jordheim. I counted. I always count.
 ~ reply banter
 Careful, {0}. I know where your liver is.
 Keep going, {0}. I'm writing it all down. Midgard has long winters and I have a long list.
+A chunky Valkyn. I've seen everything now, {0}. Write that down. [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Level {level}. Somewhere an Alb just felt a chill on his neck and doesn't know why. I know why.
@@ -258,6 +263,7 @@ Good evening, {0}. Don't ask where I'm from. Inconnu never quite say. Call me Sa
 ~ reply banter
 Cute, {0}. I'll remember that one. I remember everything.
 Lovely, {0}. Say that in Camelot and the alleys will hear it. The alleys tell me everything.
+A chunky Saracen. They're meant to be lean, {0}. Shemp skipped that part. [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Ding. Someone in Midgard just felt a chill.
@@ -298,6 +304,7 @@ Hello, {0}. I was under that mushroom. Don't laugh. Satin Snekk uses what the fo
 ~ reply banter
 Watch it, {0}. I'm exactly liver height.
 Charming, {0}. Lurikeen hear everything. The ears do the listening. The list does the remembering.
+A chunky Sylvan. They're meant to be trees, {0}. Shemp's more of a stump. [if nearby shempenstein] [cooldown 1h]
 
 ~ ding
 Level {level}. Smaller target, bigger damage.
