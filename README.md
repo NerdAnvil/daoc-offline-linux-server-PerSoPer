@@ -9,9 +9,9 @@ some life to the in-game experience.
 way) and react to in-game events. She's summoned with `/persoper`, fights with the existing bot
 AI, and remembers who she is between summons.
 
-## Version 1: what works today
+## Alpha 1: what works today
 
-Version 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, checked in game:
+Alpha 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, checked in game:
 
 - **33 named personality bots**, on by default: one of each of 11 types in each realm, every
   one with its own name, class, voice, memory and patience (see
@@ -28,7 +28,7 @@ Version 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, 
   built into the server, so the writing can be changed without touching the code.
 - Everything is plain C# rules and phrase lists inside the server: no AI model, no internet.
 
-**Not in version 1:** free conversation, relationships between bots, the bigger behaviours in
+**Not in Alpha 1:** free conversation, relationships between bots, the bigger behaviours in
 the named bots' characters (the Crafter's selling runs, the Homeowner's house, the Herbal
 Doctor's buff-and-smoke breaks) and an AI model are goals, not built yet (see below).
 
@@ -94,7 +94,7 @@ Kobaldjovi's sulk ends he sends you a make-up tell and walks back to rejoin your
 **Leeroy and emotes** (`persoper_leeroy_battle_cry_percent`, `persoper_full_leeroy`,
 `persoper_full_leeroy_percent`, `persoper_emotes`): a Leeroy-type bot yells a battle cry in
 about 1 fight in 3. "Full Leeroy" (he charges a nearby mob while your group waits) is **off by
-default** in version 1; when on, he rolls the chance once a minute while the group is idle.
+default** in Alpha 1; when on, he rolls the chance once a minute while the group is idle.
 Emotes: bots answer emotes aimed at them and react to deaths near them.
 
 ```bash
@@ -318,7 +318,7 @@ for example `/player level 50` (with no target) to set your own level for testin
 - **Upgrading a server you already play on** (from this fork or the parent project): replace
   `bin/`, `defaults/` and the scripts; `config/`, `data/` and `navmesh/` are kept
   ([docs/RUN.md](docs/RUN.md)). Saved settings keep their old values, so new defaults don't
-  apply. For example, `persoper_full_leeroy` stays on if it was on before version 1; switch it
+  apply. For example, `persoper_full_leeroy` stays on if it was on before Alpha 1; switch it
   off in the **Options** tab. PerSoPer adds its own tables (`persoper_*`) and doesn't change
   the existing ones.
 - **`/travel` doesn't work on Linux** (it drives the Windows client's keyboard). Use `/tele`
