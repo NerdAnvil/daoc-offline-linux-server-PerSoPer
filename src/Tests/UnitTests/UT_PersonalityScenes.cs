@@ -282,6 +282,7 @@ public class UT_PersonalityScenes
             var ends = plan.Skip(chain.Count).ToList();
             Assert.That(ends.Select(step => step.Speaker), Is.EquivalentTo(Enumerable.Range(0, size)), "everyone ends once, the character last");
             Assert.That(ends[^1].Speaker, Is.Zero);
+            Assert.That(ends[^1].Line, Does.Not.Contain("Shempenstein"), "the character doesn't name itself");
             int grumbles = ends.Count(step => step.Line == Grumbles[0]);
             Assert.That(grumbles, Is.EqualTo(size >= 5 ? Math.Max(1, (size - 1) / 5) : 0), "a few grumble");
 

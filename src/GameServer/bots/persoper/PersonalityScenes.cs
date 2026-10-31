@@ -239,6 +239,18 @@ public static class PersonalityScenes
     public static object NearbyKey(ushort regionId) => ("nearby", regionId);
 
     /// <summary>How long a scene still holds this channel (0 = free). Other talk waits for it.</summary>
+    /// <summary>The bots in each held channel's scene: everyone else is hushed there until it ends.</summary>
+    private static readonly Dictionary<object, HashSet<GameBot>> HeldCast = new();
+
+    /// <summary>True while a scene holds this channel and the bot isn't in it: its other chatter waits.</summary>
+    public static bool Hushes(object key, GameBot bot)
+    {
+        long now = GameLoop.GameLoopTime;
+        lock (Sync)
+            return HeldUntil.TryGetValue(key, out long until) && until > now &&
+                HeldCast.TryGetValue(key, out HashSet<GameBot> cast) && !cast.Contains(bot);
+    }
+
     public static int HeldMs(object key)
     {
         if (key == null)
@@ -412,8 +424,8 @@ public static class PersonalityScenes
                 1 => 0,
                 _ => NextCrowdSpeaker(size, previous, spoken, random),
             };
-            // A beat before the chain starts, then a line every 3 to 4.5 s.
-            int delay = step == 0 ? 3_500 + random.Next(1_000) : 3_000 + random.Next(1_500);
+            // A beat before the chain starts, then a line every 2.5 to 3.5 s.
+            int delay = step == 0 ? 3_500 + random.Next(1_000) : 2_500 + random.Next(1_000);
             plan.Add((speaker, ChainLine(step), delay));
             spoken.Add(speaker);
             previous = speaker;
@@ -444,8 +456,10 @@ public static class PersonalityScenes
             if (line != null)
                 plan.Add((enders[i], line.Replace("{a}", leadName), 800 + random.Next(1_200)));
         }
-        if (laughOrder.Length > 0)
-            plan.Add((0, laughOrder[laughed % laughOrder.Length].Replace("{a}", leadName), 1_000 + random.Next(1_000)));
+        // The character's own laugh: not one that names it ({a}).
+        string[] ownLaughs = laughOrder.Where(line => !line.Contains("{a}")).ToArray();
+        if (ownLaughs.Length > 0)
+            plan.Add((0, ownLaughs[laughed % ownLaughs.Length], 1_000 + random.Next(1_000)));
         return plan;
     }
 
@@ -566,7 +580,7 @@ public static class PersonalityScenes
                 return false;
             index = 1;
         }
-        Hold(key, total);
+        Hold(key, total, lines.Select(line => line.Speaker));
         if (index < lines.Count)
             Next(lines, index, channel, group, key, index == 0 ? firstDelayMs : LineDelayMs(lines[index].Line, Random.Shared));
         return true;
@@ -574,7 +588,8 @@ public static class PersonalityScenes
 
     /// <summary>
     /// Plays a crowd: each line after its own wait, holding the channel to the end. A bot that
-    /// can't talk just misses its line; the crowd goes on. Lines isChain picks out are worked out
+    /// can't talk just misses its line (a chain line goes to up to MaxStandIns others instead), and so
+    /// does one whose line would follow its own; the crowd goes on. Lines isChain picks out are worked out
     /// when said (ChainLine), so a missed one doesn't break the pal, buddy, guy order.
     /// False when the first line can't be said.
     /// </summary>
@@ -585,9 +600,12 @@ public static class PersonalityScenes
         if (!AutonomousBotChatCoordinator.SpeakSceneLine(steps[0].Speaker, steps[0].Line, channel, group))
             return false;
         object key = KeyFor(steps[0].Speaker, channel, group);
-        Hold(key, steps.Sum(step => step.DelayMs) + 2_000);
+        Hold(key, steps.Sum(step => step.DelayMs) + 2_000, steps.Select(step => step.Speaker));
         int at = 0;
         int[] chainSaid = [0];
+        GameBot[] cast = steps.Select(step => step.Speaker).Where(bot => bot != null).Distinct().ToArray();
+        // Who said the last line: a bot whose turn follows its own line (the one between missed) skips it.
+        GameBot[] lastSpeaker = [steps[0].Speaker];
         for (int i = 1; i < steps.Count; i++)
         {
             (GameBot speaker, string line, int delay) = steps[i];
@@ -597,8 +615,19 @@ public static class PersonalityScenes
             _ = new ECSGameTimer(speaker, _ =>
             {
                 string said = chain ? ChainLine(chainSaid[0]) : line;
-                if (AutonomousBotChatCoordinator.SpeakSceneLine(speaker, said, channel, group) && chain)
-                    chainSaid[0]++;
+                // A busy bot's chain line goes to someone else in the crowd, so the chain doesn't stall.
+                IEnumerable<GameBot> tries = chain
+                    ? cast.Where(other => other != speaker).OrderBy(_ => Random.Shared.Next()).Take(MaxStandIns).Prepend(speaker)
+                    : [speaker];
+                foreach (GameBot candidate in tries)
+                {
+                    if (candidate == lastSpeaker[0] || !AutonomousBotChatCoordinator.SpeakSceneLine(candidate, said, channel, group))
+                        continue;
+                    lastSpeaker[0] = candidate;
+                    if (chain)
+                        chainSaid[0]++;
+                    break;
+                }
                 if (last)
                     Release(key);
                 return 0;
@@ -606,6 +635,9 @@ public static class PersonalityScenes
         }
         return true;
     }
+
+    /// <summary>Others who try a busy bot's chain line in its place, at most.</summary>
+    private const int MaxStandIns = 3;
 
     /// <summary>Lines a timed scene (a crowd) may have: its chain and everyone's ending.</summary>
     private const int MaxTimedLines = 2 + MaxCrowdChain + MaxCrowd;
@@ -629,8 +661,9 @@ public static class PersonalityScenes
         }, delayMs);
     }
 
-    private static void Hold(object key, int ms)
+    private static void Hold(object key, int ms, IEnumerable<GameBot> cast)
     {
+        var speakers = new HashSet<GameBot>(cast.Where(bot => bot != null).Take(MaxTimedLines));
         long now = GameLoop.GameLoopTime;
         lock (Sync)
         {
@@ -638,15 +671,22 @@ public static class PersonalityScenes
             if (HeldUntil.Count >= MaxHeldEntries)
             {
                 foreach (object old in HeldUntil.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToArray())
+                {
                     HeldUntil.Remove(old);
+                    HeldCast.Remove(old);
+                }
             }
             HeldUntil[key] = now + ms;
+            HeldCast[key] = speakers;
         }
     }
 
     private static void Release(object key)
     {
         lock (Sync)
+        {
             HeldUntil.Remove(key);
+            HeldCast.Remove(key);
+        }
     }
 }

@@ -105,7 +105,7 @@ public static class AutonomousBotChatCoordinator
             ? KobaldjoviIdentity.AmbientLine(Random.Shared, out isSong)
             : BuildAmbientOpening(starter, context, faction);
         if (faction)
-            BroadcastFaction(starter.Name, starter.Realm, opening);
+            BotFaction(starter, opening);
         else if (!starter.Say(opening))
             return false;
 
@@ -148,7 +148,7 @@ public static class AutonomousBotChatCoordinator
     private static void Speak(GameBot speaker, string line, bool faction)
     {
         if (faction && HasFactionAudience(speaker.Realm))
-            BroadcastFaction(speaker.Name, speaker.Realm, line);
+            BotFaction(speaker, line);
         else if (!faction && HasLocalAudience(speaker))
             speaker.Say(line);
     }
@@ -291,7 +291,7 @@ public static class AutonomousBotChatCoordinator
         {
             if (!HasFactionAudience(bot.Realm))
                 return false;
-            BroadcastFaction(bot.Name, bot.Realm, line);
+            BotFaction(bot, line);
         }
         else if (!HasLocalAudience(bot) || !bot.Say(line))
             return false;
@@ -323,7 +323,7 @@ public static class AutonomousBotChatCoordinator
         if (bot?.IsAutonomousWorldBot != true || string.IsNullOrWhiteSpace(line) ||
             bot.ObjectState != GameObject.eObjectState.Active || !HasFactionAudience(bot.Realm))
             return false;
-        BroadcastFaction(bot.Name, bot.Realm, line);
+        BotFaction(bot, line);
         return true;
     }
 
@@ -355,6 +355,9 @@ public static class AutonomousBotChatCoordinator
         {
             case eSceneChannel.Faction:
                 if (!HasFactionAudience(bot.Realm))
+                    return false;
+                // A scene's own line: only bots in the scene that holds faction chat (if one does) may speak.
+                if (PersonalityScenes.Hushes(PersonalityScenes.FactionKey(bot.Realm), bot))
                     return false;
                 BroadcastFaction(bot.Name, bot.Realm, line);
                 return true;
@@ -508,7 +511,7 @@ public static class AutonomousBotChatCoordinator
         string opening = Random.Shared.Next(2) == 0
             ? $"Does anybody want to make me an offer on {item}?"
             : $"How much do u think {item} is worth?";
-        BroadcastFaction(seller.Name, seller.Realm, opening);
+        BotFaction(seller, opening);
         ScheduleBotReplies(seller, opening, true, false);
         return true;
     }
@@ -645,6 +648,19 @@ public static class AutonomousBotChatCoordinator
         return false;
     }
 
+    /// <summary>
+    /// A bot's ordinary line in faction chat. Dropped (false) while a scene holds the realm's faction
+    /// chat, even from bots in the scene, so it isn't talked over. Scene lines go through SpeakSceneLine;
+    /// players and realm notices use BroadcastFaction.
+    /// </summary>
+    private static bool BotFaction(GameBot bot, string message)
+    {
+        if (PersonalityScenes.HeldMs(PersonalityScenes.FactionKey(bot.Realm)) > 0)
+            return false;
+        BroadcastFaction(bot.Name, bot.Realm, message);
+        return true;
+    }
+
     public static void BroadcastFaction(string speakerName, eRealm realm, string message)
     {
         string safe = (message ?? string.Empty).Trim();
@@ -698,7 +714,7 @@ public static class AutonomousBotChatCoordinator
             Schedule(responder, 1_300 + scheduledIndex++ * 1_800 + Random.Shared.Next(1_200), () =>
             {
                 if (faction && HasFactionAudience(responder.Realm))
-                    BroadcastFaction(responder.Name, responder.Realm, response);
+                    BotFaction(responder, response);
                 else if (!faction && HasLocalAudience(responder))
                     responder.Say(response);
             });
@@ -733,7 +749,7 @@ public static class AutonomousBotChatCoordinator
             {
                 if (faction && HasFactionAudience(responder.Realm))
                 {
-                    BroadcastFaction(responder.Name, responder.Realm, response);
+                    BotFaction(responder, response);
                     Interlocked.Increment(ref delivered);
                 }
                 else if (!faction && HasLocalAudience(responder) && responder.Say(response))
@@ -754,7 +770,7 @@ public static class AutonomousBotChatCoordinator
                 if (Volatile.Read(ref delivered) == 0)
                     return;
                 if (faction && HasFactionAudience(starter.Realm))
-                    BroadcastFaction(starter.Name, starter.Realm, closing);
+                    BotFaction(starter, closing);
                 else if (!faction && HasLocalAudience(starter))
                     starter.Say(closing);
             });
