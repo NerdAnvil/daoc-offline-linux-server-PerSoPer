@@ -216,7 +216,9 @@ public static class PersonalityLines
                 // The character's errors are reported by CheckCharacter; here they'd come twice.
                 (TypeLines lines, TypeTalk talk) = Read(charFile.Block(character), $"{character}.dlg", []);
                 (TypeLines realmLines, TypeTalk realmTalk) = Read(charFile.Block(RealmBlock(entry)), $"{character}.dlg", []);
-                own[NamedKey(entry)] = ForRealm(Merge(lines, realmLines, Join), Merge(talk, realmTalk, Join), entry.Realm);
+                // Nicknames ("names: Natas, TripleX") come from the character's block and its realm's.
+                string[] nicknames = charFile.Names(character).Concat(charFile.Names(RealmBlock(entry))).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+                own[NamedKey(entry)] = ForRealm(Merge(lines, realmLines, Join), Merge(talk, realmTalk, Join) with { Nicknames = nicknames }, entry.Realm);
                 continue;
             }
             string name = BlockName(entry);
@@ -224,7 +226,7 @@ public static class PersonalityLines
             if (sections.Count == 0)
                 errors.Add($"{key}.dlg: no block '=== {name}' for {entry.Name} (and no {character}.dlg)");
             (TypeLines blockLines, TypeTalk blockTalk) = Read(sections, $"{key}.dlg", errors);
-            own[NamedKey(entry)] = ForRealm(blockLines, blockTalk, entry.Realm);
+            own[NamedKey(entry)] = ForRealm(blockLines, blockTalk with { Nicknames = file.Names(name) }, entry.Realm);
         }
         return (typeLines, typeTalk, own);
     }
@@ -287,7 +289,10 @@ public static class PersonalityLines
         combine ??= Mix;
         return new(
             combine(type.Ambient, own.Ambient), MixAll(type.Replies, own.Replies, combine),
-            MixAll(type.CheekyReplies, own.CheekyReplies, combine), combine(type.FallbackReplies, own.FallbackReplies));
+            MixAll(type.CheekyReplies, own.CheekyReplies, combine), combine(type.FallbackReplies, own.FallbackReplies))
+        {
+            Nicknames = own.Nicknames.Count > 0 ? own.Nicknames : type.Nicknames,
+        };
     }
 
     private static (TypeLines, TypeTalk) Read(IReadOnlyList<DialogueSection> sections, string fileName, List<string> errors)

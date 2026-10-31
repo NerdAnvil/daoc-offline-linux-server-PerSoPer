@@ -14,7 +14,8 @@
 # online), brings them beside the character with "/dialogue gather" (GM), then banters at her by
 # her nickname in group chat, each time after "/dialogue forget" so the 1-hour cooldowns don't
 # hide the lines. The chunky lines are read from the server's own dialogue/ folder. It passes
-# when at least one is heard and none from another realm's block.
+# when at least one is heard, none from another realm's block, and every banter's first answer
+# is hers (bug 2026-10-31: her nickname wasn't loaded, so a random group bot answered).
 # Prints PASS or FAIL per check; exits 0 only when every check passed.
 set -uo pipefail
 
@@ -28,7 +29,7 @@ CLIENT="$REPO/src/build/HeadlessClient/Release/HeadlessClient.dll"
 RECORD="$SERVER/logs/chunky-check.txt"   # the recording stays there after the run
 FILE="$SERVER/dialogue/xxxnatasehsxxx.dlg"
 BANTER="Natas, come on slowpokes is that all you have"
-ROUNDS=4
+ROUNDS=6   # with a random pick, 6 rounds all going to her by luck is 1 in 64
 
 case "$CHARACTER" in
   Headlessalb) NATA=xAxNataSehSxAx; SHEMP=Shempenshire; BLOCK=albion ;;
@@ -65,10 +66,10 @@ chunky() {
 late=("--send-late=/invite $SHEMP" "--send-late=/dialogue gather")
 for ((i = 0; i < ROUNDS; i++)); do late+=("--send-late=/dialogue forget" "--send-late=/g $BANTER"); done
 
-echo "== Grouping $NATA and $SHEMP and bantering at her $ROUNDS times (about 1.5 minutes)"
+echo "== Grouping $NATA and $SHEMP and bantering at her $ROUNDS times (about 2 minutes)"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/invite $NATA" --listen=10 --send-late-gap=6 "${late[@]}" \
-  --record="$RECORD" --record-seconds=80 --overwrite >"$RECORD.log" 2>&1
+  --record="$RECORD" --record-seconds=110 --overwrite >"$RECORD.log" 2>&1
 
 grep -q "$SHEMP has joined the group" "$RECORD" && grep -q "$NATA has joined the group" "$RECORD" &&
   pass "$NATA and $SHEMP joined the group" || fail "they didn't both join; are they online? See $RECORD and $RECORD.log"
@@ -84,6 +85,14 @@ heard=$(grep -cF -f <(echo "$mine") <<<"$said")
 others=$(for block in midgard albion hibernia; do [[ $block != "$BLOCK" ]] && chunky "$block"; done | grep -v '^$')
 grep -qF -f <(echo "$others") <<<"$said" && fail "a chunky line from another realm's block; see $RECORD" ||
   pass "no other realm's chunky line"
+
+# After each banter, the next party line from anyone else must be hers, not Shemp's.
+read -r first wrong < <(awk -v me="[Party] $CHARACTER:" -v nata="$NATA:" '
+  /\[Party\]/ { if (index($0, me)) { waiting = 1; next }
+                if (waiting) { waiting = 0; if (index($0, nata)) ok++; else bad++ } }
+  END { print ok + 0, bad + 0 }' "$RECORD")
+(( wrong == 0 && first > 0 )) && pass "$NATA answered first all $first time(s) she was named" ||
+  fail "someone else answered first $wrong time(s) when $NATA was named; see $RECORD"
 
 echo
 (( failures == 0 )) && echo "All checks passed." || echo "$failures check(s) failed."

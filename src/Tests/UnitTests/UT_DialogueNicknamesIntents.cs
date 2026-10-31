@@ -44,6 +44,19 @@ public class UT_DialogueNicknamesIntents
         Assert.That(PersoperIdentity.Personality.Nicknames, Is.Empty);
     }
 
+    // Bug 2026-10-31: "Natas, ..." in group chat went to a random member; character files' names were never loaded.
+    [TestCase("hardcore-mid", "Natas")]
+    [TestCase("hardcore-alb", "Natas")]
+    [TestCase("hardcore-hib", "TripleX")]
+    [TestCase("casual-mid", "Shemp")]
+    [TestCase("casual-alb", "Shemp")]
+    [TestCase("leeroy-hib", "Tham")]
+    public void NamedBot_HasItsCharacterNicknames(string key, string nickname)
+    {
+        NamedBotLineup.Entry entry = NamedBotLineup.All.Single(found => found.Key == key);
+        Assert.That(PersonalityTypes.Named(entry).Nicknames, Does.Contain(nickname));
+    }
+
     [TestCase("Jovi, thanks!", "Jovi", true)]
     [TestCase("kj hail", "KJ", true)]
     [TestCase("Kobaldjovi, thanks!", "Jovi", false)]
