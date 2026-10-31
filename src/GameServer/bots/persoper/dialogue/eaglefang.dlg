@@ -8,7 +8,7 @@
 ~ ambient
 Bandages rolled. Pack checked. Water full. Now we can talk.
 Another one walked home today. Into the book.
-Told Spyburd to put the pipe out and stand up straight. Got a buff instead. Hm. Good buff.
+Told {bot:spyburd} to put the pipe out and stand up straight. Got a buff instead. Hm. Good buff.
 Quiet hour. Nobody bleeding. I'll take it.
 My first night in the field hospital, an old sergeant-medic gave me a little book. "Write down every one who walks out of here," I was told. "Not the others. You'll remember those anyway." I'm on my third book.
 Sit still. Not you. Everybody. Just sit still for once.
@@ -19,7 +19,7 @@ Kobaldjovi sang again; I hummed the tune, then stopped when he did.
 Another bad night, soldier. I sat by the fire, book in hand, reading names of those who walked out, not down. Don't tell a soul, or I'll deny it.
 Quiet days give me time to count my blessings, not just bandages. Strange, but good.
 The old sergeant-medic never smiled, but he kept a steady hand. I think of that now.
-Spyburd actually stood straight for a minute. Proud day, soldier.
+{bot:spyburd} actually stood straight for a minute. Proud day, soldier.
 You came back, soldier? I didn't expect to see that face again. It's been a while. Drink some water. Don't tell me you're here to say thank you. Into the book, I suppose.
 Bandages rolled tight, waiting for the wounded to return. Patience, not my strong suit.
 Kobaldjovi thinks a song about bandages is a good idea. Not a single bandage likes him for it.
@@ -172,7 +172,7 @@ Counting... One, two, three, four, five. Good. No missing.
 ~ reply joke
 Hm. That was funny, {0}. I am not laughing. This is my face.
 Fine. One laugh. Then back in range, {0}.
-Hm. Spyburd will tell that one for a week. Badly.
+Hm. {bot:spyburd} will tell that one for a week. Badly.
 Not bad, {0}. Laughing is good for the lungs. Do it standing still.
 I have heard that one before. In a ward. From a patient with two broken legs.
 Hm. Jovi will put that in a song. You have been warned, {0}.
@@ -180,7 +180,7 @@ That one is going in the book. No. Not really. Good try, {0}.
 Fine. It was funny. Do not make me say it twice.
 Hm. You are in a good mood, {0}. Good. Stay that way. Stay alive.
 Careful, soldier. Laughing with a cracked rib hurts. Ask me how I know.
-Hm, a dad joke. That means Shnacksize is within range, and I can always tell. [if nearby shnacksize] [cooldown 30m]
+Hm, a dad joke. That means {bot:shnacksize} is within range, and I can always tell. [if nearby shnacksize] [cooldown 30m]
 That joke needs a medic, and as I AM said medic, I decline. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
@@ -191,7 +191,7 @@ Everyone walks home today. That is the only thing that matters.
 Hm. Worse things have happened in better places, {0}.
 Complaining is allowed. Bleeding while you do it is not.
 Slow down, {0}. Mistakes come from rushing. Ask anyone in a ward.
-Fine. Grumble. Spyburd says it helps. Spyburd says a lot of things.
+Fine. Grumble. {bot:spyburd} says it helps. {bot:spyburd} says a lot of things.
 You are tired, {0}. I can see it. Rest after this one. That is an order.
 Rough day, soldier. You are still standing. Count that.
 
@@ -211,7 +211,7 @@ Did I ever tell you about the time I had Chinese delivered but I did not actuall
 Short answer: yes. Long answer: drink some water first, {0}.
 Hm. Ask me after the pull. I answer better when everyone is standing.
 I do not know, {0}. I know where everyone is. That is enough for now.
-Ask Spyburd. Then ask me. Then do what I said.
+Ask {bot:spyburd}. Then ask me. Then do what I said.
 Good question, {0}. The answer is: stay in range.
 Depends. Have you eaten today, {0}?
 Hm. I have seen that go both ways. Mostly the bad way.
@@ -238,7 +238,7 @@ Hm. Yes. Write it down.
 Good, {0}. That is how people walk home.
 Fine. We agree. Do not get used to it.
 Exactly. The old sergeant-medic would say the same.
-Hm. Spyburd agreed too. That worries me.
+Hm. {bot:spyburd} agreed too. That worries me.
 Right, {0}. Now do it.
 Good. Sensible. Rare, in this group.
 Yes, soldier. Now let us move.

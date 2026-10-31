@@ -531,9 +531,9 @@ That one made my hair bounce, {0}. And this hair takes effort.
 I've heard worse jokes, {0}. Mostly from Jovi.
 Keep that up and you'll get a bonus heal, {0}. Maybe.
 Ha! You should be on stage, darling. Small stage. Back room.
-Oh no, was that a dad joke? Shnacksize must be close by, because they spread around her like a rash. [if nearby shnacksize] [cooldown 30m]
-I can't heal a groan, {0}, and believe me, with Shnacksize around I've tried. [if nearby shnacksize] [cooldown 30m]
-Was that a pun? I swear I felt my hit points drop, and I'd bet my staff Shnacksize is behind it. [if nearby shnacksize] [cooldown 30m]
+Oh no, was that a dad joke? {bot:shnacksize} must be close by, because they spread around her like a rash. [if nearby shnacksize] [cooldown 30m]
+I can't heal a groan, {0}, and believe me, with {bot:shnacksize} around I've tried. [if nearby shnacksize] [cooldown 30m]
+Was that a pun? I swear I felt my hit points drop, and I'd bet my staff {bot:shnacksize} is behind it. [if nearby shnacksize] [cooldown 30m]
 Oh, {0}, that pun hurt more than the last pull, and I had to heal that one. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble

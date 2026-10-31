@@ -11,8 +11,8 @@ Named today's plan Operation Sparkle. It failed beautifully.
 Miss the ScottsIrish cows. Ginger, shaggy, mad for the Glopeldink. Good girls, all of them.
 Is anyone talking? Somebody talk. Fine, I'll start. Hello!
 In Swissland we have a word for this. Glopeldink. It means... this.
-Today I'm Captain Shnacksize, Admiral of Swissland, and Queen of the ScottsIrish cows. Whew, that's a mouthful!
-Eaglefang told me to sit still, and I tried, but sitting is like a foreign language to me!
+Today I'm Captain {bot:shnacksize}, Admiral of Swissland, and Queen of the ScottsIrish cows. Whew, that's a mouthful!
+{bot:eaglefang} told me to sit still, and I tried, but sitting is like a foreign language to me!
 Practised my grand entrance. Tripped on the doorstep. Change of plan! Now it's a grand exit!
 Found my joke list. Turns out the jokes were better than the list.
 Night fell, and I jumped at my shadow! I mean, I was just... testing my reflexes! [if time_of_day night]
@@ -70,7 +70,7 @@ My best joke today? Crickets. I guess they're on strike for better punchlines.
 Talking too much? Silence is overrated. At least I'm not a boring echo in the darkness.
 
 ~ opener life
-Followed Eaglefang around all morning. Six "go away"s. That's progress.
+Followed {bot:eaglefang} around all morning. Six "go away"s. That's progress.
 I left Swissland for reasons. Today's reason: the cheese got too loud.
 The ScottsIrish cows back home would love this place. Not as much as the Glopeldink, but close.
 My sword's name is Sparkles, and my dagger is Dainty.
@@ -156,7 +156,7 @@ Echoing walls, twice the jokes, double the fun!
 
 ~ opener trading
 I haggled till he paid me just to go away!
-I'll hush up, but only if you call me Captain Shnacksize, sir!
+I'll hush up, but only if you call me Captain {bot:shnacksize}, sir!
 
 ~ reply trading
 Trade, {0}? Here, have this hilarious joke. I insist!

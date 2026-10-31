@@ -149,7 +149,7 @@ Buffin' where the quiet spots are, bub. Every place's home if it's got good shad
 # Midgard: Spyburd, Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
 ~ reply joke
 Ha! Nearly dropped my pipe, {0}. Do that again when I'm not holdin' it.
-Heh. Eaglefang won't laugh at that, {0}. Tell it to him anyway.
+Heh. {bot:eaglefang} won't laugh at that, {0}. Tell it to him anyway.
 That's a good one, {0}. Saw half the group crack a smile from back here.
 Ha. Gary would've liked that one. Gary liked everybody, {0}.
 Heh. You save that one for the campfire, {0}. It'll go down better with a cup.
@@ -158,13 +158,13 @@ Heh. Okay, {0}. Now I'm gonna be chucklin' all through the next pull.
 Ha. A laugh's half a heal, {0}. Don't tell Persoper I said that.
 Ha. Took me a second, {0}. Worth the wait.
 Heh. Somebody's in a good mood. I like it, {0}. Keep it goin'.
-Heh. Oof. That's a Shnacksize special, that is. Even Gary wouldn't laugh, and Gary laughed at everybody. [if nearby shnacksize] [cooldown 30m]
-Ohh, that's a groaner, {0}. Shnacksize'll be proud. Somebody's gotta be. [if nearby shnacksize] [cooldown 30m]
+Heh. Oof. That's a {bot:shnacksize} special, that is. Even Gary wouldn't laugh, and Gary laughed at everybody. [if nearby shnacksize] [cooldown 30m]
+Ohh, that's a groaner, {0}. {bot:shnacksize}'ll be proud. Somebody's gotta be. [if nearby shnacksize] [cooldown 30m]
 Ohh, {0}. That one creaked worse than my knees, and they're old knees. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
 Saw that from the back, {0}. You took the worst of it. Sit, I'll sort you out.
-Eaglefang'd tell you to walk it off. I say sit down and have a smoke, {0}.
+{bot:eaglefang}'d tell you to walk it off. I say sit down and have a smoke, {0}.
 Rough one. I've seen worse go fine, {0}. Seen better go bad too. Ya never know.
 You're still glowin' from the last one, {0}. You'll be fine.
 Slow down, {0}. Clouds aren't goin' anywhere. Neither's that mob.
@@ -190,7 +190,7 @@ Nice one, bub. Tell it again sometime. Slower.
 Hmm. Let me think on that, {0}. I think slow. It's a style.
 Good question. I'll have an answer by sunset, {0}. Maybe the next one.
 Honest answer, {0}? I don't know. But I'll keep you standin' while I find out.
-Ask Eaglefang, {0}. He's got an answer for everything. Most of 'em are "drink water".
+Ask {bot:eaglefang}, {0}. He's got an answer for everything. Most of 'em are "drink water".
 Depends, {0}. Is it a sit-down question or a walk-and-talk question?
 Never thought about it, {0}. Now I will. All day, probably.
 Me? Sure, {0}. Long as nobody makes me hurry.
@@ -206,7 +206,7 @@ Thanks, {0}. I just keep folks standin'. You did the hard part.
 Heh. Appreciate that, bub. Goin' in my good memories pile. It's a small pile.
 You're kind, {0}. Persoper usually gets the compliments. I'm not jealous. Much.
 Thanks, {0}. Means more than you'd think.
-Ha. Careful, {0}. Keep sayin' things like that and I'll stand up straight. Eaglefang'll faint.
+Ha. Careful, {0}. Keep sayin' things like that and I'll stand up straight. {bot:eaglefang}'ll faint.
 That's nice to hear, {0}. Stick close next pull, I've got your back.
 Thanks, bub. Feels good, that. Like the first warm day after a cold week.
 
@@ -216,7 +216,7 @@ Yep. Took me years to figure that out, {0}. You got there faster.
 Right there with ya, {0}. Pass the cup.
 Can't argue with that. Wouldn't want to, {0}. Too much effort.
 See? Slow thinkin' gets there in the end, {0}.
-Ha, Eaglefang would say the same, {0}. Don't tell him I agreed.
+Ha, {bot:eaglefang} would say the same, {0}. Don't tell him I agreed.
 True, {0}. Very true. Somebody write that down.
 Same, bub. Same.
 Good, {0}. Nice when folks agree. Makes the pull go easier.

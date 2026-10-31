@@ -26,6 +26,7 @@ public static class DialogueFactSource
         {
             BotId = personality?.TypeKey == null ? personality?.Key : bot.InternalID,
             PlayerId = playerId,
+            Realm = bot.Realm,
             PlayerDead = !player.IsAlive,
             InCombat = player.InCombat,
             Health = player.HealthPercent,
@@ -49,8 +50,16 @@ public static class DialogueFactSource
         if (bot == null)
             return null;
         BotPersonality personality = BotPersonalities.For(bot);
-        return ForBot(PersonalityReactions.MemoryKey(bot, personality), bot.InCombat, bot.Group?.MemberCount ?? 1,
-            DialogueFacts.TimeOfDayFor(WorldMgr.GetCurrentGameTime()), bot.CurrentZone?.Description, Nearby(bot, null));
+        return new DialogueFacts
+        {
+            BotId = PersonalityReactions.MemoryKey(bot, personality),
+            Realm = bot.Realm,
+            InCombat = bot.InCombat,
+            GroupSize = bot.Group?.MemberCount ?? 1,
+            TimeOfDay = DialogueFacts.TimeOfDayFor(WorldMgr.GetCurrentGameTime()),
+            Zone = bot.CurrentZone?.Description,
+            Nearby = Nearby(bot, null),
+        };
     }
 
     /// <summary>Bot-to-bot facts from plain values (tests).</summary>
@@ -65,7 +74,7 @@ public static class DialogueFactSource
             Nearby = nearby,
         };
 
-    /// <summary>Names of players and NPCs near the bot, plus each named bot's personality key; not the bot or the player it talks to.</summary>
+    /// <summary>Names of players and NPCs near the bot, plus each named bot's personality key and character; not the bot or the player it talks to.</summary>
     private static HashSet<string> Nearby(GameBot bot, GamePlayer player)
     {
         var nearby = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -79,9 +88,18 @@ public static class DialogueFactSource
             nearby.Add(npc.Name);
             if (npc is GameBot other && BotPersonalities.For(other) is { } named)
                 nearby.Add(named.Key);
+            if (CharacterOf(npc.Name) is { } character)
+                nearby.Add(character);
         }
         return nearby;
     }
+
+    /// <summary>
+    /// A named bot's character by its file name ("shnacksize" for Shnacksizer), or null: what
+    /// [if nearby shnacksize] looks for, so it holds in every realm.
+    /// </summary>
+    public static string CharacterOf(string name) =>
+        NamedBotLineup.FindByName(name) is { } entry ? PersonalityLines.CharacterKey(entry) : null;
 
     /// <summary>The player's saved answers as words; "other" (an answer nothing matched) says nothing about them.</summary>
     private static HashSet<string> Likes(string playerId) =>

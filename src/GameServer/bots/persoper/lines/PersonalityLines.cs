@@ -216,14 +216,15 @@ public static class PersonalityLines
                 // The character's errors are reported by CheckCharacter; here they'd come twice.
                 (TypeLines lines, TypeTalk talk) = Read(charFile.Block(character), $"{character}.dlg", []);
                 (TypeLines realmLines, TypeTalk realmTalk) = Read(charFile.Block(RealmBlock(entry)), $"{character}.dlg", []);
-                own[NamedKey(entry)] = (Merge(lines, realmLines, Join), Merge(talk, realmTalk, Join));
+                own[NamedKey(entry)] = ForRealm(Merge(lines, realmLines, Join), Merge(talk, realmTalk, Join), entry.Realm);
                 continue;
             }
             string name = BlockName(entry);
             IReadOnlyList<DialogueSection> sections = file.Block(name);
             if (sections.Count == 0)
                 errors.Add($"{key}.dlg: no block '=== {name}' for {entry.Name} (and no {character}.dlg)");
-            own[NamedKey(entry)] = Read(sections, $"{key}.dlg", errors);
+            (TypeLines blockLines, TypeTalk blockTalk) = Read(sections, $"{key}.dlg", errors);
+            own[NamedKey(entry)] = ForRealm(blockLines, blockTalk, entry.Realm);
         }
         return (typeLines, typeTalk, own);
     }
@@ -247,6 +248,13 @@ public static class PersonalityLines
             return own;
         int copies = Math.Max(1, (int)Math.Round((double)type.Length / own.Length));
         return type.Concat(Enumerable.Repeat(own, copies).SelectMany(lines => lines)).ToArray();
+    }
+
+    /// <summary>A named bot's own lines with each {bot:...} filled for its realm (DialogueBotNames).</summary>
+    private static (TypeLines, TypeTalk) ForRealm(TypeLines lines, TypeTalk talk, eRealm realm)
+    {
+        string[] Fill(string[] pool, string[] _) => DialogueBotNames.Fill(pool, realm);
+        return (Merge(lines, lines, Fill), Merge(talk, talk, Fill) with { Nicknames = talk.Nicknames });
     }
 
     /// <summary>Two pools as one: a character's lines and its realm's.</summary>

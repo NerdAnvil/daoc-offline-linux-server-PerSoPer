@@ -211,6 +211,9 @@ public sealed class DialogueFacts
     public string BotId { get; init; }
     public string PlayerId { get; init; }
 
+    /// <summary>The speaker's realm: which name a {bot:...} in its line gets (DialogueBotNames).</summary>
+    public eRealm? Realm { get; init; }
+
     public bool? PlayerDead { get; init; }
     public bool? InCombat { get; init; }
     public int? Health { get; init; }

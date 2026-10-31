@@ -205,7 +205,7 @@ public static class PersonalityReactions
     /// </summary>
     public static string OwnAmbientLine(GameBot bot, BotPersonality personality, Random random) =>
         personality?.Ambient is { Length: > 0 } ambient
-            ? DialoguePicker.Shared.Pick(ambient, DialogueLibrary.RuleFor, DialogueFactSource.ForBot(bot), MemoryKey(bot, personality), DateTime.UtcNow, random ?? Random.Shared)
+            ? DialoguePicker.Shared.Pick(DialogueBotNames.Fill(ambient, bot.Realm), DialogueLibrary.RuleFor, DialogueFactSource.ForBot(bot), MemoryKey(bot, personality), DateTime.UtcNow, random ?? Random.Shared)
             : null;
 
     /// <summary>A typed bot's answer to a topic another bot opened, or null (then it answers as usual).</summary>

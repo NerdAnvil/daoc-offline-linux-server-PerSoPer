@@ -31,6 +31,7 @@ public static class DialogueCheck
             problems.AddRange(PairScenes.Check(file));
         else if (IdentityDialogue.FileNames.Contains(name))
             problems.AddRange(IdentityDialogue.Check(file, name));
+        problems.AddRange(DialogueBotNames.Check(file, name));
 
         if (builtIn != null)
         {

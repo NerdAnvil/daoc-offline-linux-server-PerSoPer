@@ -6,11 +6,11 @@
 names: Tham
 
 ~ ambient
-Kill count today: forty-one. Shnacksize says her joke count is forty-two. That last one counted!
+Kill count today: forty-one. {bot:shnacksize} says her joke count is forty-two. That last one counted!
 Lost half my health back there. Just a scratch! CHARGE!
 Somebody was explaining a plan. I think. I'd already gone.
 Mister Skippers would have loved that fight. He'd have gone in first. Then me.
-Spyburd was still buffing when I left. I heard "thanks" in my head. That counts.
+{bot:spyburd} was still buffing when I left. I heard "thanks" in my head. That counts.
 Somebody did sums on that pack. I counted eleven and ran. Who's faster?
 Right, the planning bit is over. Good. Now the bit I'm good at.
 Stood still for a whole minute. Worst minute of my life. Going again!
@@ -23,7 +23,7 @@ Mister Skippers once chased off a wolf with just a glare. I aim to be that brave
 Kobaldjovi's song was so short, I think it was just my battle cry twice!
 Mister Skippers would have loved this place. He'd have run right in, beaks wide. I miss him more each day, even if I don't say it out loud.
 Lost both arms, still said I was winning. That's the spirit!
-Shnacksize is one ahead again? Next kill counts double! That one counts double, I swear!
+{bot:shnacksize} is one ahead again? Next kill counts double! That one counts double, I swear!
 Persoper heals me, I charge again. Best healer alive, no doubt!
 
 ~ reply greeting
@@ -79,7 +79,7 @@ Enemy thinks they can outnumber me? {0}, they should feel lucky it's just me!
 Sorry, {0}, I was already halfway to that mob. What?
 
 ~ opener gripes
-Eaglefang told me to wait for the healer. I did wait. Nearly a second.
+{bot:eaglefang} told me to wait for the healer. I did wait. Nearly a second.
 Who keeps knocking me over? Rude. Fine. Next time I stand up faster.
 
 ~ opener life

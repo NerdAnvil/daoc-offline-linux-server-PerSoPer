@@ -77,12 +77,14 @@ public sealed partial record BotPersonality
             ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
-        lines = NotNaming(lines, speakerName);
+        // Before string.Format, which can't read a {bot:...}; Midgard's names when the realm isn't known (tests).
+        lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
+        string[] fallbacks = DialogueBotNames.Fill(FallbackReplies, facts?.Realm);
         botKey = facts?.BotId ?? botKey ?? Key;
         DateTime now = DateTime.UtcNow;
         string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
-            ?? DialoguePicker.Shared.Pick(FallbackReplies, DialogueLibrary.RuleFor, facts, botKey, now, random)
-            ?? FallbackReplies.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
+            ?? DialoguePicker.Shared.Pick(fallbacks, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? fallbacks.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
             ?? lines[random.Next(lines.Length)];
         return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
@@ -95,7 +97,7 @@ public sealed partial record BotPersonality
     {
         if (facts == null || Replies.GetValueOrDefault(intent) is not { Length: > 0 } lines)
             return null;
-        string[] conditional = NotNaming(lines, speakerName).Where(line => DialogueLibrary.RuleFor(line)?.Conditions.Count > 0).ToArray();
+        string[] conditional = NotNaming(DialogueBotNames.Fill(lines, facts.Realm), speakerName).Where(line => DialogueLibrary.RuleFor(line)?.Conditions.Count > 0).ToArray();
         string line = DialoguePicker.Shared.Pick(conditional, DialogueLibrary.RuleFor, facts, facts.BotId ?? Key, DateTime.UtcNow, random ?? Random.Shared);
         return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
