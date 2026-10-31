@@ -545,6 +545,7 @@ Tough crowd usually, {0}, but you got me.
 Ba-dum... no. I won't drum for that one. Shnacksize, is that you rubbing off on people? [if nearby shnacksize] [cooldown 30m]
 That's a dad joke, {0}. I can hear Shnacksize laughing at it already. Only her, mind. [if nearby shnacksize] [cooldown 30m]
 I'd put that in a song, but I'd have to rhyme it with "groan". Thanks, Shnacksize. [if nearby shnacksize] [cooldown 30m]
+Ba-dum... groan. {0}, I'm not putting that one in a song, not even a short one. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
 Rough gig, {0}? I've had worse. Ask me about Audliten sometime.

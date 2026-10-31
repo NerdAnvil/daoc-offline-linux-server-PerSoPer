@@ -455,10 +455,13 @@ public static class AutonomousBotChatCoordinator
         BotPersonality personality = BotPersonalities.For(responder);
         if (personality == null)
             return faction ? GenerateFactionReply(opening) : GenerateLocalReply(responder, opening);
-        return (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
+        eAutonomousChatIntent intent = BotIntent(opening, topic, responder.Group != null && responder.Group == starter.Group);
+        DialogueFacts facts = DialogueFactSource.ForBot(responder);
+        // A situation line that holds (a groan with Shnacksize nearby) beats the usual topic answer.
+        return personality.ConditionalReply(intent, starter.Name, Random.Shared, facts)
+            ?? (topic is { } opened ? PersonalityReactions.TopicReplyFor(responder, personality, opened, starter.Name) : null)
             // Always toned down: the cheeky (flirty) lines are for players, not for other bots.
-            ?? personality.Reply(BotIntent(opening, topic, responder.Group != null && responder.Group == starter.Group),
-                starter.Name, toneDown: true, Random.Shared, botKey: PersonalityReactions.MemoryKey(responder, personality));
+            ?? personality.Reply(intent, starter.Name, toneDown: true, Random.Shared, facts);
     }
 
     /// <summary>

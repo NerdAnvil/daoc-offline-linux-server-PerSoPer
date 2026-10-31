@@ -64,7 +64,7 @@ public sealed partial record BotPersonality
     public string TypeKey { get; init; }
 
     /// <summary>
-    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (bot to bot, tests)
+    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (tests)
     /// lines with conditions are left out; [once], cooldowns and recent lines still count.
     /// botKey: whose recent lines to skip when there are no facts (PersonalityReactions.MemoryKey).
     /// </summary>
@@ -85,6 +85,19 @@ public sealed partial record BotPersonality
             ?? FallbackReplies.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
             ?? lines[random.Next(lines.Length)];
         return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+    }
+
+    /// <summary>
+    /// A reply from only the lines with conditions ([if ...]) that hold, or null when none does. Lets a
+    /// situation line (a groan with Shnacksize nearby) win over the usual topic answer.
+    /// </summary>
+    public string ConditionalReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts)
+    {
+        if (facts == null || Replies.GetValueOrDefault(intent) is not { Length: > 0 } lines)
+            return null;
+        string[] conditional = NotNaming(lines, speakerName).Where(line => DialogueLibrary.RuleFor(line)?.Conditions.Count > 0).ToArray();
+        string line = DialoguePicker.Shared.Pick(conditional, DialogueLibrary.RuleFor, facts, facts.BotId ?? Key, DateTime.UtcNow, random ?? Random.Shared);
+        return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
 
     /// <summary>

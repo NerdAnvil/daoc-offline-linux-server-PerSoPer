@@ -130,6 +130,15 @@ public static class PersonalityReactions
         return null;
     }
 
+    /// <summary>A typed bot's opener on one topic (a joke for Fun), or null when it has none (/dialogue joke).</summary>
+    public static string TopicOpener(GameBot bot, eChatTopic topic, Random random)
+    {
+        BotPersonality personality = BotPersonalities.For(bot);
+        return LinesFor(personality)?.Openers.GetValueOrDefault(topic) is { Length: > 0 } pool
+            ? PickFilled(pool, SlotsFor(bot, NextLevel(bot)), null, random, MemoryKey(bot, personality))
+            : null;
+    }
+
     /// <summary>An answer on the topic someone just opened; {0} is the one who opened it. Null: none.</summary>
     public static string TopicReply(TypeLines lines, eChatTopic topic, string otherName, LineSlots slots, Random random, string botKey = null) =>
         lines?.TopicReplies.GetValueOrDefault(topic) is { } pool ? PickFilled(pool, slots, otherName, random, botKey) : null;

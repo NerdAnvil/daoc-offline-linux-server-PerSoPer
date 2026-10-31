@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -44,6 +45,48 @@ public class UT_DialogueFolder
     private void Write(string name, string text) => File.WriteAllText(Path.Combine(_folder, name + ".dlg"), text);
 
     private static string KobaldjoviThanks() => KobaldjoviIdentity.Personality.Reply(eAutonomousChatIntent.Thank, "Tester", true, new Random(1));
+
+    [Test]
+    public void BotToBotReply_UsesNearbyLines_WhenTheBotIsClose()
+    {
+        DialogueLibrary.Initialize(null);
+        string Joke(params string[] nearby) => PersoperIdentity.Personality.Reply(eAutonomousChatIntent.Joke, "Spyburd", true, new Random(1),
+            DialogueFactSource.ForBot("persoper", false, 2, "day", "Camelot Hills", new HashSet<string>(nearby, StringComparer.OrdinalIgnoreCase)));
+
+        Assert.That(Joke("spyburd"), Does.Not.Contain("Shnacksize"), "no groan without Shnacksize");
+        Assert.That(Joke("spyburd", "shnacksize"), Does.Contain("Shnacksize"), "a groan when she is close");
+    }
+
+    [Test]
+    public void BotToBotReply_ConditionalLineBeatsTheTopicAnswer_EvenWhenSheTellsTheJoke()
+    {
+        DialogueLibrary.Initialize(null);
+        DialogueFacts Facts(params string[] nearby) =>
+            DialogueFactSource.ForBot("persoper", false, 2, "day", "Camelot Hills", new HashSet<string>(nearby, StringComparer.OrdinalIgnoreCase));
+
+        Assert.That(PersoperIdentity.Personality.ConditionalReply(eAutonomousChatIntent.Joke, "Shnacksize", new Random(1), Facts("spyburd")), Is.Null);
+        Assert.That(PersoperIdentity.Personality.ConditionalReply(eAutonomousChatIntent.Joke, "Shnacksize", new Random(1), Facts("shnacksize")),
+            Does.StartWith("Oh, Shnacksize, that pun hurt"), "the groan that doesn't name her as someone else");
+    }
+
+    [TestCase("Persoper")]
+    [TestCase("Kobaldjovi")]
+    [TestCase("Spyburd")]
+    [TestCase("Eaglefang")]
+    public void Groaners_HaveALineForShnacksizesOwnJokes(string name)
+    {
+        // Lines that name the speaker are dropped when she is the one joking, so each needs one that doesn't.
+        DialogueLibrary.Initialize(null);
+        BotPersonality personality = DialoguePreview.Find(name);
+        DialogueFacts Facts(params string[] nearby) =>
+            DialogueFactSource.ForBot(name, false, 6, "day", "Jordheim", new HashSet<string>(nearby, StringComparer.OrdinalIgnoreCase));
+
+        Assert.That(personality, Is.Not.Null);
+        Assert.That(personality.ConditionalReply(eAutonomousChatIntent.Joke, "Shnacksize", new Random(1), Facts("shnacksize")), Is.Not.Null,
+            $"{name} groans at her own joke");
+        Assert.That(personality.ConditionalReply(eAutonomousChatIntent.Joke, "Shempenstein", new Random(1), Facts("shempenstein")), Is.Null,
+            $"{name} doesn't groan when she isn't there");
+    }
 
     [Test]
     public void FolderFile_IsUsed_AndTheBotAnswersWithIt()

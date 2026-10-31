@@ -160,6 +160,7 @@ Ha. Took me a second, {0}. Worth the wait.
 Heh. Somebody's in a good mood. I like it, {0}. Keep it goin'.
 Heh. Oof. That's a Shnacksize special, that is. Even Gary wouldn't laugh, and Gary laughed at everybody. [if nearby shnacksize] [cooldown 30m]
 Ohh, that's a groaner, {0}. Shnacksize'll be proud. Somebody's gotta be. [if nearby shnacksize] [cooldown 30m]
+Ohh, {0}. That one creaked worse than my knees, and they're old knees. [if nearby shnacksize] [cooldown 30m]
 
 ~ reply grumble
 Saw that from the back, {0}. You took the worst of it. Sit, I'll sort you out.

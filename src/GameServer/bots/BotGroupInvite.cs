@@ -86,7 +86,8 @@ public static class BotGroupInvite
     public static bool ShouldMoveBesidePlayer(ushort botRegion, ushort playerRegion, bool botAlive) =>
         botAlive && botRegion != playerRegion;
 
-    private static bool TryMoveBesidePlayer(GameBot bot, GamePlayer player)
+    /// <summary>Moves a bot beside the player in formation, ending whatever it was doing (also /dialogue gather).</summary>
+    public static bool TryMoveBesidePlayer(GameBot bot, GamePlayer player)
     {
         if (player.CurrentZone == null)
             return false;
