@@ -75,22 +75,44 @@ public static partial class SceneLines
     };
 }
 
-/// <summary>Two types that needle each other, and their scripted scenes. A is always the Lead type.</summary>
+/// <summary>
+/// Two types that needle each other, and their scripted scenes. A is always the Lead type. For a
+/// named character's own scenes Lead is its character key and Rival is "any" (PairScenes.AnyRival).
+/// </summary>
 public sealed record TypePair(string Lead, string Rival, IReadOnlyList<SceneScript> Scenes)
 {
-    /// <summary>Its block name in scenes.dlg: "joker-loner".</summary>
+    /// <summary>A character block's "~ crowd laugh" lines: how most of a crowd ends one ({a} = the character). Empty: no crowds.</summary>
+    public IReadOnlyList<string> CrowdLaughs { get; init; } = [];
+
+    /// <summary>A character block's "~ crowd grumble" lines: what the few who didn't enjoy it say ({a} = the character).</summary>
+    public IReadOnlyList<string> CrowdGrumbles { get; init; } = [];
+
+    /// <summary>A character block's "~ crowd confused" lines: someone asking what is going on, a few lines in. Optional.</summary>
+    public IReadOnlyList<string> CrowdConfused { get; init; } = [];
+
+    /// <summary>True when it can play a crowd: it has both kinds of ending lines.</summary>
+    public bool HasCrowd => CrowdLaughs.Count > 0 && CrowdGrumbles.Count > 0;
+
+    /// <summary>Its block name in scenes.dlg: "joker-loner" or "shempenstein-any".</summary>
     public string Name => $"{Lead}-{Rival}";
 }
 
 /// <summary>
 /// The light type relationships (Hardcore vs Casual, Min/maxer lectures Leeroy, Joker teases
-/// Loner) and their scripts, read from dialogue/scenes.dlg: one "=== lead-rival" block per pair,
+/// Loner) and their scripts, read from dialogue/scenes.dlg: one "=== lead-rival" block per pair
+/// (or "=== shempenstein-any": a named character with any other bot),
 /// one "~ short|medium|large name [if tone_down off]" section per scene, lines "A: text".
 /// <see cref="Check"/> lists what a scenes file breaks; the scenes it breaks are left out.
 /// </summary>
 public static class PairScenes
 {
     public const string FileName = "scenes";
+
+    /// <summary>The rival in a named character's block ("shempenstein-any"): any other bot that can talk.</summary>
+    public const string AnyRival = "any";
+
+    /// <summary>A character block's crowd lines: "~ crowd laugh" and "~ crowd grumble".</summary>
+    public const string CrowdSection = "crowd";
 
     /// <summary>Scenes read per pair at most.</summary>
     public const int MaxScenesPerPair = 100;
@@ -139,9 +161,11 @@ public static class PairScenes
             IReadOnlyList<DialogueSection> sections = file.Block(block);
             string where = sections.Count > 0 ? $"{file.FileName}:{sections[0].LineNumber}: '=== {block}'" : $"{file.FileName}: '=== {block}'";
             string[] types = block.Split('-');
-            if (types.Length != 2 || !PersonalityLines.TypeKeys.Contains(types[0]) || !PersonalityLines.TypeKeys.Contains(types[1]) || types[0] == types[1])
+            bool character = types.Length == 2 && types[1] == AnyRival && PersonalityLines.IsCharacterFile(types[0]);
+            if (!character && (types.Length != 2 || !PersonalityLines.TypeKeys.Contains(types[0]) || !PersonalityLines.TypeKeys.Contains(types[1]) || types[0] == types[1]))
             {
-                errors.Add($"{where}: a pair is two different types, lead first, like 'joker-loner' (types: {string.Join(", ", PersonalityLines.TypeKeys)})");
+                errors.Add($"{where}: a pair is two different types, lead first, like 'joker-loner' (types: {string.Join(", ", PersonalityLines.TypeKeys)}), " +
+                    $"or a named character and '{AnyRival}', like 'shempenstein-{AnyRival}'");
                 continue;
             }
             if (pairs.Any(pair => pair.Lead == types[1] && pair.Rival == types[0]))
@@ -153,19 +177,48 @@ public static class PairScenes
                 errors.Add($"{where}: 'names:' doesn't belong in a scenes file");
 
             var scenes = new List<SceneScript>();
+            var laughs = new List<string>();
+            var grumbles = new List<string>();
+            var confused = new List<string>();
             foreach (DialogueSection section in sections.Take(MaxScenesPerPair))
-                if (ReadScene(file, section, scenes, errors) is { } scene)
+            {
+                if (section.Name == CrowdSection)
+                    ReadCrowd(file, section, character, laughs, grumbles, confused, errors);
+                else if (ReadScene(file, section, scenes, errors) is { } scene)
                     scenes.Add(scene);
+            }
+            if (laughs.Count > 0 != grumbles.Count > 0)
+                errors.Add($"{where}: a crowd needs both '~ crowd laugh' and '~ crowd grumble' lines");
             if (sections.Count > MaxScenesPerPair)
                 errors.Add($"{where}: more than {MaxScenesPerPair} scenes; the rest are ignored");
             if (scenes.Count == 0)
                 errors.Add($"{where}: no scenes that work");
             else
-                pairs.Add(new TypePair(types[0], types[1], scenes));
+                pairs.Add(new TypePair(types[0], types[1], scenes) { CrowdLaughs = laughs, CrowdGrumbles = grumbles, CrowdConfused = confused });
         }
         if (pairs.Count == 0 && file.Errors.Count == 0)
             errors.Add($"{file.FileName}: no pairs");
         return pairs;
+    }
+
+    /// <summary>"~ crowd laugh", "~ crowd grumble" or "~ crowd confused" in a character block: its lines go to that pool.</summary>
+    private static void ReadCrowd(DialogueFile file, DialogueSection section, bool character, List<string> laughs, List<string> grumbles,
+        List<string> confused, List<string> errors)
+    {
+        string where = $"{file.FileName}:{section.LineNumber}: '~ {section.Name}{(section.Argument == null ? "" : " " + section.Argument)}'";
+        List<string> pool = section.Argument switch { "laugh" => laughs, "grumble" => grumbles, "confused" => confused, _ => null };
+        if (!character || pool == null || section.Condition != null)
+        {
+            errors.Add($"{where}: crowd lines are '~ crowd laugh', '~ crowd grumble' or '~ crowd confused', in a character's block ('=== shempenstein-{AnyRival}')");
+            return;
+        }
+        foreach (string line in section.Lines.Take(MaxScenesPerPair))
+        {
+            if (Placeholder.Matches(line).Any(match => match.Value != "{a}"))
+                errors.Add($"{where}: crowd lines only take {{a}} (the character's name): {line}");
+            else
+                pool.Add(line);
+        }
     }
 
     /// <summary>One "~ short name" section as a scene, or null (with the reason in errors) when it breaks a rule.</summary>
@@ -219,6 +272,10 @@ public static class PairScenes
     /// <summary>The pair these two types make (in either order), or null.</summary>
     public static TypePair For(string typeA, string typeB) =>
         All.FirstOrDefault(pair => pair.Lead == typeA && pair.Rival == typeB || pair.Lead == typeB && pair.Rival == typeA);
+
+    /// <summary>A named character's own scenes with any bot ("shempenstein-any"; key as in PersonalityLines.CharacterKey), or null.</summary>
+    public static TypePair ForCharacter(string characterKey) =>
+        characterKey == null ? null : All.FirstOrDefault(pair => pair.Lead == characterKey && pair.Rival == AnyRival);
 
     /// <summary>The types this one has a relationship with.</summary>
     public static IReadOnlyList<string> RivalsOf(string type) =>

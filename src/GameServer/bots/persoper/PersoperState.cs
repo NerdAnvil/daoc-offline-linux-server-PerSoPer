@@ -23,6 +23,12 @@ public static class PersoperProperties
     [ServerProperty("persoper", "persoper_chatter_percent", "How chatty personality-type bots are, 0-100: 0 = silent, 50 = calm, 100 = lively (default).", 100)]
     public static int CHATTER_PERCENT;
 
+    [ServerProperty("persoper", "persoper_character_scene_minutes", "Fewest minutes between a named bot's own scenes (Shempenstein's pal, buddy, guy bit; scenes.dlg '=== shempenstein-any'). 0 = never.", 120)]
+    public static int CHARACTER_SCENE_MINUTES;
+
+    [ServerProperty("persoper", "persoper_crowd_scene_percent", "Chance (0-100) that a named bot's own scene turns into a crowd: up to 20 bots pile in for about a minute, then laugh or grumble.", 1)]
+    public static int CROWD_SCENE_PERCENT;
+
     [ServerProperty("persoper", "persoper_sulk_minutes", "Minutes a personality bot refuses you after quitting on you (0 = no sulk).", 10)]
     public static int SULK_MINUTES;
 

@@ -1,6 +1,10 @@
-# Scenes: short scripts between two rival personality types. Format: see DialogueFile.cs.
+# Scenes: short scripts between two rival personality types, or a named character and any bot.
+# Format: see DialogueFile.cs.
 #
 # === lead-rival        a pair of types; A is the lead type, B the rival ("joker-loner")
+# === name-any          a named character's own scenes ("shempenstein-any"): A is that character,
+#                       B any other bot that can talk; rare, and never twice with the same bot
+#                       while the server runs. Try one: /dialogue scene shempenstein-any <id>
 # ~ short <id>          a scene: its size and a name (letters, digits, - or _; unique in the pair)
 #                       short has 2 to 4 lines, medium 5 to 8, large 9 to 12
 # ~ short <id> [if tone_down off]   a cheeky scene, only played when persoper_tone_down is off
@@ -250,3 +254,58 @@ A: {b}, I bet you're a great dancer. When nobody's looking.
 B: Nobody is looking, {a}.
 A: I'm looking!
 B: Not for long.
+
+# Shempenstein's own bit (owner's choice: the known pal, buddy, guy routine, nearly word for word).
+=== shempenstein-any
+
+~ medium pal-buddy-guy
+A: Sure thing, {b}, no rush, pal.
+B: I'm not your pal, buddy.
+A: I'm not your buddy, guy.
+B: I'm not your guy, pal.
+A: ...I'm not your pal, buddy.
+B: I'm done. Good day, {a}.
+
+~ medium pal-buddy-guy-laugh
+A: Good pull there, {b}. Nice one, pal.
+B: I'm not your pal, buddy.
+A: I'm not your buddy, guy.
+B: I'm not your guy, pal.
+A: Heh. We could do this all day, {b}.
+B: We really couldn't.
+
+~ medium pal-buddy-guy-crowd
+A: Hang on a sec, pal, I'm finishing my sandwich.
+B: I'm not your pal, buddy.
+A: I'm not your buddy, guy.
+B: I'm not your guy, pal.
+C: Are you two done?
+A: Sure, sure. No rush, buddy.
+
+# A crowd (persoper_crowd_scene_percent): most laugh, a few grumble. Loose and typed fast.
+~ crowd laugh
+lol ok ok u got me {a}
+lmao i cant breathe
+every. single. time.
+hahaha who even started this
+that went on way to long and i loved it
+rofl someone clip that
+omg we're all idiots lol
+ded. im ded.
+lol brb wiping tears off my keybaord
+omg we're such dorks
+idiots. all of u. lol
+haha goobers
+heh. i love u guyz
+
+# Someone who hasn't joined in yet, five lines in.
+~ crowd confused
+wtf is happening right now
+uh. what did i just log into
+is this a raid or a group therapy session
+someone explain. slowly.
+
+~ crowd grumble
+Are we done? Some of us are hunting.
+Children. I'm grouped with children.
+I'm not your anything. Leave me out of it.

@@ -120,6 +120,12 @@ The answer is saved per player (`player_likes metal`) and later lines can check 
 
 **Scenes** (`scenes.dlg`): short scripts between two or more bots, picked by the same rules.
 Target: 10 per pair.
+A named character can have its own block (`=== shempenstein-any`): the character with any other
+bot, at most once per `persoper_character_scene_minutes` (default 120, 0 = never), not with the
+same bot again within four times that. Its `~ crowd laugh`, `~ crowd grumble` and optional
+`~ crowd confused` lines let it turn, now and then (`persoper_crowd_scene_percent`, default 1),
+into a crowd: up to 20 bots pile in for about a minute, then most laugh and a few grumble.
+Try them with `/dialogue scene shempenstein-any <scene>` or `... crowd`.
 
 ## How a line is picked
 

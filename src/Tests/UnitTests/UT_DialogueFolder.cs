@@ -226,6 +226,11 @@ public class UT_DialogueFolder
     }
 
     [TestCase("=== joker-joker\n~ short a\nA: 1\nB: 2\n", "scenes.dlg:2: '=== joker-joker': a pair is two different types")]
+    [TestCase("=== nobody-any\n~ short a\nA: 1\nB: 2\n", "or a named character and 'any', like 'shempenstein-any'")]
+    [TestCase("=== joker-any\n~ short a\nA: 1\nB: 2\n", "scenes.dlg:2: '=== joker-any': a pair is two different types")]
+    [TestCase("=== joker-loner\n~ short a\nA: 1\nB: 2\n~ crowd laugh\nHa.\n", "crowd lines are '~ crowd laugh', '~ crowd grumble' or '~ crowd confused', in a character's block")]
+    [TestCase("=== shempenstein-any\n~ short a\nA: 1\nB: 2\n~ crowd laugh\nHa.\n", "a crowd needs both '~ crowd laugh' and '~ crowd grumble' lines")]
+    [TestCase("=== shempenstein-any\n~ short a\nA: 1\nB: 2\n~ crowd laugh\nHa, {b}.\n~ crowd grumble\nHmph.\n", "crowd lines only take {a}")]
     [TestCase("=== joker-loner\n~ short a\nA: 1\nB: 2\n=== loner-joker\n~ short a\nA: 1\nB: 2\n", "'=== loner-joker': this pair is already in the file the other way round")]
     [TestCase("=== joker-loner\n~ tiny a\nA: 1\nB: 2\n", "scenes.dlg:2: '~ tiny a': a scene is '~ short', '~ medium' or '~ large'")]
     [TestCase("=== joker-loner\n~ short\nA: 1\nB: 2\n", "'~ short': the scene needs a name")]
@@ -241,6 +246,21 @@ public class UT_DialogueFolder
     {
         DialogueFile file = DialogueFile.Parse(text, "scenes.dlg");
         Assert.That(DialogueCheck.Problems(file, "scenes", null), Has.Some.Contains(problem));
+    }
+
+    [Test]
+    public void ScenesFile_CharacterBlock_GivesThatCharacterItsOwnScenes()
+    {
+        Assert.That(PairScenes.ForCharacter("spyburd"), Is.Null);
+        Write("scenes", BuiltInText("scenes") + "\n=== spyburd-any\n~ short buff\nA: Buff, {b}?\nB: No thanks, {a}.\n");
+        Assert.That(DialogueLibrary.Initialize(_folder).Errors, Is.Empty);
+        TypePair pair = PairScenes.ForCharacter("spyburd");
+        Assert.That(pair.Name, Is.EqualTo("spyburd-any"));
+        Assert.That(pair.Scenes.Single().Name, Is.EqualTo("buff"));
+        Assert.That(PairScenes.Find("spyburd-any"), Is.SameAs(pair));
+        Assert.That(pair.HasCrowd, Is.False);
+        Assert.That(PairScenes.ForCharacter("eaglefang"), Is.Null);
+        Assert.That(PairScenes.RivalsOf("casual"), Does.Not.Contain(PairScenes.AnyRival));
     }
 
     [Test]
