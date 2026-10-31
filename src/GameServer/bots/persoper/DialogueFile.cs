@@ -44,8 +44,8 @@ public sealed partial class DialogueFile
     /// <summary>The conditions a section may carry.</summary>
     public static readonly IReadOnlySet<string> KnownConditions = new HashSet<string> { "tone_down off", "tone_down on" };
 
-    /// <summary>The sections whose lines may carry rules (for now: the chat replies).</summary>
-    public static readonly IReadOnlySet<string> RuleSections = new HashSet<string> { "reply", "cheeky_reply", "fallback" };
+    /// <summary>The sections whose lines may carry rules (for now: the chat replies and ambient lines).</summary>
+    public static readonly IReadOnlySet<string> RuleSections = new HashSet<string> { "reply", "cheeky_reply", "fallback", "ambient" };
 
     /// <summary>Nicknames per block at most.</summary>
     public const int MaxNames = 8;

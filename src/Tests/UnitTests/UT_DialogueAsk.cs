@@ -48,7 +48,7 @@ public class UT_DialogueAsk
     [TestCase("=== a\n~ ask q\nQ?\n-> two words: y\n-> other: z\n", "bad.dlg:4: bad answer 'two words' (one word of 2 to 32 lower-case letters, so a chat line can match it)")]
     [TestCase("=== a\n~ ask q\nQ?\n-> r2d2: y\n-> other: z\n", "bad.dlg:4: bad answer 'r2d2' (one word of 2 to 32 lower-case letters, so a chat line can match it)")]
     [TestCase("=== a\n~ ding\nDing!\n-> xx: y\n", "bad.dlg:4: '->' answers only work in '~ ask' sections (use \\-> for text)")]
-    [TestCase("=== a\n~ ask q\nQ? [once]\n-> other: y\n", "bad.dlg:3: rules only work in reply, cheeky_reply, fallback sections for now")]
+    [TestCase("=== a\n~ ask q\nQ? [once]\n-> other: y\n", "bad.dlg:3: rules only work in reply, cheeky_reply, fallback, ambient sections for now")]
     public void Parse_ReportsAskProblemsWithFileAndRow(string text, string expected)
     {
         Assert.That(DialogueFile.Parse(text, "bad.dlg").Errors, Does.Contain(expected));

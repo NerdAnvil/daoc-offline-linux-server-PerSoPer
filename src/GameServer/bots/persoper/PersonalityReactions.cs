@@ -187,7 +187,7 @@ public static class PersonalityReactions
     private static readonly Dictionary<ushort, long> NextRegionReaction = new();
     private static readonly Dictionary<eRealm, long> NextFactionDing = new();
 
-    /// <summary>A typed bot's ambient line: from its topic pools mostly, else its short Ambient list.</summary>
+    /// <summary>A typed bot's ambient line: from its topic pools mostly, else its short Ambient list (which may have [if ...] lines).</summary>
     public static string AmbientLine(GameBot bot, BotPersonality personality, Random random, out eChatTopic? topic)
     {
         topic = null;
@@ -196,13 +196,17 @@ public static class PersonalityReactions
             Opener(lines, SlotsFor(bot, NextLevel(bot)), PersoperProperties.TONE_DOWN, random, out topic, MemoryKey(bot, personality)) is { } opener)
             return opener;
         topic = null;
-        if (personality?.Ambient is not { Length: > 0 } ambient)
-            return null;
-        string key = MemoryKey(bot, personality);
-        string line = Any(ambient, random, key);
-        DialoguePicker.Shared.Said(key, line);
-        return line;
+        return OwnAmbientLine(bot, personality, random);
     }
+
+    /// <summary>
+    /// A line from the bot's short Ambient list by the dialogue rules, with what the bot sees itself:
+    /// a night line ([if time_of_day night]) wins at night. Null when it has none (/dialogue ambient).
+    /// </summary>
+    public static string OwnAmbientLine(GameBot bot, BotPersonality personality, Random random) =>
+        personality?.Ambient is { Length: > 0 } ambient
+            ? DialoguePicker.Shared.Pick(ambient, DialogueLibrary.RuleFor, DialogueFactSource.ForBot(bot), MemoryKey(bot, personality), DateTime.UtcNow, random ?? Random.Shared)
+            : null;
 
     /// <summary>A typed bot's answer to a topic another bot opened, or null (then it answers as usual).</summary>
     public static string TopicReplyFor(GameBot responder, BotPersonality personality, eChatTopic topic, string starterName) =>

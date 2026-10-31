@@ -15,6 +15,13 @@ Today I'm Captain Shnacksize, Admiral of Swissland, and Queen of the ScottsIrish
 Eaglefang told me to sit still, and I tried, but sitting is like a foreign language to me!
 Practised my grand entrance. Tripped on the doorstep. Change of plan! Now it's a grand exit!
 Found my joke list. Turns out the jokes were better than the list.
+Night fell, and I jumped at my shadow! I mean, I was just... testing my reflexes! [if time_of_day night]
+Night's too quiet? Let's talk about the Glopeldink! It's... less scary than the dark, right? [if time_of_day night]
+The dark? Scared of me! I'm not scared... not at all... whoo! [if time_of_day night]
+An owl hooted, and I hid behind the nearest person, checking their armour for any weak spots. It was research, not fear! [if time_of_day night]
+Counting stars, one, two, three... Better than counting shadows, trust me. [if time_of_day night]
+Night fell, and shadows danced. A twig snapped, and I whipped out both blades. What's in the bush, you naughty glopeldink? [if time_of_day night]
+It's not that I'm afraid of the dark, I'm just taking a Swissland-style power nap with my eyes open! [if time_of_day night]
 
 ~ reply greeting
 Ta-daa! {0}, your day just got flashier.

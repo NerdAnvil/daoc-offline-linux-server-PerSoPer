@@ -72,7 +72,9 @@ Ooh, shiny! Save some for me, {0}? [if recent loot] [cooldown 11m]
 Conditions are split by commas and are about the player the bot is talking to. Forms:
 `[if player_dead]`, `[if not in_combat]`, `[if health < 30]`, `[if mood warm]`,
 `[if zone camelot city]`. A cooldown takes seconds, minutes or hours (`30s`, `11m`, `2h`, at most
-24h). For now, rules work in `reply`, `cheeky_reply` and `fallback` sections; `[once]`, cooldowns
+24h). For now, rules work in `reply`, `cheeky_reply`, `fallback` and `ambient` sections (an ambient
+line, and a reply to another bot, sees only what the bot itself sees: combat, group, zone, time,
+who is nearby); `[once]`, cooldowns
 and recent events are kept in memory and start fresh when the server restarts.
 
 **Swap-in parts** (defined once per block, used inside lines):

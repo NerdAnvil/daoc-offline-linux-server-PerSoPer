@@ -8,8 +8,8 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize" and "/dialogue forget" set up in-game checks of
-    /// bot-to-bot lines (tools/check-groans-ingame.sh).
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize" and "/dialogue forget" set up in-game checks of
+    /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
     /// </summary>
     [CmdAttribute("&dialogue", ePrivLevel.GM, "Shows or reloads the bot dialogue files, plays a scene, or has Persoper ask a question",
@@ -18,6 +18,7 @@ namespace DOL.GS.Commands
         "/dialogue answers   (your own saved answers to the bots' questions)",
         "/dialogue gather   (moves the bots in your group beside you)",
         "/dialogue joke <bot>   (a bot in your group tells a joke there now; its groupmates answer)",
+        "/dialogue ambient <bot>   (a bot in your group says one of its own ambient lines there now)",
         "/dialogue forget   (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
     {
@@ -64,6 +65,11 @@ namespace DOL.GS.Commands
                 ChatUtil.SendSystemMessage(client, TellJoke(client.Player, args[2]));
                 return;
             }
+            if (verb == "ambient" && args.Length == 3)
+            {
+                ChatUtil.SendSystemMessage(client, SayAmbient(client.Player, args[2]));
+                return;
+            }
             if (verb == "forget" && args.Length == 2)
             {
                 DialoguePicker.Shared.Clear();
@@ -91,11 +97,29 @@ namespace DOL.GS.Commands
         private static GameBot[] GroupBots(GamePlayer player) =>
             player.Group?.GetMembersInTheGroup().OfType<GameBot>().Take(ServerProperties.Properties.GROUP_MAX_MEMBER).ToArray() ?? [];
 
+        /// <summary>The bot in the player's group with this name or personality key, or null.</summary>
+        private static GameBot GroupBot(GamePlayer player, string name) =>
+            GroupBots(player).FirstOrDefault(member => string.Equals(member.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(BotPersonalities.For(member)?.Key, name, System.StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>The named bot says a line from its own ambient list in group chat now (night lines at night).</summary>
+        private static string SayAmbient(GamePlayer player, string name)
+        {
+            GameBot bot = GroupBot(player, name);
+            if (bot == null)
+                return $"No bot called {name} in your group.";
+            string line = PersonalityReactions.OwnAmbientLine(bot, BotPersonalities.For(bot), System.Random.Shared);
+            if (line == null)
+                return $"{bot.Name} has no ambient lines.";
+            return AutonomousBotChatCoordinator.SpeakInGroup(bot, line, null)
+                ? $"{bot.Name} says an ambient line."
+                : $"{bot.Name} can't talk now (fighting, casting or riding?).";
+        }
+
         /// <summary>The named bot (name or personality key) tells a joke in group chat now, as if it had opened a topic itself.</summary>
         private static string TellJoke(GamePlayer player, string name)
         {
-            GameBot bot = GroupBots(player).FirstOrDefault(member => string.Equals(member.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(BotPersonalities.For(member)?.Key, name, System.StringComparison.OrdinalIgnoreCase));
+            GameBot bot = GroupBot(player, name);
             if (bot == null)
                 return $"No bot called {name} in your group.";
             string joke = PersonalityReactions.TopicOpener(bot, eChatTopic.Fun, System.Random.Shared);

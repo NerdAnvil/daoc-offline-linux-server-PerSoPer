@@ -56,10 +56,21 @@ public class UT_DialogueRules
     }
 
     [Test]
+    public void Ambient_NightLine_WinsAtNight_FromTheBotsOwnFacts()
+    {
+        DialogueFile file = DialogueFile.Parse("=== bot\n~ ambient\nPlain.\nDark! [if time_of_day night]\n", "rules.dlg");
+        Assert.That(file.Errors, Is.Empty);
+        DialogueFacts night = DialogueFactSource.ForBot("bot", false, 1, "night", "Jordheim", new HashSet<string>());
+        DialogueFacts day = DialogueFactSource.ForBot("bot", false, 1, "day", "Jordheim", new HashSet<string>());
+        Assert.That(Pick(new DialoguePicker(), file, night, Noon), Is.EqualTo("Dark!"));
+        Assert.That(Enumerable.Range(0, 10).Select(seed => Pick(new DialoguePicker(), file, day, Noon, seed)).Distinct(), Is.EqualTo(new[] { "Plain." }));
+    }
+
+    [Test]
     public void Parse_RulesOnlyInReplySections_AndFallbackNeedsAPlainLine()
     {
         DialogueFile file = DialogueFile.Parse("=== bot\n~ ding\nDing! [once]\n~ fallback\nHuh? [if player_dead]\n", "rules.dlg");
-        Assert.That(file.Errors, Does.Contain("rules.dlg:3: rules only work in reply, cheeky_reply, fallback sections for now"));
+        Assert.That(file.Errors, Does.Contain("rules.dlg:3: rules only work in reply, cheeky_reply, fallback, ambient sections for now"));
         Assert.That(file.Errors, Does.Contain("rules.dlg:4: every fallback line has [if ...]; keep at least one without"));
         Assert.That(file.RuleFor("Ding!"), Is.Null);
     }
