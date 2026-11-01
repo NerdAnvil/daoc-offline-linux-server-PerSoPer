@@ -328,34 +328,83 @@ namespace DOL.GS
             }
         }
 
-        /// <summary>A player spoke in guild chat: gamebot members may answer (one directed answer when named).</summary>
+        /// <summary>
+        /// A player spoke in guild chat: gamebot members may answer. A member named (by name or nickname) answers first,
+        /// in its own voice, even while busy (its reply waits); now and then another member chips in after it. A line
+        /// naming a bot outside the guild isn't the members' to answer.
+        /// </summary>
         public static void OnPlayerGuildChat(GamePlayer player, string message)
         {
             Guild guild = player?.Guild;
             if (guild == null || string.IsNullOrWhiteSpace(message)) return;
             // Persoper isn't a member, but she wears her owner's guild (ShownGuild) and answers there in her own voice.
-            GameBot companion = Commands.PersoperCommandHandler.Active is { } persoper && ShownGuild(persoper) == guild && CanTalk(persoper) ? persoper : null;
+            GameBot companion = Commands.PersoperCommandHandler.Active is { } persoper && ShownGuild(persoper) == guild &&
+                                AutonomousBotChatCoordinator.CanAnswerNamed(persoper) ? persoper : null;
             if (companion == null && !Members.Values.Any(m => m.GuildID == guild.GuildID)) return;
             long now = GameLoop.GameLoopTime;
             if (LastGuildReply.TryGetValue(guild.GuildID, out long last) && now - last < 10_000) return;
             LastGuildReply[guild.GuildID] = now;
-            GameBot[] talkers = OnlineMembers(guild).Where(CanTalk).ToArray();
-            GameBot named = talkers.FirstOrDefault(bot => AutonomousBotChatCoordinator.ContainsMention(message, bot.Name));
+            GameBot[] online = OnlineMembers(guild).ToArray();
+            GameBot[] talkers = online.Where(CanTalk).ToArray();
+            GameBot named = online.Where(AutonomousBotChatCoordinator.CanAnswerNamed)
+                .FirstOrDefault(bot => AutonomousBotChatCoordinator.IsMentionedPublic(message, bot));
             bool toCompanion = companion != null && AutonomousBotChatCoordinator.IsMentionedPublic(message, companion);
-            if (companion != null && named == null && (toCompanion || companion.Owner == player) &&
+            GameBot[] namedHearers = new[] { named, toCompanion ? companion : null }.Where(bot => bot != null).ToArray();
+            if (AutonomousBotChatCoordinator.OthersStayQuiet(namedHearers, AutonomousBotChatCoordinator.NamedInRealm(player, message))) return;
+            if (companion != null && named == null && (toCompanion || companion.Owner == player && CanTalk(companion)) &&
                 AutonomousBotChatCoordinator.PersonalityAnswer(companion, player, message) is { } answer)
             {
-                ScheduleReply(companion, guild, answer, 1_400);
+                ScheduleNamedReply(companion, guild, answer, 1_400, toCompanion ? ChipIn(talkers, companion, player, message) : null);
                 if (toCompanion) return;
             }
-            // A "lol" or "brb" gets Persoper's short reaction at most, not the members' generic answers.
-            if (AutonomousBotChatCoordinator.IsShortReaction(AutonomousChatIntentModel.Read(message))) return;
+            bool shortReaction = AutonomousBotChatCoordinator.IsShortReaction(AutonomousChatIntentModel.Read(message));
             if (named != null)
             {
-                ScheduleReply(named, guild, AutonomousBotChatCoordinator.GenerateFactionReply(message), 1_400);
+                // A personality answers in its own voice ("lol" only now and then); a plain bot with a stock line.
+                string reply = BotPersonalities.For(named) != null
+                    ? AutonomousBotChatCoordinator.PersonalityAnswer(named, player, message)
+                    : shortReaction ? null : AutonomousBotChatCoordinator.GenerateFactionReply(message);
+                if (reply != null)
+                    ScheduleNamedReply(named, guild, reply, 1_400, shortReaction ? null : ChipIn(talkers, named, player, message));
                 return;
             }
+            // A "lol" or "brb" gets Persoper's short reaction at most, not the members' generic answers.
+            if (shortReaction) return;
             ScheduleReplies(guild, null, message, AutonomousBotChatCoordinator.RollResponseCount(Math.Min(2, talkers.Length)));
+        }
+
+        /// <summary>Now and then one other free member's line after the named bot's (own voice, or a stock line); else null.</summary>
+        private static (GameBot Bot, string Line)? ChipIn(GameBot[] talkers, GameBot named, GamePlayer player, string message)
+        {
+            if (AutonomousBotChatCoordinator.ChipIn(talkers.Where(bot => bot != named).ToArray(), Random.Shared) is not { } bot)
+                return null;
+            string line = AutonomousBotChatCoordinator.ChipInLine(bot, player, message) ?? AutonomousBotChatCoordinator.GenerateFactionReply(message);
+            return string.IsNullOrWhiteSpace(line) ? null : (bot, line.Trim());
+        }
+
+        /// <summary>
+        /// A named bot's guild answer: in a cast or a fight it waits a few tries, then answers anyway; once
+        /// said, the chip-in (if any) follows a few seconds later, never with the same words.
+        /// </summary>
+        private static void ScheduleNamedReply(GameBot bot, Guild guild, string reply, int delay, (GameBot Bot, string Line)? chipIn,
+            int retriesLeft = AutonomousBotChatCoordinator.NamedReplyRetries)
+        {
+            new ECSGameTimer(bot, _ =>
+            {
+                bool present = AutonomousBotChatCoordinator.CanAnswerNamed(bot) && ShownGuild(bot) == guild;
+                switch (AutonomousBotChatCoordinator.NextReplyStep(present, bot.InCombat || bot.IsCasting, true, retriesLeft))
+                {
+                    case AutonomousBotChatCoordinator.eReplyStep.Say:
+                        SpeakInGuild(bot, guild, reply);
+                        if (chipIn is { } next && !string.Equals(next.Line, reply.Trim(), StringComparison.OrdinalIgnoreCase))
+                            ScheduleReply(next.Bot, guild, next.Line, 2_500 + Random.Shared.Next(1_500));
+                        break;
+                    case AutonomousBotChatCoordinator.eReplyStep.Retry:
+                        ScheduleNamedReply(bot, guild, reply, 1_500, chipIn, retriesLeft - 1);
+                        break;
+                }
+                return 0;
+            }, delay);
         }
 
         private static void ScheduleReplies(Guild guild, GameBot starter, string incoming, int count)

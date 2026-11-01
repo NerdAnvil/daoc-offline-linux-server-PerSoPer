@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DOL.GS.PacketHandler;
+using DOL.Logging;
 
 namespace DOL.GS;
 
@@ -12,6 +13,7 @@ namespace DOL.GS;
 /// </summary>
 public static class AutonomousBotChatCoordinator
 {
+    private static readonly Logger Log = LoggerManager.Create(typeof(AutonomousBotChatCoordinator));
     private static readonly object Sync = new();
     private static readonly Dictionary<eRealm, long> LastFactionAmbient = new();
     private static readonly Dictionary<ushort, long> LastLocalAmbient = new();
@@ -22,6 +24,11 @@ public static class AutonomousBotChatCoordinator
     // Short reactions (lol, sorry, brb, back, nah): how often the one bot that may react does.
     public const double ReactionChance = 0.25;
     public const double NamedReactionChance = 0.5;
+    // A named bot answers even while riding; in a cast or a fight it waits a few tries for it to end, then answers
+    // anyway. Now and then one other bot chips in a few seconds after it.
+    public const int NamedReplyRetries = 3;
+    private const int NamedRetryDelayMs = 1_500;
+    public const double ChipInChance = 0.15;
     private static readonly Dictionary<Group, long> NextGroupTalk = new();
     private const int MaxGroupTalkEntries = 256;
     private const int PlainGroupTalkGapMs = 120_000;
@@ -199,8 +206,8 @@ public static class AutonomousBotChatCoordinator
     {
         if (string.IsNullOrWhiteSpace(typedName))
             return null;
-        return AutonomousBotRegistry.Snapshot().Where(Eligible)
-            .Concat(PersonalityCompanions())
+        return AutonomousBotRegistry.Snapshot().Where(CanAnswerNamed)
+            .Concat(PersonalityCompanions(evenBusy: true))
             .FirstOrDefault(bot => bot.Realm == realm && BotPersonalities.For(bot) is { } personality &&
                 IsPersonalityName(bot.Name, personality.Name, typedName, personality.Nicknames));
     }
@@ -212,7 +219,10 @@ public static class AutonomousBotChatCoordinator
          string.Equals(typedName.Trim(), personalityName, StringComparison.OrdinalIgnoreCase) ||
          (nicknames ?? []).Any(nickname => string.Equals(typedName.Trim(), nickname, StringComparison.OrdinalIgnoreCase)));
 
-    /// <summary>A player's group message: one personality bot in the group answers, the one named if any.</summary>
+    /// <summary>
+    /// A player's group message: one personality bot in the group answers, the one named if any;
+    /// after a named one, another member now and then chips in.
+    /// </summary>
     public static void OnPlayerGroupChat(GamePlayer player, string message)
     {
         if (player?.Group == null || string.IsNullOrWhiteSpace(message))
@@ -227,15 +237,24 @@ public static class AutonomousBotChatCoordinator
         if (members.Length == 0)
             return;
         GameBot[] mentioned = members.Where(bot => IsMentioned(message, bot)).ToArray();
+        // A line naming a bot outside the group isn't the members' to answer.
+        if (OthersStayQuiet(mentioned, NamedInRealm(player, message)))
+            return;
         GameBot[] pool = mentioned.Length > 0 ? mentioned : members;
-        OnPlayerPrivateChat(player, pool[Random.Shared.Next(pool.Length)], message, ePrivateChannel.Group);
+        GameBot answerer = pool[Random.Shared.Next(pool.Length)];
+        GameBot chipIn = mentioned.Length > 0
+            ? ChipIn(members.Where(bot => bot != answerer && (Eligible(bot) || IsPersonalityCompanion(bot))).ToArray(), Random.Shared)
+            : null;
+        OnPlayerPrivateChat(player, answerer, message, ePrivateChannel.Group, chipIn == null ? null : said =>
+            ScheduleChipIn(player, chipIn, message, said, line => Deliver(chipIn, player, ePrivateChannel.Group, line)));
     }
 
     /// <summary>
     /// A tell, whisper or group line to one personality bot: it answers on the same
     /// channel in its own voice. Plain bots stay silent. Returns false when nothing is sent.
+    /// <paramref name="afterSaid"/> runs with the line once it has been said (not for a short reaction).
     /// </summary>
-    public static bool OnPlayerPrivateChat(GamePlayer player, GameBot bot, string message, ePrivateChannel channel)
+    public static bool OnPlayerPrivateChat(GamePlayer player, GameBot bot, string message, ePrivateChannel channel, Action<string> afterSaid = null)
     {
         // A heal request to a healer is answered by casting, not by chat.
         if (PersonalityHeals.TryHandle(player, message, bot, channel))
@@ -261,7 +280,7 @@ public static class AutonomousBotChatCoordinator
             LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
         if (reaction != null)
         {
-            Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reaction));
+            Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reaction), named: true);
             return true;
         }
 
@@ -270,28 +289,34 @@ public static class AutonomousBotChatCoordinator
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
                 : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
-        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reply));
+        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
+        {
+            if (Deliver(bot, player, channel, reply))
+                afterSaid?.Invoke(reply);
+        }, named: true);
         return true;
     }
 
-    /// <summary>Sends a bot's line to a player on a private channel: a tell, a whisper or group chat.</summary>
-    public static void Deliver(GameBot bot, GamePlayer player, ePrivateChannel channel, string line)
+    /// <summary>Sends a bot's line to a player on a private channel: a tell, a whisper or group chat. False when not sent.</summary>
+    public static bool Deliver(GameBot bot, GamePlayer player, ePrivateChannel channel, string line)
     {
         if (player?.ObjectState != GameObject.eObjectState.Active || string.IsNullOrEmpty(line))
-            return;
+            return false;
         switch (channel)
         {
             case ePrivateChannel.Tell:
                 ChatUtil.SendSendMessage(player.Client, "Social.ReceiveMessage.Private.Sends", bot.Name, line);
-                break;
+                return true;
             case ePrivateChannel.Whisper:
                 bot.Whisper(player, line);
-                break;
+                return true;
             case ePrivateChannel.Group:
-                if (bot.Group != null && bot.Group == player.Group)
-                    bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
-                break;
+                if (bot.Group == null || bot.Group != player.Group)
+                    return false;
+                bot.Group.SendMessageToGroupMembers(bot, line, eChatType.CT_Group, eChatLoc.CL_ChatWindow);
+                return true;
         }
+        return false;
     }
 
     /// <summary>
@@ -694,8 +719,10 @@ public static class AutonomousBotChatCoordinator
         bool hasKnowledge = AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge);
         eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
         // Personality companions (Persoper) are not world bots but still answer players.
-        GameBot[] eligible = AutonomousBotRegistry.Snapshot().Where(Eligible)
-            .Concat(PersonalityCompanions())
+        // A bot named in the line hears it even while riding a stable route or casting (bug #7).
+        GameBot[] eligible = AutonomousBotRegistry.Snapshot()
+            .Where(bot => Eligible(bot) || CanAnswerNamed(bot) && IsMentioned(message, bot))
+            .Concat(PersonalityCompanions(evenBusy: true).Where(bot => IsPersonalityCompanion(bot) || IsMentioned(message, bot)))
             .Where(bot => bot.Realm == player.Realm)
             .Where(bot => faction || bot.CurrentRegion == player.CurrentRegion && bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE))
             .Distinct()
@@ -705,8 +732,20 @@ public static class AutonomousBotChatCoordinator
             .ToArray();
         GameBot[] mentioned = eligible.Where(bot => IsMentioned(message, bot)).ToArray();
         bool directed = mentioned.Length > 0;
+        // A line for a bot that can't hear it (too far, another zone) isn't the others' to answer.
+        if (OthersStayQuiet(mentioned, NamedInRealm(player, message)))
+        {
+            LogUnheardNames(player, message, faction);
+            return;
+        }
+        // The named bot answers alone, first; now and then another personality bot in reach chips in after it.
+        GameBot chipIn = null;
         if (directed)
+        {
+            chipIn = ChipIn(eligible.Where(bot => !mentioned.Contains(bot) && BotPersonalities.For(bot) != null &&
+                (Eligible(bot) || IsPersonalityCompanion(bot))).ToArray(), Random.Shared);
             eligible = mentioned;
+        }
         eAutonomousChatIntent read = AutonomousChatIntentModel.Read(message);
         if (IsShortReaction(read))
         {
@@ -738,12 +777,78 @@ public static class AutonomousBotChatCoordinator
                 continue;
             Schedule(responder, 1_300 + scheduledIndex++ * 1_800 + Random.Shared.Next(1_200), () =>
             {
-                if (faction && HasFactionAudience(responder.Realm))
-                    BotFaction(responder, response);
-                else if (!faction && HasLocalAudience(responder))
-                    responder.Say(response);
-            });
+                if (SayTo(responder, response, faction) && directed && chipIn != null)
+                    ScheduleChipIn(player, chipIn, message, response, line => SayTo(chipIn, line, faction));
+            }, named: directed);
         }
+    }
+
+    /// <summary>
+    /// True when a line names someone (<paramref name="named"/>, wherever they are) but no named bot can hear it
+    /// (<paramref name="namedHearers"/>): the bots that can hear it then stay quiet instead of answering in its place.
+    /// </summary>
+    public static bool OthersStayQuiet<T>(IReadOnlyCollection<T> namedHearers, IReadOnlyCollection<T> named) =>
+        named is { Count: > 0 } && namedHearers is not { Count: > 0 };
+
+    /// <summary>The bots of the player's realm (world bots and Persoper) that a line names, wherever they are.</summary>
+    public static GameBot[] NamedInRealm(GamePlayer player, string message) =>
+        AutonomousBotRegistry.Snapshot().Concat(PersonalityCompanions(evenBusy: true))
+            .Where(bot => bot != null && bot.Realm == player.Realm && IsMentioned(message, bot))
+            .Distinct()
+            .ToArray();
+
+    /// <summary>Logs why a world bot the player named didn't hear the line (bug #7: too far, riding, another region...).</summary>
+    private static void LogUnheardNames(GamePlayer player, string message, bool faction)
+    {
+        foreach (GameBot bot in NamedInRealm(player, message).Take(4))
+            Log.Info($"AUTONOMOUS_CHAT_NAMED_UNHEARD bot=\"{bot.Name}\" player=\"{player.Name}\" channel={(faction ? "faction" : "say")} " +
+                     $"sameRealm={bot.Realm == player.Realm} sameRegion={bot.CurrentRegion == player.CurrentRegion} " +
+                     $"distance={(bot.CurrentRegion == player.CurrentRegion ? bot.GetDistanceTo(player).ToString() : "-")} " +
+                     $"canAnswer={CanAnswerNamed(bot)} eligible={Eligible(bot)} riding={bot.IsOnStableMasterRoute} horse={bot.IsOnHorse} " +
+                     $"helper={bot.IsTemporaryGroupHelper} worldBot={bot.IsAutonomousWorldBot} grouped={bot.Group != null && bot.Group == player.Group}");
+    }
+
+    /// <summary>A bot's line in faction chat or /say, when someone can hear it. False when not said.</summary>
+    private static bool SayTo(GameBot bot, string line, bool faction) =>
+        faction ? HasFactionAudience(bot.Realm) && BotFaction(bot, line) : HasLocalAudience(bot) && bot.Say(line);
+
+    /// <summary>
+    /// The bot that chips in after a named bot answered, from the others in reach: one at most and only now
+    /// and then (<see cref="ChipInChance"/>), else null.
+    /// </summary>
+    public static T ChipIn<T>(IReadOnlyList<T> others, Random random) where T : class
+    {
+        random ??= Random.Shared;
+        if (others == null || others.Count == 0 || random.NextDouble() >= ChipInChance)
+            return null;
+        return others[random.Next(others.Count)];
+    }
+
+    /// <summary>
+    /// What a bot that chips in says to the player's line: its own voice (mood-tinted, not counted toward its memory
+    /// of the player as the named bot's answer is); null for a bot without a personality.
+    /// </summary>
+    public static string ChipInLine(GameBot bot, GamePlayer player, string message)
+    {
+        if (BotPersonalities.For(bot) is not { } personality || player == null || string.IsNullOrWhiteSpace(message))
+            return null;
+        eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
+        return MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player)));
+    }
+
+    /// <summary>
+    /// A chip-in a few seconds after the named bot's <paramref name="namedLine"/>: the other bot's own answer to
+    /// the player's line, never the same words. Dropped when it is busy by then.
+    /// </summary>
+    private static void ScheduleChipIn(GamePlayer player, GameBot bot, string message, string namedLine, Func<string, bool> speak)
+    {
+        string line = ChipInLine(bot, player, message);
+        if (line == null)
+            return;
+        HashSet<string> said = new(StringComparer.OrdinalIgnoreCase) { namedLine?.Trim() ?? string.Empty };
+        if (!TryAddDistinctResponse(said, line, out line))
+            return;
+        Schedule(bot, 2_500 + Random.Shared.Next(1_500), () => speak(line));
     }
 
     /// <summary>True for the lines that get a short reaction from one bot now and then, never a full answer.</summary>
@@ -769,13 +874,7 @@ public static class AutonomousBotChatCoordinator
     {
         if (responder == null || ShortReaction(BotPersonalities.For(responder), intent, named, player.Name, Random.Shared, DialogueFactSource.For(responder, player)) is not { } reaction)
             return;
-        Schedule(responder, 1_300 + Random.Shared.Next(1_200), () =>
-        {
-            if (faction && HasFactionAudience(responder.Realm))
-                BotFaction(responder, reaction);
-            else if (!faction && HasLocalAudience(responder))
-                responder.Say(reaction);
-        });
+        Schedule(responder, 1_300 + Random.Shared.Next(1_200), () => SayTo(responder, reaction, faction), named);
     }
 
     /// <summary>The responders with the companion first and then the first <paramref name="count"/> others: one more answer.</summary>
@@ -861,15 +960,45 @@ public static class AutonomousBotChatCoordinator
         }
     }
 
-    private static void Schedule(GameBot speaker, int delay, Action action)
+    /// <summary>
+    /// Runs a bot's line after <paramref name="delay"/> ms, or drops it when the bot is busy or gone by then.
+    /// A <paramref name="named"/> bot's answer also comes while it rides, and mid-fight after a few tries.
+    /// </summary>
+    private static void Schedule(GameBot speaker, int delay, Action action, bool named = false, int retriesLeft = NamedReplyRetries)
     {
         _ = new ECSGameTimer(speaker, timer =>
         {
-            if ((Eligible(speaker) || IsPersonalityCompanion(speaker)) && !speaker.InCombat && !speaker.IsCasting)
-                action();
+            bool present = named ? CanAnswerNamed(speaker) : Eligible(speaker) || IsPersonalityCompanion(speaker);
+            switch (NextReplyStep(present, speaker.InCombat || speaker.IsCasting, named, retriesLeft))
+            {
+                case eReplyStep.Say:
+                    action();
+                    break;
+                case eReplyStep.Retry:
+                    Schedule(speaker, NamedRetryDelayMs, action, true, retriesLeft - 1);
+                    break;
+            }
             return 0;
         }, delay);
     }
+
+    public enum eReplyStep
+    {
+        Drop,
+        Say,
+        Retry,
+    }
+
+    /// <summary>
+    /// What a due reply does: said when the bot is there and free; a named bot's answer waits for a cast or a
+    /// fight to end up to <see cref="NamedReplyRetries"/> times and is then said anyway; anything else is dropped.
+    /// </summary>
+    public static eReplyStep NextReplyStep(bool present, bool busy, bool named, int retriesLeft) =>
+        !present ? eReplyStep.Drop
+        : !busy ? eReplyStep.Say
+        : !named ? eReplyStep.Drop
+        : retriesLeft > 0 ? eReplyStep.Retry
+        : eReplyStep.Say;
 
     public static bool TryAddDistinctResponse(HashSet<string> scheduled, string response, out string normalized)
     {
@@ -919,11 +1048,20 @@ public static class AutonomousBotChatCoordinator
         ContainsMention(message, bot.Name) || BotPersonalities.For(bot) is { } personality &&
         (ContainsMention(message, personality.Name) || personality.Nicknames.Any(nickname => ContainsMention(message, nickname)));
 
-    private static IEnumerable<GameBot> PersonalityCompanions()
+    /// <summary>Persoper when she can talk; <paramref name="evenBusy"/> also while she casts or fights (to answer her name).</summary>
+    private static IEnumerable<GameBot> PersonalityCompanions(bool evenBusy = false)
     {
         GameBot persoper = DOL.GS.Commands.PersoperCommandHandler.Active;
-        return persoper != null && IsPersonalityCompanion(persoper) ? [persoper] : [];
+        return persoper != null && (evenBusy ? CanAnswerNamed(persoper) : IsPersonalityCompanion(persoper)) ? [persoper] : [];
     }
+
+    /// <summary>
+    /// A bot that can answer its name: an active world bot (riding, casting or fighting included; the reply
+    /// waits, see Schedule) or a personality companion. Unnamed chat still needs <see cref="Eligible"/>.
+    /// </summary>
+    public static bool CanAnswerNamed(GameBot bot) =>
+        bot is { IsAlive: true, ObjectState: GameObject.eObjectState.Active } &&
+        (bot.IsAutonomousWorldBot && !bot.IsTemporaryGroupHelper || bot.IsTemporaryGroupHelper && BotPersonalities.For(bot) != null);
 
     private static bool IsPersonalityCompanion(GameBot bot) =>
         bot is { IsTemporaryGroupHelper: true, IsAlive: true, ObjectState: GameObject.eObjectState.Active, InCombat: false, IsCasting: false } &&
