@@ -14,6 +14,20 @@ Don't thank me. Just stay out of trouble. Please.
 Seen worse. Seen a lot worse. Let's leave it there.
 Not soft. Just tired of patching people up.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Go on.
+Don't know. Tell me.
+Concussion? It's usually a concussion.
+
+~ reply groan
+Hm. Terrible.
+That hurt more than a broken arm.
+
+~ reply jokelaugh
+Heh. Fine, that was funny.
+Ha. Don't tell the others I laughed.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Hm. Funny.

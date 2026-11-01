@@ -13,6 +13,20 @@ Light one up, stand back, watch the buffs tick. Beautiful.
 Lotta folks think healin' is the hard part. Pfft.
 Best at what I do. Don't take my word for it. Ask anybody. Anybody?
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+No idea, bub. Tell me.
+For the buffs? It's always for the buffs, bub.
+Go on, bub, hit me.
+
+~ reply groan
+Oof, bub. That one needs a buff.
+Ugh. Even my buffs can't save that one, bub.
+
+~ reply jokelaugh
+Ha! Good one, bub!
+Heh, that's a buff for the soul, bub.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Heh, bub.

@@ -11,6 +11,20 @@ Strategy: go in. Phase two: see what happens.
 Anyone got a res? Asking for me.
 I'm not reckless, I'm EFFICIENT at dying.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Tell me! TELL ME!
+To CHARGE the other side!
+I dunno! What?!
+
+~ reply groan
+NOOO!
+Ugh! Worse than a wipe!
+
+~ reply jokelaugh
+HAHA! Good one!
+Ha! I'm telling everyone that!
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 HA!

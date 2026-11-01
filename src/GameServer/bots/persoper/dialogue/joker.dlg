@@ -11,6 +11,20 @@ Somebody stole my horse. I'm not stable.
 My healer said I need to lose weight. I dropped my shield.
 Kobolds make great comedians. Short, punchy material.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+To get to the other side! No? Wait, I know this one.
+Because it was there? I'm told that's an answer.
+I give up. Tell me, I need new material.
+
+~ reply groan
+Booo! I'm stealing it anyway.
+Ugh. That's my kind of terrible.
+
+~ reply jokelaugh
+Ha! That's going in my act.
+HA! Okay, you win this round.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 See? I'm hilarious. Oh wait, that wasn't me.

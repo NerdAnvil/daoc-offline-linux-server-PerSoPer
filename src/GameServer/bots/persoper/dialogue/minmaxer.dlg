@@ -11,6 +11,20 @@ Quickness is undervalued. Fight me. Mathematically.
 Spent the afternoon on a spreadsheet. Best day this week.
 If your hits cap isn't capped, what are you doing?
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+No idea. Explain efficiently.
+For the xp. Everything's for the xp.
+Is there a numerical answer?
+
+~ reply groan
+That's a suboptimal joke.
+Low damage, that one.
+
+~ reply jokelaugh
+Heh. Efficient.
+Ha. Good ratio of setup to payoff.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Heh.

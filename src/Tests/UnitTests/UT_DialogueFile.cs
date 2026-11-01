@@ -64,13 +64,13 @@ public class UT_DialogueFile
         Assert.That(PersonalityLines.Errors, Is.Empty);
     }
 
-    // The six types had these many lines in C# before the move to dialogue files (step 3b), plus the short reactions (intent B2).
-    [TestCase("hardcore", 240)]
-    [TestCase("casual", 246)]
-    [TestCase("minmaxer", 240)]
-    [TestCase("joker", 254)]
-    [TestCase("loner", 238)]
-    [TestCase("leeroy", 253)]
+    // The six types had these many lines in C# before the move to dialogue files (step 3b), plus the short reactions (intent B2) and joke flow (B3a).
+    [TestCase("hardcore", 247)]
+    [TestCase("casual", 256)]
+    [TestCase("minmaxer", 247)]
+    [TestCase("joker", 261)]
+    [TestCase("loner", 244)]
+    [TestCase("leeroy", 260)]
     public void TypeFiles_KeepEveryLine(string key, int lines)
     {
         Assert.That(DialogueLibrary.For(key).Block(key).Sum(section => section.Lines.Count), Is.EqualTo(lines));

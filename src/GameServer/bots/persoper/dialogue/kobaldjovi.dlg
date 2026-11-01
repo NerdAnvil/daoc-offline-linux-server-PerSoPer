@@ -210,6 +210,25 @@ Thanks a million, {0}! Catch this!
 {0}, you're officially the president of my fan club, unpaid.
 {0}, you just made a Kobold's day brighter than a midsummer sun.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Hit me, {0}, I need a chorus.
+To get to the other side? It's always the other side.
+Ooh, I don't know. Drumroll, please.
+
+~ reply groan
+Ugh! That's a one-star review, {0}.
+Booo! Off the stage!
+
+~ reply jokelaugh
+Ha! That's going on the album, {0}.
+Ha! Encore!
+
+~ reply jokeask
+Why did the bard bring a ladder? To reach the high notes.
+My lute and I had a fight. It was a string of bad decisions.
+What's a troll's favourite music? Rock. Any rock. He eats it.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Ha! That's going in a song.

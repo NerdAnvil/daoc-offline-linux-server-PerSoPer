@@ -168,6 +168,8 @@ public static class AutonomousBotChatCoordinator
         if (player == null || string.IsNullOrWhiteSpace(message))
             return;
         BroadcastFaction(player.Name, player.Realm, message);
+        if (TryJokeAnswer(player, message, (bot, line) => SayTo(bot, line, true)))
+            return;
         lock (Sync)
         {
             if (LastFactionPlayerResponse.TryGetValue(player.Realm, out long last) && GameLoop.GameLoopTime - last < 12_000)
@@ -186,6 +188,9 @@ public static class AutonomousBotChatCoordinator
             return;
         // A short line while Persoper waits on a question is the answer, not chat for the others.
         if (PersoperAsks.TryAnswer(player, message))
+            return;
+        // The punchline (or knock-knock name) of a joke a bot is waiting on.
+        if (TryJokeAnswer(player, message, (bot, line) => SayTo(bot, line, false)))
             return;
         if (AutonomousChatIntentModel.Predict(message) == eAutonomousChatIntent.IgnoreOutOfWorld)
             return;
@@ -231,6 +236,8 @@ public static class AutonomousBotChatCoordinator
             return;
         if (PersoperAsks.TryAnswer(player, message))
             return;
+        if (TryJokeAnswer(player, message, (bot, line) => Deliver(bot, player, ePrivateChannel.Group, line)))
+            return;
         GameBot[] members = player.Group.GetMembersInTheGroup().OfType<GameBot>()
             .Where(bot => BotPersonalities.For(bot) != null)
             .ToArray();
@@ -261,6 +268,8 @@ public static class AutonomousBotChatCoordinator
             return true;
         if (PersoperAsks.TryAnswer(player, message, bot))
             return true;
+        if (channel != ePrivateChannel.Group && TryJokeAnswer(player, message, (teller, line) => Deliver(teller, player, channel, line), bot))
+            return true;
         BotPersonality personality = BotPersonalities.For(bot);
         if (player == null || personality == null || string.IsNullOrWhiteSpace(message))
             return false;
@@ -278,6 +287,8 @@ public static class AutonomousBotChatCoordinator
             return false;
         lock (Sync)
             LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
+        if (reaction == null && TryJokeOpening(player, bot, message, read, (teller, line) => Deliver(teller, player, channel, line), true))
+            return true;
         if (reaction != null)
         {
             Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reaction), named: true);
@@ -752,6 +763,10 @@ public static class AutonomousBotChatCoordinator
             ScheduleShortReaction(player, eligible.FirstOrDefault(bot => BotPersonalities.For(bot) != null), read, directed, faction);
             return;
         }
+        // A joke told (or asked for) gets one personality bot's answer: a guess, "Who's there?", a groan, a joke.
+        if (eligible.FirstOrDefault(bot => BotPersonalities.For(bot) != null) is { } teller &&
+            TryJokeOpening(player, teller, message, read, (bot, line) => SayTo(bot, line, faction), directed))
+            return;
         int count = directed || hasKnowledge || intent is eAutonomousChatIntent.IgnoreOutOfWorld or eAutonomousChatIntent.Abuse
             ? Math.Min(1, eligible.Length)
             : RollResponseCount(eligible.Length);
@@ -867,6 +882,51 @@ public static class AutonomousBotChatCoordinator
             random.NextDouble() >= (named ? NamedReactionChance : ReactionChance))
             return null;
         return personality.OwnReply(intent, speakerName, random, facts);
+    }
+
+    /// <summary>
+    /// A player's line as the punchline (or knock-knock name) of the joke a bot is waiting on (PersonalityJokes):
+    /// that bot groans, laughs or asks "Boo who?" through <paramref name="say"/>. With <paramref name="toBot"/>
+    /// (a tell or whisper), only that bot's joke. False when the line answers no open joke.
+    /// </summary>
+    private static bool TryJokeAnswer(GamePlayer player, string message, Func<GameBot, string, bool> say, GameBot toBot = null)
+    {
+        DateTime now = DateTime.UtcNow;
+        if (player == null || PersonalityJokes.TryTake(player.InternalID, message, now, toBot) is not { } open ||
+            BotPersonalities.For(open.Bot) is not { } personality)
+            return false;
+        GameBot bot = open.Bot;
+        string line;
+        if (open.Stage == eJokeStage.KnockName)
+        {
+            line = PersonalityJokes.KnockWho(message);
+            PersonalityJokes.Start(player.InternalID, bot, eJokeStage.Punchline, now);
+        }
+        else
+            line = PersonalityJokes.Punchline(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
+        if (line == null)
+            return false;
+        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => say(bot, line), named: true);
+        return true;
+    }
+
+    /// <summary>
+    /// A joke the player tells or asks for, answered by this bot through the joke flow; a riddle or knock-knock then
+    /// waits for the player's next line. False when the line isn't one, or the bot has no line for it.
+    /// </summary>
+    private static bool TryJokeOpening(GamePlayer player, GameBot bot, string message, eAutonomousChatIntent read, Func<GameBot, string, bool> say, bool named)
+    {
+        eJokeKind kind = PersonalityJokes.Kind(message, read);
+        if (kind == eJokeKind.None || BotPersonalities.For(bot) is not { } personality)
+            return false;
+        string line = PersonalityJokes.Opening(personality, kind, player.Name, Random.Shared, DialogueFactSource.For(bot, player),
+            () => PersonalityReactions.TopicOpener(bot, eChatTopic.Fun, Random.Shared));
+        if (line == null)
+            return false;
+        if (kind is eJokeKind.Riddle or eJokeKind.KnockKnock)
+            PersonalityJokes.Start(player.InternalID, bot, kind == eJokeKind.KnockKnock ? eJokeStage.KnockName : eJokeStage.Punchline, DateTime.UtcNow);
+        Schedule(bot, 1_300 + Random.Shared.Next(1_200), () => say(bot, line), named);
+        return true;
     }
 
     /// <summary>One bot (the named one, else the first personality bot in reach) may react; plain bots stay quiet.</summary>

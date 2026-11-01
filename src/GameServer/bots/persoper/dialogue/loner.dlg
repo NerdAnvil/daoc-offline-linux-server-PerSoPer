@@ -8,6 +8,19 @@ Too many people in this zone.
 Solo.
 Don't follow me.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Go on.
+Hm. Don't know.
+
+~ reply groan
+Hm.
+...no.
+
+~ reply jokelaugh
+Heh.
+Hm. Funny.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Heh.

@@ -13,6 +13,20 @@ Please don't say 'lol' near me. It breaks the mood.
 A proper hero speaks like a proper hero. I'm working on it.
 Sometimes I forget which old words are real and which I made up. Nobody's noticed.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Pray tell, what?
+To reach the far side of the realm? A noble quest!
+A riddle! I give up. Tell me.
+
+~ reply groan
+Oh, a terrible jest!
+My hero groans in character. And out.
+
+~ reply jokelaugh
+Ha! A merry jest indeed!
+Ha! The bards will sing of that one.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Ha! A merry jest!

@@ -13,6 +13,20 @@ Housing rent's due. Worth it, though. Oh, you betcha.
 Could use one more head for the wall. Big one. Over the fireplace.
 I dust the trophies twice a week. Once for them, once for me.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Oh, I dunno. Tell me!
+Oh gosh, to get home? I'd go home.
+Oh, you got me there.
+
+~ reply groan
+Oh, for Pete's sake.
+Oh, that's a real groaner, that is.
+
+~ reply jokelaugh
+Oh, ha! That's a good one!
+Oh, you're a hoot.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Oh, ha!

@@ -608,6 +608,28 @@ I could watch that one again tonight, {0}.
 That takes me back, {0}. Big hair, loud music, good times.
 Film lines mid-fight? My kind of adventurer, {0}.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Hmm... I give up.
+To get to the other side? Please say it's not that.
+I don't know, {0}. Tell me.
+Because someone pulled without me? It's always that.
+
+~ reply groan
+Oh, {0}. That's awful.
+Ugh. I'm healing everyone but you now.
+That one hurt more than a crit, {0}.
+
+~ reply jokelaugh
+Ha! Okay, that was good, {0}.
+Hehe. Fine, you're funny.
+Ha! I'm stealing that one.
+
+~ reply jokeask
+Why did the healer cross the road? Someone on the other side forgot to stay in range.
+What do you call a tank who never pulls? Furniture.
+I told my staff a joke once. It didn't laugh, but it glowed a little.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Hehe.
