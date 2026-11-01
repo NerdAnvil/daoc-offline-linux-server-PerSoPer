@@ -76,6 +76,14 @@ tools, build scripts, docs) are not listed.
      fork point `08ebffe`.
    - Status: fixed upstream in v0.35 (`c1c465c`, Thomas Farral, 2026-10-05); we kept our own version
      on the sync.
+7. **An effect ended before its start was processed ticks forever.** Ending an effect removes it
+   from the effect service at once, but its start step waits in a queue and then added it anyway.
+   An ended effect can't end again, so EffectService kept ticking it and its tick time grew all
+   night (0.29 to 1.53 ms in 12 h with ~535 bots). Same leak as fixed in rambodolphin13's
+   DividedRealms fork.
+   - Files: `ECS-Components/EffectListComponent.cs`, a new test.
+   - Commit: the 2026-11-01 effect leak fix. Made by: PerSoPer fork. Seen in: v0.37c.
+   - Status: open upstream.
 
 ## World data and navmeshes (from the v0.37 release)
 
