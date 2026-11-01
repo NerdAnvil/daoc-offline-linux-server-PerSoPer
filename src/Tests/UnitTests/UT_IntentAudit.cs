@@ -44,7 +44,7 @@ public class UT_IntentAudit
         {
             Assert.That(line.Text, Is.Not.Empty, $"{set}: a line has no text");
             Assert.That(line.Expect, Is.Not.Empty, $"{set}: '{line.Text}' has no expect");
-            eAutonomousChatIntent read = AutonomousChatIntentModel.Predict(line.Text);
+            eAutonomousChatIntent read = AutonomousChatIntentModel.Read(line.Text);
             if (Enum.TryParse(line.Expect, true, out eAutonomousChatIntent expect) && Enum.IsDefined(expect) &&
                 expect != eAutonomousChatIntent.Unknown)
                 known.Add((line, expect, read));
