@@ -136,6 +136,46 @@ public class UT_DialogueFolder
         Assert.That(PersonalityLines.Own["named:spyburd"].Talk.Ambient, Is.Not.Empty);
     }
 
+    // Bug 2026-10-31: "~ song_reaction" was an unknown section in type and character files, and the merge dropped it.
+    [Test]
+    public void SongReactions_NamedBotUsesItsOwn_AndKeepsEveryOtherMergedPool()
+    {
+        Write("gruffdoc", Regex.Replace(BuiltInText("gruffdoc"), @"(=== gruffdoc\r?\n)", "$1~ song_reaction\nType song line.\n\n"));
+        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n)", "$1~ song_reaction\nCharacter song line.\n\n");
+        Write("eaglefang", Regex.Replace(text, @"(=== albion\r?\n)", "$1~ song_reaction\nAlbion song line.\n\n"));
+        DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
+
+        Assert.That(report.Errors, Is.Empty);
+        Assert.That(PersonalityLines.Errors, Is.Empty);
+        Assert.That(PersonalityLines.TalkFor("gruffdoc").SongReactions, Is.EqualTo(new[] { "Type song line." }));
+        Assert.That(PersonalityLines.NamedTalk["named:eaglefang"].SongReactions, Is.EqualTo(new[] { "Character song line." }), "own lines only, not the type's");
+        Assert.That(PersonalityLines.NamedTalk["named:eaglefange"].SongReactions, Is.EqualTo(new[] { "Character song line.", "Albion song line." }));
+        BotPersonality eaglefang = PersonalityTypes.Named(NamedBotLineup.All.Single(entry => entry.Key == "gruffdoc-mid"));
+        Assert.That(KobaldjoviIdentity.SongReaction(eaglefang, new Random(1)), Is.EqualTo("Character song line."));
+
+        // Every other pool the merge copies still holds the type's and the character's lines.
+        TypeTalk type = PersonalityLines.TalkFor("gruffdoc"), own = PersonalityLines.Own["named:eaglefang"].Talk, merged = PersonalityLines.NamedTalk["named:eaglefang"];
+        Assert.That(merged.Ambient, Is.SupersetOf(type.Ambient).And.SupersetOf(own.Ambient));
+        Assert.That(merged.FallbackReplies, Is.SupersetOf(type.FallbackReplies).And.SupersetOf(own.FallbackReplies));
+        foreach ((eAutonomousChatIntent intent, string[] lines) in type.Replies.Concat(own.Replies))
+            Assert.That(merged.Replies[intent], Is.SupersetOf(lines), $"reply {intent}");
+        foreach ((eAutonomousChatIntent intent, string[] lines) in (type.CheekyReplies ?? new Dictionary<eAutonomousChatIntent, string[]>()).Concat(own.CheekyReplies ?? new Dictionary<eAutonomousChatIntent, string[]>()))
+            Assert.That(merged.CheekyReplies[intent], Is.SupersetOf(lines), $"cheeky_reply {intent}");
+        Assert.That(merged.Nicknames, Is.EqualTo(own.Nicknames));
+    }
+
+    [Test]
+    public void SongReactions_NamedBotWithoutItsOwn_UsesItsTypes_ElseThePlainLines()
+    {
+        Write("gruffdoc", Regex.Replace(BuiltInText("gruffdoc"), @"(=== gruffdoc\r?\n)", "$1~ song_reaction\nType song line.\n\n"));
+        DialogueLibrary.Initialize(_folder);
+        BotPersonality eaglefang = PersonalityTypes.Named(NamedBotLineup.All.Single(entry => entry.Key == "gruffdoc-mid"));
+        Assert.That(eaglefang.SongReactions, Is.EqualTo(new[] { "Type song line." }));
+
+        DialogueLibrary.Initialize(null);
+        Assert.That(eaglefang.SongReactions, Is.Null.Or.Empty, "no lines anywhere: KobaldjoviIdentity uses its plain reactions");
+    }
+
     [Test]
     public void CharacterFile_WithAnotherBlock_IsNotUsed()
     {

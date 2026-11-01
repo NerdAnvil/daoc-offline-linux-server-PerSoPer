@@ -286,12 +286,17 @@ public static class PersonalityLines
 
     private static TypeTalk Merge(TypeTalk type, TypeTalk own, Func<string[], string[], string[]> combine = null)
     {
+        // A named bot reacts to a song with its own lines only, its type's when it has none.
+        string[] songReactions = combine == null
+            ? (own.SongReactions is { Length: > 0 } ? own.SongReactions : type.SongReactions)
+            : combine(type.SongReactions, own.SongReactions);
         combine ??= Mix;
         return new(
             combine(type.Ambient, own.Ambient), MixAll(type.Replies, own.Replies, combine),
             MixAll(type.CheekyReplies, own.CheekyReplies, combine), combine(type.FallbackReplies, own.FallbackReplies))
         {
             Nicknames = own.Nicknames.Count > 0 ? own.Nicknames : type.Nicknames,
+            SongReactions = songReactions,
         };
     }
 
@@ -301,7 +306,7 @@ public static class PersonalityLines
         var topicReplies = new Dictionary<eChatTopic, string[]>();
         var replies = new Dictionary<eAutonomousChatIntent, string[]>();
         Dictionary<eAutonomousChatIntent, string[]> cheekyReplies = null;
-        string[] ambient = [], fallback = [], ding = [], grats = [], ownDeath = [], otherDeath = [], drop = [], cheeky = null;
+        string[] ambient = [], fallback = [], ding = [], grats = [], ownDeath = [], otherDeath = [], drop = [], cheeky = null, songReactions = null;
 
         foreach (DialogueSection section in sections)
         {
@@ -328,6 +333,7 @@ public static class PersonalityLines
                 case "opener" or "topic_reply" or "reply" or "cheeky_reply": break; // bad argument, already reported
                 case "ambient": ambient = lines; break;
                 case "fallback": fallback = lines; break;
+                case "song_reaction": songReactions = lines; break;
                 case "ding": ding = lines; break;
                 case "grats": grats = lines; break;
                 case "own_death": ownDeath = lines; break;
@@ -343,7 +349,7 @@ public static class PersonalityLines
             Openers = openers, TopicReplies = topicReplies, Ding = ding, Grats = grats,
             OwnDeath = ownDeath, OtherDeath = otherDeath, Drop = drop, Cheeky = cheeky,
         };
-        return (typeLines, new TypeTalk(ambient, replies, cheekyReplies, fallback));
+        return (typeLines, new TypeTalk(ambient, replies, cheekyReplies, fallback) { SongReactions = songReactions });
     }
 
     private static eChatTopic? Topic(DialogueSection section, string where, List<string> errors) =>
