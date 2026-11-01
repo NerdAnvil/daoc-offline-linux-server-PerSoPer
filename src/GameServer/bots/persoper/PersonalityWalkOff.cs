@@ -121,8 +121,14 @@ public static class PersonalityWalkOff
     /// </summary>
     public static bool Roll(GameBot bot, GamePlayer player, long now, Random random)
     {
-        if (bot == null || player == null || BlockedNow(bot, player, now) != null)
+        if (bot == null || player == null)
             return false;
+        // Rolls come only with groans, so noting each skipped one is cheap and shows which guard held.
+        if (BlockedNow(bot, player, now) is { } reason)
+        {
+            Log.Info($"PERSONALITY_WALKOFF skipped bot=\"{bot.Name}\" player=\"{player.Name}\" reason=\"{reason}\"");
+            return false;
+        }
         if (Always)
             return true;
         if (CoolingDown(PlayerAnswers.Cache.Get(player.InternalID, CooldownKey), DateTime.UtcNow))
@@ -210,8 +216,12 @@ public static class PersonalityWalkOff
             player.Group != null && player.Group.MemberCount >= ServerProperties.Properties.GROUP_MAX_MEMBER);
         if (blocked == null && Rejoin(bot, player))
         {
+            lock (Sync)
+                AwayUntil.Remove(bot.ObjectID);
             Log.Info($"PERSONALITY_WALKOFF rejoined bot=\"{bot.Name}\" player=\"{player.Name}\"");
+            Log.Info($"PERSONALITY_WALKOFF end bot=\"{bot.Name}\" player=\"{player.Name}\" reason=\"rejoined\" distance={(int)bot.GetDistanceTo(player)}");
             Say(bot, back);
+            WatchRejoined(bot, player, ReturnWatchMs / 1_000);
             return;
         }
         if (triesLeft > 1 && playerHere)
@@ -231,6 +241,22 @@ public static class PersonalityWalkOff
                 $"ok, I'm over it, {player.Name}. Invite me back when you can.");
     }
 
+    // A world bot follows the player by its own route once it is back in the group, not through Adjust: checked
+    // once a second, it is logged back within 200, or still away when the tries run out.
+    private static void WatchRejoined(GameBot bot, GamePlayer player, int triesLeft)
+    {
+        _ = new ECSGameTimer(bot, _ =>
+        {
+            int distance = (int)bot.GetDistanceTo(player);
+            bool back = distance <= 200;
+            if (back || triesLeft <= 1 || bot.ObjectState != GameObject.eObjectState.Active)
+                Log.Info($"PERSONALITY_WALKOFF {(back ? "returned" : "notback")} bot=\"{bot.Name}\" player=\"{player.Name}\" distance={distance}");
+            else
+                WatchRejoined(bot, player, triesLeft - 1);
+            return 0;
+        }, 1_000);
+    }
+
     // As BotGroupInvite.TryInvite, without its greeting and spec lines (it's only been a few seconds).
     private static bool Rejoin(GameBot bot, GamePlayer player)
     {
@@ -242,7 +268,14 @@ public static class PersonalityWalkOff
         }
         if (!player.Group.AddMember(bot) || !bot.EnterPlayerLedGroup(player))
             return false;
-        bot.PathTo(player, bot.MaxSpeed);
+        // Walks back from its spot; one that ended up out of reach (another region, far off) is put beside the player.
+        if (bot.CurrentRegion != player.CurrentRegion || !bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE))
+        {
+            Log.Info($"PERSONALITY_WALKOFF moved bot=\"{bot.Name}\" player=\"{player.Name}\" (out of reach at rejoin)");
+            BotGroupInvite.TryMoveBesidePlayer(bot, player);
+        }
+        else
+            bot.PathTo(player, bot.MaxSpeed);
         return true;
     }
 
@@ -270,8 +303,10 @@ public static class PersonalityWalkOff
                 return normal;
             }
         }
-        // A world bot following again has rejoined; a companion ends on time or when a fight starts.
-        bool timeUp = now >= until || QuitsGroup(bot);
+        // A world bot is watched from its rejoin (WatchRejoined); a companion ends on time or when a fight starts.
+        if (QuitsGroup(bot))
+            return normal;
+        bool timeUp = now >= until;
         string stop = timeUp ? "time is up" : FightReason(bot, leader);
         if (stop == null)
             return Away(normal);
@@ -312,11 +347,18 @@ public static class PersonalityWalkOff
         Always = false;
     }
 
-    /// <summary>True while the bot is storming off (B4: "where are you?" could use it).</summary>
+    /// <summary>
+    /// True while the bot is storming off (B4: "where are you?" could use it). A world bot counts until it has
+    /// rejoined, so its own planning (BotBrain) stays paused; Prune drops an entry that is long past due.
+    /// </summary>
     public static bool IsAway(GameBot bot, long now)
     {
         lock (Sync)
-            return bot != null && AwayUntil.TryGetValue(bot.ObjectID, out long until) && now < until;
+        {
+            if (bot == null || AwayUntil.Count == 0 || !AwayUntil.TryGetValue(bot.ObjectID, out long until))
+                return false;
+            return now < until || QuitsGroup(bot) && now - until <= RejoinTries * RejoinGapMs + 1_000;
+        }
     }
 
     // Under Sync. Entries left by a bot that never came back through Adjust go once they are well past due.

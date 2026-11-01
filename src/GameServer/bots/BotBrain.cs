@@ -1516,13 +1516,16 @@ namespace DOL.AI.Brain
 
             MaybeAutonomousWorldChat();
 
-            if (TryHandleAutonomousMerchantService())
+            // A bot storming off after a bad joke (PersonalityWalkOff) is back in a few seconds: no new trips meanwhile.
+            bool walkingOff = PersonalityWalkOff.IsAway(BotBody, GameLoop.GameLoopTime);
+
+            if (!walkingOff && TryHandleAutonomousMerchantService())
                 return;
 
-            if (TryHandleAutonomousRealmExchange())
+            if (!walkingOff && TryHandleAutonomousRealmExchange())
                 return;
 
-            if (BotBody?.IsAutonomousWorldBot == true && !BotBody.IsPlayerLedGroup)
+            if (BotBody?.IsAutonomousWorldBot == true && !BotBody.IsPlayerLedGroup && !walkingOff)
             {
                 _autonomousWorldController ??= new AutonomousWorldBotController();
                 if (_autonomousWorldController.Tick(this))

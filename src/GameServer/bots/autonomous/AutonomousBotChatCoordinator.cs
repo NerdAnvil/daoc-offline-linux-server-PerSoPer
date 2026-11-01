@@ -922,14 +922,16 @@ public static class AutonomousBotChatCoordinator
     /// </summary>
     private static void AfterReaction(GamePlayer player, GameBot bot, BotPersonality personality, Func<GameBot, string, bool> say, bool groaned)
     {
-        if (groaned && personality.OwnReply(eAutonomousChatIntent.JokeQuit, player.Name, Random.Shared, DialogueFactSource.For(bot, player)) is { } quit &&
-            PersonalityWalkOff.Roll(bot, player, GameLoop.GameLoopTime, Random.Shared))
+        if (groaned && PersonalityWalkOff.Roll(bot, player, GameLoop.GameLoopTime, Random.Shared) &&
+            personality.OwnReply(eAutonomousChatIntent.JokeQuit, player.Name, Random.Shared, DialogueFactSource.For(bot, player)) is { } quit)
         {
             string back = personality.OwnReply(eAutonomousChatIntent.JokeReturn, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
             Schedule(bot, 1_800 + Random.Shared.Next(800),
                 () => PersonalityWalkOff.Begin(bot, player, GameLoop.GameLoopTime, () => say(bot, quit), back), named: true);
             return;
         }
+        if (groaned && PersonalityWalkOff.Always)
+            Log.Info($"PERSONALITY_WALKOFF nogag bot=\"{bot.Name}\" player=\"{player.Name}\" (no roll, or no jokequit line)");
         ScheduleJokeBack(player, bot, personality, say);
     }
 

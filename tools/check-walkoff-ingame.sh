@@ -15,6 +15,7 @@
 # a 1 in 40 miss: run it again). Then:
 #   1. a groan gets a "~ reply jokequit" line, and server.log shows PERSONALITY_WALKOFF start (mode=quit),
 #      rejoined, end at least 200 away, and returned (back at his spot); a "~ reply jokereturn" line follows;
+#      while he is out of the group his own plans are paused: no town teleport, no "moved" (out of reach) note;
 #   2. with "/dialogue walkoff normal" again, a fifth joke gets no "I'm out" line (the 24 h cooldown the gag saved).
 # The run ends with "/dialogue walkoff reset", so the test doesn't use up the character's real 24 h.
 # Prints PASS or FAIL per check; exits 0 only when every check passed. The look of the walk is a hand check.
@@ -103,6 +104,11 @@ far=$(grep -F 'PERSONALITY_WALKOFF end bot="Shempenstein"' <<<"$log" | grep -oE 
 if [[ -n $far ]] && (( far >= 200 )); then pass "he walked off: $far away when he rejoined"
 elif [[ -n $far ]]; then fail "he only got $far away (200 or more expected)"
 else fail "no walk-off end for Shempenstein"; fi
+grep -q 'PERSONALITY_WALKOFF moved bot="Shempenstein"' <<<"$log" &&
+  fail "he was out of reach at the rejoin and had to be moved back (his own plans weren't paused)" ||
+  pass "he stayed in reach while he was out of the group"
+teleports=$(tail -n +"$start" "$LOG" | grep -c "AUTONOMOUS_TOWN_TELEPORT bot=Shempenstein ")
+(( teleports == 0 )) && pass "no town teleport during the run" || fail "$teleports town teleport(s) by Shempenstein during the run"
 grep -q 'PERSONALITY_WALKOFF returned bot="Shempenstein"' <<<"$log" && pass "he came back to his spot" ||
   fail "no \"returned\" note ($(grep -oE 'PERSONALITY_WALKOFF notback.*distance=[0-9]+' <<<"$log" | head -1))"
 
