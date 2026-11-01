@@ -1132,6 +1132,8 @@ namespace DOL.AI.Brain
             AutonomousFormation.Offset formation = ambientWander
                 ? AutonomousFormation.ForIdleWander(BotBody.Name, tightInterior, (int)(GameLoop.GameLoopTime / IDLE_WANDER_CYCLE_MS))
                 : AutonomousFormation.For(BotBody.Name, tightInterior);
+            // A mock-offended walk-off (PersonalityWalkOff) pushes the spot far out for a few seconds.
+            formation = PersonalityWalkOff.Adjust(BotBody, leader, formation, GameLoop.GameLoopTime);
             double radians = formation.AngleDegrees * Math.PI / 180d;
             var destination = new Point3D(
                 leader.X + (int)Math.Round(Math.Cos(radians) * formation.Distance),

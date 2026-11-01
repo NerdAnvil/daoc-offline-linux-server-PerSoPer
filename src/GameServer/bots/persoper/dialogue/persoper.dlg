@@ -635,6 +635,17 @@ Ooh, I've got one for you, {0}.
 My turn, {0}. Brace yourself.
 Okay, okay, I have one too.
 
+# The walk-off gag after a really bad joke, very rare (PersonalityWalkOff): she storms off, then comes back.
+~ reply jokequit
+No. No, {0}, that's it, I'm going to go stand over there until it wears off.
+That one was so bad I need a walk, {0}. Don't follow me.
+I'm out, {0}. Heal yourself, I'll be back once I've forgotten that joke.
+
+~ reply jokereturn
+Okay, I'm back, but that joke is still not forgiven, {0}.
+Fine, I missed you lot. Not the joke, though.
+I'm back. Let's never speak of that pun again.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Hehe.

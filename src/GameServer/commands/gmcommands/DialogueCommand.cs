@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
     /// </summary>
@@ -19,6 +19,7 @@ namespace DOL.GS.Commands
         "/dialogue gather   (moves the bots in your group beside you)",
         "/dialogue joke <bot>   (a bot in your group tells a joke there now; its groupmates answer)",
         "/dialogue ambient <bot>   (a bot in your group says one of its own ambient lines there now)",
+        "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
         "/dialogue forget   (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
     {
@@ -68,6 +69,20 @@ namespace DOL.GS.Commands
             if (verb == "ambient" && args.Length == 3)
             {
                 ChatUtil.SendSystemMessage(client, SayAmbient(client.Player, args[2]));
+                return;
+            }
+            if (verb == "walkoff" && args.Length == 3 && args[2].Equals("reset", System.StringComparison.OrdinalIgnoreCase))
+            {
+                PlayerAnswers.Cache.Set(client.Player.InternalID, PersonalityWalkOff.CooldownKey, "0");
+                ChatUtil.SendSystemMessage(client, "Walk-off: your 24 h cooldown is forgotten.");
+                return;
+            }
+            if (verb == "walkoff" && args.Length == 3 && args[2].ToLowerInvariant() is "always" or "normal")
+            {
+                PersonalityWalkOff.Always = args[2].Equals("always", System.StringComparison.OrdinalIgnoreCase);
+                ChatUtil.SendSystemMessage(client, PersonalityWalkOff.Always
+                    ? "Walk-off: every groan at your joke gets the gag now (no session roll, no cooldown)."
+                    : "Walk-off: back to the normal rare chance and cooldown.");
                 return;
             }
             if (verb == "forget" && args.Length == 2)

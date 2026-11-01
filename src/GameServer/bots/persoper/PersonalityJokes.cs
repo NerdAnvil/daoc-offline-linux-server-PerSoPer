@@ -116,17 +116,24 @@ public static partial class PersonalityJokes
     }
 
     /// <summary>A groan (more often) or a laugh at a punchline, from the bot's own lines; its joke replies when it has neither.</summary>
-    public static string Punchline(BotPersonality personality, string speakerName, Random random, DialogueFacts facts = null)
+    public static string Punchline(BotPersonality personality, string speakerName, Random random, DialogueFacts facts = null) =>
+        PunchlineReaction(personality, speakerName, random, facts).Line;
+
+    /// <summary>As <see cref="Punchline"/>, and whether the line is a groan (the joke was a bad one).</summary>
+    public static (string Line, bool Groan) PunchlineReaction(BotPersonality personality, string speakerName, Random random, DialogueFacts facts = null)
     {
         if (personality == null)
-            return null;
+            return (null, false);
         random ??= Random.Shared;
-        (eAutonomousChatIntent first, eAutonomousChatIntent second) = random.NextDouble() < GroanChance
+        bool groanFirst = random.NextDouble() < GroanChance;
+        (eAutonomousChatIntent first, eAutonomousChatIntent second) = groanFirst
             ? (eAutonomousChatIntent.Groan, eAutonomousChatIntent.JokeLaugh)
             : (eAutonomousChatIntent.JokeLaugh, eAutonomousChatIntent.Groan);
-        return personality.OwnReply(first, speakerName, random, facts)
-            ?? personality.OwnReply(second, speakerName, random, facts)
-            ?? personality.OwnReply(eAutonomousChatIntent.Joke, speakerName, random, facts);
+        if (personality.OwnReply(first, speakerName, random, facts) is { } firstLine)
+            return (firstLine, groanFirst);
+        if (personality.OwnReply(second, speakerName, random, facts) is { } secondLine)
+            return (secondLine, !groanFirst);
+        return (personality.OwnReply(eAutonomousChatIntent.Joke, speakerName, random, facts), false);
     }
 
     /// <summary>

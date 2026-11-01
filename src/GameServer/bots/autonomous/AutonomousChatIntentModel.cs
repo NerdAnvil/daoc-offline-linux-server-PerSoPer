@@ -52,6 +52,9 @@ public enum eAutonomousChatIntent
     Groan,
     JokeLaugh,
     JokeBack,
+    // The rare walk-off gag after a bad joke (PersonalityWalkOff): "I'm out", then "I'm back". Never read from chat.
+    JokeQuit,
+    JokeReturn,
 }
 
 /// <summary>
@@ -260,10 +263,11 @@ public static partial class AutonomousChatIntentModel
         intent >= eAutonomousChatIntent.Joke && intent is not (eAutonomousChatIntent.Command or eAutonomousChatIntent.CombatCall) &&
         !IsJokeReplyKind(intent);
 
-    /// <summary>The joke flow's reply kinds (JokeGuess, Groan, JokeLaugh, JokeBack): sections in .dlg files, never an intent read from chat.</summary>
+    /// <summary>The joke flow's reply kinds (JokeGuess, Groan, JokeLaugh, JokeBack, JokeQuit, JokeReturn): sections in .dlg files, never an intent read from chat.</summary>
     public static bool IsJokeReplyKind(eAutonomousChatIntent intent) =>
         intent is eAutonomousChatIntent.JokeGuess or eAutonomousChatIntent.Groan or eAutonomousChatIntent.JokeLaugh or
-            eAutonomousChatIntent.JokeBack;
+            eAutonomousChatIntent.JokeBack or eAutonomousChatIntent.JokeQuit or
+            eAutonomousChatIntent.JokeReturn;
 
     // Greetings and farewells give way to a game word too: "hey, anyone want to group?" is about grouping.
     private static bool GameWordsWin(eAutonomousChatIntent intent) =>

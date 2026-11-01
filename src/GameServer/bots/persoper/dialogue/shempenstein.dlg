@@ -35,6 +35,16 @@ Oof. Okay, {0}. I'll just be over here, being sorry aboot it.
 Hey now, guy. No need for that. Want a snack?
 Sorry to hear you feel that way, pal. No hard feelings, eh?
 
+~ reply jokequit
+Oh, buddy, that was rough. I'm gonna go walk that one off, eh.
+Sorry, {0}, that one hurt. I need some air aboot it, back in a bit.
+Okay, I'm out, pal, and I'm taking my snacks with me.
+
+~ reply jokereturn
+Alright, I'm back, eh. Still thinking aboot that joke, though.
+Sorry I left, guy. It was a real stinker, but I missed you all.
+Back, buddy. I ate a snack and feel much better aboot it now.
+
 ~ reply compliment
 Ah, thanks, {0}. It's my aunt's sweater, though. She's convinced chunky is charming.
 

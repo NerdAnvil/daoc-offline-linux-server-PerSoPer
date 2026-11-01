@@ -897,22 +897,40 @@ public static class AutonomousBotChatCoordinator
             return false;
         GameBot bot = open.Bot;
         string line;
+        bool groaned = false;
         if (open.Stage == eJokeStage.KnockName)
         {
             line = PersonalityJokes.KnockWho(message);
             PersonalityJokes.Start(player.InternalID, bot, eJokeStage.Punchline, now);
         }
         else
-            line = PersonalityJokes.Punchline(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
+            (line, groaned) = PersonalityJokes.PunchlineReaction(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
         if (line == null)
             return false;
         bool punchline = open.Stage == eJokeStage.Punchline;
         Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
         {
             if (say(bot, line) && punchline)
-                ScheduleJokeBack(player, bot, personality, say);
+                AfterReaction(player, bot, personality, say, groaned);
         }, named: true);
         return true;
+    }
+
+    /// <summary>
+    /// After its groan or laugh at a player's joke: very rarely a groan gets the walk-off gag (PersonalityWalkOff:
+    /// "that's it, I'm out", off it goes, back in a few seconds), else now and then a joke back.
+    /// </summary>
+    private static void AfterReaction(GamePlayer player, GameBot bot, BotPersonality personality, Func<GameBot, string, bool> say, bool groaned)
+    {
+        if (groaned && personality.OwnReply(eAutonomousChatIntent.JokeQuit, player.Name, Random.Shared, DialogueFactSource.For(bot, player)) is { } quit &&
+            PersonalityWalkOff.Roll(bot, player, GameLoop.GameLoopTime, Random.Shared))
+        {
+            string back = personality.OwnReply(eAutonomousChatIntent.JokeReturn, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
+            Schedule(bot, 1_800 + Random.Shared.Next(800),
+                () => PersonalityWalkOff.Begin(bot, player, GameLoop.GameLoopTime, () => say(bot, quit), back), named: true);
+            return;
+        }
+        ScheduleJokeBack(player, bot, personality, say);
     }
 
     /// <summary>
@@ -940,8 +958,14 @@ public static class AutonomousBotChatCoordinator
         eJokeKind kind = PersonalityJokes.Kind(message, read);
         if (kind == eJokeKind.None || BotPersonalities.For(bot) is not { } personality)
             return false;
-        string line = PersonalityJokes.Opening(personality, kind, player.Name, Random.Shared, DialogueFactSource.For(bot, player),
-            () => PersonalityReactions.TopicOpener(bot, eChatTopic.Fun, Random.Shared));
+        // A joke told in full is groaned or laughed at straight away (Opening would do the same, but not say which).
+        string line;
+        bool groaned = false;
+        if (kind == eJokeKind.Told)
+            (line, groaned) = PersonalityJokes.PunchlineReaction(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
+        else
+            line = PersonalityJokes.Opening(personality, kind, player.Name, Random.Shared, DialogueFactSource.For(bot, player),
+                () => PersonalityReactions.TopicOpener(bot, eChatTopic.Fun, Random.Shared));
         if (line == null)
             return false;
         if (kind is eJokeKind.Riddle or eJokeKind.KnockKnock)
@@ -950,7 +974,7 @@ public static class AutonomousBotChatCoordinator
         {
             // A joke told in full is groaned at here, and may get one back like a punchline does.
             if (say(bot, line) && kind == eJokeKind.Told)
-                ScheduleJokeBack(player, bot, personality, say);
+                AfterReaction(player, bot, personality, say, groaned);
         }, named);
         return true;
     }

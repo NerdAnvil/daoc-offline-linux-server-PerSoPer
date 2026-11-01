@@ -66,7 +66,7 @@ public class UT_DialogueFile
 
     // The six types had these many lines in C# before the move to dialogue files (step 3b), plus the short reactions (intent B2) and joke flow (B3a, B3b).
     [TestCase("hardcore", 252)]
-    [TestCase("casual", 262)]
+    [TestCase("casual", 268)]
     [TestCase("minmaxer", 252)]
     [TestCase("joker", 266)]
     [TestCase("loner", 249)]

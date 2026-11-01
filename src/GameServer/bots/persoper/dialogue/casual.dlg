@@ -38,6 +38,17 @@ ooh wait, I got one
 lol ok ok, my turn
 that reminds me of one
 
+# The walk-off gag after a really bad joke, very rare (PersonalityWalkOff): the bot storms off, then comes back.
+~ reply jokequit
+nope, that's it, I'm out lol
+omg {0} that was so bad, I'm leaving
+ok I can't, bye {0}
+
+~ reply jokereturn
+ok fine I'm back lol
+I'm back, but no more jokes {0}
+lol ok ok, I'm over it
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 lol
