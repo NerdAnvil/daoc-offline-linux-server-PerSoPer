@@ -608,6 +608,32 @@ I could watch that one again tonight, {0}.
 That takes me back, {0}. Big hair, loud music, good times.
 Film lines mid-fight? My kind of adventurer, {0}.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Hehe.
+Glad someone's laughing, {0}.
+Ha! Okay, that was good.
+
+~ reply sorry
+It's fine, {0}. I forgive you. This time.
+Apology accepted.
+No harm done, {0}.
+
+~ reply disagree
+Fair enough, {0}.
+Hm. Agree to disagree.
+Okay, okay. You might be right.
+
+~ reply away
+Don't be long, {0}.
+I'll be right here.
+Go on, I'll keep watch.
+
+~ reply back
+Welcome back, {0}!
+There you are.
+Wb, {0}. I missed you. A little.
+
 ~ fallback
 Mm-hm. Sure, {0}. Now, who needs healing?
 Interesting, {0}. Tell me more after this pull.

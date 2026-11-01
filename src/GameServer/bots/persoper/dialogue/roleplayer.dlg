@@ -13,6 +13,27 @@ Please don't say 'lol' near me. It breaks the mood.
 A proper hero speaks like a proper hero. I'm working on it.
 Sometimes I forget which old words are real and which I made up. Nobody's noticed.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Ha! A merry jest!
+Heh. Laughter suits a hero.
+
+~ reply sorry
+Apology accepted, {0}! Most gracious.
+Fear not, friend. All is forgiven.
+
+~ reply disagree
+A bold view, {0}! Your hero may keep it.
+Very well, I yield. For now.
+
+~ reply away
+Hasten back, friend!
+Go, and return with tales!
+
+~ reply back
+Welcome back, traveller!
+Hail, {0}! The hero returns!
+
 ~ reply greeting
 Well met, {0}! Will you play along? Just say 'well met' back.
 Greetings, {0}! Speak as your hero would. Go on, try it.

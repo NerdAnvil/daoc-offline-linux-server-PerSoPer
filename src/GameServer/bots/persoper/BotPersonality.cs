@@ -103,6 +103,20 @@ public sealed partial record BotPersonality
     }
 
     /// <summary>
+    /// A line from this intent's own lines only, or null when it has none or none may be said now
+    /// ([once], cooldowns, recent lines). No banter or "you've lost me" stand-in: a short reaction
+    /// ("heh" to a "lol") is better left unsaid than answered with something long.
+    /// </summary>
+    public string OwnReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts = null, string botKey = null)
+    {
+        if (Replies.GetValueOrDefault(intent) is not { Length: > 0 } lines)
+            return null;
+        lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
+        string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, facts?.BotId ?? botKey ?? Key, DateTime.UtcNow, random ?? Random.Shared);
+        return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+    }
+
+    /// <summary>
     /// The lines that don't talk about the speaker as someone else ("Ask Eaglefang" said to
     /// Eaglefang): a capitalised word of 4+ letters that is part of the speaker's first name
     /// ("Jovi" in Kobaldjovi). All of them when that would leave none.

@@ -44,6 +44,8 @@ public enum eAutonomousChatIntent
     OutOfWorldChat,
     Command,
     CombatCall,
+    // "back" after a "brb": a different answer ("wb") from going away ("k").
+    Back,
 }
 
 /// <summary>
@@ -184,7 +186,7 @@ public static partial class AutonomousChatIntentModel
         eAutonomousChatIntent.OutOfWorldChat => eAutonomousChatIntent.IgnoreOutOfWorld,
         eAutonomousChatIntent.CombatCall => eAutonomousChatIntent.Help,
         eAutonomousChatIntent.Sorry or eAutonomousChatIntent.Disagree or eAutonomousChatIntent.Away or
-            eAutonomousChatIntent.Command => eAutonomousChatIntent.Unknown,
+            eAutonomousChatIntent.Back or eAutonomousChatIntent.Command => eAutonomousChatIntent.Unknown,
         _ => intent,
     };
 
@@ -194,6 +196,9 @@ public static partial class AutonomousChatIntentModel
         string[] tokens = Tokens(text).ToArray();
         if (tokens.Length == 0)
             return eAutonomousChatIntent.Unknown;
+        // "back" on its own is coming back; inside a line it's "back home" or "fall back".
+        if (tokens is ["back"])
+            return eAutonomousChatIntent.Back;
         if (tokens.Any(HardOutOfWorld.Contains))
             return eAutonomousChatIntent.IgnoreOutOfWorld;
         if (tokens.Any(Insults.Contains) || (tokens.Any(AimedInsults.Contains) && tokens.Any(Aimed.Contains)))

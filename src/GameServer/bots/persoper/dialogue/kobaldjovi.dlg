@@ -210,6 +210,27 @@ Thanks a million, {0}! Catch this!
 {0}, you're officially the president of my fan club, unpaid.
 {0}, you just made a Kobold's day brighter than a midsummer sun.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Ha! That's going in a song.
+Heh. Good one, {0}.
+
+~ reply sorry
+No worries, {0}. Off-key happens.
+All forgiven. Encore later.
+
+~ reply disagree
+Fair. We'll work out the harmony later.
+Ok, ok, different tune.
+
+~ reply away
+I'll keep the lute warm, {0}.
+Go on, I'll play the intermission.
+
+~ reply back
+Wb, {0}! Right on cue.
+{0}'s back! Cue the chorus.
+
 ~ reply greeting
 {0}! ~ Hello, hello, it's good to see you ~ ...sorry, it just comes out.
 Hail, {0}! Got a request? I do ballads, metal and very loud whale noises.

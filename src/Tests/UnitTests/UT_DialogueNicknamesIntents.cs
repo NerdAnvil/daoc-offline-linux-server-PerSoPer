@@ -139,7 +139,7 @@ public class UT_DialogueNicknamesIntents
             eAutonomousChatIntent.Compliment, eAutonomousChatIntent.Agree, eAutonomousChatIntent.Quote,
             eAutonomousChatIntent.JokeAsk, eAutonomousChatIntent.Laugh, eAutonomousChatIntent.Sorry, eAutonomousChatIntent.Disagree,
             eAutonomousChatIntent.Away, eAutonomousChatIntent.Activity, eAutonomousChatIntent.HowGoing, eAutonomousChatIntent.Mood,
-            eAutonomousChatIntent.Flirt, eAutonomousChatIntent.OutOfWorldChat,
+            eAutonomousChatIntent.Flirt, eAutonomousChatIntent.OutOfWorldChat, eAutonomousChatIntent.Back,
         }));
         Assert.That((int)eAutonomousChatIntent.Thank, Is.EqualTo(13), "the old intents keep their numbers");
         Assert.That((int)eAutonomousChatIntent.Quote, Is.EqualTo(20), "the old intents keep their numbers");

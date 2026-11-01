@@ -11,6 +11,27 @@ Somebody stole my horse. I'm not stable.
 My healer said I need to lose weight. I dropped my shield.
 Kobolds make great comedians. Short, punchy material.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+See? I'm hilarious. Oh wait, that wasn't me.
+Ha! Was it my joke? It was my joke.
+
+~ reply sorry
+Apology accepted. Mostly.
+No harm done, {0}. Probably.
+
+~ reply disagree
+Agree to disagree. I'm right though.
+No? Bold.
+
+~ reply away
+Don't fall in!
+Bring snacks.
+
+~ reply back
+Wb! We talked about you.
+Welcome back, {0}! Nothing happened. Probably.
+
 ~ reply greeting
 Well, if it isn't {0}! Or is it?
 {0}! Knock knock.

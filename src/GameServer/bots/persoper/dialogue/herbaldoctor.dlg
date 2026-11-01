@@ -13,6 +13,27 @@ Light one up, stand back, watch the buffs tick. Beautiful.
 Lotta folks think healin' is the hard part. Pfft.
 Best at what I do. Don't take my word for it. Ask anybody. Anybody?
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Heh, bub.
+Ha! Laughing's a buff too, y'know.
+
+~ reply sorry
+No worries, bub.
+All good, {0}. Here, have a buff.
+
+~ reply disagree
+Fair enough, bub.
+Agree to disagree. Still buffin' ya.
+
+~ reply away
+Go on, bub. Your buffs'll wait. Maybe.
+Hurry back, bub, buffs don't last forever.
+
+~ reply back
+Welcome back, bub! Lemme refresh those buffs.
+Wb {0}. You look unbuffed.
+
 ~ reply greeting
 Hey there, {0}, bub. Want a buff? Course you do.
 {0}! Stand still a sec. There. Feel that? That's buffin'.

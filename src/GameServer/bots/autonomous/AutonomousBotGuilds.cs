@@ -348,6 +348,8 @@ namespace DOL.GS
                 ScheduleReply(companion, guild, answer, 1_400);
                 if (toCompanion) return;
             }
+            // A "lol" or "brb" gets Persoper's short reaction at most, not the members' generic answers.
+            if (AutonomousBotChatCoordinator.IsShortReaction(AutonomousChatIntentModel.Read(message))) return;
             if (named != null)
             {
                 ScheduleReply(named, guild, AutonomousBotChatCoordinator.GenerateFactionReply(message), 1_400);

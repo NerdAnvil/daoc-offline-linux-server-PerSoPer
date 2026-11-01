@@ -14,6 +14,27 @@ Don't thank me. Just stay out of trouble. Please.
 Seen worse. Seen a lot worse. Let's leave it there.
 Not soft. Just tired of patching people up.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Hm. Funny.
+Heh. Laughing's good for you. Don't overdo it.
+
+~ reply sorry
+Noted.
+It's fine, {0}. Don't do it again.
+
+~ reply disagree
+Your call. Your funeral.
+Fine.
+
+~ reply away
+Go. Drink some water.
+Back soon, {0}. That's an order.
+
+~ reply back
+Welcome back. You look fine.
+{0}. Good, sit.
+
 ~ reply greeting
 Hm. {0}. You look fine. Good. Don't make me check.
 {0}. Sit still. Let me look at you. ...Fine. Off you go.

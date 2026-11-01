@@ -11,6 +11,27 @@ Whoever said crafting doesn't pay never met my bank.
 Spent the morning on the forge. It was lovely. I'm told.
 I don't sell things. Things sell themselves, to me, for more.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Ha! Good. Laughing's free.
+Heh. Don't laugh near the anvil.
+
+~ reply sorry
+Apology noted, {0}. No charge.
+It's fine. Just don't break anything.
+
+~ reply disagree
+Suit yourself.
+Fine. Your coin, your call.
+
+~ reply away
+Go on, I'll keep counting.
+Mind you don't wander off with anything.
+
+~ reply back
+Welcome back, {0}. Buying now?
+Oh good, {0}'s back. Wallet too?
+
 ~ reply greeting
 Welcome, {0}! Browse, don't touch. Nothing here is for you.
 {0}! Lovely timing. I was just counting.

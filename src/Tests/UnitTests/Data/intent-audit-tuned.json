@@ -221,7 +221,7 @@
 
     { "text": "brb", "expect": "away" },
     { "text": "afk a sec", "expect": "away" },
-    { "text": "back", "expect": "away" },
+    { "text": "back", "expect": "back" },
     { "text": "bio break", "expect": "away" },
 
     { "text": "persoper you're cute", "expect": "flirt", "to": "Persoper" },

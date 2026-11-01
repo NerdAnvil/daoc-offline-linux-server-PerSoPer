@@ -11,6 +11,27 @@ Strategy: go in. Phase two: see what happens.
 Anyone got a res? Asking for me.
 I'm not reckless, I'm EFFICIENT at dying.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+HA!
+Haha! Ok, let's go!
+
+~ reply sorry
+No worries, let's go!
+Eh, it's fine!
+
+~ reply disagree
+Ok, ok!
+Fine, I'll just run in anyway.
+
+~ reply away
+Hurry! I'm not waiting!
+Ok! I'm gonna pull something.
+
+~ reply back
+WB! Let's GO!
+{0}! You're back! Pulling!
+
 ~ reply greeting
 {0}! Let's GO!
 Hey {0}! Wanna pull something big?

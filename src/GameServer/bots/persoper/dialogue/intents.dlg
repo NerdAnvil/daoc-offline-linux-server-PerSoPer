@@ -5,11 +5,12 @@
 # the list is Shorthand in AutonomousChatIntentModel.cs), so write phrases in full words.
 # Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
 # farewell, ignoreoutofworld, thank, and the small talk ones: joke, grumble, smalltalk,
-# question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, activity, howgoing,
-# mood, flirt, outofworldchat. Then command and combatcall, which beat game words.
+# question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
+# howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words.
 # Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
-# answers from "~ reply banter". The newest intents (jokeask onwards) are answered as their
-# nearest older one for now (Collapse in AutonomousChatIntentModel.cs).
+# answers from "~ reply banter". The short reactions (laugh, sorry, disagree, away, back) get
+# one brief line from one bot now and then, and no answer otherwise. The other newest intents
+# are answered as their nearest older one for now (Collapse in AutonomousChatIntentModel.cs).
 # A game word (group, dungeon, buy, frontier...) beats small talk, greetings and farewells:
 # "yeah, want to group" is grouping. A grouping phrase with a dungeon or realm word in the line
 # is that dungeon or frontier trip ("who's up for a keep?").
@@ -115,7 +116,10 @@ no, nope, nah, nay, disagree, not true, that's not true, don't think so, no way,
 sorry, my bad, oops, whoops, apologies, my fault
 
 ~ intent away
-brb, afk, bio, bio break, be right back, one sec, i'm back, back now
+brb, afk, bio, bio break, be right back, one sec
+
+~ intent back
+i'm back, back now, back again, ok back
 
 ~ intent activity
 what are you doing, what are you up to, what you up to, everyone up to

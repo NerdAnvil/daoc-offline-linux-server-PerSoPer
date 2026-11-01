@@ -19,6 +19,9 @@ public static class AutonomousBotChatCoordinator
     private static readonly Dictionary<ushort, long> LastLocalPlayerResponse = new();
     private static readonly Dictionary<int, long> LastPrivateReply = new();
     private const int PrivateReplyCooldownMs = 3_000;
+    // Short reactions (lol, sorry, brb, back, nah): how often the one bot that may react does.
+    public const double ReactionChance = 0.25;
+    public const double NamedReactionChance = 0.5;
     private static readonly Dictionary<Group, long> NextGroupTalk = new();
     private const int MaxGroupTalkEntries = 256;
     private const int PlainGroupTalkGapMs = 120_000;
@@ -246,7 +249,20 @@ public static class AutonomousBotChatCoordinator
         {
             if (LastPrivateReply.TryGetValue(bot.ObjectID, out long last) && GameLoop.GameLoopTime - last < PrivateReplyCooldownMs)
                 return false;
+        }
+        // A "lol" or "brb" in group chat gets a short reaction now and then; a tell or whisper is named.
+        eAutonomousChatIntent read = AutonomousChatIntentModel.Read(message);
+        string reaction = IsShortReaction(read)
+            ? ShortReaction(personality, read, channel != ePrivateChannel.Group || IsMentioned(message, bot), player.Name, Random.Shared, DialogueFactSource.For(bot, player))
+            : null;
+        if (IsShortReaction(read) && reaction == null)
+            return false;
+        lock (Sync)
             LastPrivateReply[bot.ObjectID] = GameLoop.GameLoopTime;
+        if (reaction != null)
+        {
+            Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => Deliver(bot, player, channel, reaction));
+            return true;
         }
 
         eAutonomousChatIntent intent = NotWhenGrouped(AutonomousChatIntentModel.Predict(message), bot.Group != null && bot.Group == player.Group);
@@ -691,6 +707,12 @@ public static class AutonomousBotChatCoordinator
         bool directed = mentioned.Length > 0;
         if (directed)
             eligible = mentioned;
+        eAutonomousChatIntent read = AutonomousChatIntentModel.Read(message);
+        if (IsShortReaction(read))
+        {
+            ScheduleShortReaction(player, eligible.FirstOrDefault(bot => BotPersonalities.For(bot) != null), read, directed, faction);
+            return;
+        }
         int count = directed || hasKnowledge || intent is eAutonomousChatIntent.IgnoreOutOfWorld or eAutonomousChatIntent.Abuse
             ? Math.Min(1, eligible.Length)
             : RollResponseCount(eligible.Length);
@@ -724,6 +746,38 @@ public static class AutonomousBotChatCoordinator
         }
     }
 
+    /// <summary>True for the lines that get a short reaction from one bot now and then, never a full answer.</summary>
+    public static bool IsShortReaction(eAutonomousChatIntent intent) =>
+        intent is eAutonomousChatIntent.Laugh or eAutonomousChatIntent.Sorry or eAutonomousChatIntent.Disagree or
+            eAutonomousChatIntent.Away or eAutonomousChatIntent.Back;
+
+    /// <summary>
+    /// A personality's short reaction from its "~ reply laugh" (sorry, disagree, away, back) lines, or
+    /// null most of the time and always when it has none: a "lol" gets a "heh" now and then, never a joke.
+    /// </summary>
+    public static string ShortReaction(BotPersonality personality, eAutonomousChatIntent intent, bool named, string speakerName, Random random, DialogueFacts facts = null)
+    {
+        random ??= Random.Shared;
+        if (personality?.Replies.GetValueOrDefault(intent) is not { Length: > 0 } ||
+            random.NextDouble() >= (named ? NamedReactionChance : ReactionChance))
+            return null;
+        return personality.OwnReply(intent, speakerName, random, facts);
+    }
+
+    /// <summary>One bot (the named one, else the first personality bot in reach) may react; plain bots stay quiet.</summary>
+    private static void ScheduleShortReaction(GamePlayer player, GameBot responder, eAutonomousChatIntent intent, bool named, bool faction)
+    {
+        if (responder == null || ShortReaction(BotPersonalities.For(responder), intent, named, player.Name, Random.Shared, DialogueFactSource.For(responder, player)) is not { } reaction)
+            return;
+        Schedule(responder, 1_300 + Random.Shared.Next(1_200), () =>
+        {
+            if (faction && HasFactionAudience(responder.Realm))
+                BotFaction(responder, reaction);
+            else if (!faction && HasLocalAudience(responder))
+                responder.Say(reaction);
+        });
+    }
+
     /// <summary>The responders with the companion first and then the first <paramref name="count"/> others: one more answer.</summary>
     public static (T[] Responders, int Count) CompanionFirst<T>(T[] eligible, T companion, int count) where T : class
     {
@@ -734,12 +788,16 @@ public static class AutonomousBotChatCoordinator
 
     /// <summary>
     /// A personality bot's answer to a player's line, as in /say and faction chat: a special reply,
-    /// a known answer, or its own voice (mood-tinted). Null for a bot without a personality.
+    /// a known answer, or its own voice (mood-tinted). A "lol" or "brb" gets a short reaction now and
+    /// then and null otherwise. Null for a bot without a personality.
     /// </summary>
     public static string PersonalityAnswer(GameBot bot, GamePlayer player, string message)
     {
         if (BotPersonalities.For(bot) is not { } personality || player == null || string.IsNullOrWhiteSpace(message))
             return null;
+        eAutonomousChatIntent read = AutonomousChatIntentModel.Read(message);
+        if (IsShortReaction(read))
+            return ShortReaction(personality, read, IsMentioned(message, bot), player.Name, Random.Shared, DialogueFactSource.For(bot, player));
         eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
         return PersonalitySpecialReply(bot, player, message, intent, IsMentioned(message, bot))
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)

@@ -13,6 +13,27 @@ Housing rent's due. Worth it, though. Oh, you betcha.
 Could use one more head for the wall. Big one. Over the fireplace.
 I dust the trophies twice a week. Once for them, once for me.
 
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Oh, ha!
+Heh, oh you.
+
+~ reply sorry
+Oh, don't worry about it, {0}.
+Oh no, you're fine. Really.
+
+~ reply disagree
+Well, okay then.
+Oh, sure, sure. You betcha. Maybe.
+
+~ reply away
+You go ahead, {0}, I'll be here.
+Okay! Take your time, hon.
+
+~ reply back
+Oh, welcome back, {0}!
+There you are! Welcome back.
+
 ~ reply greeting
 Well hey there, {0}! You oughta come see the house sometime.
 Oh, hi {0}! Come on over, I'll put the kettle on. Figuratively.
