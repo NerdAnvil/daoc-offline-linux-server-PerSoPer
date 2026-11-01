@@ -630,6 +630,11 @@ Why did the healer cross the road? Someone on the other side forgot to stay in r
 What do you call a tank who never pulls? Furniture.
 I told my staff a joke once. It didn't laugh, but it glowed a little.
 
+~ reply jokeback
+Ooh, I've got one for you, {0}.
+My turn, {0}. Brace yourself.
+Okay, okay, I have one too.
+
 # Short reactions: one bot now and then, so keep them brief.
 ~ reply laugh
 Hehe.

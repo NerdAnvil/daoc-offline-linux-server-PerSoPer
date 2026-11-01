@@ -273,6 +273,10 @@ namespace DOL.Tests.Unit
             Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--create=Testa", "--realm=1", "--race=Briton", "--class=2", "--delete=Other" }, null));
             Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--race=Briton" }, null));
             Assert.Throws<ArgumentException>(() => Options.Parse(new[] { "--account=a", "--delete=" }, null));
+
+            Options wait = Options.Parse(new[] { "--account=a", "--wait-for= Shempenstein ", "--wait-for-seconds=900" }, null);
+            Assert.That((wait.WaitFor, wait.WaitForSeconds), Is.EqualTo(("Shempenstein", 600)));
+            Assert.That(Options.Parse(new[] { "--account=a" }, null).WaitForSeconds, Is.EqualTo(180));
         }
 
         [Test]

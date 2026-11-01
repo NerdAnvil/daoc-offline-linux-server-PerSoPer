@@ -906,8 +906,29 @@ public static class AutonomousBotChatCoordinator
             line = PersonalityJokes.Punchline(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player));
         if (line == null)
             return false;
-        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () => say(bot, line), named: true);
+        bool punchline = open.Stage == eJokeStage.Punchline;
+        Schedule(bot, 1_200 + Random.Shared.Next(1_000), () =>
+        {
+            if (say(bot, line) && punchline)
+                ScheduleJokeBack(player, bot, personality, say);
+        }, named: true);
         return true;
+    }
+
+    /// <summary>
+    /// Now and then, after its groan or laugh, the bot says it has one too and tells it a moment later
+    /// (PersonalityJokes.JokeBack): the lead-in after about 2.5 s, the joke about 3 s after that.
+    /// </summary>
+    private static void ScheduleJokeBack(GamePlayer player, GameBot bot, BotPersonality personality, Func<GameBot, string, bool> say)
+    {
+        if (PersonalityJokes.JokeBack(personality, player.Name, Random.Shared, DialogueFactSource.For(bot, player),
+                () => PersonalityReactions.TopicOpener(bot, eChatTopic.Fun, Random.Shared)) is not { } back)
+            return;
+        Schedule(bot, 2_200 + Random.Shared.Next(800), () =>
+        {
+            if (say(bot, back.LeadIn))
+                Schedule(bot, 2_600 + Random.Shared.Next(1_000), () => say(bot, back.Joke), named: true);
+        }, named: true);
     }
 
     /// <summary>
@@ -925,7 +946,12 @@ public static class AutonomousBotChatCoordinator
             return false;
         if (kind is eJokeKind.Riddle or eJokeKind.KnockKnock)
             PersonalityJokes.Start(player.InternalID, bot, kind == eJokeKind.KnockKnock ? eJokeStage.KnockName : eJokeStage.Punchline, DateTime.UtcNow);
-        Schedule(bot, 1_300 + Random.Shared.Next(1_200), () => say(bot, line), named);
+        Schedule(bot, 1_300 + Random.Shared.Next(1_200), () =>
+        {
+            // A joke told in full is groaned at here, and may get one back like a punchline does.
+            if (say(bot, line) && kind == eJokeKind.Told)
+                ScheduleJokeBack(player, bot, personality, say);
+        }, named);
         return true;
     }
 

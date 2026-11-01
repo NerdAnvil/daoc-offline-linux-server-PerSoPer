@@ -47,10 +47,11 @@ public enum eAutonomousChatIntent
     // "back" after a "brb": a different answer ("wb") from going away ("k").
     Back,
     // Reply kinds for the joke flow (PersonalityJokes), never read from chat: a guess at a riddle's
-    // punchline, and a groan or a laugh at the punchline.
+    // punchline, a groan or a laugh at the punchline, and the lead-in to telling one back.
     JokeGuess,
     Groan,
     JokeLaugh,
+    JokeBack,
 }
 
 /// <summary>
@@ -259,9 +260,10 @@ public static partial class AutonomousChatIntentModel
         intent >= eAutonomousChatIntent.Joke && intent is not (eAutonomousChatIntent.Command or eAutonomousChatIntent.CombatCall) &&
         !IsJokeReplyKind(intent);
 
-    /// <summary>The joke flow's reply kinds (JokeGuess, Groan, JokeLaugh): sections in .dlg files, never an intent read from chat.</summary>
+    /// <summary>The joke flow's reply kinds (JokeGuess, Groan, JokeLaugh, JokeBack): sections in .dlg files, never an intent read from chat.</summary>
     public static bool IsJokeReplyKind(eAutonomousChatIntent intent) =>
-        intent is eAutonomousChatIntent.JokeGuess or eAutonomousChatIntent.Groan or eAutonomousChatIntent.JokeLaugh;
+        intent is eAutonomousChatIntent.JokeGuess or eAutonomousChatIntent.Groan or eAutonomousChatIntent.JokeLaugh or
+            eAutonomousChatIntent.JokeBack;
 
     // Greetings and farewells give way to a game word too: "hey, anyone want to group?" is about grouping.
     private static bool GameWordsWin(eAutonomousChatIntent intent) =>

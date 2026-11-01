@@ -119,14 +119,47 @@ public class UT_JokeFlow
         Assert.That(groaned / (double)tries, Is.EqualTo(PersonalityJokes.GroanChance).Within(0.06));
     }
 
+    // B3b: now and then the bot that groaned says it has one too, and tells one of its own.
     [Test]
-    public void AType_WithoutItsOwnJokes_TellsOneFromItsType()
+    public void JokeBack_ComesNowAndThen_LeadInThenAJoke()
     {
-        BotPersonality casual = DialoguePreview.Find("casual");
+        BotPersonality persoper = DialoguePreview.Find("Persoper");
+        HashSet<string> leadIns = Filled(persoper, eAutonomousChatIntent.JokeBack).ToHashSet();
+        HashSet<string> jokes = Filled(persoper, eAutonomousChatIntent.JokeAsk).ToHashSet();
+        Random random = new(13);
+        const int tries = 2000;
+        int told = 0;
+        for (int i = 0; i < tries; i++)
+        {
+            if (PersonalityJokes.JokeBack(persoper, "Tester", random) is not { } back)
+                continue;
+            told++;
+            Assert.That(leadIns, Does.Contain(back.LeadIn));
+            Assert.That(jokes, Does.Contain(back.Joke));
+        }
+        Assert.That(told / (double)tries, Is.EqualTo(PersonalityJokes.JokeBackChance).Within(0.04));
+    }
+
+    [Test]
+    public void JokeBack_WithoutItsOwnJokes_TellsOneFromItsType_AndNoJokeMeansNone()
+    {
+        BotPersonality casual = NoJokes();
+        Random random = new(2);
+        var backs = Enumerable.Range(0, 200).Select(_ => PersonalityJokes.JokeBack(casual, "Tester", random, null, () => "a type joke"))
+            .Where(back => back != null).ToArray();
+        Assert.That(backs, Is.Not.Empty);
+        Assert.That(backs.Select(back => back.Value.Joke), Is.All.EqualTo("a type joke"));
+        Assert.That(Enumerable.Range(0, 200).Select(_ => PersonalityJokes.JokeBack(casual, "Tester", random, null, () => null)), Is.All.Null);
+    }
+
+    [Test]
+    public void ABotWithoutItsOwnJokes_TellsOneFromItsType()
+    {
+        BotPersonality casual = NoJokes();
         Assert.That(PersonalityJokes.Opening(casual, eJokeKind.Ask, "Tester", new Random(1), null, () => "a type joke"), Is.EqualTo("a type joke"));
     }
 
-    // Every type, Persoper, Kobaldjovi and every named character (mixed over its type) can guess, groan and laugh.
+    // Every type, Persoper, Kobaldjovi and every named character (mixed over its type) can guess, groan, laugh, tell a joke and tell one back.
     [Test]
     public void EveryPersonality_HasJokeFlowLines()
     {
@@ -135,7 +168,7 @@ public class UT_JokeFlow
         foreach (string name in names)
         {
             BotPersonality personality = DialoguePreview.Find(name);
-            foreach (eAutonomousChatIntent kind in new[] { eAutonomousChatIntent.JokeGuess, eAutonomousChatIntent.Groan, eAutonomousChatIntent.JokeLaugh })
+            foreach (eAutonomousChatIntent kind in new[] { eAutonomousChatIntent.JokeGuess, eAutonomousChatIntent.Groan, eAutonomousChatIntent.JokeLaugh, eAutonomousChatIntent.JokeBack, eAutonomousChatIntent.JokeAsk })
                 Assert.That(personality.Replies.GetValueOrDefault(kind), Is.Not.Null.And.Length.AtLeast(2), $"{name} {kind}");
         }
     }
@@ -148,6 +181,13 @@ public class UT_JokeFlow
         foreach (string line in new[] { "groan", "joke guess", "ha ha", "ugh" })
             Assert.That(AutonomousChatIntentModel.IsJokeReplyKind(AutonomousChatIntentModel.Read(line)), Is.False, line);
     }
+
+    // A personality with a joke-back lead-in but no "~ reply jokeask": its type's jokes stand in.
+    private static BotPersonality NoJokes() => new()
+    {
+        Key = "nojokes", Name = "Nojokes", Matches = _ => false, FallbackReplies = ["Hm?"],
+        Replies = new Dictionary<eAutonomousChatIntent, string[]> { [eAutonomousChatIntent.JokeBack] = ["Got one."] },
+    };
 
     private static string[] Filled(BotPersonality personality, eAutonomousChatIntent kind) =>
         personality.Replies[kind].Select(line => string.Format(line, "Tester")).ToArray();

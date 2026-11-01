@@ -49,6 +49,9 @@ public static partial class PersonalityJokes
     /// <summary>How often a punchline gets a groan rather than a laugh.</summary>
     public const double GroanChance = 0.6;
 
+    /// <summary>How often the bot that groaned or laughed tells one back (B3b).</summary>
+    public const double JokeBackChance = 0.2;
+
     private static readonly Dictionary<string, OpenJoke> Open = new(StringComparer.Ordinal);
     private static readonly object Lock = new();
 
@@ -124,6 +127,21 @@ public static partial class PersonalityJokes
         return personality.OwnReply(first, speakerName, random, facts)
             ?? personality.OwnReply(second, speakerName, random, facts)
             ?? personality.OwnReply(eAutonomousChatIntent.Joke, speakerName, random, facts);
+    }
+
+    /// <summary>
+    /// Now and then (<see cref="JokeBackChance"/>) after a groan or laugh, the bot's lead-in ("Ooh, I've got
+    /// one for you") and one of its jokes; null otherwise, and when it has no lead-in or no joke.
+    /// <paramref name="tellsJoke"/> gives its type's jokes when it has no "~ reply jokeask".
+    /// </summary>
+    public static (string LeadIn, string Joke)? JokeBack(BotPersonality personality, string speakerName, Random random, DialogueFacts facts = null, Func<string> tellsJoke = null)
+    {
+        random ??= Random.Shared;
+        if (personality == null || random.NextDouble() >= JokeBackChance ||
+            personality.OwnReply(eAutonomousChatIntent.JokeBack, speakerName, random, facts) is not { } leadIn)
+            return null;
+        string joke = personality.OwnReply(eAutonomousChatIntent.JokeAsk, speakerName, random, facts) ?? tellsJoke?.Invoke();
+        return joke == null ? null : (leadIn, joke);
     }
 
     /// <summary>"Boo who?": the knock-knock name with a capital, its punctuation off. Null for a line that isn't a short name.</summary>

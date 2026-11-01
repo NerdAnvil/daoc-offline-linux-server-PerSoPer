@@ -2,20 +2,24 @@
 # check-jokes-ingame.sh - in-game check of the joke flow (intent Part B3a) on a running test server.
 # Run it yourself, outside any sandbox:
 #
-#   tools/check-jokes-ingame.sh <server-folder> [character]       (about 2.5 minutes)
+#   tools/check-jokes-ingame.sh <server-folder> [character]       (about 6 minutes)
 #
 #   <server-folder>  a test copy of dist/daoc-server, with the server running (never a live one)
 #   [character]      a level 1 GM test character in Midgard (default Headlesstest)
 #   DAOC_ACCOUNT     the test account (default persopertest); DAOC_PASSWORD, if set, is its password
 #
 # Needs the test server's dialogue files for intents, Persoper, Shempenstein and Casual to be the repo's.
-# Summons Persoper, teleports to Shempenstein and invites him, then tells jokes in group chat. Each line's
+# Summons Persoper, invites Shempenstein and brings him over with the GM command /dialogue gather (a test
+# shortcut: in play only a bot in another region pops to the player), waits until he is near, then tells jokes
+# in group chat. Each line's
 # answer (within 10 s) must come from the right bot's right lines:
 #   a riddle gets a "~ reply jokeguess" line, its punchline a "~ reply groan" or "~ reply jokelaugh" line;
 #   a joke told in full gets a groan or laugh straight away; "knock knock" gets "Who's there?", the name
 #   "Boo who?", the punchline a groan or laugh; "tell me a joke" gets a "~ reply jokeask" line (Persoper);
 #   a riddle naming nobody gets one bot's guess, and that bot answers its punchline.
 # No "you've lost me" fallback line may reach the chat. Other chatter in the window is shown and ignored.
+# Part 2 (B3b) tells Shempenstein 15 jokes in full: now and then (about 1 in 5) he answers his groan with a
+#   "~ reply jokeback" lead-in and then a "~ reply jokeask" joke; never two lead-ins to one joke, and not every time.
 # Prints PASS or FAIL per check; exits 0 only when every check passed.
 set -uo pipefail
 
@@ -57,11 +61,11 @@ rows() { if [[ $1 == Persoper ]]; then section persoper "$2"; else section casua
 # What one bot said in a recording: party chat ("Name: "..."") or /say ("Name says, "..."").
 said_by() { sed -nE "s/.*\\] ([Tt]he )?$1[^:\"]*: \"(.*)\"\$/\\2/p; s/.*\\] ([Tt]he )?$1( [A-Za-z]+)? says, \"(.*)\"\$/\\3/p" "$2" |
   sed -E 's/[[:space:]]+$//'; }
-# The chat lines from the moment the player said $2 in group chat until 10 seconds later.
-within() { awk -v pat="$2" -v me="$CHARACTER" '
+# The chat lines from the moment the player said $2 in group chat until $3 (default 10) seconds later.
+within() { awk -v pat="$2" -v me="$CHARACTER" -v span="${3:-10}" '
   function secs(t) { split(t, a, ":"); return a[1] * 3600 + a[2] * 60 + a[3] }
   index($0, "[Party] " me ": \"" pat "\"") || index($0, "[Party] " me ": \"" pat " \"") { start = secs($1); seen = 1; next }
-  seen && secs($1) - start <= 10' "$1"; }
+  seen && secs($1) - start <= span' "$1"; }
 
 # The test: the line, who must answer (Persoper, Shempenstein, or "first" for the bot that answered the
 # last unnamed riddle), and what with (sections, or the exact line).
@@ -81,10 +85,10 @@ f="$RECORDS/jokes-check.txt"
 late=(); for row in "${LINES[@]}"; do late+=("--send-late=/g ${row%%|*}"); done
 echo "== Joke flow in group chat: ${#LINES[@]} lines (about 2.5 minutes)"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
-  --send="/tele Shempenstein" --send="/invite Shempenstein" --send="/persoper" --listen=10 \
-  --goto=Shempenstein --follow=Shempenstein --send-late-gap=11 "${late[@]}" \
-  --record="$f" --record-seconds=$((20 + ${#LINES[@]} * 11)) --overwrite >"$f.log" 2>&1
-grep -q "Shempenstein" "$f" || fail "Shempenstein never showed up in the recording; see $f (did the /tele and /invite work?)"
+  --send="/invite Shempenstein" --send="/dialogue gather" --send="/persoper" --listen=5 \
+  --wait-for=Shempenstein --follow=Shempenstein --send-late-gap=11 "${late[@]}" \
+  --record="$f" --record-seconds=15 --overwrite >"$f.log" 2>&1
+grep -q "Shempenstein" "$f" || fail "Shempenstein never showed up in the recording; see $f (did the /invite work?)"
 
 fallbacks=$(section persoper "~ fallback"; section casual "~ fallback"; section shempenstein "~ fallback")
 first=""
@@ -107,6 +111,32 @@ for row in "${LINES[@]}"; do
   if [[ -n $answered ]]; then pass "\"$line\": $answered answered from the right lines"
   else fail "\"$line\": no fitting answer from ${bots[*]} within 10 s (a casting bot drops a reply; run it again). See $f"; fi
 done
+
+echo "== 2. Joke back: 15 jokes told in full to Shempenstein (about 3.5 minutes)"
+f="$RECORDS/jokes-check-2.txt"
+THINGS=(troll kobold dwarf skeleton wolf bear spider imp ghost giant goblin seal frog yeti boar)
+late=(); for thing in "${THINGS[@]}"; do late+=("--send-late=/g shemp, why did the $thing cross the road? to get to the inn"); done
+"$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
+  --send="/invite Shempenstein" --send="/dialogue gather" --listen=5 \
+  --wait-for=Shempenstein --follow=Shempenstein --send-late-gap=13 "${late[@]}" \
+  --record="$f" --record-seconds=15 --overwrite >"$f.log" 2>&1
+leadins=$(rows Shempenstein "~ reply jokeback")
+backs=0
+for thing in "${THINGS[@]}"; do
+  said=$(said_by Shempenstein <(within "$f" "shemp, why did the $thing cross the road? to get to the inn" 12))
+  echo "  the $thing:"; [[ -n $said ]] && echo "$said" | sed 's/^/      Shempenstein: /'
+  count=$(grep -cxFf <(echo "$leadins") <<<"$said")
+  if (( count > 1 )); then fail "the $thing got $count joke-back lead-ins (one at most)"
+  elif (( count == 1 )); then
+    backs=$((backs + 1))
+    after=$(awk -v lead="$(grep -xFf <(echo "$leadins") <<<"$said" | head -1)" 'found { print } $0 == lead { found = 1 }' <<<"$said")
+    grep -qxFf <(rows Shempenstein "~ reply jokeask") <<<"$after" && pass "the $thing: a lead-in, then one of his jokes" ||
+      fail "the $thing: a lead-in with no joke of his after it; see $f"
+  fi
+done
+(( backs > 0 )) && pass "$backs of ${#THINGS[@]} jokes got one back" ||
+  fail "no joke came back (about a 1 in 30 chance by luck; run it again)"
+(( backs < ${#THINGS[@]} )) && pass "not every joke got one back" || fail "every joke got one back (should be now and then)"
 
 echo
 (( failures == 0 )) && echo "All checks passed." || echo "$failures check(s) failed."
