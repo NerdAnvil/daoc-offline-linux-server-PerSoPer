@@ -225,7 +225,7 @@ On the road to {destination}, next stop on the tour! [if bot_doing travelling]
 Somewhere on tour, {0}. They all look alike from the stage.
 
 ~ reply level
-{level} {class}, {0}, and my voice is max level.
+Level {level} {class}, {0}, and my voice is max level.
 Level {level}! {class} by day, rock star by night.
 Ask my manager, {0}. I just sing.
 

@@ -22,8 +22,8 @@ Going to {destination}. Alone. [if bot_doing travelling]
 Away from people.
 
 ~ reply level
-{level}. {class}.
-{level} {class}, {0}. Why?
+Level {level}, {class}.
+Level {level} {class}, {0}. Why?
 Enough.
 
 ~ reply groupstatus

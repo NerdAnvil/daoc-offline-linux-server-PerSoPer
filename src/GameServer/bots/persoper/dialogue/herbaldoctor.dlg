@@ -28,7 +28,7 @@ Headin' to {destination}, bub, no hurry. [if bot_doing travelling]
 Somewhere relaxin', bub. Who's countin'?
 
 ~ reply level
-{level} {class}, {0}, bub. Buffs get better every level.
+Level {level} {class}, {0}, bub. Buffs get better every level.
 Level {level}, bub. {class}, and my buffs are top shelf.
 Enough levels to buff ya good, bub.
 

@@ -26,7 +26,7 @@ On the road to {destination}, or as I call it, the scenic detour. [if bot_doing 
 Where am I? Philosophically, {0}, nobody knows.
 
 ~ reply level
-{level} {class}, {0}. The jokes are max level though.
+Level {level} {class}, {0}. The jokes are max level though.
 Level {level}. {class} by trade, comedian by mistake.
 Ask my trainer, {0}. He stopped counting.
 

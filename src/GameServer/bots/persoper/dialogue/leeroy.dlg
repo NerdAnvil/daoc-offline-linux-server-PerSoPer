@@ -26,7 +26,7 @@ Running to {destination}! Can't stop now! [if bot_doing travelling]
 No idea, {0}! I just ran in!
 
 ~ reply level
-{level} {class}, {0}! Strong enough to pull anything!
+LEVEL {level} {class}, {0}! Strong enough to pull anything!
 LEVEL {level}! {class}! Let's GO!
 Who cares, {0}? I'm pulling anyway!
 

@@ -26,7 +26,7 @@ En route to {destination}, the shortest path I could find. [if bot_doing travell
 Somewhere suboptimal, {0}. Don't ask.
 
 ~ reply level
-{level} {class}, {0}. Specced right, unlike most.
+Level {level} {class}, {0}. Specced right, unlike most.
 Level {level}. {class}, and the template is perfect.
 Lower than my numbers deserve, {0}.
 

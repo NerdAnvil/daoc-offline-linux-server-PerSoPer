@@ -26,7 +26,7 @@ On my way to {destination}, and there's a merchant there who owes me. [if bot_do
 Wherever the copper is, {0}.
 
 ~ reply level
-{level} {class}, {0}. My crafting's higher, though.
+Level {level} {class}, {0}. My crafting's higher, though.
 Level {level}, {class}. It pays the bills.
 Old enough to know my prices, {0}.
 

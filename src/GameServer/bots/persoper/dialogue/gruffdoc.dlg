@@ -29,7 +29,7 @@ Moving to {destination}, so don't get hurt till I'm back. [if bot_doing travelli
 Where I'm needed, {0}. That's all you need to know.
 
 ~ reply level
-{level} {class}, {0}. Old enough to have seen worse.
+Level {level} {class}, {0}. Old enough to have seen worse.
 Level {level}, {class}, and I've mended every one of those levels.
 High enough, {0}. Sit still.
 

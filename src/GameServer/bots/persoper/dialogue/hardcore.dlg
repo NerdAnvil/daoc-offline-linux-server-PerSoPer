@@ -26,7 +26,7 @@ Heading for {destination}, and I'm not stopping to chat. [if bot_doing travellin
 Somewhere with mobs, {0}. That's all that matters.
 
 ~ reply level
-{level} {class}, {0}. Next level by tonight.
+Level {level} {class}, {0}. Next level by tonight.
 Level {level}, {class}. Ask me again in an hour.
 Not high enough, {0}. Never high enough.
 

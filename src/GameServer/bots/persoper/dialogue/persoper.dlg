@@ -624,7 +624,7 @@ On my way to {destination}, darling, keep your hit points on. [if bot_doing trav
 Wherever you are, {0}, give or take a heal.
 
 ~ reply level
-{level} {class}, {0}, and fabulous at every level.
+Level {level} {class}, {0}, and fabulous with it.
 Level {level}, darling. {class}, and yes, the robe is part of the build.
 A lady never tells, {0}. Well, not the level, anyway.
 

@@ -28,7 +28,7 @@ Headed for {destination}, dontcha know. [if bot_doing travelling]
 Oh gosh, {0}, I'd have to look at a map.
 
 ~ reply level
-{level} {class}, {0}. Paid the mortgage with every one of 'em.
+Level {level} {class}, {0}. Paid the mortgage with every one of 'em.
 Level {level}, {class}. Not bad for a homebody, huh?
 Oh, I don't keep track, {0}. Too busy with the house.
 
