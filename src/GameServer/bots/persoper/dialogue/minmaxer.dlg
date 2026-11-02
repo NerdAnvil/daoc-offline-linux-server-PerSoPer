@@ -44,6 +44,27 @@ Heading to {destination}. I have a route planned. [if bot_doing travelling]
 Resting in {zone}. Regen is a stat too, {0}. [if bot_doing resting]
 Optimising, {0}. Always optimising.
 
+~ reply groupyes
+I'm in, {0}, invite me and send me the group comp.
+Fine, {0}, invite me, as long as there's a real healer.
+
+~ reply groupno
+Pass, {0}. Your comp doesn't need my class.
+Not without a full healer and a tank, {0}, I've seen how that ends.
+
+~ reply groupbusy
+Mid-rotation on this {monster}, {0}, don't break my parse. [if bot_doing fighting]
+Riding, {0}, the worst stat in the game, ask again later. [if bot_doing riding]
+Busy, {0}. Ask me after this.
+
+~ reply grouphave
+Already grouped with {leader}, {0}, and the comp is finally right.
+Got a group, {0}, and I'm not giving up this slot.
+
+~ reply grouplevel
+I'm {level}, {0}, and the xp curve says that's a terrible idea.
+The level gap kills the xp, {0}, so no.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.

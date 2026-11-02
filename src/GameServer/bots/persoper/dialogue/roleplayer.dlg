@@ -46,6 +46,27 @@ Bound for {destination}, on an urgent errand. [if bot_doing travelling]
 Resting in {zone} by the fire, telling old tales. [if bot_doing resting]
 Living my hero's tale, {0}. As should you.
 
+~ reply groupyes
+A fellowship! I'll ride with you, {0}, send word and I'll come.
+Aye, {0}, invite me and our tale begins.
+
+~ reply groupno
+Not this night, {0}, my hero walks a lonely road.
+My quest calls me elsewhere, {0}, perhaps fate will bring us together again.
+
+~ reply groupbusy
+I am locked in battle with this {monster}, {0}, ask me when it falls! [if bot_doing fighting]
+I ride on an urgent errand, {0}, I cannot stop now. [if bot_doing riding]
+My hero is busy, {0}, ask again later.
+
+~ reply grouphave
+I am sworn to ride with {leader} for now, {0}.
+I already ride with a fellowship, {0}, but I thank you.
+
+~ reply grouplevel
+I am level {level}, {0}, our paths run too far apart in strength.
+Our strengths are too far apart, {0}, it would not be a fair tale.
+
 ~ reply groan
 Oh, a terrible jest!
 My hero groans in character. And out.

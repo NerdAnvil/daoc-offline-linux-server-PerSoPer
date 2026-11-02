@@ -768,6 +768,9 @@ public static class AutonomousBotChatCoordinator
         if (eligible.FirstOrDefault(bot => BotPersonalities.For(bot) != null) is { } teller &&
             TryJokeOpening(player, teller, message, read, (bot, line) => SayTo(bot, line, faction), directed))
             return;
+        // An open group call ("who wants to group?") gets yes, no or "busy" from a few personality world bots.
+        if (AutonomousChatIntentModel.IsGroupCall(message) && TryGroupCallAnswers(player, eligible, faction, directed))
+            return;
         int count = directed || hasKnowledge || intent is eAutonomousChatIntent.IgnoreOutOfWorld or eAutonomousChatIntent.Abuse
             ? Math.Min(1, eligible.Length)
             : RollResponseCount(eligible.Length);
@@ -799,6 +802,50 @@ public static class AutonomousBotChatCoordinator
                     ScheduleChipIn(player, chipIn, message, response, line => SayTo(chipIn, line, faction));
             }, named: directed);
         }
+    }
+
+    /// <summary>
+    /// A player's open group call answered by up to three of the personality world bots that heard it, each from its own
+    /// state and type (PersonalityGroupCalls). False when none of them is one (plain bots and Persoper then answer as
+    /// before); true otherwise, also when nobody answers (the cooldown, a full group, the roll). A "yes" is only said:
+    /// the player still invites the bot.
+    /// </summary>
+    private static bool TryGroupCallAnswers(GamePlayer player, GameBot[] heard, bool faction, bool directed)
+    {
+        GameBot[] weighed = heard
+            .Where(bot => bot is { IsAutonomousWorldBot: true, IsTemporaryGroupHelper: false } && BotPersonalities.For(bot) != null)
+            .Take(PersonalityGroupCalls.MaxWeighed)
+            .ToArray();
+        if (weighed.Length == 0)
+            return false;
+        if (!PersonalityGroupCalls.TryStart(player.InternalID, GameLoop.GameLoopTime))
+        {
+            Log.Info($"PERSONALITY_GROUPCALL cooldown player=\"{player.Name}\"");
+            return true;
+        }
+        (GameBot Bot, eGroupCallAnswer Answer)[] decided = weighed.Select(bot =>
+        {
+            BotPersonality personality = BotPersonalities.For(bot);
+            bool sulking = personality.Patience != null && PersonalityAnnoyance.SulkLeft(personality, player) > TimeSpan.Zero;
+            return (bot, PersonalityGroupCalls.Decide(PersonalityGroupCalls.StateOf(bot, player, sulking), personality.TypeKey, Random.Shared));
+        }).ToArray();
+        foreach ((GameBot bot, eGroupCallAnswer answer) in decided)
+            Log.Info($"PERSONALITY_GROUPCALL weighed bot=\"{bot.Name}\" player=\"{player.Name}\" answer={answer} " +
+                     $"type={BotPersonalities.For(bot).TypeKey} level={bot.Level} playerLevel={player.Level}");
+        int index = 0;
+        foreach ((GameBot bot, eGroupCallAnswer answer) in PersonalityGroupCalls.Pick(decided, Random.Shared))
+        {
+            string line = PersonalityGroupCalls.Line(BotPersonalities.For(bot), answer, PersonalityStateAnswers.SlotsFor(bot),
+                DialogueFactSource.For(bot, player), player.Name, Random.Shared);
+            if (line == null)
+                continue;
+            Schedule(bot, 1_300 + index++ * 1_800 + Random.Shared.Next(1_200), () =>
+            {
+                if (SayTo(bot, line, faction) && answer == eGroupCallAnswer.Yes)
+                    PersonalityGroupCalls.Promise(bot.ObjectID, player.InternalID, GameLoop.GameLoopTime);
+            }, named: directed);
+        }
+        return true;
     }
 
     /// <summary>

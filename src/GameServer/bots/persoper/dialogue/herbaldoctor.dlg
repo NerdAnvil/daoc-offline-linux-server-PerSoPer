@@ -46,6 +46,27 @@ Headin' to {destination}, bub, takin' my time. [if bot_doing travelling]
 Chillin' in {zone} after a round of buffs, bub. [if bot_doing resting]
 Buffin' and chillin', {0}. Same as always.
 
+~ reply groupyes
+Sure thing, bub, invite me and I'll buff the lot of you.
+You bet, {0}, I'm in, just save me a spot to stand back and relax.
+
+~ reply groupno
+Eh, not tonight, bub, I'm brewin' up a fresh batch.
+Pass, {0}, I'm takin' it easy for once, bub.
+
+~ reply groupbusy
+Bit busy with this {monster}, bub, hold that thought. [if bot_doing fighting]
+Ridin', bub, ask me again when I'm off the horse. [if bot_doing riding]
+Busy, bub, maybe after.
+
+~ reply grouphave
+Already buffin' for {leader}, bub, sorry.
+Got a group already, {0}, they keep me busy.
+
+~ reply grouplevel
+I'm level {level}, bub, too far off yours for my buffs to fit.
+Levels are too far apart, bub, it'd be a mess.
+
 ~ reply groan
 Oof, bub. That one needs a buff.
 Ugh. Even my buffs can't save that one, bub.

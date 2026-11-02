@@ -44,6 +44,27 @@ On my way to {destination}. Don't slow me down. [if bot_doing travelling]
 Resting in {zone}, which I hate, {0}. [if bot_doing resting]
 Grinding, {0}. Always grinding.
 
+~ reply groupyes
+I'm in, {0}, if you can keep up the pace.
+Invite me, {0}, and we'll have this done before the others log in.
+
+~ reply groupno
+Not unless the xp is better than mine solo, {0}, and it isn't.
+Pass, {0}. I've got a grind schedule and it doesn't have you in it.
+
+~ reply groupbusy
+Mid-pull on this {monster}, {0}, ask again when it's dead. [if bot_doing fighting]
+Riding, {0}, which is wasted time already, so don't make it worse. [if bot_doing riding]
+Busy, {0}. Ask me after this.
+
+~ reply grouphave
+Already running with {leader}, {0}, and we're not slowing down.
+Got a group, {0}. Try the next one.
+
+~ reply grouplevel
+I'm {level}, {0}, so the xp split would kill us both.
+Wrong level range, {0}. Nobody gets anything out of that.
+
 ~ reply groan
 ugh
 that cost me a pull

@@ -44,6 +44,27 @@ Charging toward {destination}! [if bot_doing travelling]
 Resting in {zone}, and it's KILLING me, {0}! [if bot_doing resting]
 Getting ready to pull something huge, {0}!
 
+~ reply groupyes
+YES {0}! Invite me, I'll pull!
+I'M IN! Send the invite, {0}, I'm already running!
+
+~ reply groupno
+Nah {0}, I'm soloing EVERYTHING tonight!
+Can't, {0}, I've got a huge pull lined up!
+
+~ reply groupbusy
+Busy hitting this {monster}! Hang on, {0}! [if bot_doing fighting]
+Riding! Too slow! Ask me when I'm off, {0}! [if bot_doing riding]
+Hang on, {0}, I'm in the middle of something!
+
+~ reply grouphave
+Already pulling for {leader}, {0}!
+Got a group already, {0}! They can't keep up though!
+
+~ reply grouplevel
+I'm level {level}, {0}! Doesn't matter! Wait, it does, never mind!
+We're too far apart in levels, {0}, somebody dies on the first pull!
+
 ~ reply groan
 NOOO!
 Ugh! Worse than a wipe!

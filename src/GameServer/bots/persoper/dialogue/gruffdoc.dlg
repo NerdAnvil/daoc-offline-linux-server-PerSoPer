@@ -47,6 +47,27 @@ Headed for {destination}. Try not to need me. [if bot_doing travelling]
 Resting in {zone} while nobody's bleeding, {0}. [if bot_doing resting]
 My job, {0}. Somebody always needs mending.
 
+~ reply groupyes
+Fine, {0}. Invite me, and stay where I can reach you.
+Count me in, {0}, somebody has to keep you breathing.
+
+~ reply groupno
+Not tonight, {0}. I've patched enough fools this week.
+No, {0}. Find another healer, I need a rest.
+
+~ reply groupbusy
+Fighting this {monster}, {0}, ask me when it's down. [if bot_doing fighting]
+On a horse, {0}, and it already kicked me twice. [if bot_doing riding]
+Busy, {0}. Later.
+
+~ reply grouphave
+Already keeping {leader} and the rest alive, {0}.
+Got a group, {0}, and they bleed plenty without you.
+
+~ reply grouplevel
+I'm {level}, {0}, too far off your level for my heals to fit.
+Levels too far apart, {0}. Someone would die, and I'd get blamed.
+
 ~ reply groan
 Hm. Terrible.
 That hurt more than a broken arm.

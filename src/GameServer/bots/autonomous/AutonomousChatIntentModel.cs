@@ -60,6 +60,16 @@ public enum eAutonomousChatIntent
     Where,
     Level,
     GroupStatus,
+    // An open call to group ("who wants to group?", "lfg"): only a marker for the phrases in intents.dlg. Read() still
+    // gives Grouping, Dungeon or RvR for it; IsGroupCall() tells it apart from asking to join ("can I join?").
+    GroupCall,
+    // A personality bot's answers to a group call (PersonalityGroupCalls), never read from chat: yes, no, busy
+    // (fighting or riding), already in a group, and the level gap.
+    GroupYes,
+    GroupNo,
+    GroupBusy,
+    GroupHave,
+    GroupLevel,
 }
 
 /// <summary>
@@ -223,7 +233,7 @@ public static partial class AutonomousChatIntentModel
             return eAutonomousChatIntent.Abuse;
         eAutonomousChatIntent? phrased = IntentPhrases.Shared.Match(tokens);
         // "Who wants to ..." is an invite; a dungeon or frontier word says which kind.
-        if (phrased == eAutonomousChatIntent.Grouping)
+        if (phrased is eAutonomousChatIntent.Grouping or eAutonomousChatIntent.GroupCall)
             return tokens.Any(InviteDungeon.Contains) ? eAutonomousChatIntent.Dungeon
                 : tokens.Any(InviteRvR.Contains) ? eAutonomousChatIntent.RvR
                 : eAutonomousChatIntent.Grouping;
@@ -267,10 +277,25 @@ public static partial class AutonomousChatIntentModel
         return best - runnerUp < 0.18 ? eAutonomousChatIntent.Unknown : bestIntent;
     }
 
+    /// <summary>
+    /// True for an open call to group ("who wants to group?", "anyone up for a dungeon?", "lfg"), which bots answer
+    /// yes or no (PersonalityGroupCalls); false for asking to join ("can I join?", "inv pls") and everything else.
+    /// </summary>
+    public static bool IsGroupCall(string text)
+    {
+        if (Read(text) is not (eAutonomousChatIntent.Grouping or eAutonomousChatIntent.Dungeon or eAutonomousChatIntent.RvR))
+            return false;
+        return IntentPhrases.Shared.Has(Tokens(text).ToArray(), eAutonomousChatIntent.GroupCall);
+    }
+
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>
         intent >= eAutonomousChatIntent.Joke && intent is not (eAutonomousChatIntent.Command or eAutonomousChatIntent.CombatCall) &&
-        !IsJokeReplyKind(intent) && !IsStateQuestion(intent);
+        !IsJokeReplyKind(intent) && !IsStateQuestion(intent) && !IsGroupCallKind(intent);
+
+    /// <summary>The group-call marker and its answer kinds (GroupYes ... GroupLevel): sections in .dlg files, never small talk.</summary>
+    public static bool IsGroupCallKind(eAutonomousChatIntent intent) =>
+        intent is >= eAutonomousChatIntent.GroupCall and <= eAutonomousChatIntent.GroupLevel;
 
     /// <summary>
     /// Questions about the bot's own state (where, level, group), answered from the game, not small talk: a game

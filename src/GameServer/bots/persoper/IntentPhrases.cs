@@ -94,6 +94,27 @@ public sealed class IntentPhrases
         return null;
     }
 
+    /// <summary>True when any phrase of <paramref name="intent"/> is in the message words, longer phrases of other intents or not.</summary>
+    public bool Has(IReadOnlyList<string> tokens, eAutonomousChatIntent intent)
+    {
+        if (tokens == null || tokens.Count == 0)
+            return false;
+        foreach ((string[] words, eAutonomousChatIntent found) in _phrases)
+        {
+            if (found != intent)
+                continue;
+            for (int start = 0; start + words.Length <= tokens.Count; start++)
+            {
+                int matched = 0;
+                while (matched < words.Length && string.Equals(tokens[start + matched], words[matched], StringComparison.OrdinalIgnoreCase))
+                    matched++;
+                if (matched == words.Length)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>The intent of the first phrase found in a chat line, or null.</summary>
     public eAutonomousChatIntent? Match(string text) => Match(AutonomousChatIntentModel.Tokens(text).ToArray());
 

@@ -44,6 +44,27 @@ Heading to {destination} to sell a few things. [if bot_doing travelling]
 Resting in {zone} and counting my coin, {0}. [if bot_doing resting]
 Business, {0}. Always business.
 
+~ reply groupyes
+Fine, {0}, invite me, but I get first look at the drops.
+I'll come if the loot's worth the repair bill, {0}, send the invite.
+
+~ reply groupno
+Can't, {0}, I've got orders to fill and the forge won't wait.
+No thanks, {0}, splitting loot is how a crafter goes broke.
+
+~ reply groupbusy
+Busy with this {monster}, {0}, and it better drop something. [if bot_doing fighting]
+On the road, {0}, I'll be at my bench after this. [if bot_doing riding]
+Bit busy, {0}, I'll ask the forge.
+
+~ reply grouphave
+Already with {leader}, {0}, and they're splitting fair so far.
+Got a group, {0}, sorry, my loot's spoken for.
+
+~ reply grouplevel
+I'm level {level}, {0}, too far from yours for a fair loot split.
+Our levels are too far apart, {0}, nobody profits from that.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

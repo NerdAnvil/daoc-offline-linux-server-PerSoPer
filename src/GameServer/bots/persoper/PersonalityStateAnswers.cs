@@ -112,7 +112,20 @@ public static class PersonalityStateAnswers
     public static string Answer(BotPersonality personality, eAutonomousChatIntent intent, StateSlots slots, DialogueFacts facts,
         string speakerName, Random random, Func<string, DialogueRule> ruleOf = null)
     {
-        if (personality == null || !IsAnswered(intent) || personality.Replies.GetValueOrDefault(intent) is not { Length: > 0 } written)
+        if (personality == null || !IsAnswered(intent))
+            return null;
+        return Pick(personality, intent, slots, facts, speakerName, random, ruleOf);
+    }
+
+    /// <summary>
+    /// A line from the personality's "~ reply" section for <paramref name="intent"/>, filled from its state: a line with
+    /// a slot or condition that fits, else a plain one (the shrug). Null when it has none that may be said now. Also
+    /// used for the answers to group calls (PersonalityGroupCalls).
+    /// </summary>
+    public static string Pick(BotPersonality personality, eAutonomousChatIntent intent, StateSlots slots, DialogueFacts facts,
+        string speakerName, Random random, Func<string, DialogueRule> ruleOf = null)
+    {
+        if (personality?.Replies.GetValueOrDefault(intent) is not { Length: > 0 } written)
             return null;
         ruleOf ??= DialogueLibrary.RuleFor;
         random ??= Random.Shared;

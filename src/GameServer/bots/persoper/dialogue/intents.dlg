@@ -4,7 +4,7 @@
 # Chat shorthand is read as its words first (grp = group, wanna = want to, cya = see you, ...;
 # the list is Shorthand in AutonomousChatIntentModel.cs), so write phrases in full words.
 # Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
-# farewell, ignoreoutofworld, thank, and the small talk ones: joke, grumble, smalltalk,
+# farewell, ignoreoutofworld, thank, groupcall, and the small talk ones: joke, grumble, smalltalk,
 # question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
 # howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words.
 # The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
@@ -41,9 +41,15 @@ slowpoke, noob, nub, scrub, shorty, you're fat, fatty, loser buys, race you, ugl
 shorter than you, bet you can't, nice try, too slow, are you a
 
 ~ intent grouping
-who wants to, anyone want to, anybody want to, anyone up for, who's up for, up for some
-looking for group, looking for more, looking for power, power level, can join, can i join, room for, join you, join your, invite me, invite please
-team up, need healer, need a healer, need a tank
+looking for power, power level, can join, can i join, room for, join you, join your, invite me, invite please
+need healer, need a healer, need a tank
+
+# An open call to group: read as grouping (or its dungeon or frontier trip), and personality world bots
+# answer it yes, no, busy, already grouped or "wrong level" (PersonalityGroupCalls.cs). Asking to join
+# ("can I join?") stays plain grouping above.
+~ intent groupcall
+who wants to, anyone want to, anybody want to, anyone up for, anybody up for, who's up for, up for some
+looking for group, looking for more, looking for people, lfg, lfm, team up
 
 ~ intent grinding
 where to level, place to level, spot to level, good spot, good place to level, what should hunt

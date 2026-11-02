@@ -45,6 +45,28 @@ wandering over to {destination}, no rush [if bot_doing travelling]
 chilling in {zone}, snack break [if bot_doing resting]
 oh, you know, stuff lol
 
+~ reply groupyes
+sure {0}, send me an invite
+ooh yeah, I'm in {0}, inv me
+why not, I've got nothing better going on lol
+
+~ reply groupno
+nah {0}, I'm just chilling tonight
+eh, maybe later {0}, kinda lazy rn
+
+~ reply groupbusy
+can't rn {0}, kinda fighting this {monster} lol [if bot_doing fighting]
+on the horse rn, ask me when I'm off it [if bot_doing riding]
+bit busy {0}, maybe after?
+
+~ reply grouphave
+already with {leader} rn, sorry {0}
+already grouped lol, maybe next time
+
+~ reply grouplevel
+I'm level {level} {0}, kinda far from you for that lol
+our levels are kinda far apart {0}, wouldn't work
+
 ~ reply groan
 ugh lol
 oh no

@@ -46,6 +46,27 @@ On the way to {destination}, should be back by supper. [if bot_doing travelling]
 Taking a breather in {zone}, {0}. My feet are done. [if bot_doing resting]
 Oh, just keeping busy, {0}. You know how it is.
 
+~ reply groupyes
+Oh sure, {0}! Invite me, I'll grab my good boots.
+You betcha, {0}, long as we're back before supper.
+
+~ reply groupno
+Oh, not tonight, {0}, I gotta finish the porch.
+Ah, gee, {0}, I promised I'd stay home and sort the shelves.
+
+~ reply groupbusy
+Ope, bit busy with this {monster}, {0}! [if bot_doing fighting]
+Riding right now, {0}, and my back's already sore. [if bot_doing riding]
+Oh, kinda busy, {0}, maybe after?
+
+~ reply grouphave
+Already with {leader}, {0}, real nice bunch too.
+Oh, I'm grouped up already, {0}, sorry about that.
+
+~ reply grouplevel
+Gosh, I'm level {level}, {0}, that's a ways off from you.
+Our levels are a bit far apart, {0}, wouldn't feel right.
+
 ~ reply groan
 Oh, for Pete's sake.
 Oh, that's a real groaner, that is.

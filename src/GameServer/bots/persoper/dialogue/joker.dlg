@@ -44,6 +44,27 @@ Heading for {destination}. Don't wait up. [if bot_doing travelling]
 Resting in {zone}, rehearsing new material. [if bot_doing resting]
 Me? Oh, a little of this, a little of that, {0}.
 
+~ reply groupyes
+I'm in, {0}! Every group needs a comedian, invite me.
+Count me in, {0}, I'll bring the jokes, you bring the heals.
+
+~ reply groupno
+Not tonight, {0}, my audience is booked.
+Pass, {0}, my material isn't ready for a group that size.
+
+~ reply groupbusy
+Little busy with this {monster}, {0}, it doesn't get my jokes either. [if bot_doing fighting]
+On my horse, {0}, and he's a terrible audience. [if bot_doing riding]
+Busy, {0}! Catch me after the show.
+
+~ reply grouphave
+Already got a group with {leader}, {0}, and they laugh at everything.
+I'm taken, {0}! Grouped and adored, mostly.
+
+~ reply grouplevel
+I'm level {level}, {0}, and that gap is no joke.
+We're too far apart in levels, {0}, and that's not even the punchline.
+
 ~ reply groan
 Booo! I'm stealing it anyway.
 Ugh. That's my kind of terrible.

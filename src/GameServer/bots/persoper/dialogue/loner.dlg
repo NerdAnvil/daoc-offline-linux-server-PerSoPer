@@ -40,6 +40,28 @@ Walking to {destination}. [if bot_doing travelling]
 Resting in {zone}. Quietly. [if bot_doing resting]
 Nothing, {0}.
 
+~ reply groupyes
+Fine, {0}. Just this once.
+Invite me, {0}, before I change my mind.
+
+~ reply groupno
+No, {0}.
+I work alone.
+Not interested, {0}.
+
+~ reply groupbusy
+Fighting this {monster}. Later. [if bot_doing fighting]
+Riding, {0}. Ask later. [if bot_doing riding]
+Busy right now, {0}.
+
+~ reply grouphave
+Already with {leader}, for now.
+Already grouped. Don't get used to it.
+
+~ reply grouplevel
+I'm {level}. Wouldn't work.
+Wrong level for that, {0}.
+
 ~ reply groan
 Hm.
 ...no.
