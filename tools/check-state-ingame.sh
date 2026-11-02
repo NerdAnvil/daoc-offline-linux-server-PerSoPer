@@ -104,7 +104,7 @@ one_of() { local said="$1" line; while IFS= read -r line; do
   [[ -n $line ]] && { [[ $said == "$line" || $said == *" $line" || $said == "$line "* ]] && return 0; }; done; return 1; }
 
 # The test: the line, who must answer, its "/dialogue state" name, and which section.
-LINES=(
+QUESTIONS=(
   "shemp, where are you?|Shempenstein|Shempenstein|~ reply where"
   "shemp, what level are you?|Shempenstein|Shempenstein|~ reply level"
   "shemp, are you in a group?|Shempenstein|Shempenstein|~ reply groupstatus"
@@ -116,8 +116,8 @@ LINES=(
 )
 
 f="$RECORDS/state-check.txt"
-late=(); for row in "${LINES[@]}"; do IFS='|' read -r line _ name _ <<<"$row"; late+=("--send-late=/dialogue state $name" "--send-late=/g $line"); done
-echo "== Questions about the bots themselves, in group chat: ${#LINES[@]} lines (about 3.5 minutes)"
+late=(); for row in "${QUESTIONS[@]}"; do IFS='|' read -r line _ name _ <<<"$row"; late+=("--send-late=/dialogue state $name" "--send-late=/g $line"); done
+echo "== Questions about the bots themselves, in group chat: ${#QUESTIONS[@]} lines (about 3.5 minutes)"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/invite Shempenstein" --send="/dialogue gather" --send="/persoper" --listen=5 \
   --wait-for=Shempenstein --follow=Shempenstein --send-late-gap=11 "${late[@]}" \
@@ -125,7 +125,7 @@ echo "== Questions about the bots themselves, in group chat: ${#LINES[@]} lines 
 grep -q "Shempenstein" "$f" || fail "Shempenstein never showed up in the recording; see $f (did the /invite work?)"
 grep -q "State " "$f" || fail "no \"/dialogue state\" answer in the recording; is the server's GameServer.dll the new one?"
 
-for row in "${LINES[@]}"; do
+for row in "${QUESTIONS[@]}"; do
   IFS='|' read -r line who name section <<<"$row"
   state=$(state_before "$f" "$([[ $who == Persoper ]] && echo Persoper || echo "$who")" "$line")
   echo "  \"$line\""
