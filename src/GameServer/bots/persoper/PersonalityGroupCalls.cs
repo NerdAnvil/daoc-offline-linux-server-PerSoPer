@@ -172,13 +172,40 @@ public static class PersonalityGroupCalls
             return Promises.TryGetValue((botId, playerId), out long said) && nowMs - said >= 0 && nowMs - said < PromiseMs;
     }
 
-    /// <summary>Forgets cooldowns and promises (tests, /dialogue forget).</summary>
+    /// <summary>The longest a test hold (/dialogue hold) lasts.</summary>
+    public const long MaxHoldMs = 120_000;
+
+    private static readonly Dictionary<int, long> HeldUntil = new();
+
+    /// <summary>
+    /// Test hold (/dialogue hold): the bot's own plans pause for up to <see cref="MaxHoldMs"/>, so a check can leave
+    /// its group and still find it there (tools/check-groupcalls-ingame.sh).
+    /// </summary>
+    public static void Hold(int botId, long nowMs, long forMs)
+    {
+        lock (Sync)
+        {
+            if (HeldUntil.Count >= MaxRemembered)
+                HeldUntil.Clear();
+            HeldUntil[botId] = nowMs + Math.Clamp(forMs, 0, MaxHoldMs);
+        }
+    }
+
+    /// <summary>True while a test hold keeps the bot's own plans paused.</summary>
+    public static bool IsHeld(int botId, long nowMs)
+    {
+        lock (Sync)
+            return HeldUntil.Count > 0 && HeldUntil.TryGetValue(botId, out long until) && nowMs < until;
+    }
+
+    /// <summary>Forgets cooldowns, promises and test holds (tests, /dialogue forget).</summary>
     public static void Clear()
     {
         lock (Sync)
         {
             LastCall.Clear();
             Promises.Clear();
+            HeldUntil.Clear();
         }
     }
 

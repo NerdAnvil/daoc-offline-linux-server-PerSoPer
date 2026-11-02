@@ -11,7 +11,8 @@
 # Needs the test server's dialogue files for intents, Shempenstein and Casual to be the repo's, and its GameServer.dll
 # to have "/dialogue groupcall". Invites Shempenstein, brings him over with /dialogue gather, follows him and turns on
 # the GM test shortcut "/dialogue groupcall always" (every personality bot that hears a call answers; the cooldown and
-# his real state still decide). Then, in /say, 11 s apart:
+# his real state still decide) and holds him with "/dialogue hold" (his own plans pause, so he is still there after
+# /disband instead of teleporting off). Then, in /say, 11 s apart:
 #   1. "who wants to group?" while he is in the group: server.log weighs him Quiet and he says nothing;
 #   2. /disband, then "anyone up for a dungeon?": server.log weighs him (yes, no, busy, grouped or level) and he says
 #      a line from that answer's section ("~ reply groupyes" and so on; a yes may use "~ reply grouping", a reason
@@ -103,11 +104,13 @@ echo "== Group calls: one in the group, one after /disband, one in the cooldown 
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/invite Shempenstein" --send="/dialogue gather" --listen=5 \
   --wait-for=Shempenstein --follow=Shempenstein --send-late-gap=11 \
-  --send-late="/dialogue forget" --send-late="/dialogue groupcall always" --send-late="$IN_GROUP" \
+  --send-late="/dialogue forget" --send-late="/dialogue groupcall always" --send-late="/dialogue hold Shempenstein 90" \
+  --send-late="$IN_GROUP" \
   --send-late="/disband" --send-late="$CALL" --send-late="$AGAIN" --send-late="/dialogue groupcall normal" \
   --record="$f" --record-seconds=12 --overwrite >"$f.log" 2>&1
 grep -q "Shempenstein" "$f" || fail "Shempenstein never showed up in the recording; see $f (did the /invite work?)"
 grep -q "Group calls: every" "$f" || fail "no \"/dialogue groupcall\" answer in the recording; is the server's GameServer.dll the new one?"
+grep -q "Holding Shempenstein" "$f" || fail "no \"/dialogue hold\" answer in the recording; is the server's GameServer.dll the new one?"
 
 log=$(notes "$start")
 echo "  server.log:"; [[ -n $log ]] && echo "$log" | sed -E 's/^.*PERSONALITY_GROUPCALL/      PERSONALITY_GROUPCALL/'
@@ -124,7 +127,7 @@ echo "  \"$IN_GROUP\" (in the group):"; [[ -n $said ]] && echo "$said" | sed 's/
 said=$(said_by Shempenstein <(within "$f" "$CALL"))
 echo "  \"$CALL\" (after /disband, weighed ${second:-nothing}):"; [[ -n $said ]] && echo "$said" | sed 's/^/      Shempenstein: /'
 if [[ -z $second || $second == Quiet ]]; then
-  fail "after /disband he was weighed \"${second:-not at all}\" (still in a group? out of earshot?)"
+  fail "after /disband he was weighed \"${second:-not at all}\" (still in a group? out of earshot? did the hold work?)"
 else
   pass "after /disband he was weighed $second"
   answered=""

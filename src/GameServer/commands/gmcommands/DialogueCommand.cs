@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue groupcall always" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue groupcall always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
     /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
@@ -23,7 +23,8 @@ namespace DOL.GS.Commands
         "/dialogue state <bot>   (what a bot in your group would say about itself: zone, level, class, what it's doing)",
         "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
         "/dialogue groupcall always|normal   (test: every personality bot that hears \"who wants to group?\" answers, up to 3)",
-        "/dialogue forget   (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
+        "/dialogue hold <bot> <seconds>   (test: a bot in your group pauses its own plans, up to 120 s, so it stays after /disband)",
+        "/dialogue forget  (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
     {
         /// <summary>Problems listed in chat at most; the rest are in server.log and daoc-admin.</summary>
@@ -99,6 +100,16 @@ namespace DOL.GS.Commands
                 ChatUtil.SendSystemMessage(client, PersonalityGroupCalls.Always
                     ? $"Group calls: every personality bot that hears one answers now (up to {PersonalityGroupCalls.MaxAnswers}; the cooldown stays)."
                     : "Group calls: back to the normal 0 to 3 answers.");
+                return;
+            }
+            if (verb == "hold" && args.Length == 4 && int.TryParse(args[3], out int seconds) && seconds > 0)
+            {
+                GameBot held = GroupBot(client.Player, args[2]);
+                if (held != null)
+                    PersonalityGroupCalls.Hold(held.ObjectID, GameLoop.GameLoopTime, seconds * 1_000L);
+                ChatUtil.SendSystemMessage(client, held == null
+                    ? $"No bot called {args[2]} in your group."
+                    : $"Holding {held.Name}: its own plans pause for {System.Math.Min(seconds, PersonalityGroupCalls.MaxHoldMs / 1_000)} s.");
                 return;
             }
             if (verb == "forget" && args.Length == 2)

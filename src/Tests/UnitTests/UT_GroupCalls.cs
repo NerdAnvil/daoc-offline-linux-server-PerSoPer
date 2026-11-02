@@ -185,14 +185,31 @@ public class UT_GroupCalls
     }
 
     [Test]
+    public void TestHold_LastsItsTimeCappedAndClears()
+    {
+        Assert.That(PersonalityGroupCalls.IsHeld(7, 1_000), Is.False);
+        PersonalityGroupCalls.Hold(7, 1_000, 90_000);
+        Assert.That(PersonalityGroupCalls.IsHeld(7, 90_999), Is.True);
+        Assert.That(PersonalityGroupCalls.IsHeld(8, 2_000), Is.False, "another bot");
+        Assert.That(PersonalityGroupCalls.IsHeld(7, 91_000), Is.False, "over");
+        PersonalityGroupCalls.Hold(7, 0, 10_000_000);
+        Assert.That(PersonalityGroupCalls.IsHeld(7, PersonalityGroupCalls.MaxHoldMs), Is.False, "capped");
+        PersonalityGroupCalls.Hold(7, 0, 10_000);
+        PersonalityGroupCalls.Clear();
+        Assert.That(PersonalityGroupCalls.IsHeld(7, 1), Is.False, "forgotten");
+    }
+
+    [Test]
     public void Remembered_StaysBounded()
     {
         for (int i = 0; i < 10_000; i++)
         {
             PersonalityGroupCalls.TryStart("p" + i, i);
             PersonalityGroupCalls.Promise(i, "p" + i, i);
+            PersonalityGroupCalls.Hold(i, i, 1_000);
         }
         Assert.That(PersonalityGroupCalls.Promised(9_999, "p9999", 9_999), Is.True, "the newest is kept");
+        Assert.That(PersonalityGroupCalls.IsHeld(9_999, 9_999), Is.True, "the newest hold is kept");
     }
 
     private static IEnumerable<BotPersonality> WorldVoices() =>

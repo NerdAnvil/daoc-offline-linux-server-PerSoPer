@@ -1517,7 +1517,9 @@ namespace DOL.AI.Brain
             MaybeAutonomousWorldChat();
 
             // A bot storming off after a bad joke (PersonalityWalkOff) is back in a few seconds: no new trips meanwhile.
-            bool walkingOff = PersonalityWalkOff.IsAway(BotBody, GameLoop.GameLoopTime);
+            // A GM test hold (/dialogue hold) pauses them the same way.
+            bool walkingOff = PersonalityWalkOff.IsAway(BotBody, GameLoop.GameLoopTime) ||
+                BotBody != null && PersonalityGroupCalls.IsHeld(BotBody.ObjectID, GameLoop.GameLoopTime);
 
             if (!walkingOff && TryHandleAutonomousMerchantService())
                 return;
