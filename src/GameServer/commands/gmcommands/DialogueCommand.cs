@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue groupcall always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue groupcall always", "/dialogue orders always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
     /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
@@ -23,6 +23,7 @@ namespace DOL.GS.Commands
         "/dialogue state <bot>   (what a bot in your group would say about itself: zone, level, class, what it's doing)",
         "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
         "/dialogue groupcall always|normal   (test: every personality bot that hears \"who wants to group?\" answers, up to 3)",
+        "/dialogue orders always|normal   (test: no bot refuses \"stay\" by its type, and a named order is always answered)",
         "/dialogue hold <bot> <seconds>   (test: a bot in your group pauses its own plans, up to 120 s, so it stays after /disband)",
         "/dialogue forget  (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
@@ -102,6 +103,14 @@ namespace DOL.GS.Commands
                     : "Group calls: back to the normal 0 to 3 answers.");
                 return;
             }
+            if (verb == "orders" && args.Length == 3 && args[2].ToLowerInvariant() is "always" or "normal")
+            {
+                PersonalityOrders.Always = args[2].Equals("always", System.StringComparison.OrdinalIgnoreCase);
+                ChatUtil.SendSystemMessage(client, PersonalityOrders.Always
+                    ? "Orders: no bot refuses \"stay\" by its type now, and a named order is always answered (the cooldown stays)."
+                    : "Orders: back to the normal refusals and answers.");
+                return;
+            }
             if (verb == "hold" && args.Length == 4 && int.TryParse(args[3], out int seconds) && seconds > 0)
             {
                 GameBot held = GroupBot(client.Player, args[2]);
@@ -116,7 +125,8 @@ namespace DOL.GS.Commands
             {
                 DialoguePicker.Shared.Clear();
                 PersonalityGroupCalls.Clear();
-                ChatUtil.SendSystemMessage(client, "Forgot the lines said: cooldowns and [once] lines start fresh, and group-call cooldowns too.");
+                PersonalityOrders.Clear();
+                ChatUtil.SendSystemMessage(client, "Forgot the lines said: cooldowns and [once] lines start fresh, and group-call and order cooldowns (and stays) too.");
                 return;
             }
             if (verb is not ("status" or "reload"))
@@ -154,7 +164,9 @@ namespace DOL.GS.Commands
             StateSlots slots = PersonalityStateAnswers.SlotsFor(bot);
             return $"State {bot.Name}: zone={slots.Zone}; level={slots.Level}; class={slots.ClassName}; doing={PersonalityStateAnswers.DoingOf(bot)}; " +
                    $"grouped={(bot.Group?.MemberCount > 1 ? "yes" : "no")}; groupsize={slots.GroupSize}; leader={slots.Leader}; " +
-                   $"monster={slots.Monster}; destination={slots.Destination}";
+                   $"monster={slots.Monster}; destination={slots.Destination}; " +
+                   $"staying={PersonalityOrders.StaySecondsLeft(bot.ObjectID, GameLoop.GameLoopTime)}s; " +
+                   $"distance={(bot.CurrentRegion == player.CurrentRegion ? bot.GetDistanceTo(player).ToString() : "other region")}";
         }
 
         /// <summary>The named bot says a line from its own ambient list in group chat now (night lines at night).</summary>

@@ -68,6 +68,33 @@ Got a group, {0}, and they bleed plenty without you.
 I'm {level}, {0}, too far off your level for my heals to fit.
 Levels too far apart, {0}. Someone would die, and I'd get blamed.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following, {0}, stay where I can reach you.
+Right behind you, {0}, try not to run into anything.
+
+~ reply orderstay
+Holding here, {0}, don't wander off and get yourself hurt.
+Fine, I'll wait, {0}, call if you need patching up.
+
+~ reply ordercome
+Coming, {0}, what did you break?
+On my way, {0}, keep still.
+
+~ reply orderno
+No, {0}, I don't let my patients out of my sight.
+I'm not leaving you alone out there, {0}.
+
+~ reply orderbusy
+Fighting this {monster}, {0}, give me a moment. [if bot_doing fighting]
+On a horse, {0}, and it doesn't listen either. [if bot_doing riding]
+Busy, {0}, later.
+
+~ reply ordernot
+You're not my leader, {0}, find your own healer.
+I'm not in your group, {0}, so no.
+
 ~ reply groan
 Hm. Terrible.
 That hurt more than a broken arm.

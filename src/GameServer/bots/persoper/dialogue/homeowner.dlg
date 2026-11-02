@@ -67,6 +67,33 @@ Oh, I'm grouped up already, {0}, sorry about that.
 Gosh, I'm level {level}, {0}, that's a ways off from you.
 Our levels are a bit far apart, {0}, wouldn't feel right.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Oh sure, {0}, right behind you!
+Following, {0}, lead the way, I'll keep up.
+
+~ reply orderstay
+Okie dokie, {0}, I'll wait right here.
+I'll stay put, {0}, don't forget about me now.
+
+~ reply ordercome
+Coming, {0}! Ope, just a sec.
+On my way, {0}!
+
+~ reply orderno
+Oh, I'd rather not stand here all alone, {0}.
+Ope, sorry, {0}, I'll just come along if that's okay.
+
+~ reply orderbusy
+Ope, just a sec, {0}, this {monster} won't quit! [if bot_doing fighting]
+Riding right now, {0}, I'll come when we stop. [if bot_doing riding]
+Oh, kinda busy, {0}, one sec?
+
+~ reply ordernot
+Oh, you're not my group leader, {0}, sorry!
+I'm not in your group, {0}, but thanks for asking!
+
 ~ reply groan
 Oh, for Pete's sake.
 Oh, that's a real groaner, that is.

@@ -1301,6 +1301,10 @@ namespace DOL.GS
             // A raid squad on a keep siege holds its post until the event ends (goal 11: no leash during sieges).
             if (CurrentRegionID == Owner.CurrentRegionID && CompanionRaidSiege.Holds(this))
                 return false;
+            // Told to stay in chat (PersonalityOrders, at most 5 minutes): no recall while the owner is in this region.
+            if (!afterRevival && !IsReturningAfterRelease && PersonalityOrders.Holds(ObjectID, Owner.CurrentRegionID, GameLoop.GameLoopTime) &&
+                CurrentRegionID == Owner.CurrentRegionID)
+                return false;
 
             Vector3 destination = TemporaryGroupStableTravel.FormationPoint(Owner, CompanionRaid.IsMember(this) ? Math.Max(0, GroupIndex - 1) : ObjectID % 6);
             StopCurrentSpellcast();

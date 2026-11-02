@@ -65,6 +65,33 @@ Got a group already, {0}! They can't keep up though!
 I'm level {level}, {0}! Doesn't matter! Wait, it does, never mind!
 We're too far apart in levels, {0}, somebody dies on the first pull!
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+RIGHT BEHIND YOU {0}! Unless I see a mob!
+Following! Go faster, {0}!
+
+~ reply orderstay
+Stay?! Ugh, fine, {0}, but only for a second!
+Okay okay, I'm staying, {0}, this is torture!
+
+~ reply ordercome
+COMING {0}!
+On my way, {0}, is there a pull?!
+
+~ reply orderno
+Stay? Nah, {0}, there's mobs over there!
+Can't stay, {0}, my legs won't let me!
+
+~ reply orderbusy
+Busy hitting this {monster}, {0}! Hang on! [if bot_doing fighting]
+Riding! I'll come when this horse stops, {0}! [if bot_doing riding]
+Hang on, {0}, I'm in the middle of something!
+
+~ reply ordernot
+You're not my leader, {0}! My leader says charge!
+Ha, you can't tell me what to do, {0}, we're not even grouped!
+
 ~ reply groan
 NOOO!
 Ugh! Worse than a wipe!

@@ -65,6 +65,33 @@ Got a group, {0}, sorry, my loot's spoken for.
 I'm level {level}, {0}, too far from yours for a fair loot split.
 Our levels are too far apart, {0}, nobody profits from that.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following, {0}, mind the path, my pack is heavy.
+Lead on, {0}, I'll keep an eye out for ore.
+
+~ reply orderstay
+Staying here, {0}, I'll sort my bags.
+Fine, {0}, I'll wait and count my materials.
+
+~ reply ordercome
+Coming, {0}, give me a moment to close my pack.
+On my way, {0}.
+
+~ reply orderno
+Wait here with all this loot on me? Not a chance, {0}.
+I'd rather stay close, {0}, there's thieves about.
+
+~ reply orderbusy
+Busy with this {monster}, {0}, it better drop something. [if bot_doing fighting]
+On the road, {0}, the horse sets the pace. [if bot_doing riding]
+Bit busy, {0}, one moment.
+
+~ reply ordernot
+You're not my group lead, {0}, and I don't work for free.
+I'm not in your group, {0}, ask your own crafter.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

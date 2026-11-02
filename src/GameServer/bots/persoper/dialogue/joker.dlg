@@ -65,6 +65,33 @@ I'm taken, {0}! Grouped and adored, mostly.
 I'm level {level}, {0}, and that gap is no joke.
 We're too far apart in levels, {0}, and that's not even the punchline.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following you, {0}, like a bad joke follows a bard.
+Lead on, {0}, I'll be right behind you making noises.
+
+~ reply orderstay
+Staying put, {0}, I'll practice my material on this rock.
+Okay, {0}, I'll wait here and look mysterious.
+
+~ reply ordercome
+Coming, {0}! Hold the punchline.
+On my way, {0}, don't be funny without me.
+
+~ reply orderno
+Stay here alone, with no audience? No thanks, {0}.
+Nah, {0}, where you go the jokes go.
+
+~ reply orderbusy
+Bit busy with this {monster}, {0}, it's heckling me. [if bot_doing fighting]
+On my horse, {0}, and he goes where he likes. [if bot_doing riding]
+One sec, {0}, I'm mid-bit.
+
+~ reply ordernot
+Ha, nice try, {0}, you're not my group leader.
+I'd take orders from you, {0}, if you were my leader, which you're not.
+
 ~ reply groan
 Booo! I'm stealing it anyway.
 Ugh. That's my kind of terrible.

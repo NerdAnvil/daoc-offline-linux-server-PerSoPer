@@ -1,6 +1,7 @@
 # Persoper: her chat lines and greetings. Format: see DialogueFile.cs.
 # Her memory lines, heal and build lines, patience and surnames stay in code.
 === persoper
+names: Persi
 
 ~ greeting first_meeting
 Hello, {2}! I'm {0}. Yes, {1}. I picked it myself.
@@ -641,6 +642,30 @@ Following {leader} and watching your health bar like a hawk. [if bot_doing follo
 Off to {destination}, darling, try not to die while I'm gone. [if bot_doing travelling]
 Resting in {zone}, {0}, filing my nails and topping up my mana. [if bot_doing resting]
 Healing, darling. It's what I do.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when she can't (busy: fighting
+# or riding) or the speaker can't order her (not: not her owner or group leader). A companion never says no.
+~ reply orderfollow
+Right behind you, darling.
+Following, {0}, and keeping your health bar green.
+Lead on, {0}, I'll be two steps behind.
+
+~ reply orderstay
+I'll wait right here, {0}, don't go dying out of range.
+Staying put, darling, but come back before you need a heal.
+
+~ reply ordercome
+Coming, darling!
+On my way, {0}, try not to get hit before I'm there.
+
+~ reply orderbusy
+Bit busy healing you, {0}! [if bot_doing fighting]
+Let me get off this horse first, darling. [if bot_doing riding]
+One moment, {0}!
+
+~ reply ordernot
+Sorry, darling, I only take orders from the one who summoned me.
+Nice try, {0}, you're not my summoner.
 
 ~ reply groan
 Oh, {0}. That's awful.

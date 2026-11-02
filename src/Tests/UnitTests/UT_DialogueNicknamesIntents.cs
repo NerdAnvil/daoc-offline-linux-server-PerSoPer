@@ -41,7 +41,7 @@ public class UT_DialogueNicknamesIntents
     public void Kobaldjovi_HasHisNicknames()
     {
         Assert.That(KobaldjoviIdentity.Personality.Nicknames, Is.EqualTo(new[] { "Jovi", "KJ" }));
-        Assert.That(PersoperIdentity.Personality.Nicknames, Is.Empty);
+        Assert.That(PersoperIdentity.Personality.Nicknames, Is.EqualTo(new[] { "Persi" }));
     }
 
     // Bug 2026-10-31: "Natas, ..." in group chat went to a random member; character files' names were never loaded.

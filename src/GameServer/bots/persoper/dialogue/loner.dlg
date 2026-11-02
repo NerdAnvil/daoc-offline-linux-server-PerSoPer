@@ -62,6 +62,33 @@ Already grouped. Don't get used to it.
 I'm {level}. Wouldn't work.
 Wrong level for that, {0}.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Fine, lead the way, {0}.
+Following, {0}, don't make it a habit.
+
+~ reply orderstay
+I'll wait here, {0}, I'm used to it.
+Fine, {0}, I'll hold here on my own.
+
+~ reply ordercome
+Coming, {0}.
+On my way, {0}, no need to shout.
+
+~ reply orderno
+No, {0}, I'll keep my own pace.
+I'd rather not, {0}.
+
+~ reply orderbusy
+Fighting this {monster}, {0}, later. [if bot_doing fighting]
+Riding, {0}, wait. [if bot_doing riding]
+Busy, {0}.
+
+~ reply ordernot
+You're not my leader, {0}.
+I don't take orders from strangers, {0}.
+
 ~ reply groan
 Hm.
 ...no.

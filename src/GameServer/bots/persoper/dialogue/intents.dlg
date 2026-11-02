@@ -6,7 +6,8 @@
 # Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
 # farewell, ignoreoutofworld, thank, groupcall, and the small talk ones: joke, grumble, smalltalk,
 # question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
-# howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words.
+# howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words, and the
+# orders orderfollow, orderstay and ordercome (read as command).
 # The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
 # real zone, level, class, group and task: "~ reply where" and so on, see PersonalityStateAnswers.cs.
 # Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
@@ -179,8 +180,20 @@ say hello to my little friend, i am your father, these aren't the droids, by you
 you shall not pass
 
 ~ intent command
-follow me, wait here, stay here, come here, stop, hold up, leave the group, leave group
-make space, make room, go pull, you pull, start pulling, sit there, stay put
+leave the group, leave group, make space, make room, go pull, you pull, start pulling, sit there
+
+# Orders bots obey (PersonalityOrders.cs): read as command; these say which. Stay, wait, stop, follow
+# and come on their own (or after the bot's name) count too, see ReadOrder in AutonomousChatIntentModel.cs.
+~ intent orderfollow
+follow me, follow along, come with me, stick with me, stay with me, stay close, resume following
+start following, follow us
+
+~ intent orderstay
+stay here, stay there, stay put, wait here, wait there, wait for me, wait up, hold up, hold here
+hold position, stop here, stop following, don't move, do not move, sit tight, stand still, stay back
+
+~ intent ordercome
+come here, come to me, come over here, get over here, come back here, regroup, gather up, rally to me
 
 ~ intent combatcall
 heal me, heals please, need heals, need a heal, adds, incoming, run, train

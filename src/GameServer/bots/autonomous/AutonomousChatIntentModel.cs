@@ -70,6 +70,24 @@ public enum eAutonomousChatIntent
     GroupBusy,
     GroupHave,
     GroupLevel,
+    // Orders (PersonalityOrders): follow me, stay here, come here. Read() gives Command for their phrases in intents.dlg;
+    // ReadOrder() tells which. The same names are the sections a bot says yes from, then its refusal, busy and
+    // "not yours to order" answers. Never small talk.
+    OrderFollow,
+    OrderStay,
+    OrderCome,
+    OrderNo,
+    OrderBusy,
+    OrderNot,
+}
+
+/// <summary>An order a player gives bots in chat (intent Part B6); None when the line isn't one.</summary>
+public enum eBotOrder
+{
+    None,
+    Follow,
+    Stay,
+    Come,
 }
 
 /// <summary>
@@ -231,7 +249,12 @@ public static partial class AutonomousChatIntentModel
             return eAutonomousChatIntent.IgnoreOutOfWorld;
         if (tokens.Any(Insults.Contains) || (tokens.Any(AimedInsults.Contains) && tokens.Any(Aimed.Contains)))
             return eAutonomousChatIntent.Abuse;
+        // "stay", "wait", "follow", "come" on their own are orders.
+        if (tokens.Length == 1 && LoneOrders.ContainsKey(tokens[0]))
+            return eAutonomousChatIntent.Command;
         eAutonomousChatIntent? phrased = IntentPhrases.Shared.Match(tokens);
+        if (phrased is eAutonomousChatIntent.OrderFollow or eAutonomousChatIntent.OrderStay or eAutonomousChatIntent.OrderCome)
+            return eAutonomousChatIntent.Command;
         // "Who wants to ..." is an invite; a dungeon or frontier word says which kind.
         if (phrased is eAutonomousChatIntent.Grouping or eAutonomousChatIntent.GroupCall)
             return tokens.Any(InviteDungeon.Contains) ? eAutonomousChatIntent.Dungeon
@@ -288,10 +311,75 @@ public static partial class AutonomousChatIntentModel
         return IntentPhrases.Shared.Has(Tokens(text).ToArray(), eAutonomousChatIntent.GroupCall);
     }
 
+    // A line that is only one of these words (after the bot's name is taken off) is that order.
+    private static readonly Dictionary<string, eBotOrder> LoneOrders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["stay"] = eBotOrder.Stay, ["wait"] = eBotOrder.Stay, ["stop"] = eBotOrder.Stay, ["halt"] = eBotOrder.Stay,
+        ["follow"] = eBotOrder.Follow, ["come"] = eBotOrder.Come,
+    };
+
+    /// <summary>
+    /// The order in a chat line ("follow me", "shemp, stay here", "come here", or one of stay, wait, stop, follow, come
+    /// on its own); None for anything else. <paramref name="names"/> are the words that name the bots (full names,
+    /// personality names, nicknames): taken off first, so "shemp stay" is a lone "stay". A rude line is never an order.
+    /// </summary>
+    public static eBotOrder ReadOrder(string text, IEnumerable<string> names = null)
+    {
+        if (Read(text) is eAutonomousChatIntent.Abuse or eAutonomousChatIntent.IgnoreOutOfWorld)
+            return eBotOrder.None;
+        HashSet<string> named = new(StringComparer.OrdinalIgnoreCase);
+        foreach (string name in (names ?? []).Take(64))
+            named.UnionWith(Tokens(name));
+        string[] tokens = Tokens(text).Where(token => !named.Contains(token)).ToArray();
+        if (tokens.Length == 1 && LoneOrders.TryGetValue(tokens[0], out eBotOrder lone))
+            return lone;
+        return IntentPhrases.Shared.Match(tokens) switch
+        {
+            eAutonomousChatIntent.OrderFollow => eBotOrder.Follow,
+            eAutonomousChatIntent.OrderStay => eBotOrder.Stay,
+            eAutonomousChatIntent.OrderCome => eBotOrder.Come,
+            _ => eBotOrder.None,
+        };
+    }
+
+    // Words that may stand around an order without naming anyone: "ok guys, stay here", "everyone come here please".
+    private static readonly HashSet<string> OrderFiller = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ok", "okay", "alright", "hey", "yo", "oi", "so", "now", "then", "just", "again", "too", "quick", "quickly", "please",
+        "pls", "plz", "thanks", "ty", "lol", "yeah", "guys", "everyone", "everybody", "all", "folks", "team", "group", "party",
+        "people", "you", "sec", "second", "moment", "minute", "bit", "here", "there", "me", "us", "up", "and", "right",
+    };
+
+    /// <summary>
+    /// A word that looks like someone the order is for but isn't one of <paramref name="names"/>: the first word
+    /// ("shnacki, stay here") or a lone word after the last comma ("stay here, shnacki") that is neither an order word nor
+    /// filler. Null when there is none. An open order with such a word goes to nobody (it was meant for someone the game
+    /// doesn't know by that name), not to everyone.
+    /// </summary>
+    public static string OrderStranger(string text, IEnumerable<string> names = null)
+    {
+        HashSet<string> named = new(StringComparer.OrdinalIgnoreCase);
+        foreach (string name in (names ?? []).Take(64))
+            named.UnionWith(Tokens(name));
+        bool Stranger(string word) => word != null && !named.Contains(word) && !OrderFiller.Contains(word) &&
+            !LoneOrders.ContainsKey(word) && !IntentPhrases.Shared.IsWordOf(word, eAutonomousChatIntent.OrderFollow,
+                eAutonomousChatIntent.OrderStay, eAutonomousChatIntent.OrderCome);
+        string first = Tokens(text).FirstOrDefault();
+        if (Stranger(first))
+            return first;
+        string[] parts = (text ?? string.Empty).Split(',');
+        string[] last = parts.Length > 1 ? Tokens(parts[^1]).ToArray() : [];
+        return last.Length == 1 && Stranger(last[0]) ? last[0] : null;
+    }
+
+    /// <summary>The order sections and answers (OrderFollow ... OrderNot): sections in .dlg files, never small talk.</summary>
+    public static bool IsOrderKind(eAutonomousChatIntent intent) =>
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderNot;
+
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>
         intent >= eAutonomousChatIntent.Joke && intent is not (eAutonomousChatIntent.Command or eAutonomousChatIntent.CombatCall) &&
-        !IsJokeReplyKind(intent) && !IsStateQuestion(intent) && !IsGroupCallKind(intent);
+        !IsJokeReplyKind(intent) && !IsStateQuestion(intent) && !IsGroupCallKind(intent) && !IsOrderKind(intent);
 
     /// <summary>The group-call marker and its answer kinds (GroupYes ... GroupLevel): sections in .dlg files, never small talk.</summary>
     public static bool IsGroupCallKind(eAutonomousChatIntent intent) =>

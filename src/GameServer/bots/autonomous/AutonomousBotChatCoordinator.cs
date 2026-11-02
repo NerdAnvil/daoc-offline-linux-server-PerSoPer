@@ -194,6 +194,9 @@ public static class AutonomousBotChatCoordinator
             return;
         if (AutonomousChatIntentModel.Predict(message) == eAutonomousChatIntent.IgnoreOutOfWorld)
             return;
+        // An order is obeyed even right after other chat (the chat throttle below is for answers only).
+        if (TryLocalOrder(player, message))
+            return;
         lock (Sync)
         {
             if (LastLocalPlayerResponse.TryGetValue(player.CurrentRegionID, out long last) && GameLoop.GameLoopTime - last < 10_000)
@@ -238,6 +241,13 @@ public static class AutonomousBotChatCoordinator
             return;
         if (TryJokeAnswer(player, message, (bot, line) => Deliver(bot, player, ePrivateChannel.Group, line)))
             return;
+        // "follow me", "shemp, stay here": the named bots, else every bot in the group, may obey (a line naming a bot
+        // outside the group is left to the check below, so the members don't obey in its place).
+        GameBot[] groupBots = player.Group.GetMembersInTheGroup().OfType<GameBot>().Take(PersonalityOrders.MaxTargets).ToArray();
+        GameBot[] namedMembers = groupBots.Where(bot => IsMentioned(message, bot)).ToArray();
+        if (!OthersStayQuiet(namedMembers, NamedInRealm(player, message)) &&
+            TryOrders(player, message, namedMembers, groupBots, (bot, line) => Deliver(bot, player, ePrivateChannel.Group, line)))
+            return;
         GameBot[] members = player.Group.GetMembersInTheGroup().OfType<GameBot>()
             .Where(bot => BotPersonalities.For(bot) != null)
             .ToArray();
@@ -269,6 +279,10 @@ public static class AutonomousBotChatCoordinator
         if (PersoperAsks.TryAnswer(player, message, bot))
             return true;
         if (channel != ePrivateChannel.Group && TryJokeAnswer(player, message, (teller, line) => Deliver(teller, player, channel, line), bot))
+            return true;
+        // An order in a tell or whisper is for this bot alone (group chat orders are read in OnPlayerGroupChat).
+        if (channel != ePrivateChannel.Group && player != null && bot != null &&
+            TryOrders(player, message, [bot], [], (teller, line) => Deliver(teller, player, channel, line)))
             return true;
         BotPersonality personality = BotPersonalities.For(bot);
         if (player == null || personality == null || string.IsNullOrWhiteSpace(message))
@@ -847,6 +861,84 @@ public static class AutonomousBotChatCoordinator
         }
         return true;
     }
+
+    /// <summary>
+    /// An order in /say: for the bots it names that hear it, else for the bots of the player's group in earshot. False
+    /// when the line isn't an order, or names a bot that can't hear it (then the usual quiet for the others applies).
+    /// </summary>
+    private static bool TryLocalOrder(GamePlayer player, string message)
+    {
+        GameBot[] near = AutonomousBotRegistry.Snapshot().Where(CanAnswerNamed)
+            .Concat(PersonalityCompanions(evenBusy: true))
+            .Concat(player.Group?.GetMembersInTheGroup().OfType<GameBot>() ?? [])
+            .Where(bot => bot != null && bot.Realm == player.Realm && bot.CurrentRegion == player.CurrentRegion &&
+                bot.IsWithinRadius(player, WorldMgr.SAY_DISTANCE))
+            .Distinct()
+            .ToArray();
+        GameBot[] named = near.Where(bot => IsMentioned(message, bot)).Take(PersonalityOrders.MaxTargets).ToArray();
+        if (OthersStayQuiet(named, NamedInRealm(player, message)))
+            return false;
+        GameBot[] group = near.Where(bot => bot.Group != null && bot.Group == player.Group).Take(PersonalityOrders.MaxTargets).ToArray();
+        return TryOrders(player, message, named, group, (bot, line) => SayTo(bot, line, false));
+    }
+
+    /// <summary>
+    /// A player's order ("follow me", "stay here", "come here"; PersonalityOrders): the named bots take it, else the
+    /// open ones (the player's group). Each decides from its kind and state; the ones that say yes obey at once, and a
+    /// few personality bots answer (none within the cooldown). False when the line isn't an order; true otherwise,
+    /// also when nobody takes it (an open order nobody in the group hears gets silence, not small talk).
+    /// </summary>
+    private static bool TryOrders(GamePlayer player, string message, GameBot[] named, GameBot[] open, Func<GameBot, string, bool> say)
+    {
+        if (player == null || string.IsNullOrWhiteSpace(message))
+            return false;
+        GameBot[] heard = named.Concat(open).Where(bot => bot != null).Distinct().ToArray();
+        eBotOrder order = AutonomousChatIntentModel.ReadOrder(message, heard.SelectMany(NamesOf));
+        if (order == eBotOrder.None)
+            return false;
+        bool isNamed = named.Length > 0;
+        // "shnacki, stay here" with a name the game doesn't know is for someone, not for everyone: nobody obeys.
+        if (!isNamed && AutonomousChatIntentModel.OrderStranger(message, heard.SelectMany(NamesOf)) is { } stranger)
+        {
+            Log.Info($"PERSONALITY_ORDER unknown player=\"{player.Name}\" order={order} word=\"{stranger}\"");
+            return true;
+        }
+        GameBot[] targets = (isNamed ? named : open).Where(bot => bot != null).Distinct()
+            .OrderBy(_ => Random.Shared.Next()).Take(PersonalityOrders.MaxTargets).ToArray();
+        (GameBot Bot, eOrderAnswer Answer)[] decided = targets.Select(bot =>
+        {
+            BotPersonality personality = BotPersonalities.For(bot);
+            bool sulking = personality?.Patience != null && PersonalityAnnoyance.SulkLeft(personality, player) > TimeSpan.Zero;
+            return (bot, PersonalityOrders.Decide(order, PersonalityOrders.StateOf(bot, player, sulking), personality?.TypeKey, Random.Shared));
+        }).ToArray();
+        foreach ((GameBot bot, eOrderAnswer answer) in decided)
+        {
+            if (answer == eOrderAnswer.Yes)
+                PersonalityOrders.Apply(bot, player, order);
+            Log.Info($"PERSONALITY_ORDER bot=\"{bot.Name}\" player=\"{player.Name}\" order={order} answer={answer} named={isNamed}");
+        }
+        if (!PersonalityOrders.TryStart(player.InternalID, GameLoop.GameLoopTime))
+        {
+            Log.Info($"PERSONALITY_ORDER cooldown player=\"{player.Name}\"");
+            return true;
+        }
+        int index = 0;
+        foreach ((GameBot bot, eOrderAnswer answer) in PersonalityOrders.Pick(decided.Where(pair => BotPersonalities.For(pair.Bot) != null), isNamed, Random.Shared))
+        {
+            string line = PersonalityOrders.Line(BotPersonalities.For(bot), order, answer, PersonalityStateAnswers.SlotsFor(bot),
+                DialogueFactSource.For(bot, player), player.Name, Random.Shared);
+            if (line == null)
+                continue;
+            Schedule(bot, 900 + index++ * 1_600 + Random.Shared.Next(900), () => say(bot, line), named: isNamed);
+        }
+        return true;
+    }
+
+    /// <summary>The words that name a bot in chat: its full name, personality name and nicknames.</summary>
+    private static IEnumerable<string> NamesOf(GameBot bot) =>
+        BotPersonalities.For(bot) is { } personality
+            ? new[] { bot.Name, personality.Name }.Concat(personality.Nicknames ?? [])
+            : [bot.Name];
 
     /// <summary>
     /// True when a line names someone (<paramref name="named"/>, wherever they are) but no named bot can hear it

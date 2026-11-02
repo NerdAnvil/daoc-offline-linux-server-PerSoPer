@@ -67,6 +67,33 @@ I already ride with a fellowship, {0}, but I thank you.
 I am level {level}, {0}, our paths run too far apart in strength.
 Our strengths are too far apart, {0}, it would not be a fair tale.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Lead on, {0}, and I shall follow!
+Where you go, {0}, I go.
+
+~ reply orderstay
+I shall hold this ground, {0}, until you return.
+As you command, {0}, I stand watch here.
+
+~ reply ordercome
+I come, {0}!
+At once, {0}, I am on my way!
+
+~ reply orderno
+Stand idle while you face danger alone? I cannot, {0}.
+Forgive me, {0}, but my hero stays at your side.
+
+~ reply orderbusy
+Not while this {monster} still stands, {0}! [if bot_doing fighting]
+My steed will not turn, {0}, I come when we halt. [if bot_doing riding]
+A moment, {0}, I am beset!
+
+~ reply ordernot
+You are not my captain, {0}.
+I am sworn to another fellowship, {0}.
+
 ~ reply groan
 Oh, a terrible jest!
 My hero groans in character. And out.

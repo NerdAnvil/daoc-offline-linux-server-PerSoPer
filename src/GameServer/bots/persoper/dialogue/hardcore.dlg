@@ -65,6 +65,33 @@ Got a group, {0}. Try the next one.
 I'm {level}, {0}, so the xp split would kill us both.
 Wrong level range, {0}. Nobody gets anything out of that.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+On your heels, {0}, lead the way and don't stop.
+Following, {0}, set a real pace.
+
+~ reply orderstay
+Holding here, {0}, but don't make me wait long.
+Fine, I'll hold this spot, {0}, call when it's time.
+
+~ reply ordercome
+Coming, {0}, on my way.
+On my way, {0}, save the pull for me.
+
+~ reply orderno
+Standing around is how you waste a night, {0}, I'm coming with you.
+No, {0}, I don't do idle.
+
+~ reply orderbusy
+Mid-pull on this {monster}, {0}, give me a second. [if bot_doing fighting]
+Riding, {0}, I'll come when this horse stops. [if bot_doing riding]
+Busy, {0}, after this.
+
+~ reply ordernot
+You don't lead my group, {0}.
+I take calls from my own leader, {0}, not you.
+
 ~ reply groan
 ugh
 that cost me a pull

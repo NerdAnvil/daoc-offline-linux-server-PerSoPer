@@ -67,6 +67,33 @@ already grouped lol, maybe next time
 I'm level {level} {0}, kinda far from you for that lol
 our levels are kinda far apart {0}, wouldn't work
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+k, right behind you {0}
+following, lead the way lol
+
+~ reply orderstay
+ok, I'll wait here {0}
+staying put, don't forget me lol
+
+~ reply ordercome
+omw {0}
+coming, coming lol
+
+~ reply orderno
+eh, nah {0}, I'll just tag along
+I'd rather not stand here alone lol
+
+~ reply orderbusy
+one sec {0}, kinda fighting this {monster} lol [if bot_doing fighting]
+on the horse rn, can't really [if bot_doing riding]
+hang on {0}, bit busy
+
+~ reply ordernot
+lol you're not my group leader {0}
+uh, I'm not in your group, {0}
+
 ~ reply groan
 ugh lol
 oh no

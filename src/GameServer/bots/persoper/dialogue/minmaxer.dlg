@@ -65,6 +65,33 @@ Got a group, {0}, and I'm not giving up this slot.
 I'm {level}, {0}, and the xp curve says that's a terrible idea.
 The level gap kills the xp, {0}, so no.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following, {0}, staying in buff range.
+On you, {0}, path efficiently please.
+
+~ reply orderstay
+Holding position, {0}, as long as it's for a reason.
+Fine, {0}, parked here at max range.
+
+~ reply ordercome
+On my way, {0}, shortest path.
+Coming, {0}, don't pull without me.
+
+~ reply orderno
+Standing here is zero xp an hour, {0}, I'm coming.
+Bad call, {0}, I'm staying with the group.
+
+~ reply orderbusy
+Mid-rotation on this {monster}, {0}, after it dies. [if bot_doing fighting]
+Riding, {0}, the horse doesn't take orders from me either. [if bot_doing riding]
+Busy, {0}, give me a moment.
+
+~ reply ordernot
+You're not my group lead, {0}, so no.
+Wrong group, {0}, I don't take your calls.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.

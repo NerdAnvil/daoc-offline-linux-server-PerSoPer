@@ -115,6 +115,19 @@ public sealed class IntentPhrases
         return false;
     }
 
+    /// <summary>True when the word is in any phrase of these intents.</summary>
+    public bool IsWordOf(string word, params eAutonomousChatIntent[] intents)
+    {
+        if (string.IsNullOrEmpty(word))
+            return false;
+        foreach ((string[] words, eAutonomousChatIntent found) in _phrases)
+        {
+            if (Array.IndexOf(intents, found) >= 0 && words.Contains(word, StringComparer.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
     /// <summary>The intent of the first phrase found in a chat line, or null.</summary>
     public eAutonomousChatIntent? Match(string text) => Match(AutonomousChatIntentModel.Tokens(text).ToArray());
 

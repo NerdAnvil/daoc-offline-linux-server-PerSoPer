@@ -1108,6 +1108,15 @@ namespace DOL.AI.Brain
                 return;
             }
 
+            // Told to stay in chat (PersonalityOrders): hold here, capped in time, until "follow" or "come".
+            if (BotBody != null && PersonalityOrders.Holds(BotBody.ObjectID, leader.CurrentRegionID, GameLoop.GameLoopTime))
+            {
+                _ambientWanderMovement = false;
+                if (Body.IsMoving && !HasAggro)
+                    Body.StopMoving();
+                return;
+            }
+
             bool tightInterior = Body.CurrentRegion?.IsDungeon == true;
             bool companionTravel = CompanionFollowPolicy.Applies(BotBody);
             // Do not run native owner-follow and formation orders concurrently.

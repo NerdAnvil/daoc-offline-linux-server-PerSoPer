@@ -67,6 +67,33 @@ Got a group already, {0}, they keep me busy.
 I'm level {level}, bub, too far off yours for my buffs to fit.
 Levels are too far apart, bub, it'd be a mess.
 
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Right behind ya, bub.
+Lead the way, {0}, I'll keep the buffs rolling.
+
+~ reply orderstay
+Sure thing, bub, I'll put my feet up right here.
+Stayin' put, {0}, holler if you need me.
+
+~ reply ordercome
+Comin', bub!
+On my way, {0}, hold your horses.
+
+~ reply orderno
+Ah, I'd rather tag along, bub.
+Nah, {0}, I'll stick with ya.
+
+~ reply orderbusy
+Gimme a sec, bub, this {monster} ain't down yet. [if bot_doing fighting]
+Ridin', bub, I'll come when I'm off this horse. [if bot_doing riding]
+Busy, bub, give me a sec.
+
+~ reply ordernot
+Ha, you ain't my group leader, bub.
+We ain't grouped, {0}, so no.
+
 ~ reply groan
 Oof, bub. That one needs a buff.
 Ugh. Even my buffs can't save that one, bub.
