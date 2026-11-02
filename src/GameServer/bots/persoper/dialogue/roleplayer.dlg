@@ -19,6 +19,33 @@ Pray tell, what?
 To reach the far side of the realm? A noble quest!
 A riddle! I give up. Tell me.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+In {zone}, {0}, as my hero's tale demands.
+{zone}, and every step of it part of the story.
+On the road to {destination}, wherever the quest leads. [if bot_doing travelling]
+Where the story takes me, {0}. Play along?
+
+~ reply level
+My hero is level {level}, {class} by calling, {0}.
+Level {level}, {class} by trade, with a long tale ahead.
+A hero doesn't count levels, {0}, only deeds.
+
+~ reply groupstatus
+I ride with a band of {groupsize}, {0}. A fine company. [if bot_grouped]
+I travel alone for now, a wanderer. Will you join, {0}? [if not bot_grouped]
+That depends on the story, {0}.
+
+~ reply activity
+My hero battles this {monster}, {0}! Stand with me! [if bot_doing fighting]
+In battle, {0}! Speak after the fight! [if bot_doing fighting]
+Riding on, as all good heroes must. [if bot_doing riding]
+Following {leader}, loyal to the end. [if bot_doing following]
+Bound for {destination}, on an urgent errand. [if bot_doing travelling]
+Resting in {zone} by the fire, telling old tales. [if bot_doing resting]
+Living my hero's tale, {0}. As should you.
+
 ~ reply groan
 Oh, a terrible jest!
 My hero groans in character. And out.

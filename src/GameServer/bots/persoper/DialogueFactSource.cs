@@ -38,6 +38,8 @@ public static class DialogueFactSource
             Recent = PlayerEventLog.Recent(playerId, now),
             Nearby = Nearby(bot, player),
             Likes = Likes(playerId),
+            BotDoing = PersonalityStateAnswers.DoingOf(bot),
+            BotGrouped = bot.Group?.MemberCount > 1,
         };
     }
 
@@ -59,6 +61,8 @@ public static class DialogueFactSource
             TimeOfDay = DialogueFacts.TimeOfDayFor(WorldMgr.GetCurrentGameTime()),
             Zone = bot.CurrentZone?.Description,
             Nearby = Nearby(bot, null),
+            BotDoing = PersonalityStateAnswers.DoingOf(bot),
+            BotGrouped = bot.Group?.MemberCount > 1,
         };
     }
 

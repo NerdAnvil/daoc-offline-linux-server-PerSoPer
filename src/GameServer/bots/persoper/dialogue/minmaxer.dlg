@@ -17,6 +17,33 @@ No idea. Explain efficiently.
 For the xp. Everything's for the xp.
 Is there a numerical answer?
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Best xp per hour for my level, I checked.
+In {zone}. The spawn timers here are acceptable.
+En route to {destination}, the shortest path I could find. [if bot_doing travelling]
+Somewhere suboptimal, {0}. Don't ask.
+
+~ reply level
+{level} {class}, {0}. Specced right, unlike most.
+Level {level}. {class}, and the template is perfect.
+Lower than my numbers deserve, {0}.
+
+~ reply groupstatus
+Grouped, {groupsize} of us. The comp could be better. [if bot_grouped]
+Solo, {0}. Nobody met my requirements. [if not bot_grouped]
+Depends on the group comp, {0}.
+
+~ reply activity
+Parsing my damage on this {monster}, {0}. [if bot_doing fighting]
+Fighting, {0}. Watch my numbers. [if bot_doing fighting]
+Riding. Travel time is the worst stat in the game. [if bot_doing riding]
+Following {leader}, at the optimal distance. [if bot_doing following]
+Heading to {destination}. I have a route planned. [if bot_doing travelling]
+Resting in {zone}. Regen is a stat too, {0}. [if bot_doing resting]
+Optimising, {0}. Always optimising.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.

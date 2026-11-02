@@ -15,7 +15,8 @@ public sealed record DialogueCondition(string Fact, bool Negated, string Operato
 /// Again, {0}? [if player_dead, deaths_today >= 3] [once]
 /// Nice drop! [if recent loot] [cooldown 11m]
 /// </code>
-/// Conditions are about the player the bot is talking to (see <see cref="DialogueFacts"/>).
+/// Conditions are about the player the bot is talking to (see <see cref="DialogueFacts"/>), except
+/// bot_doing and bot_grouped, which are about the bot itself.
 /// </summary>
 public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Conditions, bool Once, TimeSpan Cooldown)
 {
@@ -25,7 +26,7 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     public static readonly TimeSpan MaxCooldown = TimeSpan.FromHours(24);
 
     /// <summary>Facts that are true or false: "[if player_dead]", "[if not in_combat]".</summary>
-    public static readonly IReadOnlySet<string> YesNoFacts = new HashSet<string> { "player_dead", "in_combat" };
+    public static readonly IReadOnlySet<string> YesNoFacts = new HashSet<string> { "player_dead", "in_combat", "bot_grouped" };
 
     /// <summary>Facts compared with a number: "[if health < 30]".</summary>
     public static readonly IReadOnlySet<string> NumberFacts = new HashSet<string> { "health", "group_size", "deaths_today" };
@@ -36,6 +37,8 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
         ["mood"] = new HashSet<string> { "warm", "neutral", "cool" },
         ["time_of_day"] = new HashSet<string> { "morning", "day", "evening", "night" },
         ["recent"] = new HashSet<string> { "death", "kill", "loot", "level_up" },
+        // The bot's own task, for its answers to "what are you doing?" (PersonalityStateAnswers).
+        ["bot_doing"] = new HashSet<string> { "fighting", "riding", "following", "travelling", "resting" },
     };
 
     /// <summary>Facts with any text value: "[if zone camelot city]", "[if nearby kobaldjovi]".</summary>
@@ -228,8 +231,14 @@ public sealed class DialogueFacts
     /// <summary>The player's saved answers to the bots' questions, as the answer words ("metal"); never "other".</summary>
     public IReadOnlySet<string> Likes { get; init; }
 
+    /// <summary>The bot's own state, not the player's: what it is doing (PersonalityStateAnswers.Doing) and whether it is in a group.</summary>
+    public string BotDoing { get; init; }
+    public bool? BotGrouped { get; init; }
+
     public bool Holds(DialogueCondition condition) => condition.Fact switch
     {
+        "bot_doing" => BotDoing == condition.Value,
+        "bot_grouped" => BotGrouped is { } grouped && grouped != condition.Negated,
         "player_dead" => PlayerDead is { } dead && dead != condition.Negated,
         "in_combat" => InCombat is { } fighting && fighting != condition.Negated,
         "health" => Compare(Health, condition),

@@ -72,7 +72,7 @@ public sealed partial class DialogueFile
     public const int MaxVariants = 24;
 
     /// <summary>Names in {braces} the game fills itself; a part can't be called any of these.</summary>
-    public static readonly IReadOnlySet<string> ReservedSlots = new HashSet<string> { "zone", "monster", "level", "class", "item", "a", "b", "c" };
+    public static readonly IReadOnlySet<string> ReservedSlots = new HashSet<string> { "zone", "monster", "level", "class", "item", "a", "b", "c", "destination", "groupsize", "leader" };
 
     private sealed record Part(IReadOnlyList<string> Alternatives, int Depth);
 

@@ -17,6 +17,33 @@ dunno. go on
 dunno. go on, then pull
 to farm xp? that's why I'd do it
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Where the xp is.
+Still in {zone}. Camp's good, don't tell anyone.
+Heading for {destination}, and I'm not stopping to chat. [if bot_doing travelling]
+Somewhere with mobs, {0}. That's all that matters.
+
+~ reply level
+{level} {class}, {0}. Next level by tonight.
+Level {level}, {class}. Ask me again in an hour.
+Not high enough, {0}. Never high enough.
+
+~ reply groupstatus
+Grouped, {groupsize} of us, and nobody AFKs. [if bot_grouped]
+Solo, {0}. Faster that way. [if not bot_grouped]
+Depends who's slowing me down, {0}.
+
+~ reply activity
+Killing {monster}, {0}. Obviously. [if bot_doing fighting]
+Fighting, {0}. Talk after this pull. [if bot_doing fighting]
+Riding, which is wasted xp time, {0}. [if bot_doing riding]
+Keeping up with {leader} and pulling when I can. [if bot_doing following]
+On my way to {destination}. Don't slow me down. [if bot_doing travelling]
+Resting in {zone}, which I hate, {0}. [if bot_doing resting]
+Grinding, {0}. Always grinding.
+
 ~ reply groan
 ugh
 that cost me a pull

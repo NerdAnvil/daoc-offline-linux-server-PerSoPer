@@ -9,7 +9,8 @@ namespace DOL.GS.Commands
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
     /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always" and "/dialogue forget" set up in-game checks of
-    /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh).
+    /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
+    /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
     /// </summary>
     [CmdAttribute("&dialogue", ePrivLevel.GM, "Shows or reloads the bot dialogue files, plays a scene, or has Persoper ask a question",
@@ -19,6 +20,7 @@ namespace DOL.GS.Commands
         "/dialogue gather   (moves the bots in your group beside you)",
         "/dialogue joke <bot>   (a bot in your group tells a joke there now; its groupmates answer)",
         "/dialogue ambient <bot>   (a bot in your group says one of its own ambient lines there now)",
+        "/dialogue state <bot>   (what a bot in your group would say about itself: zone, level, class, what it's doing)",
         "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
         "/dialogue forget   (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
@@ -64,6 +66,11 @@ namespace DOL.GS.Commands
             if (verb == "joke" && args.Length == 3)
             {
                 ChatUtil.SendSystemMessage(client, TellJoke(client.Player, args[2]));
+                return;
+            }
+            if (verb == "state" && args.Length == 3)
+            {
+                ChatUtil.SendSystemMessage(client, BotState(client.Player, args[2]));
                 return;
             }
             if (verb == "ambient" && args.Length == 3)
@@ -116,6 +123,18 @@ namespace DOL.GS.Commands
         private static GameBot GroupBot(GamePlayer player, string name) =>
             GroupBots(player).FirstOrDefault(member => string.Equals(member.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(BotPersonalities.For(member)?.Key, name, System.StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>What a bot in the group would fill its answers about itself with (PersonalityStateAnswers), on one line.</summary>
+        private static string BotState(GamePlayer player, string name)
+        {
+            GameBot bot = GroupBot(player, name);
+            if (bot == null)
+                return $"No bot called {name} in your group.";
+            StateSlots slots = PersonalityStateAnswers.SlotsFor(bot);
+            return $"State {bot.Name}: zone={slots.Zone}; level={slots.Level}; class={slots.ClassName}; doing={PersonalityStateAnswers.DoingOf(bot)}; " +
+                   $"grouped={(bot.Group?.MemberCount > 1 ? "yes" : "no")}; groupsize={slots.GroupSize}; leader={slots.Leader}; " +
+                   $"monster={slots.Monster}; destination={slots.Destination}";
+        }
 
         /// <summary>The named bot says a line from its own ambient list in group chat now (night lines at night).</summary>
         private static string SayAmbient(GamePlayer player, string name)

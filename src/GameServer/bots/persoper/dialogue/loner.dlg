@@ -13,6 +13,33 @@ Don't follow me.
 Go on.
 Hm. Don't know.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}.
+In {zone}, {0}. Quiet here.
+Going to {destination}. Alone. [if bot_doing travelling]
+Away from people.
+
+~ reply level
+{level}. {class}.
+{level} {class}, {0}. Why?
+Enough.
+
+~ reply groupstatus
+In a group, for now. [if bot_grouped]
+Alone, {0}. As usual. [if not bot_grouped]
+Does it matter?
+
+~ reply activity
+Fighting this {monster}. [if bot_doing fighting]
+Busy. [if bot_doing fighting]
+Riding. [if bot_doing riding]
+Following {leader}, for now. [if bot_doing following]
+Walking to {destination}. [if bot_doing travelling]
+Resting in {zone}. Quietly. [if bot_doing resting]
+Nothing, {0}.
+
 ~ reply groan
 Hm.
 ...no.

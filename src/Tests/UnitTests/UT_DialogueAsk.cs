@@ -82,7 +82,7 @@ public class UT_DialogueAsk
     [TestCase("x [if player_likes]", "'player_likes' needs a name, for example [if player_likes camelot city]")]
     [TestCase("x [if player_likes other]", "'player_likes' needs one answer word from an ask (not 'other'), for example [if player_likes metal]")]
     [TestCase("x [if player_likes heavy metal]", "'player_likes' needs one answer word from an ask (not 'other'), for example [if player_likes metal]")]
-    [TestCase("x [if not player_likes metal]", "'not' only works with player_dead, in_combat")]
+    [TestCase("x [if not player_likes metal]", "'not' only works with player_dead, in_combat, bot_grouped")]
     public void PlayerLikes_RejectsBadUse(string line, string expected)
     {
         var errors = new List<string>();

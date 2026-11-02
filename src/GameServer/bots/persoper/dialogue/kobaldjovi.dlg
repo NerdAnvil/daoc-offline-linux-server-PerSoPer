@@ -216,6 +216,33 @@ Hit me, {0}, I need a chorus.
 To get to the other side? It's always the other side.
 Ooh, I don't know. Drumroll, please.
 
+# Answers about himself from his real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when he doesn't know.
+~ reply where
+{zone}, {0}! Tonight's stop on the tour.
+Playing {zone} this week, {0}. Small crowd, big heart.
+On the road to {destination}, next stop on the tour! [if bot_doing travelling]
+Somewhere on tour, {0}. They all look alike from the stage.
+
+~ reply level
+{level} {class}, {0}, and my voice is max level.
+Level {level}! {class} by day, rock star by night.
+Ask my manager, {0}. I just sing.
+
+~ reply groupstatus
+In a band of {groupsize}, {0}! Best lineup yet. [if bot_grouped]
+Solo act right now, {0}. Want to join the band? [if not bot_grouped]
+Depends on the gig, {0}.
+
+~ reply activity
+Fighting this {monster}, {0}! Worst heckler of the tour! [if bot_doing fighting]
+Busy, {0}! Mid-solo here! [if bot_doing fighting]
+Riding to the next gig, {0}, and humming the whole way. [if bot_doing riding]
+Following {leader}, like a roadie with better hair. [if bot_doing following]
+Off to {destination} for the next show! [if bot_doing travelling]
+Resting my voice in {zone}, {0}. Doctor's orders. [if bot_doing resting]
+Writing a song, {0}. It's about you. Maybe.
+
 ~ reply groan
 Ugh! That's a one-star review, {0}.
 Booo! Off the stage!

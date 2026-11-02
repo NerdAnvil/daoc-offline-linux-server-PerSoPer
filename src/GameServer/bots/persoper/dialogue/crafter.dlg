@@ -17,6 +17,33 @@ I'll bite. Go on.
 Because it was cheaper? Everything's about price.
 No idea. Is there a fee to hear the answer?
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Good prices here, if you know who to ask.
+In {zone}, looking for materials nobody else wants.
+On my way to {destination}, and there's a merchant there who owes me. [if bot_doing travelling]
+Wherever the copper is, {0}.
+
+~ reply level
+{level} {class}, {0}. My crafting's higher, though.
+Level {level}, {class}. It pays the bills.
+Old enough to know my prices, {0}.
+
+~ reply groupstatus
+Grouped, {groupsize} of us, so the loot split is going to hurt. [if bot_grouped]
+Solo, {0}. No splitting the loot that way. [if not bot_grouped]
+Depends who's paying, {0}.
+
+~ reply activity
+Fighting this {monster}. Hope it drops something I can sell. [if bot_doing fighting]
+Busy, {0}! This one better be worth the repair bill. [if bot_doing fighting]
+Riding. I charge by the hour, you know. [if bot_doing riding]
+Following {leader} and keeping an eye on the loot. [if bot_doing following]
+Heading to {destination} to sell a few things. [if bot_doing travelling]
+Resting in {zone} and counting my coin, {0}. [if bot_doing resting]
+Business, {0}. Always business.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

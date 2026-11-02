@@ -77,6 +77,7 @@ public sealed partial record BotPersonality
             ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
+        lines = WithoutStateSlots(lines) is { Length: > 0 } plain ? plain : FallbackReplies;
         // Before string.Format, which can't read a {bot:...}; Midgard's names when the realm isn't known (tests).
         lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
         string[] fallbacks = DialogueBotNames.Fill(FallbackReplies, facts?.Realm);
@@ -95,7 +96,7 @@ public sealed partial record BotPersonality
     /// </summary>
     public string ConditionalReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts)
     {
-        if (facts == null || Replies.GetValueOrDefault(intent) is not { Length: > 0 } lines)
+        if (facts == null || WithoutStateSlots(Replies.GetValueOrDefault(intent)) is not { Length: > 0 } lines)
             return null;
         string[] conditional = NotNaming(DialogueBotNames.Fill(lines, facts.Realm), speakerName).Where(line => DialogueLibrary.RuleFor(line)?.Conditions.Count > 0).ToArray();
         string line = DialoguePicker.Shared.Pick(conditional, DialogueLibrary.RuleFor, facts, facts.BotId ?? Key, DateTime.UtcNow, random ?? Random.Shared);
@@ -109,12 +110,19 @@ public sealed partial record BotPersonality
     /// </summary>
     public string OwnReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts = null, string botKey = null)
     {
-        if (Replies.GetValueOrDefault(intent) is not { Length: > 0 } lines)
+        if (WithoutStateSlots(Replies.GetValueOrDefault(intent)) is not { Length: > 0 } lines)
             return null;
         lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
         string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, facts?.BotId ?? botKey ?? Key, DateTime.UtcNow, random ?? Random.Shared);
         return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
+
+    /// <summary>
+    /// The lines without a state slot ({zone}, {level}...): those are filled only by PersonalityStateAnswers, and
+    /// string.Format can't read them. What's left of a "~ reply where" is its shrug.
+    /// </summary>
+    private static string[] WithoutStateSlots(string[] lines) =>
+        lines == null || !lines.Any(PersonalityStateAnswers.HasSlot) ? lines : lines.Where(line => !PersonalityStateAnswers.HasSlot(line)).ToArray();
 
     /// <summary>
     /// The lines that don't talk about the speaker as someone else ("Ask Eaglefang" said to

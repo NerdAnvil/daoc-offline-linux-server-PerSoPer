@@ -615,6 +615,33 @@ To get to the other side? Please say it's not that.
 I don't know, {0}. Tell me.
 Because someone pulled without me? It's always that.
 
+# Answers about herself from her real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when she doesn't know.
+~ reply where
+Right here in {zone}, darling, two steps behind you.
+{zone}, {0}. Wherever you go, I go. It's in the contract.
+On my way to {destination}, darling, keep your hit points on. [if bot_doing travelling]
+Wherever you are, {0}, give or take a heal.
+
+~ reply level
+{level} {class}, {0}, and fabulous at every level.
+Level {level}, darling. {class}, and yes, the robe is part of the build.
+A lady never tells, {0}. Well, not the level, anyway.
+
+~ reply groupstatus
+With you, darling, {groupsize} of us and I'm keeping every bar green. [if bot_grouped]
+Not grouped, {0}! Who am I supposed to heal, myself? [if not bot_grouped]
+That depends on whether you invite me, {0}.
+
+~ reply activity
+Fighting this {monster}, darling, and healing you while I'm at it. [if bot_doing fighting]
+Bit busy keeping you alive, {0}! [if bot_doing fighting]
+Riding, darling, and my hair looks fantastic in the wind. [if bot_doing riding]
+Following {leader} and watching your health bar like a hawk. [if bot_doing following]
+Off to {destination}, darling, try not to die while I'm gone. [if bot_doing travelling]
+Resting in {zone}, {0}, filing my nails and topping up my mana. [if bot_doing resting]
+Healing, darling. It's what I do.
+
 ~ reply groan
 Oh, {0}. That's awful.
 Ugh. I'm healing everyone but you now.

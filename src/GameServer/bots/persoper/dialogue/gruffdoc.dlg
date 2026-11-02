@@ -20,6 +20,33 @@ Go on.
 Don't know. Tell me.
 Concussion? It's usually a concussion.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Close enough to patch you up.
+In {zone}, where the wounded are.
+Moving to {destination}, so don't get hurt till I'm back. [if bot_doing travelling]
+Where I'm needed, {0}. That's all you need to know.
+
+~ reply level
+{level} {class}, {0}. Old enough to have seen worse.
+Level {level}, {class}, and I've mended every one of those levels.
+High enough, {0}. Sit still.
+
+~ reply groupstatus
+In a group of {groupsize}, and I'm watching every health bar. [if bot_grouped]
+On my own, {0}. Nobody to patch but me. [if not bot_grouped]
+Ask me when someone's bleeding, {0}.
+
+~ reply activity
+Fighting this {monster}. Stay back, {0}. [if bot_doing fighting]
+Busy, {0}! Keep your head down. [if bot_doing fighting]
+Riding, and I hate horses, they kick. [if bot_doing riding]
+Following {leader}, close enough to reach them. [if bot_doing following]
+Headed for {destination}. Try not to need me. [if bot_doing travelling]
+Resting in {zone} while nobody's bleeding, {0}. [if bot_doing resting]
+My job, {0}. Somebody always needs mending.
+
 ~ reply groan
 Hm. Terrible.
 That hurt more than a broken arm.

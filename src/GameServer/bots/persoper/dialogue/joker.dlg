@@ -17,6 +17,33 @@ To get to the other side! No? Wait, I know this one.
 Because it was there? I'm told that's an answer.
 I give up. Tell me, I need new material.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Lovely this time of year, terrible every other time.
+In {zone}, and I'd say "wish you were here," but you are.
+On the road to {destination}, or as I call it, the scenic detour. [if bot_doing travelling]
+Where am I? Philosophically, {0}, nobody knows.
+
+~ reply level
+{level} {class}, {0}. The jokes are max level though.
+Level {level}. {class} by trade, comedian by mistake.
+Ask my trainer, {0}. He stopped counting.
+
+~ reply groupstatus
+Grouped! {groupsize} of us, so I've got an audience. [if bot_grouped]
+Solo, {0}. Nobody laughs at my jokes. [if not bot_grouped]
+Ask me again after the punchline, {0}.
+
+~ reply activity
+Fighting this {monster}. It started it, {0}. [if bot_doing fighting]
+Busy, {0}! Hitting things is serious business. [if bot_doing fighting]
+Riding! My horse does the work, I do the commentary. [if bot_doing riding]
+Following {leader}, like a very funny shadow. [if bot_doing following]
+Heading for {destination}. Don't wait up. [if bot_doing travelling]
+Resting in {zone}, rehearsing new material. [if bot_doing resting]
+Me? Oh, a little of this, a little of that, {0}.
+
 ~ reply groan
 Booo! I'm stealing it anyway.
 Ugh. That's my kind of terrible.

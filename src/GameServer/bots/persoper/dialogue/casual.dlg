@@ -18,6 +18,33 @@ to get to the other side? it's always that
 ok I give up lol
 hmm... no idea, tell me
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone} I think? lol
+um, {zone}, last I checked
+on my way to {destination}, slowly lol [if bot_doing travelling]
+honestly no idea {0}, I just follow the road
+
+~ reply level
+level {level} {class}, no rush lol
+{level}? yeah, {level}, {class}. I'm getting there
+uh, some level, {0}. does it matter lol
+
+~ reply groupstatus
+yep, {groupsize} of us, it's comfy [if bot_grouped]
+nah, just me {0}, wanna hang? [if not bot_grouped]
+kinda? I lose track lol
+
+~ reply activity
+hitting this {monster}, one sec lol [if bot_doing fighting]
+fighting something, brb {0} [if bot_doing fighting]
+riding the horse, best part of the game honestly [if bot_doing riding]
+just tagging along with {leader} lol [if bot_doing following]
+wandering over to {destination}, no rush [if bot_doing travelling]
+chilling in {zone}, snack break [if bot_doing resting]
+oh, you know, stuff lol
+
 ~ reply groan
 ugh lol
 oh no

@@ -55,6 +55,11 @@ public enum eAutonomousChatIntent
     // The rare walk-off gag after a bad joke (PersonalityWalkOff): "I'm out", then "I'm back". Never read from chat.
     JokeQuit,
     JokeReturn,
+    // Questions about the bot itself, answered from its real state (PersonalityStateAnswers): where it is,
+    // its level and class, whether it is in a group. "What are you doing" is Activity, above.
+    Where,
+    Level,
+    GroupStatus,
 }
 
 /// <summary>
@@ -196,6 +201,10 @@ public static partial class AutonomousChatIntentModel
         eAutonomousChatIntent.CombatCall => eAutonomousChatIntent.Help,
         eAutonomousChatIntent.Sorry or eAutonomousChatIntent.Disagree or eAutonomousChatIntent.Away or
             eAutonomousChatIntent.Back or eAutonomousChatIntent.Command => eAutonomousChatIntent.Unknown,
+        // Plain bots answer these from their task (BuildLocalReply); personality bots from their state lines.
+        eAutonomousChatIntent.Where => eAutonomousChatIntent.Travel,
+        eAutonomousChatIntent.GroupStatus => eAutonomousChatIntent.Grouping,
+        eAutonomousChatIntent.Level => eAutonomousChatIntent.Question,
         _ => intent,
     };
 
@@ -261,7 +270,15 @@ public static partial class AutonomousChatIntentModel
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>
         intent >= eAutonomousChatIntent.Joke && intent is not (eAutonomousChatIntent.Command or eAutonomousChatIntent.CombatCall) &&
-        !IsJokeReplyKind(intent);
+        !IsJokeReplyKind(intent) && !IsStateQuestion(intent);
+
+    /// <summary>
+    /// Questions about the bot's own state (where, level, group), answered from the game, not small talk: a game
+    /// word doesn't beat them ("are you in a group?" is asking, not inviting). Activity is answered the same way
+    /// but stays small talk, so "what are you doing, want to group?" is still about grouping.
+    /// </summary>
+    public static bool IsStateQuestion(eAutonomousChatIntent intent) =>
+        intent is eAutonomousChatIntent.Where or eAutonomousChatIntent.Level or eAutonomousChatIntent.GroupStatus;
 
     /// <summary>The joke flow's reply kinds (JokeGuess, Groan, JokeLaugh, JokeBack, JokeQuit, JokeReturn): sections in .dlg files, never an intent read from chat.</summary>
     public static bool IsJokeReplyKind(eAutonomousChatIntent intent) =>

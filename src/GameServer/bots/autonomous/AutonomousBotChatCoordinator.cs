@@ -297,6 +297,7 @@ public static class AutonomousBotChatCoordinator
 
         eAutonomousChatIntent intent = NotWhenGrouped(AutonomousChatIntentModel.Predict(message), bot.Group != null && bot.Group == player.Group);
         string reply = PersonalitySpecialReply(bot, player, message, intent, true)
+            ?? StateAnswer(bot, personality, player, read)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
                 : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
@@ -781,6 +782,8 @@ public static class AutonomousBotChatCoordinator
             BotPersonality personality = BotPersonalities.For(responder);
             string response = personality != null && PersonalitySpecialReply(responder, player, message, intent, IsMentioned(message, responder)) is { } special
                 ? special
+                : personality != null && StateAnswer(responder, personality, player, read) is { } state
+                ? state
                 : hasKnowledge
                 ? knowledge
                 : personality != null
@@ -1011,6 +1014,7 @@ public static class AutonomousBotChatCoordinator
             return ShortReaction(personality, read, IsMentioned(message, bot), player.Name, Random.Shared, DialogueFactSource.For(bot, player));
         eAutonomousChatIntent intent = AutonomousChatIntentModel.Predict(message);
         return PersonalitySpecialReply(bot, player, message, intent, IsMentioned(message, bot))
+            ?? StateAnswer(bot, personality, player, read)
             ?? (AutonomousChatKnowledge.TryAnswer(player, message, out string knowledge)
                 ? knowledge
                 : MoodTinted(bot, player, personality.Reply(intent, player.Name, PersoperProperties.TONE_DOWN, Random.Shared, DialogueFactSource.For(bot, player))));
@@ -1146,6 +1150,16 @@ public static class AutonomousBotChatCoordinator
             PersonalityAnnoyance.Irritate(player, bot, PersonalityAnnoyance.eIrritation.Rude);
         return special;
     }
+
+    /// <summary>
+    /// A personality bot's answer to a question about itself (where, level, group, what it's doing), from its
+    /// real state and mood-tinted; null when the line isn't one or it has no line for it (then it answers as usual).
+    /// </summary>
+    private static string StateAnswer(GameBot bot, BotPersonality personality, GamePlayer player, eAutonomousChatIntent read) =>
+        PersonalityStateAnswers.IsAnswered(read) &&
+        PersonalityStateAnswers.Answer(personality, read, PersonalityStateAnswers.SlotsFor(bot), DialogueFactSource.For(bot, player), player.Name, Random.Shared) is { } answer
+            ? MoodTinted(bot, player, answer)
+            : null;
 
     /// <summary>A personality's mood toward this player sometimes colours its reply.</summary>
     private static string MoodTinted(GameBot bot, GamePlayer player, string reply)

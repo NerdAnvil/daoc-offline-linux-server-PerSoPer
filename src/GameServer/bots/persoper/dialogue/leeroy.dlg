@@ -17,6 +17,33 @@ Tell me! TELL ME!
 To CHARGE the other side!
 I dunno! What?!
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}! Come on, there's stuff to pull!
+IN {zone}! Right where the action is!
+Running to {destination}! Can't stop now! [if bot_doing travelling]
+No idea, {0}! I just ran in!
+
+~ reply level
+{level} {class}, {0}! Strong enough to pull anything!
+LEVEL {level}! {class}! Let's GO!
+Who cares, {0}? I'm pulling anyway!
+
+~ reply groupstatus
+Grouped! {groupsize} of us, so I'll pull for everyone! [if bot_grouped]
+Solo, {0}! Which means I pull ALL of it! [if not bot_grouped]
+Doesn't matter, {0}! I'm going in!
+
+~ reply activity
+Fighting this {monster}! IT'S MINE! [if bot_doing fighting]
+FIGHTING, {0}! Hang on! [if bot_doing fighting]
+Riding! Too slow! I want to RUN! [if bot_doing riding]
+Following {leader}! Tell me when I can pull! [if bot_doing following]
+Charging toward {destination}! [if bot_doing travelling]
+Resting in {zone}, and it's KILLING me, {0}! [if bot_doing resting]
+Getting ready to pull something huge, {0}!
+
 ~ reply groan
 NOOO!
 Ugh! Worse than a wipe!

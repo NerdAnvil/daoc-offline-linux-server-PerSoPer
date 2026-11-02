@@ -7,6 +7,8 @@
 # farewell, ignoreoutofworld, thank, and the small talk ones: joke, grumble, smalltalk,
 # question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
 # howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words.
+# The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
+# real zone, level, class, group and task: "~ reply where" and so on, see PersonalityStateAnswers.cs.
 # Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
 # answers from "~ reply banter". The short reactions (laugh, sorry, disagree, away, back) get
 # one brief line from one bot now and then, and no answer otherwise. The other newest intents
@@ -127,6 +129,24 @@ i'm back, back now, back again, ok back
 ~ intent activity
 what are you doing, what are you up to, what you up to, everyone up to
 where are you headed, where you headed, where are you going, what you doing
+where you going, are you busy, you busy, busy right now
+
+# Questions about the bot itself, answered from what it really is and does (its zone, level,
+# class, group). "where are you from" stays a question and "where are you headed" an activity:
+# their phrases are longer.
+~ intent where
+where are you, where you at, where are you at, whereabouts are you, where in the world are you
+what zone are you, what zone you in, which zone are you, what area are you, where did you go
+
+~ intent level
+what level are, what level you, what's your level, what is your level, how high are you
+what class are, what class you, what's your class, what is your class, what are you playing
+what do you play, level and class
+
+~ intent groupstatus
+are you in group, you in group, are you grouped, you grouped, are you solo, you solo
+are you alone, you alone, who are you with, who you with, who are you grouped with
+are you in party, you in party
 
 ~ intent howgoing
 how are you, how are you doing, how you doing, how's it going, how is it going, how goes

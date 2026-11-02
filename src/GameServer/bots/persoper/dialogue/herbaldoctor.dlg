@@ -19,6 +19,33 @@ No idea, bub. Tell me.
 For the buffs? It's always for the buffs, bub.
 Go on, bub, hit me.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, bub. Buffin' and chillin'.
+Hangin' out in {zone}, {0}. Nice spot for a smoke.
+Headin' to {destination}, bub, no hurry. [if bot_doing travelling]
+Somewhere relaxin', bub. Who's countin'?
+
+~ reply level
+{level} {class}, {0}, bub. Buffs get better every level.
+Level {level}, bub. {class}, and my buffs are top shelf.
+Enough levels to buff ya good, bub.
+
+~ reply groupstatus
+Yeah, bub, {groupsize} of us, and I'm buffin' 'em all. [if bot_grouped]
+Just me, {0}. Want a buff while you decide? [if not bot_grouped]
+Eh, depends who needs a buff, bub.
+
+~ reply activity
+Fightin' this {monster}, bub, and I buffed myself first. [if bot_doing fighting]
+Busy, bub! Hold that thought. [if bot_doing fighting]
+Ridin', bub. Best time to relax. [if bot_doing riding]
+Followin' {leader} and keepin' the buffs up, bub. [if bot_doing following]
+Headin' to {destination}, bub, takin' my time. [if bot_doing travelling]
+Chillin' in {zone} after a round of buffs, bub. [if bot_doing resting]
+Buffin' and chillin', {0}. Same as always.
+
 ~ reply groan
 Oof, bub. That one needs a buff.
 Ugh. Even my buffs can't save that one, bub.

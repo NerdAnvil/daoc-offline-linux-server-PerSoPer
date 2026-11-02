@@ -19,6 +19,33 @@ Oh, I dunno. Tell me!
 Oh gosh, to get home? I'd go home.
 Oh, you got me there.
 
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+Oh, {zone}, {0}. Nice enough, but it's no house.
+{zone}, you betcha. Long way from home, though.
+Headed for {destination}, dontcha know. [if bot_doing travelling]
+Oh gosh, {0}, I'd have to look at a map.
+
+~ reply level
+{level} {class}, {0}. Paid the mortgage with every one of 'em.
+Level {level}, {class}. Not bad for a homebody, huh?
+Oh, I don't keep track, {0}. Too busy with the house.
+
+~ reply groupstatus
+Oh sure, {groupsize} of us. Real nice folks. [if bot_grouped]
+Just me, {0}. Wanna come see the house after? [if not bot_grouped]
+Oh, ya know, {0}, depends on the day.
+
+~ reply activity
+Ope, fighting this {monster} here, {0}! [if bot_doing fighting]
+Bit busy, {0}! Ope, ope, ope! [if bot_doing fighting]
+Riding, and my back's gonna feel it tomorrow. [if bot_doing riding]
+Following {leader} around, just happy to be here. [if bot_doing following]
+On the way to {destination}, should be back by supper. [if bot_doing travelling]
+Taking a breather in {zone}, {0}. My feet are done. [if bot_doing resting]
+Oh, just keeping busy, {0}. You know how it is.
+
 ~ reply groan
 Oh, for Pete's sake.
 Oh, that's a real groaner, that is.
