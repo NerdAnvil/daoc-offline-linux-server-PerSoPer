@@ -11,8 +11,8 @@ public sealed class UT_OvernightPveGroupRecovery
     [Test]
     public void MatchmakingSkipsActiveSoloTravelCombatAndLongCommutes()
     {
-        Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, false, false, false, false, 30_000), Is.True);
-        Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, false, false, false, false, 30_001), Is.False);
+        Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, false, false, false, false, 90_000), Is.True);
+        Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, false, false, false, false, 90_001), Is.False);
         Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(true, false, false, false, false, 0), Is.False);
         Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, true, false, false, false, 0), Is.False);
         Assert.That(AutonomousBotGroupCoordinator.CanRecruitPveMember(false, false, true, false, false, 0), Is.False);
