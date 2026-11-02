@@ -15,7 +15,8 @@
 #   1. "/g shemp, stay here": server.log notes Stay/Yes for him and he says a "~ reply orderstay" line;
 #   2. "/g persoper, stay here": the same for her (a companion obeys her owner);
 #   3. "/jump rel 800 0 0" (the GM moves away), then "/dialogue state" for both: each still holds (staying > 0 s)
-#      and stands 600 or more away;
+#      and Shempenstein stands 600 or more away (a teleport carries a companion along, so Persoper may not; walking
+#      away from a staying Persoper is a hand check);
 #   4. "/g come here" (open, to the group): both are noted Come/Yes, one of them says a "~ reply ordercome" line, and
 #      10 s later both are back within 500 and no longer staying;
 #   5. "/dialogue hold Shempenstein 60", "/disband", "/s shemp, follow me": he is no longer in the GM's group, so
@@ -123,13 +124,16 @@ for pair in "Shempenstein|$STAY_SHEMP" "Persoper|$STAY_PERSOPER"; do
     fail "no orderstay line from $who within 10 s (a casting bot drops a reply; run it again). See $f"
 done
 
-# 3. After the GM moved away, both still hold.
+# 3. After the GM moved away, both still hold. A teleport (here /jump) carries companions along with their owner
+#    (TemporaryGroupStableTravel.RelocateHelpersAfterPlayerTransfer), so Persoper only has to be still staying; the
+#    world bot has to be left behind.
 for who in Shempenstein Persoper; do
   state=$(states "$f" "$who" | sed -n 1p)
   echo "  after /jump, $who: ${state:-no state line}"
   staying=$(field staying "$state"); distance=$(field distance "$state")
-  [[ ${staying%s} =~ ^[0-9]+$ && ${staying%s} -gt 0 && $distance =~ ^[0-9]+$ && $distance -ge 600 ]] &&
-    pass "$who stayed behind ($distance away, ${staying} left)" || fail "$who didn't stay (staying=$staying, distance=$distance)"
+  far=600; [[ $who == Persoper ]] && far=0
+  [[ ${staying%s} =~ ^[0-9]+$ && ${staying%s} -gt 0 && $distance =~ ^[0-9]+$ && $distance -ge $far ]] &&
+    pass "$who still stays ($distance away, ${staying} left)" || fail "$who didn't stay (staying=$staying, distance=$distance)"
 done
 
 # 4. Come, open: both obey, one or two answer, both come back.
