@@ -89,6 +89,32 @@ Busy, {0}.
 You're not my leader, {0}.
 I don't take orders from strangers, {0}.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine by me, {0}, I'm off.
+Leaving, {0}, I prefer it that way anyway.
+
+~ reply orderassist
+Fine, {0}, on your target.
+Assisting, {0}.
+
+~ reply orderrest
+I'll rest, {0}.
+Fine, {0}, a quiet minute suits me.
+
+~ reply ordernotarget
+There's nothing to assist on, {0}.
+On what, {0}?
+
+~ reply orderfull
+I'm fine, {0}.
+No need, {0}, I'm full.
+
+~ reply orderaway
+Leave me be, {0}, I'm out.
+Not now, {0}, I walked off for a reason.
+
 ~ reply groan
 Hm.
 ...no.

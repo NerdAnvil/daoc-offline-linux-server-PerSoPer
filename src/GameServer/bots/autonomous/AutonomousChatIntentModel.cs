@@ -72,22 +72,32 @@ public enum eAutonomousChatIntent
     GroupLevel,
     // Orders (PersonalityOrders): follow me, stay here, come here. Read() gives Command for their phrases in intents.dlg;
     // ReadOrder() tells which. The same names are the sections a bot says yes from, then its refusal, busy and
-    // "not yours to order" answers. Never small talk.
+    // "not yours to order" answers. Never small talk. B6b: leave the group, assist, rest, and the answers when there is
+    // nothing to assist on (notarget), it is full already (full) or it has stormed off after a bad joke (away).
     OrderFollow,
     OrderStay,
     OrderCome,
+    OrderLeave,
+    OrderAssist,
+    OrderRest,
     OrderNo,
     OrderBusy,
+    OrderNoTarget,
+    OrderFull,
+    OrderAway,
     OrderNot,
 }
 
-/// <summary>An order a player gives bots in chat (intent Part B6); None when the line isn't one.</summary>
+/// <summary>An order a player gives bots in chat (intent Part B6, B6b); None when the line isn't one.</summary>
 public enum eBotOrder
 {
     None,
     Follow,
     Stay,
     Come,
+    Leave,
+    Assist,
+    Rest,
 }
 
 /// <summary>
@@ -253,7 +263,7 @@ public static partial class AutonomousChatIntentModel
         if (tokens.Length == 1 && LoneOrders.ContainsKey(tokens[0]))
             return eAutonomousChatIntent.Command;
         eAutonomousChatIntent? phrased = IntentPhrases.Shared.Match(tokens);
-        if (phrased is eAutonomousChatIntent.OrderFollow or eAutonomousChatIntent.OrderStay or eAutonomousChatIntent.OrderCome)
+        if (phrased is { } ordered && IsOrderPhrase(ordered))
             return eAutonomousChatIntent.Command;
         // "Who wants to ..." is an invite; a dungeon or frontier word says which kind.
         if (phrased is eAutonomousChatIntent.Grouping or eAutonomousChatIntent.GroupCall)
@@ -316,11 +326,16 @@ public static partial class AutonomousChatIntentModel
     {
         ["stay"] = eBotOrder.Stay, ["wait"] = eBotOrder.Stay, ["stop"] = eBotOrder.Stay, ["halt"] = eBotOrder.Stay,
         ["follow"] = eBotOrder.Follow, ["come"] = eBotOrder.Come,
+        ["assist"] = eBotOrder.Assist, ["rest"] = eBotOrder.Rest, ["sit"] = eBotOrder.Rest, ["med"] = eBotOrder.Rest,
     };
 
+    /// <summary>The intents.dlg sections that hold order phrases (orderfollow ... orderrest), each read as Command.</summary>
+    public static bool IsOrderPhrase(eAutonomousChatIntent intent) =>
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderRest;
+
     /// <summary>
-    /// The order in a chat line ("follow me", "shemp, stay here", "come here", or one of stay, wait, stop, follow, come
-    /// on its own); None for anything else. <paramref name="names"/> are the words that name the bots (full names,
+    /// The order in a chat line ("follow me", "shemp, stay here", "come here", "leave the group", "assist me", "rest up",
+    /// or one of stay, wait, stop, follow, come, assist, rest, sit, med on its own); None for anything else. <paramref name="names"/> are the words that name the bots (full names,
     /// personality names, nicknames): taken off first, so "shemp stay" is a lone "stay". A rude line is never an order.
     /// </summary>
     public static eBotOrder ReadOrder(string text, IEnumerable<string> names = null)
@@ -338,6 +353,9 @@ public static partial class AutonomousChatIntentModel
             eAutonomousChatIntent.OrderFollow => eBotOrder.Follow,
             eAutonomousChatIntent.OrderStay => eBotOrder.Stay,
             eAutonomousChatIntent.OrderCome => eBotOrder.Come,
+            eAutonomousChatIntent.OrderLeave => eBotOrder.Leave,
+            eAutonomousChatIntent.OrderAssist => eBotOrder.Assist,
+            eAutonomousChatIntent.OrderRest => eBotOrder.Rest,
             _ => eBotOrder.None,
         };
     }
@@ -363,7 +381,8 @@ public static partial class AutonomousChatIntentModel
             named.UnionWith(Tokens(name));
         bool Stranger(string word) => word != null && !named.Contains(word) && !OrderFiller.Contains(word) &&
             !LoneOrders.ContainsKey(word) && !IntentPhrases.Shared.IsWordOf(word, eAutonomousChatIntent.OrderFollow,
-                eAutonomousChatIntent.OrderStay, eAutonomousChatIntent.OrderCome);
+                eAutonomousChatIntent.OrderStay, eAutonomousChatIntent.OrderCome, eAutonomousChatIntent.OrderLeave,
+                eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest);
         string first = Tokens(text).FirstOrDefault();
         if (Stranger(first))
             return first;

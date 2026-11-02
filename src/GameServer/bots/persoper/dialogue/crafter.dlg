@@ -92,6 +92,32 @@ Bit busy, {0}, one moment.
 You're not my group lead, {0}, and I don't work for free.
 I'm not in your group, {0}, ask your own crafter.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Right, {0}, I'll be off, my anvil misses me.
+Leaving the group, {0}, send word if you need gear.
+
+~ reply orderassist
+On your target, {0}, and the hide is mine.
+Assisting, {0}, try not to ruin the drops.
+
+~ reply orderrest
+Good, {0}, I'll sit and sort my bags.
+A rest suits me, {0}, my pack weighs a ton.
+
+~ reply ordernotarget
+Assist on what, {0}? There's nothing here to skin.
+You're not fighting anything, {0}, so I'll keep my tools out.
+
+~ reply orderfull
+No need, {0}, I'm fresh as new leather.
+I'm full up, {0}, unlike my bags.
+
+~ reply orderaway
+Not now, {0}, I'm still pricing that joke, and it's worth nothing.
+I'm out, {0}, back when I've cooled off.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

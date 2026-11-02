@@ -883,9 +883,9 @@ public static class AutonomousBotChatCoordinator
     }
 
     /// <summary>
-    /// A player's order ("follow me", "stay here", "come here"; PersonalityOrders): the named bots take it, else the
-    /// open ones (the player's group). Each decides from its kind and state; the ones that say yes obey at once, and a
-    /// few personality bots answer (none within the cooldown). False when the line isn't an order; true otherwise,
+    /// A player's order ("follow me", "stay here", "come here", "leave the group", "assist me", "rest up";
+    /// PersonalityOrders): the named bots take it, else the open ones (the player's group; "leave" only when named).
+    /// Each decides from its kind and state; the ones that say yes obey at once, and a few personality bots answer (none within the cooldown). False when the line isn't an order; true otherwise,
     /// also when nobody takes it (an open order nobody in the group hears gets silence, not small talk).
     /// </summary>
     private static bool TryOrders(GamePlayer player, string message, GameBot[] named, GameBot[] open, Func<GameBot, string, bool> say)
@@ -897,6 +897,12 @@ public static class AutonomousBotChatCoordinator
         if (order == eBotOrder.None)
             return false;
         bool isNamed = named.Length > 0;
+        // "leave the group" to nobody in particular is no order to the whole group.
+        if (!isNamed && PersonalityOrders.NamedOnly(order))
+        {
+            Log.Info($"PERSONALITY_ORDER open player=\"{player.Name}\" order={order} (taken only by a bot named in it)");
+            return true;
+        }
         // "shnacki, stay here" with a name the game doesn't know is for someone, not for everyone: nobody obeys.
         if (!isNamed && AutonomousChatIntentModel.OrderStranger(message, heard.SelectMany(NamesOf)) is { } stranger)
         {
@@ -909,7 +915,7 @@ public static class AutonomousBotChatCoordinator
         {
             BotPersonality personality = BotPersonalities.For(bot);
             bool sulking = personality?.Patience != null && PersonalityAnnoyance.SulkLeft(personality, player) > TimeSpan.Zero;
-            return (bot, PersonalityOrders.Decide(order, PersonalityOrders.StateOf(bot, player, sulking), personality?.TypeKey, Random.Shared));
+            return (bot, PersonalityOrders.Decide(order, PersonalityOrders.StateOf(bot, player, sulking, order), personality?.TypeKey, Random.Shared));
         }).ToArray();
         foreach ((GameBot bot, eOrderAnswer answer) in decided)
         {

@@ -92,6 +92,32 @@ One sec, {0}, I'm mid-bit.
 Ha, nice try, {0}, you're not my group leader.
 I'd take orders from you, {0}, if you were my leader, which you're not.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+I'm leaving, {0}, but my jokes stay with you forever.
+Off I go, {0}, try to have fun without me.
+
+~ reply orderassist
+On your target, {0}, and I'll heckle it too.
+Assisting, {0}, it won't know what hit it, mostly because it's me.
+
+~ reply orderrest
+Good, {0}, I'll work on some new material.
+Resting, {0}, comedy is exhausting.
+
+~ reply ordernotarget
+Assist on what, {0}, an imaginary friend?
+There's nothing to hit, {0}, unless you count my jokes.
+
+~ reply orderfull
+I'm full, {0}, unlike this crowd's laughter.
+No need, {0}, I'm topped up and ready to bomb.
+
+~ reply orderaway
+No, {0}, I'm out, the joke police are looking for you.
+I'm still out, {0}, that joke needs a moment of silence.
+
 ~ reply groan
 Booo! I'm stealing it anyway.
 Ugh. That's my kind of terrible.

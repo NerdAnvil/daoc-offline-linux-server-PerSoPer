@@ -92,6 +92,32 @@ Busy, {0}, after this.
 You don't lead my group, {0}.
 I take calls from my own leader, {0}, not you.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine, {0}, I'll find a group that pulls.
+Leaving, {0}, good luck with the pace.
+
+~ reply orderassist
+On your target, {0}, finally.
+Assisting, {0}, kill it fast.
+
+~ reply orderrest
+Short one, {0}, then we pull.
+Resting, {0}, but keep it quick.
+
+~ reply ordernotarget
+Assist on what, {0}? Pull something first.
+Nothing's up, {0}, find a mob.
+
+~ reply orderfull
+I'm full, {0}, resting is wasted time.
+No rest needed, {0}, let's go.
+
+~ reply orderaway
+I'm out, {0}, that joke cost us a pull.
+Not now, {0}, I need a minute after that.
+
 ~ reply groan
 ugh
 that cost me a pull

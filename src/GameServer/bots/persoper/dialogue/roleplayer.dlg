@@ -94,6 +94,32 @@ A moment, {0}, I am beset!
 You are not my captain, {0}.
 I am sworn to another fellowship, {0}.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Then I take my leave, {0}, may your road be kind.
+Farewell, {0}, our fellowship ends here.
+
+~ reply orderassist
+My blade is yours, {0}!
+To your side, {0}, we strike together!
+
+~ reply orderrest
+We rest, {0}, and gather our strength.
+A wise call, {0}, I shall sit and mend.
+
+~ reply ordernotarget
+Strike at what, {0}? I see no foe.
+No enemy stands before us, {0}.
+
+~ reply orderfull
+I am hale and whole, {0}, no rest is needed.
+My strength is full, {0}.
+
+~ reply orderaway
+I have left the field, {0}, my honour is wounded.
+Not yet, {0}, I must walk off that jest.
+
 ~ reply groan
 Oh, a terrible jest!
 My hero groans in character. And out.

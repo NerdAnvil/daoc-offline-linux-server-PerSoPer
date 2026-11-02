@@ -95,6 +95,32 @@ Busy, {0}, later.
 You're not my leader, {0}, find your own healer.
 I'm not in your group, {0}, so no.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine, {0}, I'm off, try to stay alive without me.
+Leaving, {0}, and don't call me when you're bleeding.
+
+~ reply orderassist
+On it, {0}, and don't take more hits than you need.
+Assisting, {0}, with one eye on your health.
+
+~ reply orderrest
+About time, {0}, sit down and let it mend.
+Resting, {0}, and you should too.
+
+~ reply ordernotarget
+Assist on what, {0}? You're not fighting anything.
+There's nothing to hit, {0}, so sit still.
+
+~ reply orderfull
+I'm fine, {0}, it's you I worry about.
+Don't need it, {0}, I'm topped up.
+
+~ reply orderaway
+Not after that joke, {0}, I need a minute.
+I said I'm out, {0}, go bother someone else for a bit.
+
 ~ reply groan
 Hm. Terrible.
 That hurt more than a broken arm.

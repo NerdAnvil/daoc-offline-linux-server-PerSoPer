@@ -94,6 +94,32 @@ Oh, kinda busy, {0}, one sec?
 Oh, you're not my group leader, {0}, sorry!
 I'm not in your group, {0}, but thanks for asking!
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Oh, okay, {0}, I'll head on home then, take care now!
+Ope, leaving the group, {0}, it was real nice!
+
+~ reply orderassist
+You betcha, {0}, on your target!
+Oh, I'll help, {0}, here I come!
+
+~ reply orderrest
+Oh, a sit-down sounds lovely, {0}.
+Sure, {0}, I'll put my feet up a minute.
+
+~ reply ordernotarget
+Ope, help with what, {0}? I don't see anything.
+Oh, you're not fighting anything, {0}, are you?
+
+~ reply orderfull
+Oh, I'm just fine, {0}, thanks for asking!
+No need, {0}, I'm feeling right as rain.
+
+~ reply orderaway
+Ope, not just now, {0}, that joke still stings a bit.
+I'm still out, {0}, gimme a sec, okay?
+
 ~ reply groan
 Oh, for Pete's sake.
 Oh, that's a real groaner, that is.

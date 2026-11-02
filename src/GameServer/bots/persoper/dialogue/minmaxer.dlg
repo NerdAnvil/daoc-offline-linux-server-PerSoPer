@@ -92,6 +92,32 @@ Busy, {0}, give me a moment.
 You're not my group lead, {0}, so no.
 Wrong group, {0}, I don't take your calls.
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Leaving, {0}, I'll find a better xp spot.
+Fine, {0}, dropping group, good luck with that comp.
+
+~ reply orderassist
+Assisting, {0}, dps on your target.
+On your target, {0}, maximum damage.
+
+~ reply orderrest
+Resting, {0}, regen is faster out of combat anyway.
+Good call, {0}, downtime now saves time later.
+
+~ reply ordernotarget
+Assist on what, {0}? You don't have a target.
+Nothing to assist, {0}, that's zero dps.
+
+~ reply orderfull
+I'm full, {0}, resting now is wasted time.
+No need, {0}, all bars at max.
+
+~ reply orderaway
+I'm out, {0}, that joke had zero value.
+Not now, {0}, I'm on cooldown after that one.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.

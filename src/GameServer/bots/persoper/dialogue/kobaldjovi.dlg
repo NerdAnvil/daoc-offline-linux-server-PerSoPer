@@ -243,6 +243,58 @@ Off to {destination} for the next show! [if bot_doing travelling]
 Resting my voice in {zone}, {0}. Doctor's orders. [if bot_doing resting]
 Writing a song, {0}. It's about you. Maybe.
 
+# Orders (PersonalityOrders): follow, stay, come, leave the group, assist, rest, and the answers when he won't
+# (no), can't (busy: fighting or riding; notarget; full), has stormed off after a bad joke (away) or the speaker
+# can't order him (not).
+~ reply orderfollow
+Right behind you, {0}, humming the marching song.
+Lead on, {0}, every hero needs a bard at their back.
+
+~ reply orderstay
+Staying, {0}, I'll tune the lute while you're gone.
+I'll wait right here, {0}, and work on the second verse.
+
+~ reply ordercome
+Coming, {0}, the music goes where you go!
+On my way, {0}, don't start the chorus without me.
+
+~ reply orderno
+Stand here alone with no audience? Not a chance, {0}.
+A Skald doesn't wait in the wings, {0}, I'm coming along.
+
+~ reply orderbusy
+Mid-solo with this {monster}, {0}, one moment! [if bot_doing fighting]
+On the horse, {0}, and it hates my singing. [if bot_doing riding]
+One beat, {0}, I'm in the middle of a song.
+
+~ reply ordernot
+You're not my bandleader, {0}.
+We're not even in the same band, {0}, so no.
+
+~ reply orderleave
+Leaving, {0}, but this tour isn't over, it's just a hiatus.
+Off I go, {0}, the solo career starts now.
+
+~ reply orderassist
+On your target, {0}, and I'll sing it a battle hymn.
+Assisting, {0}, let's give it a big finish!
+
+~ reply orderrest
+A break between sets, {0}, perfect.
+Resting, {0}, the voice needs it.
+
+~ reply ordernotarget
+Assist on what, {0}? There's nobody in the mosh pit.
+Nothing to hit, {0}, I'll save the war song.
+
+~ reply orderfull
+I'm full, {0}, ready for an encore.
+No need, {0}, voice and mana both warmed up.
+
+~ reply orderaway
+Not now, {0}, I'm writing a sad song about that joke.
+I'm out, {0}, this is my dramatic exit and you're ruining it.
+
 ~ reply groan
 Ugh! That's a one-star review, {0}.
 Booo! Off the stage!

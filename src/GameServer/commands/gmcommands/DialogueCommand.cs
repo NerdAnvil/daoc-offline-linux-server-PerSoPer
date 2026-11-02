@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue groupcall always", "/dialogue orders always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue walkoff Shnacksize", "/dialogue groupcall always", "/dialogue orders always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
     /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
@@ -22,6 +22,7 @@ namespace DOL.GS.Commands
         "/dialogue ambient <bot>   (a bot in your group says one of its own ambient lines there now)",
         "/dialogue state <bot>   (what a bot in your group would say about itself: zone, level, class, what it's doing)",
         "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
+        "/dialogue walkoff <bot>   (test: a bot in your group storms off now as after a bad joke; the guards stay on)",
         "/dialogue groupcall always|normal   (test: every personality bot that hears \"who wants to group?\" answers, up to 3)",
         "/dialogue orders always|normal   (test: no bot refuses \"stay\" by its type, and a named order is always answered)",
         "/dialogue hold <bot> <seconds>   (test: a bot in your group pauses its own plans, up to 120 s, so it stays after /disband)",
@@ -93,6 +94,11 @@ namespace DOL.GS.Commands
                 ChatUtil.SendSystemMessage(client, PersonalityWalkOff.Always
                     ? "Walk-off: every groan at your joke gets the gag now (no session roll, no cooldown)."
                     : "Walk-off: back to the normal rare chance and cooldown.");
+                return;
+            }
+            if (verb == "walkoff" && args.Length == 3)
+            {
+                ChatUtil.SendSystemMessage(client, StartWalkOff(client.Player, args[2]));
                 return;
             }
             if (verb == "groupcall" && args.Length == 3 && args[2].ToLowerInvariant() is "always" or "normal")
@@ -181,6 +187,32 @@ namespace DOL.GS.Commands
             return AutonomousBotChatCoordinator.SpeakInGroup(bot, line, null)
                 ? $"{bot.Name} says an ambient line."
                 : $"{bot.Name} can't talk now (fighting, casting or riding?).";
+        }
+
+        /// <summary>
+        /// The named bot storms off now as after a bad joke (PersonalityWalkOff), saying its own "I'm out" line in group
+        /// chat, for checking what it does meanwhile (tools/check-orders-b-ingame.sh). The gag's guards still hold.
+        /// </summary>
+        private static string StartWalkOff(GamePlayer player, string name)
+        {
+            GameBot bot = GroupBot(player, name);
+            BotPersonality personality = bot == null ? null : BotPersonalities.For(bot);
+            if (personality == null)
+                return $"No personality bot called {name} in your group.";
+            DialogueFacts facts = DialogueFactSource.For(bot, player);
+            string quit = personality.OwnReply(eAutonomousChatIntent.JokeQuit, player.Name, System.Random.Shared, facts);
+            string back = personality.OwnReply(eAutonomousChatIntent.JokeReturn, player.Name, System.Random.Shared, facts);
+            if (quit == null)
+                return $"{bot.Name} has no walk-off lines.";
+            bool started = PersonalityWalkOff.Begin(bot, player, GameLoop.GameLoopTime,
+                () =>
+                {
+                    bot.Group?.SendMessageToGroupMembers(bot, quit, PacketHandler.eChatType.CT_Group, PacketHandler.eChatLoc.CL_ChatWindow);
+                    return bot.Group != null;
+                }, back);
+            return started
+                ? $"{bot.Name} walks off now, back in {PersonalityWalkOff.AwayMs / 1_000} s."
+                : $"{bot.Name} can't walk off now; server.log says why (PERSONALITY_WALKOFF blocked).";
         }
 
         /// <summary>The named bot (name or personality key) tells a joke in group chat now, as if it had opened a topic itself.</summary>

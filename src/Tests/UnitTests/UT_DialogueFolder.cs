@@ -119,7 +119,7 @@ public class UT_DialogueFolder
     public void CharacterFile_GivesAllThreeRealms_TheCharacterPlusTheirRealmFlavour()
     {
         // The built-in file plus one line in the character block and one in the Albion block.
-        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n(?:\r?\n)*~ ambient\r?\n)", "$1Character line.\n");
+        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n(?:names:[^\r\n]*\r?\n)?(?:\r?\n)*~ ambient\r?\n)", "$1Character line.\n");
         Write("eaglefang", Regex.Replace(text, @"(=== albion\r?\n~ ambient\r?\n)", "$1Albion line.\n"));
         DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
 
@@ -141,7 +141,7 @@ public class UT_DialogueFolder
     public void SongReactions_NamedBotUsesItsOwn_AndKeepsEveryOtherMergedPool()
     {
         Write("gruffdoc", Regex.Replace(BuiltInText("gruffdoc"), @"(=== gruffdoc\r?\n)", "$1~ song_reaction\nType song line.\n\n"));
-        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n)", "$1~ song_reaction\nCharacter song line.\n\n");
+        string text = Regex.Replace(BuiltInText("eaglefang"), @"(=== eaglefang\r?\n(?:names:[^\r\n]*\r?\n)?)", "$1~ song_reaction\nCharacter song line.\n\n");
         Write("eaglefang", Regex.Replace(text, @"(=== albion\r?\n)", "$1~ song_reaction\nAlbion song line.\n\n"));
         DialogueLoadReport report = DialogueLibrary.Initialize(_folder);
 

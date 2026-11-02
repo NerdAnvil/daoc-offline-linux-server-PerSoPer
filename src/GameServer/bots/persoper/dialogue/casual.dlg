@@ -94,6 +94,32 @@ hang on {0}, bit busy
 lol you're not my group leader {0}
 uh, I'm not in your group, {0}
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+k, cya {0}, was fun lol
+aight, dropping group, good luck {0}
+
+~ reply orderassist
+on it {0}
+ok assisting, go go
+
+~ reply orderrest
+ok, sitting for a bit {0}
+yeah I could use a breather lol
+
+~ reply ordernotarget
+assist on what lol, nothing's here {0}
+uh, you're not fighting anything {0}
+
+~ reply orderfull
+I'm good {0}, full on everything
+don't need to, I'm topped up lol
+
+~ reply orderaway
+nope, still salty about that joke {0} lol
+I said I'm out {0}, give me a minute
+
 ~ reply groan
 ugh lol
 oh no

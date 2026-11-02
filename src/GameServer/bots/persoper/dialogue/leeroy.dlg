@@ -92,6 +92,32 @@ Hang on, {0}, I'm in the middle of something!
 You're not my leader, {0}! My leader says charge!
 Ha, you can't tell me what to do, {0}, we're not even grouped!
 
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine, {0}, more mobs for me then!
+Leaving! Don't miss me too much, {0}!
+
+~ reply orderassist
+ASSISTING! Finally, {0}!
+On it, {0}, let's GO!
+
+~ reply orderrest
+Rest?! Ugh, fine, {0}, ten seconds!
+Sitting, {0}, but I'm not happy about it!
+
+~ reply ordernotarget
+Assist on WHAT, {0}? Pull something!
+There's nothing to hit, {0}, that's the whole problem!
+
+~ reply orderfull
+I'm FULL, {0}, let's pull instead!
+Rest? I'm topped up, {0}, go go go!
+
+~ reply orderaway
+Nope, still out, {0}, that joke was worse than a wipe!
+I'm OUT, {0}, ask me later!
+
 ~ reply groan
 NOOO!
 Ugh! Worse than a wipe!
