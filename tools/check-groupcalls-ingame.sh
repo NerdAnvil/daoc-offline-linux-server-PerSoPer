@@ -13,11 +13,12 @@
 # the GM test shortcut "/dialogue groupcall always" (every personality bot that hears a call answers; the cooldown and
 # his real state still decide) and holds him with "/dialogue hold" (his own plans pause, so he is still there after
 # /disband instead of teleporting off). Then, in /say, 11 s apart:
-#   1. "who wants to group?" while he is in the group: server.log weighs him Quiet and he says nothing;
+#   1. "who wants to group?" while he is in the group: server.log weighs him Quiet and he gives no group answer;
 #   2. /disband, then "anyone up for a dungeon?": server.log weighs him (yes, no, busy, grouped or level) and he says
 #      a line from that answer's section ("~ reply groupyes" and so on; a yes may use "~ reply grouping", a reason
 #      without lines his "~ reply groupno"), filled from his state;
-#   3. "lfg" 11 s later, within the 20 s cooldown: server.log notes the cooldown and he says nothing.
+#   3. "lfg" 11 s later, within the 20 s cooldown: server.log notes the cooldown and he gives no group answer
+#      (his own ambient chat may come at any time and is not counted).
 # The run ends with "/dialogue groupcall normal". Which answer he gives depends on his level and state (a level 1
 # character usually gets the level answer); the yes/no odds per type are unit tested (UT_GroupCalls).
 # Prints PASS or FAIL per check; exits 0 only when every check passed.
@@ -68,6 +69,10 @@ answer_rows() { case "$1" in
   Grouped) rows "~ reply grouphave"; rows "~ reply groupno" ;;
   Level) rows "~ reply grouplevel"; rows "~ reply groupno" ;;
 esac; }
+# The lines in $1 (one per row) said from any group-answer section; his own ambient chat in between doesn't count.
+answers_in() { local one; while IFS= read -r one; do
+  [[ -n $one ]] && { for a in Yes No Busy Grouped Level; do answer_rows "$a"; done; } | fits "$one" && echo "$one"
+done <<<"$1"; }
 # True when $1 is one of the rows on stdin, each slot ({level}, {zone}, ...) standing for some words.
 fits() { awk -v said="$1" '
   function match_row(row, s,   n, parts, i, at, pos, lit) {
@@ -117,11 +122,11 @@ echo "  server.log:"; [[ -n $log ]] && echo "$log" | sed -E 's/^.*PERSONALITY_GR
 weighed=$(grep -F 'weighed bot="Shempenstein"' <<<"$log" | grep -oE "answer=[A-Za-z]+" | cut -d= -f2)
 first=$(sed -n 1p <<<"$weighed"); second=$(sed -n 2p <<<"$weighed")
 
-# 1. In the group: quiet.
+# 1. In the group: quiet. (His ambient lines may still come; only a group answer fails.)
 said=$(said_by Shempenstein <(within "$f" "$IN_GROUP"))
 echo "  \"$IN_GROUP\" (in the group):"; [[ -n $said ]] && echo "$said" | sed 's/^/      Shempenstein: /'
 [[ $first == Quiet ]] && pass "in the group he was weighed Quiet" || fail "in the group he was weighed \"${first:-not at all}\", not Quiet"
-[[ -z $said ]] && pass "in the group he said nothing" || fail "in the group he answered in /say"
+[[ -z $(answers_in "$said") ]] && pass "in the group he gave no group answer" || fail "in the group he answered in /say"
 
 # 2. After /disband: an answer from the weighed section.
 said=$(said_by Shempenstein <(within "$f" "$CALL"))
@@ -136,12 +141,12 @@ else
     fail "no line for $second from him within 10 s (a casting bot drops a reply; run it again). See $f"
 fi
 
-# 3. Within the cooldown: nothing.
+# 3. Within the cooldown: no group answer.
 said=$(said_by Shempenstein <(within "$f" "$AGAIN"))
 echo "  \"$AGAIN\" (11 s later):"; [[ -n $said ]] && echo "$said" | sed 's/^/      Shempenstein: /'
 grep -q 'PERSONALITY_GROUPCALL cooldown' <<<"$log" && pass "the second call was held by the cooldown" ||
   fail "no cooldown note for the call 11 s after the last"
-[[ -z $said ]] && pass "within the cooldown he said nothing" || fail "within the cooldown he answered in /say"
+[[ -z $(answers_in "$said") ]] && pass "within the cooldown he gave no group answer" || fail "within the cooldown he answered in /say"
 
 echo
 (( failures == 0 )) && echo "All checks passed." || echo "$failures check(s) failed."
