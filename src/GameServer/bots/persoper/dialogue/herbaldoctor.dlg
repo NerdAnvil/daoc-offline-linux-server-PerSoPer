@@ -24,11 +24,11 @@ Go on, bub, hit me.
 ~ reply where
 {zone}, bub. Buffin' and chillin'.
 Hangin' out in {zone}, {0}. Nice spot for a smoke.
-Headin' to {destination}, bub, no hurry. [if bot_doing travelling]
+Headin' to {destination}, {0}, no hurry. [if bot_doing travelling]
 Somewhere relaxin', bub. Who's countin'?
 
 ~ reply level
-Level {level} {class}, {0}, bub. Buffs get better every level.
+Level {level} {class}, {0}. Buffs get better every level.
 Level {level}, bub. {class}, and my buffs are top shelf.
 Enough levels to buff ya good, bub.
 
@@ -38,11 +38,11 @@ Just me, {0}. Want a buff while you decide? [if not bot_grouped]
 Eh, depends who needs a buff, bub.
 
 ~ reply activity
-Fightin' this {monster}, bub, and I buffed myself first. [if bot_doing fighting]
+Fightin' this {monster}, and I buffed myself first. [if bot_doing fighting]
 Busy, bub! Hold that thought. [if bot_doing fighting]
 Ridin', bub. Best time to relax. [if bot_doing riding]
-Followin' {leader} and keepin' the buffs up, bub. [if bot_doing following]
-Headin' to {destination}, bub, takin' my time. [if bot_doing travelling]
+Followin' {leader} and keepin' the buffs up. [if bot_doing following]
+Headin' to {destination}, takin' my time. [if bot_doing travelling]
 Chillin' in {zone} after a round of buffs, bub. [if bot_doing resting]
 Buffin' and chillin', {0}. Same as always.
 
@@ -52,15 +52,15 @@ You bet, {0}, I'm in, just save me a spot to stand back and relax.
 
 ~ reply groupno
 Eh, not tonight, bub, I'm brewin' up a fresh batch.
-Pass, {0}, I'm takin' it easy for once, bub.
+Pass, {0}, I'm takin' it easy for once.
 
 ~ reply groupbusy
-Bit busy with this {monster}, bub, hold that thought. [if bot_doing fighting]
+Bit busy with this {monster}, hold that thought. [if bot_doing fighting]
 Ridin', bub, ask me again when I'm off the horse. [if bot_doing riding]
 Busy, bub, maybe after.
 
 ~ reply grouphave
-Already buffin' for {leader}, bub, sorry.
+Already buffin' for {leader}, sorry.
 Got a group already, {0}, they keep me busy.
 
 ~ reply grouplevel
@@ -74,7 +74,7 @@ Right behind ya, bub.
 Lead the way, {0}, I'll keep the buffs rolling.
 
 ~ reply orderstay
-Sure thing, bub, I'll put my feet up right here.
+Sure thing, I'll put my feet up right here.
 Stayin' put, {0}, holler if you need me.
 
 ~ reply ordercome
@@ -98,15 +98,15 @@ We ain't grouped, {0}, so no.
 # nothing to rest off (full) or it has stormed off after a bad joke (away).
 ~ reply orderleave
 Alright, I'm off, {0}, holler if you need me.
-Droppin' group, bub, good huntin'.
+Droppin' group, good huntin'.
 
 ~ reply orderassist
 On it, {0}!
-Assistin', bub, go get 'em.
+Assistin', go get 'em.
 
 ~ reply orderrest
 Sure thing, {0}, feet up.
-Restin', bub, I'll top off my mana.
+Restin', I'll top off my mana.
 
 ~ reply ordernotarget
 Assist on what, {0}? Nothin' here.
@@ -114,7 +114,7 @@ You ain't fightin' nothin', bub.
 
 ~ reply orderfull
 I'm good, {0}, full tank.
-Don't need it, bub, I'm topped up.
+Don't need it, I'm topped up.
 
 ~ reply orderaway
 Nah, I'm still out after that one, {0}.

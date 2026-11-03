@@ -54,7 +54,7 @@ Pass, {0}. I've got a grind schedule and it doesn't have you in it.
 
 ~ reply groupbusy
 Mid-pull on this {monster}, {0}, ask again when it's dead. [if bot_doing fighting]
-Riding, {0}, which is wasted time already, so don't make it worse. [if bot_doing riding]
+On the horse, {0}, dead time anyway. Ask me when I'm off. [if bot_doing riding]
 Busy, {0}. Ask me after this.
 
 ~ reply grouphave
@@ -76,7 +76,6 @@ Holding here, {0}, but don't make me wait long.
 Fine, I'll hold this spot, {0}, call when it's time.
 
 ~ reply ordercome
-Coming, {0}, on my way.
 On my way, {0}, save the pull for me.
 
 ~ reply orderno
@@ -112,8 +111,6 @@ Nothing's up, {0}, find a mob.
 
 ~ reply orderfull
 I'm full, {0}, resting is wasted time.
-No rest needed, {0}, let's go.
-
 ~ reply orderaway
 I'm out, {0}, that joke cost us a pull.
 Not now, {0}, I need a minute after that.

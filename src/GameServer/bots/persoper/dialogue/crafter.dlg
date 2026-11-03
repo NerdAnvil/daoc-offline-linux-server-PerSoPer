@@ -84,7 +84,7 @@ Wait here with all this loot on me? Not a chance, {0}.
 I'd rather stay close, {0}, there's thieves about.
 
 ~ reply orderbusy
-Busy with this {monster}, {0}, it better drop something. [if bot_doing fighting]
+Hands full with this {monster}, {0}, one moment. [if bot_doing fighting]
 On the road, {0}, the horse sets the pace. [if bot_doing riding]
 Bit busy, {0}, one moment.
 
@@ -108,8 +108,6 @@ A rest suits me, {0}, my pack weighs a ton.
 
 ~ reply ordernotarget
 Assist on what, {0}? There's nothing here to skin.
-You're not fighting anything, {0}, so I'll keep my tools out.
-
 ~ reply orderfull
 No need, {0}, I'm fresh as new leather.
 I'm full up, {0}, unlike my bags.

@@ -65,10 +65,10 @@ public class UT_DialogueFile
     }
 
     // The six types had these many lines in C# before the move to dialogue files (step 3b), plus the short reactions (intent B2), joke flow (B3a, B3b), answers about themselves (B4), to group calls (B5) and to orders (B6, B6b).
-    [TestCase("hardcore", 305)]
-    [TestCase("casual", 322)]
+    [TestCase("hardcore", 303)]
+    [TestCase("casual", 334)]
     [TestCase("minmaxer", 305)]
-    [TestCase("joker", 319)]
+    [TestCase("joker", 317)]
     [TestCase("loner", 303)]
     [TestCase("leeroy", 318)]
     public void TypeFiles_KeepEveryLine(string key, int lines)

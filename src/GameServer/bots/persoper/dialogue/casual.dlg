@@ -9,7 +9,7 @@ what level is everyone? I'm... some level
 just here for the vibes honestly
 this sunset in game is nice ngl
 ok who's up for doing absolutely nothing productive
-I sold my good sword by accident. it's fine.
+I sold my good sword by accident. it's fine. ::deep breaths::
 
 # Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
 ~ reply jokeguess
@@ -17,6 +17,10 @@ idk, go on
 to get to the other side? it's always that
 ok I give up lol
 hmm... no idea, tell me
+your face?
+their face?
+it was a.... a shoe!
+
 
 # Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
 # [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
@@ -25,11 +29,12 @@ hmm... no idea, tell me
 um, {zone}, last I checked
 on my way to {destination}, slowly lol [if bot_doing travelling]
 honestly no idea {0}, I just follow the road
+somebody stop this crazy horse! I just wanted to go to {zone}!
 
 ~ reply level
 level {level} {class}, no rush lol
-{level}? yeah, {level}, {class}. I'm getting there
 uh, some level, {0}. does it matter lol
+im {level} and i have a brilliant personality!
 
 ~ reply groupstatus
 yep, {groupsize} of us, it's comfy [if bot_grouped]
@@ -43,7 +48,7 @@ riding the horse, best part of the game honestly [if bot_doing riding]
 just tagging along with {leader} lol [if bot_doing following]
 wandering over to {destination}, no rush [if bot_doing travelling]
 chilling in {zone}, snack break [if bot_doing resting]
-oh, you know, stuff lol
+::shrugs:: oh, you know, stuff
 
 ~ reply groupyes
 sure {0}, send me an invite
@@ -64,14 +69,14 @@ already with {leader} rn, sorry {0}
 already grouped lol, maybe next time
 
 ~ reply grouplevel
-I'm level {level} {0}, kinda far from you for that lol
+I'm level {level}, {0}, kinda far from you for that lol
 our levels are kinda far apart {0}, wouldn't work
 
 # Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
 # (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
 ~ reply orderfollow
 k, right behind you {0}
-following, lead the way lol
+following, lead the way
 
 ~ reply orderstay
 ok, I'll wait here {0}
@@ -79,14 +84,14 @@ staying put, don't forget me lol
 
 ~ reply ordercome
 omw {0}
-coming, coming lol
+coming, coming!
 
 ~ reply orderno
 eh, nah {0}, I'll just tag along
-I'd rather not stand here alone lol
+::shakes head:: nah, not standing here alone {0}
 
 ~ reply orderbusy
-one sec {0}, kinda fighting this {monster} lol [if bot_doing fighting]
+one sec {0}, mid-fight with this {monster} [if bot_doing fighting]
 on the horse rn, can't really [if bot_doing riding]
 hang on {0}, bit busy
 
@@ -97,11 +102,11 @@ uh, I'm not in your group, {0}
 # Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
 # nothing to rest off (full) or it has stormed off after a bad joke (away).
 ~ reply orderleave
-k, cya {0}, was fun lol
+::waves:: k, cya {0}, was fun
 aight, dropping group, good luck {0}
 
 ~ reply orderassist
-on it {0}
+::salutes:: on it {0}
 ok assisting, go go
 
 ~ reply orderrest
@@ -114,7 +119,7 @@ uh, you're not fighting anything {0}
 
 ~ reply orderfull
 I'm good {0}, full on everything
-don't need to, I'm topped up lol
+don't need to, I'm topped up
 
 ~ reply orderaway
 nope, still salty about that joke {0} lol
@@ -465,6 +470,14 @@ well that happened
 i'm fine. i'm dead but i'm fine
 died. gonna lie here a minute
 that thing was mean
+ow
+owwwwww
+ouchies.
+dangit.
+I COULDA BEEN A CONTENDAAAAAA!
+woooooops. 
+that didn't go as planned. frell.
+rassafrassin...............
 
 ~ other_death
 oh no {0}!

@@ -54,7 +54,7 @@ Not without a full healer and a tank, {0}, I've seen how that ends.
 
 ~ reply groupbusy
 Mid-rotation on this {monster}, {0}, don't break my parse. [if bot_doing fighting]
-Riding, {0}, the worst stat in the game, ask again later. [if bot_doing riding]
+Riding, {0}, and the horse's speed stat is mediocre, ask again later. [if bot_doing riding]
 Busy, {0}. Ask me after this.
 
 ~ reply grouphave
@@ -111,7 +111,7 @@ Assist on what, {0}? You don't have a target.
 Nothing to assist, {0}, that's zero dps.
 
 ~ reply orderfull
-I'm full, {0}, resting now is wasted time.
+I'm full, {0}, resting now would only lower my uptime.
 No need, {0}, all bars at max.
 
 ~ reply orderaway

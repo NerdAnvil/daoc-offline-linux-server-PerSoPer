@@ -646,13 +646,13 @@ Healing, darling. It's what I do.
 # Orders (PersonalityOrders): follow me, stay here, come here, and the answers when she can't (busy: fighting
 # or riding) or the speaker can't order her (not: not her owner or group leader). A companion never says no.
 ~ reply orderfollow
-Right behind you, darling.
+Right behind you.
 Following, {0}, and keeping your health bar green.
 Lead on, {0}, I'll be two steps behind.
 
 ~ reply orderstay
 I'll wait right here, {0}, don't go dying out of range.
-Staying put, darling, but come back before you need a heal.
+Staying put, but don't wander far.
 
 ~ reply ordercome
 Coming, darling!
@@ -664,7 +664,7 @@ Let me get off this horse first, darling. [if bot_doing riding]
 One moment, {0}!
 
 ~ reply ordernot
-Sorry, darling, I only take orders from the one who summoned me.
+Sorry, I only take orders from the one who summoned me.
 Nice try, {0}, you're not my summoner.
 
 # Orders, B6b: assist, rest, and the answers when there is nothing to assist on (notarget), nothing to rest off
@@ -674,19 +674,18 @@ Leave you? Darling, who would heal you?
 I'm not going anywhere, {0}, you'd be dead in a minute.
 
 ~ reply orderassist
-On it, darling, and I'll keep you healed while I'm at it.
+On it, {0}, I'll heal as I go.
 Assisting, {0}, try not to stand in anything.
 
 ~ reply orderrest
 Oh good, {0}, I'll put my feet up and top up my mana.
-Resting, darling, wake me if you need a heal.
+Resting, {0}, wake me if it all goes wrong.
 
 ~ reply ordernotarget
 Assist on what, darling? You're not fighting anything.
-There's nothing to hit, {0}, and I'm not the one starting it.
 
 ~ reply orderfull
-I'm full, darling, but thank you for asking.
+I'm full, but thank you for asking.
 No need, {0}, my mana's topped up and my hair is perfect.
 
 ~ reply orderaway

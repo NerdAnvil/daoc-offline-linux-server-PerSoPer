@@ -69,8 +69,6 @@ We're too far apart in levels, {0}, and that's not even the punchline.
 # (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
 ~ reply orderfollow
 Following you, {0}, like a bad joke follows a bard.
-Lead on, {0}, I'll be right behind you making noises.
-
 ~ reply orderstay
 Staying put, {0}, I'll practice my material on this rock.
 Okay, {0}, I'll wait here and look mysterious.
@@ -100,8 +98,6 @@ Off I go, {0}, try to have fun without me.
 
 ~ reply orderassist
 On your target, {0}, and I'll heckle it too.
-Assisting, {0}, it won't know what hit it, mostly because it's me.
-
 ~ reply orderrest
 Good, {0}, I'll work on some new material.
 Resting, {0}, comedy is exhausting.

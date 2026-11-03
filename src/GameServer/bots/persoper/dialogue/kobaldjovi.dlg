@@ -255,11 +255,15 @@ Staying, {0}, I'll tune the lute while you're gone.
 I'll wait right here, {0}, and work on the second verse.
 
 ~ reply ordercome
-Coming, {0}, the music goes where you go!
+The road goes on forever, and grindin' nevva ends!
+Chuggachuggachuggachugga
+omw
 On my way, {0}, don't start the chorus without me.
 
 ~ reply orderno
-Stand here alone with no audience? Not a chance, {0}.
+You expect the speedster to stand still? Thats a big ole Negatory, red ghost ryder.
+Yea, no.
+There's voozels around here, no way I'm stayin.
 A Skald doesn't wait in the wings, {0}, I'm coming along.
 
 ~ reply orderbusy
@@ -281,7 +285,7 @@ Assisting, {0}, let's give it a big finish!
 
 ~ reply orderrest
 A break between sets, {0}, perfect.
-Resting, {0}, the voice needs it.
+Skald ki low. I need a senzu bean.
 
 ~ reply ordernotarget
 Assist on what, {0}? There's nobody in the mosh pit.
@@ -289,7 +293,8 @@ Nothing to hit, {0}, I'll save the war song.
 
 ~ reply orderfull
 I'm full, {0}, ready for an encore.
-No need, {0}, voice and mana both warmed up.
+Power overfloooowing
+Powwwarh Ovarh Wherlming.
 
 ~ reply orderaway
 Not now, {0}, I'm writing a sad song about that joke.
