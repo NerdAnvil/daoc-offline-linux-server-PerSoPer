@@ -65,12 +65,12 @@ public class UT_DialogueFile
     }
 
     // The six types had these many lines in C# before the move to dialogue files (step 3b), plus the short reactions (intent B2), joke flow (B3a, B3b), answers about themselves (B4), to group calls (B5) and to orders (B6, B6b, the named pull).
-    [TestCase("hardcore", 307)]
-    [TestCase("casual", 338)]
-    [TestCase("minmaxer", 309)]
-    [TestCase("joker", 321)]
-    [TestCase("loner", 307)]
-    [TestCase("leeroy", 322)]
+    [TestCase("hardcore", 309)]
+    [TestCase("casual", 340)]
+    [TestCase("minmaxer", 311)]
+    [TestCase("joker", 323)]
+    [TestCase("loner", 309)]
+    [TestCase("leeroy", 324)]
     public void TypeFiles_KeepEveryLine(string key, int lines)
     {
         Assert.That(DialogueLibrary.For(key).Block(key).Sum(section => section.Lines.Count), Is.EqualTo(lines));

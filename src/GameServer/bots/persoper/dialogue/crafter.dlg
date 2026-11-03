@@ -116,7 +116,7 @@ I'm full up, {0}, unlike my bags.
 Not now, {0}, I'm still pricing that joke, and it's worth nothing.
 I'm out, {0}, back when I've cooled off.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Pulling, {0}, mind the hide.
 Here it comes, {0}, don't ruin the drops.
@@ -124,6 +124,10 @@ Here it comes, {0}, don't ruin the drops.
 ~ reply orderpullwhat
 Pull what, {0}?
 Point at something worth skinning, {0}.
+
+~ reply orderpulleasy
+That one's grey, {0}, it won't even drop scraps.
+Too weak to be worth skinning, {0}.
 
 ~ reply groan
 That one's worth about two copper.

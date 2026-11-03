@@ -90,6 +90,8 @@ public enum eAutonomousChatIntent
     // At the end so the older intents keep their numbers.
     OrderPull,
     OrderPullWhat,
+    // "pull this" on a mob grey to the bot: too weak to bother with (bots never fight grey mobs).
+    OrderPullEasy,
 }
 
 /// <summary>An order a player gives bots in chat (intent Part B6, B6b); None when the line isn't one.</summary>
@@ -398,9 +400,9 @@ public static partial class AutonomousChatIntentModel
         return last.Length == 1 && Stranger(last[0]) ? last[0] : null;
     }
 
-    /// <summary>The order sections and answers (OrderFollow ... OrderNot, OrderPull, OrderPullWhat): sections in .dlg files, never small talk.</summary>
+    /// <summary>The order sections and answers (OrderFollow ... OrderNot, OrderPull ... OrderPullEasy): sections in .dlg files, never small talk.</summary>
     public static bool IsOrderKind(eAutonomousChatIntent intent) =>
-        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderPullWhat;
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderPullEasy;
 
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>

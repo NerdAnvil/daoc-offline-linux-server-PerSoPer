@@ -120,7 +120,7 @@ Don't need it, I'm topped up.
 Nah, I'm still out after that one, {0}.
 Gimme a minute, bub, that joke stung.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Pullin' it, {0}!
 Here it comes, bub.
@@ -128,6 +128,10 @@ Here it comes, bub.
 ~ reply orderpullwhat
 Pull what, {0}?
 Ain't nothin' targeted, bub.
+
+~ reply orderpulleasy
+That runt? Not worth the sweat, bub.
+Too weak, {0}. Find somethin' with teeth.
 
 ~ reply groan
 Oof, bub. That one needs a buff.

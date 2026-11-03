@@ -118,7 +118,7 @@ No need, {0}, all bars at max.
 I'm out, {0}, that joke had zero value.
 Not now, {0}, I'm on cooldown after that one.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Pulling, {0}, burn it down.
 On it, {0}, damage up.
@@ -126,6 +126,10 @@ On it, {0}, damage up.
 ~ reply orderpullwhat
 Pull what, {0}? No target.
 No target, {0}, zero value.
+
+~ reply orderpulleasy
+Grey con, {0}. Zero xp, zero value.
+Not worth the time, {0}, it's grey.
 
 ~ reply groan
 That's a suboptimal joke.

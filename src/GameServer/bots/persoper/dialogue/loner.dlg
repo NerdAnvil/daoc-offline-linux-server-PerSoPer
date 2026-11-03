@@ -115,7 +115,7 @@ No need, {0}, I'm full.
 Leave me be, {0}, I'm out.
 Not now, {0}, I walked off for a reason.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Fine, {0}, pulling.
 Pulling.
@@ -123,6 +123,10 @@ Pulling.
 ~ reply orderpullwhat
 Pull what, {0}?
 On what, {0}?
+
+~ reply orderpulleasy
+Not worth it, {0}.
+Too weak.
 
 ~ reply groan
 Hm.

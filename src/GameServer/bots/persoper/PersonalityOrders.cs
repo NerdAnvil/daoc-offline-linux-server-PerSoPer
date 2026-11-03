@@ -8,7 +8,7 @@ namespace DOL.GS;
 
 /// <summary>
 /// A bot's answer to an order: silence, yes (it obeys), no, busy, "you can't order me", and (B6b) nothing to assist on,
-/// full already (nothing to rest off), or stormed off after a bad joke.
+/// full already (nothing to rest off), or stormed off after a bad joke; and a pull target too weak to bother with.
 /// </summary>
 public enum eOrderAnswer
 {
@@ -20,16 +20,18 @@ public enum eOrderAnswer
     NoTarget,
     Full,
     Away,
+    TooEasy,
 }
 
 /// <summary>
 /// What a bot's answer to an order is decided from, all read from the game: whether the speaker may order it (see
 /// <see cref="PersonalityOrders.MayOrder"/>), whether it is a companion (Persoper, a /spawn helper), its fight or ride,
 /// and a sulk at the speaker. B6b: whether it has stormed off after a bad joke (PersonalityWalkOff), whether the leader
-/// is fighting something it could assist on, and whether it has anything to rest off.
+/// is fighting something it could assist on, and whether it has anything to rest off. Pull: whether the target is
+/// grey to the bot (TargetGrey; it has no target then, as bots never fight grey mobs).
 /// </summary>
 public sealed record OrderState(bool Allowed, bool Companion, bool Fighting, bool Riding, bool Sulking,
-    bool Away = false, bool HasTarget = false, bool NeedsRest = true);
+    bool Away = false, bool HasTarget = false, bool NeedsRest = true, bool TargetGrey = false);
 
 /// <summary>
 /// Orders players give bots in chat (intent Part B6): "follow me", "stay here", "come here"; and B6b: "leave the
@@ -57,7 +59,8 @@ public sealed record OrderState(bool Allowed, bool Companion, bool Fighting, boo
 /// <para>Pull. "&lt;bot&gt;, pull this" goes to the first bot named in it: it pulls the speaker's target whatever its role
 /// (a healer or buffer pulls once, then goes back to its job) and the rest of the group attack at once
 /// (PlayerLedPullCoordinator.NamedPull). With no name it is the plain /pull (PlayerLedPullCoordinator.Begin, said
-/// by nobody). With no target to pull the bot asks "pull what?" (~ reply orderpullwhat).</para>
+/// by nobody). With no target to pull the bot asks "pull what?" (~ reply orderpullwhat); a target grey to it is too
+/// weak to bother with (~ reply orderpulleasy).</para>
 /// </summary>
 public static class PersonalityOrders
 {
@@ -117,6 +120,8 @@ public static class PersonalityOrders
             return eOrderAnswer.Busy;
         if (order == eBotOrder.Leave)
             return state.Companion ? eOrderAnswer.No : eOrderAnswer.Yes;
+        if (order == eBotOrder.Pull && !state.HasTarget && state.TargetGrey)
+            return eOrderAnswer.TooEasy;
         if (order is eBotOrder.Assist or eBotOrder.Pull && !state.HasTarget)
             return eOrderAnswer.NoTarget;
         if (order == eBotOrder.Rest && !state.NeedsRest)
@@ -149,6 +154,7 @@ public static class PersonalityOrders
         eOrderAnswer.NoTarget => order == eBotOrder.Pull ? eAutonomousChatIntent.OrderPullWhat : eAutonomousChatIntent.OrderNoTarget,
         eOrderAnswer.Full => eAutonomousChatIntent.OrderFull,
         eOrderAnswer.Away => eAutonomousChatIntent.OrderAway,
+        eOrderAnswer.TooEasy => eAutonomousChatIntent.OrderPullEasy,
         eOrderAnswer.NotYours => eAutonomousChatIntent.OrderNot,
         _ => eAutonomousChatIntent.Unknown,
     };
@@ -179,9 +185,11 @@ public static class PersonalityOrders
         if (personality == null || kind == eAutonomousChatIntent.Unknown)
             return null;
         string said = PersonalityStateAnswers.Pick(personality, kind, slots, facts, speakerName, random, ruleOf);
-        if (said == null && kind == eAutonomousChatIntent.OrderPullWhat)
+        if (said == null && kind == eAutonomousChatIntent.OrderPullEasy)
+            said = PersonalityStateAnswers.Pick(personality, eAutonomousChatIntent.OrderPullWhat, slots, facts, speakerName, random, ruleOf);
+        if (said == null && kind is eAutonomousChatIntent.OrderPullWhat or eAutonomousChatIntent.OrderPullEasy)
             said = PersonalityStateAnswers.Pick(personality, eAutonomousChatIntent.OrderNoTarget, slots, facts, speakerName, random, ruleOf);
-        if (said != null || answer is not (eOrderAnswer.Busy or eOrderAnswer.NoTarget or eOrderAnswer.Full or eOrderAnswer.Away))
+        if (said != null || answer is not (eOrderAnswer.Busy or eOrderAnswer.NoTarget or eOrderAnswer.Full or eOrderAnswer.Away or eOrderAnswer.TooEasy))
             return said;
         return PersonalityStateAnswers.Pick(personality, eAutonomousChatIntent.OrderNo, slots, facts, speakerName, random, ruleOf);
     }
@@ -278,8 +286,10 @@ public static class PersonalityOrders
         bool hasTarget = order == eBotOrder.Assist && AssistTarget(bot, player) != null ||
             order == eBotOrder.Pull && PullTarget(bot, player) != null;
         bool needsRest = order != eBotOrder.Rest || BotRestRecovery.NeedsOrContinuesRest(bot);
+        bool grey = order == eBotOrder.Pull && !hasTarget && PlayerLedPullCoordinator.PullTarget(player) is { } target &&
+            bot.IsObjectGreyCon(target);
         return new(MayOrder(bot, player), bot.IsTemporaryGroupHelper, fighting, bot.IsOnHorse || bot.IsOnStableMasterRoute,
-            sulking, PersonalityWalkOff.IsAway(bot, GameLoop.GameLoopTime), hasTarget, needsRest);
+            sulking, PersonalityWalkOff.IsAway(bot, GameLoop.GameLoopTime), hasTarget, needsRest, grey);
     }
 
     /// <summary>What the player is fighting, when the bot is near enough to join in; null when nothing.</summary>

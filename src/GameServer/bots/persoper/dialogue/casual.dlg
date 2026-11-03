@@ -125,7 +125,7 @@ don't need to, I'm topped up
 nope, still salty about that joke {0} lol
 I said I'm out {0}, give me a minute
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 ok pulling {0}
 sure, here it comes
@@ -133,6 +133,10 @@ sure, here it comes
 ~ reply orderpullwhat
 pull what lol
 uh, target something first {0}
+
+~ reply orderpulleasy
+lol that thing's grey {0}
+nah too easy, find something better
 
 ~ reply groan
 ugh lol

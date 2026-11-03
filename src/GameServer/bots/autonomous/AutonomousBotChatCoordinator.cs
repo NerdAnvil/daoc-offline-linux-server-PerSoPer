@@ -922,7 +922,7 @@ public static class AutonomousBotChatCoordinator
         }).ToArray();
         // "pull this" to nobody in particular is the plain /pull, once for the group, with no chat answer; a target the
         // bots won't fight (grey) still goes to /pull, which says so, as typing /pull would.
-        if (!isNamed && order == eBotOrder.Pull && decided.Any(pair => pair.Answer is eOrderAnswer.Yes or eOrderAnswer.NoTarget) &&
+        if (!isNamed && order == eBotOrder.Pull && decided.Any(pair => pair.Answer is eOrderAnswer.Yes or eOrderAnswer.NoTarget or eOrderAnswer.TooEasy) &&
             PlayerLedPullCoordinator.PullTarget(player) is { } pullTarget)
         {
             string result = PlayerLedPullCoordinator.Begin(player, pullTarget);

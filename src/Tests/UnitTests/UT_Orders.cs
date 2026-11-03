@@ -26,7 +26,7 @@ public class UT_Orders
         eAutonomousChatIntent.OrderLeave, eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest,
         eAutonomousChatIntent.OrderNo, eAutonomousChatIntent.OrderBusy, eAutonomousChatIntent.OrderNoTarget,
         eAutonomousChatIntent.OrderFull, eAutonomousChatIntent.OrderAway, eAutonomousChatIntent.OrderNot,
-        eAutonomousChatIntent.OrderPull, eAutonomousChatIntent.OrderPullWhat,
+        eAutonomousChatIntent.OrderPull, eAutonomousChatIntent.OrderPullWhat, eAutonomousChatIntent.OrderPullEasy,
     ];
 
     private static readonly eBotOrder[] AllOrders =
@@ -178,6 +178,7 @@ public class UT_Orders
         kinds.AddRange(new[] { eOrderAnswer.No, eOrderAnswer.Busy, eOrderAnswer.NoTarget, eOrderAnswer.Full, eOrderAnswer.Away, eOrderAnswer.NotYours }
             .Select(answer => PersonalityOrders.KindFor(eBotOrder.Stay, answer)));
         kinds.Add(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.NoTarget));
+        kinds.Add(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.TooEasy));
         Assert.That(kinds, Is.EquivalentTo(OrderKinds));
         Assert.That(PersonalityOrders.KindFor(eBotOrder.Follow, eOrderAnswer.Quiet), Is.EqualTo(eAutonomousChatIntent.Unknown));
     }
@@ -421,6 +422,9 @@ public class UT_Orders
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Sulking = true }, "casual", random), Is.EqualTo(eOrderAnswer.No));
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Allowed = false }, "casual", random), Is.EqualTo(eOrderAnswer.NotYours));
         Assert.That(PersonalityOrders.NamedOnly(eBotOrder.Pull), Is.False, "pull this with no name is the plain /pull");
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { TargetGrey = true }, "casual", random), Is.EqualTo(eOrderAnswer.TooEasy), "grey: too easy");
+        Assert.That(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.TooEasy), Is.EqualTo(eAutonomousChatIntent.OrderPullEasy));
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { TargetGrey = true, Fighting = true }, "casual", random), Is.EqualTo(eOrderAnswer.Busy));
     }
 
     private static IEnumerable<BotPersonality> WorldVoices() =>
@@ -467,7 +471,7 @@ public class UT_Orders
             (eBotOrder.Stay, eOrderAnswer.Busy), (eBotOrder.Stay, eOrderAnswer.NotYours),
             (eBotOrder.Assist, eOrderAnswer.Yes), (eBotOrder.Rest, eOrderAnswer.Yes), (eBotOrder.Assist, eOrderAnswer.NoTarget),
             (eBotOrder.Rest, eOrderAnswer.Full), (eBotOrder.Follow, eOrderAnswer.Away), (eBotOrder.Leave, eOrderAnswer.No),
-            (eBotOrder.Pull, eOrderAnswer.Yes), (eBotOrder.Pull, eOrderAnswer.NoTarget),
+            (eBotOrder.Pull, eOrderAnswer.Yes), (eBotOrder.Pull, eOrderAnswer.NoTarget), (eBotOrder.Pull, eOrderAnswer.TooEasy),
         };
         foreach (BotPersonality voice in WorldVoices().Append(Persoper()).Append(KobaldjoviIdentity.Personality))
         foreach ((eBotOrder order, eOrderAnswer answer) in answers)

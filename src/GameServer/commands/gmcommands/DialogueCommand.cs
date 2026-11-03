@@ -164,8 +164,9 @@ namespace DOL.GS.Commands
         /// <summary>
         /// "/dialogue target nearest|&lt;mob&gt;|clear" (tools/check-pull-ingame.sh, as the headless client can't target):
         /// sets the GM's target on the server to the nearest living mob it may attack (not a bot or a pet), one with that
-        /// name if given, within the pull range (BotBrain.GROUP_DEFENSE_ASSIST_RADIUS), and not grey to every bot in the
-        /// GM's group (bots never pull grey mobs); "clear" targets nothing.
+        /// name if given, within the pull range (BotBrain.GROUP_DEFENSE_ASSIST_RADIUS). "nearest" skips mobs grey to every
+        /// bot in the GM's group (bots never pull grey mobs); a name doesn't, so a grey one can be targeted on purpose.
+        /// "clear" targets nothing.
         /// </summary>
         private static string SetTarget(GamePlayer player, string what)
         {
@@ -181,12 +182,12 @@ namespace DOL.GS.Commands
                 .Where(npc => npc is not GameBot && npc.IsAlive && npc.Brain is not DOL.AI.Brain.IControlledBrain &&
                     (any || npc.Name.Equals(what, System.StringComparison.OrdinalIgnoreCase)) &&
                     GameServer.ServerRules.IsAllowedToAttack(player, npc, true) &&
-                    (bots.Length == 0 || bots.Any(bot => !bot.IsObjectGreyCon(npc))))
+                    (!any || bots.Length == 0 || bots.Any(bot => !bot.IsObjectGreyCon(npc))))
                 .OrderBy(npc => npc.InCombat).ThenBy(npc => player.GetDistanceTo(npc))
                 .FirstOrDefault();
             if (mob == null)
                 return any ? "Target: no mob you could attack within range (none grey to all your bots)." :
-                    $"Target: no {what} you could attack within range (none grey to all your bots).";
+                    $"Target: no {what} you could attack within range.";
             player.TargetObject = mob;
             return $"Target: {mob.Name}, level {mob.Level}, {player.GetDistanceTo(mob):0} away.";
         }

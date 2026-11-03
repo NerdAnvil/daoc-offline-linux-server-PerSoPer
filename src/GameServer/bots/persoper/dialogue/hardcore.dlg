@@ -115,7 +115,7 @@ I'm full, {0}, resting is wasted time.
 I'm out, {0}, that joke cost us a pull.
 Not now, {0}, I need a minute after that.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Pulling, {0}, be ready.
 On it, {0}, hit it when it comes.
@@ -123,6 +123,10 @@ On it, {0}, hit it when it comes.
 ~ reply orderpullwhat
 Pull what, {0}? Target something.
 Nothing targeted, {0}.
+
+~ reply orderpulleasy
+That's grey, {0}. Waste of time.
+Not worth it, {0}. Find something that cons.
 
 ~ reply groan
 ugh

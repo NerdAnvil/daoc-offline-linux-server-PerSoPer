@@ -118,7 +118,7 @@ I am hale and whole, {0}, no rest is needed.
 I have left the field, {0}, my honour is wounded.
 Not yet, {0}, I must walk off that jest.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 I shall draw it forth, {0}!
 To me, foul beast!
@@ -126,6 +126,10 @@ To me, foul beast!
 ~ reply orderpullwhat
 Draw forth what, {0}? I see no foe.
 Name the foe, {0}, and I shall bring it.
+
+~ reply orderpulleasy
+That creature is beneath my blade, {0}.
+No honour in such a feeble foe, {0}.
 
 ~ reply groan
 Oh, a terrible jest!

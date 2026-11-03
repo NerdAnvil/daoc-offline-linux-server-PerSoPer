@@ -121,7 +121,7 @@ Don't need it, {0}, I'm topped up.
 Not after that joke, {0}, I need a minute.
 I said I'm out, {0}, go bother someone else for a bit.
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Pulling, {0}, and don't make me regret it.
 Fine, {0}, I'll pull, you heal yourselves first.
@@ -129,6 +129,10 @@ Fine, {0}, I'll pull, you heal yourselves first.
 ~ reply orderpullwhat
 Pull what, {0}?
 There's nothing targeted, {0}.
+
+~ reply orderpulleasy
+That's grey, {0}. I'm not wasting mana on it.
+Too weak, {0}. Pick something worth healing through.
 
 ~ reply groan
 Hm. Terrible.

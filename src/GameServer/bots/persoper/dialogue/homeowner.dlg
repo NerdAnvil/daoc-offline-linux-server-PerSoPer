@@ -119,7 +119,7 @@ No need, {0}, I'm feeling right as rain.
 Not just now, {0}, that joke still stings a bit.
 I'm still out, {0}, gimme a sec, okay?
 
-# Pull: named in "pull this", and "pull what?" with no target.
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
 ~ reply orderpull
 Oh, you betcha, {0}, pulling!
 Here it comes, {0}, get ready now!
@@ -127,6 +127,10 @@ Here it comes, {0}, get ready now!
 ~ reply orderpullwhat
 Pull what, {0}? I don't see anything.
 Which one, {0}? You've got nothing picked.
+
+~ reply orderpulleasy
+Oh, that little thing, {0}? Not worth the bother.
+Too easy, {0}, let's find a real one.
 
 ~ reply groan
 Oh, for Pete's sake.
