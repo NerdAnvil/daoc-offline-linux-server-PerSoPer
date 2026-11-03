@@ -18,6 +18,8 @@ public static class DialogueCheck
         var problems = new List<string>(file.Errors);
         if (PersonalityLines.TypeKeys.Contains(name) || PersonalityLines.NamedOnlyKeys.Contains(name))
             problems.AddRange(PersonalityLines.Check(file, name));
+        else if (PersonalityLines.IsCharacterFile(name))
+            problems.AddRange(PersonalityLines.CheckCharacter(file, name));
         else if (name == "intents")
         {
             IntentPhrases phrases = IntentPhrases.From(file);
@@ -25,8 +27,11 @@ public static class DialogueCheck
             if (phrases.Count == 0)
                 problems.Add($"{file.FileName}: no phrases");
         }
+        else if (name == PairScenes.FileName)
+            problems.AddRange(PairScenes.Check(file));
         else if (IdentityDialogue.FileNames.Contains(name))
             problems.AddRange(IdentityDialogue.Check(file, name));
+        problems.AddRange(DialogueBotNames.Check(file, name));
 
         if (builtIn != null)
         {
@@ -107,7 +112,7 @@ public static class DialoguePreview
 
     /// <summary>
     /// The situation from words like "player_dead", "health=20", "mood=warm", "recent=loot",
-    /// "nearby=kobaldjovi", "zone=Camelot City". Unknown facts or values go to <paramref name="errors"/>.
+    /// "nearby=kobaldjovi", "player_likes=metal", "zone=Camelot City". Unknown facts or values go to <paramref name="errors"/>.
     /// </summary>
     public static DialogueFacts Facts(IEnumerable<string> words, List<string> errors)
     {
@@ -116,6 +121,7 @@ public static class DialoguePreview
         string mood = null, timeOfDay = null, zone = null;
         var recent = new HashSet<string>();
         var nearby = new HashSet<string>();
+        var likes = new HashSet<string>();
         foreach (string word in words.Take(DialogueRule.MaxConditions * 4))
         {
             int equals = word.IndexOf('=');
@@ -158,13 +164,15 @@ public static class DialoguePreview
                 zone = value;
             else if (fact == "nearby")
                 nearby.Add(value.ToLowerInvariant());
+            else if (fact == DialogueRule.LikesFact)
+                likes.Add(value.ToLowerInvariant());
             else
                 errors.Add($"'{word}': unknown fact '{fact}'");
         }
         return new DialogueFacts
         {
             BotId = "preview", PlayerId = "preview", PlayerDead = dead, InCombat = combat, Health = health, GroupSize = groupSize,
-            DeathsToday = deaths, Mood = mood, TimeOfDay = timeOfDay, Zone = zone, Recent = recent, Nearby = nearby,
+            DeathsToday = deaths, Mood = mood, TimeOfDay = timeOfDay, Zone = zone, Recent = recent, Nearby = nearby, Likes = likes,
         };
     }
 

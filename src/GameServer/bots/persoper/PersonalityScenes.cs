@@ -13,7 +13,8 @@ public enum eSceneChannel
 }
 
 /// <summary>Who takes part in a topic scene: name, type key and what its lines can be filled with.</summary>
-public sealed record SceneVoice(string Name, string TypeKey, LineSlots Slots);
+/// <summary>One speaker of a scene; with a MemoryKey it skips lines it said lately, in earlier scenes too (DialoguePicker).</summary>
+public sealed record SceneVoice(string Name, string TypeKey, LineSlots Slots, string MemoryKey = null);
 
 /// <summary>
 /// Back-and-forth scenes between personality-type bots (Step B2). Topic scenes carry on a
@@ -30,6 +31,23 @@ public static class PersonalityScenes
     public const double MediumShare = 0.25;
     /// <summary>Chance a typed bot whose turn it is plays a pair scene, when a rival can join.</summary>
     public const double PairSceneChance = 0.35;
+    /// <summary>Chance a named bot whose turn it is plays one of its character's own scenes ("shempenstein-any").</summary>
+    public const double CharacterSceneChance = 0.05;
+    /// <summary>Character scenes remembered as played (character and partner) at most; a full store is emptied.</summary>
+    public const int MaxCharacterScenesRemembered = 1000;
+    /// <summary>The same partner waits this many times persoper_character_scene_minutes for the next one.</summary>
+    public const int PartnerRepeatFactor = 4;
+    /// <summary>A crowd: at least this many bots (the character included), at most MaxCrowd.</summary>
+    public const int MinCrowd = 4;
+    public const int MaxCrowd = 20;
+    /// <summary>How long a crowd's pal, buddy, guy chain runs, and its lines at most; the laughs follow.</summary>
+    public const int CrowdChainMs = 36_000;
+    /// <summary>After this many chain lines, someone asks what is going on (a "~ crowd confused" line).</summary>
+    public const int ConfusedAfter = 5;
+    public const int MaxCrowdChain = 30;
+    /// <summary>The chain: the known bit, word for word (owner's choice). {0} and {1} cycle pal, buddy, guy.</summary>
+    public const string CrowdChainLine = "I'm not your {0}, {1}.";
+    private static readonly string[] CrowdWords = ["pal", "buddy", "guy"];
     /// <summary>Chance a Short topic scene ends with a closer.</summary>
     public const double CloserChance = 0.5;
     /// <summary>Chance a closer is cheeky instead (only with tone-down off and a type that has some).</summary>
@@ -155,10 +173,10 @@ public static class PersonalityScenes
             string line = step switch
             {
                 eStep.Reply => PickFresh(PersonalityLines.All.GetValueOrDefault(voice.TypeKey ?? string.Empty)?.TopicReplies.GetValueOrDefault(topic),
-                    voice.Slots, other, used, random),
+                    voice.Slots, other, used, random, voice.MemoryKey),
                 eStep.Comeback => PickFresh(SceneLines.All.GetValueOrDefault(voice.TypeKey ?? string.Empty)?.Comebacks.GetValueOrDefault(topic),
-                    voice.Slots, other, used, random),
-                _ => PickFresh(CloserPool(voice.TypeKey, toneDown, random), voice.Slots, other, used, random),
+                    voice.Slots, other, used, random, voice.MemoryKey),
+                _ => PickFresh(CloserPool(voice.TypeKey, toneDown, random), voice.Slots, other, used, random, voice.MemoryKey),
             };
             // Nothing fresh to say: the conversation has run its course.
             if (line == null)
@@ -192,11 +210,26 @@ public static class PersonalityScenes
         return !toneDown && lines.CheekyClosers is { Length: > 0 } cheeky && random.NextDouble() < CheekyCloserChance ? cheeky : lines.Closers;
     }
 
-    /// <summary>A filled line from the pool that hasn't been said in this scene yet, or null.</summary>
-    private static string PickFresh(IReadOnlyList<string> pool, LineSlots slots, string otherName, HashSet<string> used, Random random)
+    /// <summary>
+    /// A filled line from the pool that hasn't been said in this scene yet, or null. With a botKey, of those, one the bot
+    /// hasn't said lately (so "Exit, stage left." doesn't close two scenes in a row), and it is remembered.
+    /// </summary>
+    private static string PickFresh(IReadOnlyList<string> pool, LineSlots slots, string otherName, HashSet<string> used, Random random,
+        string botKey = null)
     {
         if (pool == null || pool.Count == 0)
             return null;
+        if (botKey != null)
+        {
+            List<string> open = pool.Take(DialoguePicker.MaxPool)
+                .Where(template => PersonalityReactions.Fill(template, slots, otherName) is { } filled && !used.Contains(filled)).ToList();
+            if (DialoguePicker.Shared.Fresh(open, botKey, random) is not { } picked)
+                return null;
+            DialoguePicker.Shared.Said(botKey, picked);
+            string line = PersonalityReactions.Fill(picked, slots, otherName);
+            used.Add(line);
+            return line;
+        }
         for (int attempt = 0; attempt < PersonalityReactions.MaxFillTries; attempt++)
         {
             if (PersonalityReactions.Fill(pool[random.Next(pool.Count)], slots, otherName) is { } line && used.Add(line))
@@ -222,6 +255,18 @@ public static class PersonalityScenes
     public static object NearbyKey(ushort regionId) => ("nearby", regionId);
 
     /// <summary>How long a scene still holds this channel (0 = free). Other talk waits for it.</summary>
+    /// <summary>The bots in each held channel's scene: everyone else is hushed there until it ends.</summary>
+    private static readonly Dictionary<object, HashSet<GameBot>> HeldCast = new();
+
+    /// <summary>True while a scene holds this channel and the bot isn't in it: its other chatter waits.</summary>
+    public static bool Hushes(object key, GameBot bot)
+    {
+        long now = GameLoop.GameLoopTime;
+        lock (Sync)
+            return HeldUntil.TryGetValue(key, out long until) && until > now &&
+                HeldCast.TryGetValue(key, out HashSet<GameBot> cast) && !cast.Contains(bot);
+    }
+
     public static int HeldMs(object key)
     {
         if (key == null)
@@ -274,6 +319,8 @@ public static class PersonalityScenes
     /// </summary>
     public static bool TryPairScene(GameBot bot, BotPersonality personality, eSceneChannel channel)
     {
+        if (TryCharacterScene(bot, channel))
+            return true;
         if (personality?.TypeKey is not { } type || PersoperProperties.CHATTER_PERCENT <= 0 ||
             PairScenes.RivalsOf(type) is not { Count: > 0 } rivals || Random.Shared.NextDouble() >= PairSceneChance)
             return false;
@@ -297,8 +344,223 @@ public static class PersonalityScenes
         return Play(lines.Select(line => (bots[line.Speaker], line.Text)).ToList(), channel, bot.Group, firstDelayMs: 0);
     }
 
+    /// <summary>When (GameLoopTime) each character last played one of its own scenes, and with which partner.</summary>
+    private static readonly Dictionary<string, long> CharacterSceneAt = new();
+    private static readonly Dictionary<(string Character, string Partner), long> CharacterPartnerAt = new();
+
+    /// <summary>
+    /// Now and then a named bot plays one of its character's own scenes with another bot in the
+    /// audience (A the named bot, B the partner, C a third if there is one): at most once per
+    /// persoper_character_scene_minutes, and not with the same partner again within four times
+    /// that. Sometimes (persoper_crowd_scene_percent) it turns into a crowd.
+    /// </summary>
+    private static bool TryCharacterScene(GameBot bot, eSceneChannel channel)
+    {
+        int minutes = PersoperProperties.CHARACTER_SCENE_MINUTES;
+        if (minutes <= 0 || PersoperProperties.CHATTER_PERCENT <= 0 || NamedBots.EntryFor(bot.DatabaseID) is not { } entry ||
+            PairScenes.ForCharacter(PersonalityLines.CharacterKey(entry)) is not { } pair)
+            return false;
+        long now = GameLoop.GameLoopTime;
+        long gapMs = minutes * 60_000L;
+        lock (Sync)
+            if (CharacterSceneAt.TryGetValue(pair.Lead, out long last) && now - last < gapMs)
+                return false;
+        if (Random.Shared.NextDouble() >= CharacterSceneChance)
+            return false;
+        var audience = PersonalityTypes.Online()
+            .Where(other => other.Bot != bot && other.Bot.Realm == bot.Realm && AutonomousBotChatCoordinator.CanSpeakInScene(other.Bot) &&
+                InSameAudience(bot, other.Bot, channel))
+            .Take(MaxCandidates)
+            .OrderBy(_ => Random.Shared.Next())
+            .Select(other => other.Bot)
+            .ToList();
+        GameBot partner;
+        lock (Sync)
+            partner = audience.FirstOrDefault(other =>
+                !CharacterPartnerAt.TryGetValue((pair.Lead, other.InternalID), out long at) || now - at >= PartnerRepeatFactor * gapMs);
+        if (partner == null)
+            return false;
+        audience.Remove(partner);
+        audience.Insert(0, partner);
+        bool crowd = pair.HasCrowd && audience.Count + 1 >= MinCrowd && Random.Shared.Next(100) < PersoperProperties.CROWD_SCENE_PERCENT;
+        if (!PlayCharacterScene(bot, pair, null, audience, channel, crowd))
+            return false;
+        lock (Sync)
+        {
+            if (CharacterPartnerAt.Count >= MaxCharacterScenesRemembered)
+                CharacterPartnerAt.Clear();
+            CharacterSceneAt[pair.Lead] = now;
+            CharacterPartnerAt[(pair.Lead, partner.InternalID)] = now;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Plays a character scene (by name, or a random one that fits) with others[0] as B and
+    /// others[1] as C; with crowd, the scene's opener starts a crowd of up to MaxCrowd bots instead.
+    /// </summary>
+    private static bool PlayCharacterScene(GameBot lead, TypePair pair, SceneScript script, IReadOnlyList<GameBot> others, eSceneChannel channel, bool crowd)
+    {
+        GameBot partner = others.ElementAtOrDefault(0), third = others.ElementAtOrDefault(1);
+        if (partner == null)
+            return false;
+        script ??= PickScript(pair.Scenes, PickSize(Random.Shared), third != null, PersoperProperties.TONE_DOWN, Random.Shared) ??
+            PickScript(pair.Scenes, eSceneSize.Large, third != null, PersoperProperties.TONE_DOWN, Random.Shared);
+        GameBot[] bots = [lead, partner, third];
+        List<SceneLine> lines = script == null ? null : FillScript(script, bots.Select(member => member?.Name).ToArray(),
+            PersonalityReactions.SlotsFor(lead, lead.Level < lead.MaxLevel ? lead.Level + 1 : 0));
+        if (lines == null || lines.Count == 0)
+            return false;
+        if (!crowd)
+            return Play(lines.Select(line => (bots[line.Speaker], line.Text)).ToList(), channel, lead.Group, firstDelayMs: 0);
+        GameBot[] cast = [lead, .. others.Take(MaxCrowd - 1)];
+        List<(int Speaker, string Line, int DelayMs)> plan = PlanCrowd(lines[0].Text, cast.Length, pair.CrowdLaughs, pair.CrowdGrumbles, lead.Name, Random.Shared, pair.CrowdConfused);
+        return PlayTimed(plan.Select(step => (cast[step.Speaker], step.Line, step.DelayMs)).ToList(), channel, lead.Group, IsChainLine);
+    }
+
+    /// <summary>
+    /// A crowd of size bots (0 the character, 1 its partner): the opener, then the pal, buddy, guy
+    /// chain for about CrowdChainMs with everyone piling in, then each one laughs, or for a few,
+    /// grumbles. Steps are (speaker, line, wait before it); the first wait is 0. About a minute.
+    /// </summary>
+    public static List<(int Speaker, string Line, int DelayMs)> PlanCrowd(string opener, int size, IReadOnlyList<string> laughs,
+        IReadOnlyList<string> grumbles, string leadName, Random random, IReadOnlyList<string> confused = null)
+    {
+        random ??= Random.Shared;
+        size = Math.Clamp(size, 2, MaxCrowd);
+        var plan = new List<(int Speaker, string Line, int DelayMs)> { (0, opener, 0) };
+        var spoken = new HashSet<int> { 0 };
+        int previous = 0, elapsed = 0;
+        for (int step = 0; step < MaxCrowdChain && elapsed < CrowdChainMs; step++)
+        {
+            // B answers the opener and A answers B, as in the bit; then whoever hasn't spoken yet, mostly.
+            int speaker = step switch
+            {
+                0 => 1,
+                1 => 0,
+                _ => NextCrowdSpeaker(size, previous, spoken, random),
+            };
+            // A beat before the chain starts, then a line every 2.5 to 3.5 s.
+            int delay = step == 0 ? 3_500 + random.Next(1_000) : 2_500 + random.Next(1_000);
+            plan.Add((speaker, ChainLine(step), delay));
+            spoken.Add(speaker);
+            previous = speaker;
+            elapsed += delay;
+            // After a few chain lines someone who hasn't joined in yet asks what is going on.
+            if (step + 1 == ConfusedAfter && confused is { Count: > 0 } &&
+                Enumerable.Range(0, size).Where(other => !spoken.Contains(other)).ToArray() is { Length: > 0 } quiet)
+            {
+                int asker = quiet[random.Next(quiet.Length)];
+                int wait = 1_000 + random.Next(1_000);
+                plan.Add((asker, confused[random.Next(confused.Count)].Replace("{a}", leadName), wait));
+                spoken.Add(asker);
+                previous = asker;
+                elapsed += wait;
+            }
+        }
+        // Most laugh, a few grumble (one in five, at least one in a crowd of five or more); the character laughs last.
+        // Each pool is shuffled and gone through in order, so a line only repeats once all have been said.
+        int grumblers = size >= 5 ? Math.Max(1, (size - 1) / 5) : 0;
+        int[] enders = Enumerable.Range(1, size - 1).OrderBy(_ => random.Next()).ToArray();
+        string[] laughOrder = laughs?.OrderBy(_ => random.Next()).ToArray() ?? [];
+        string[] grumbleOrder = grumbles?.OrderBy(_ => random.Next()).ToArray() ?? [];
+        int laughed = 0;
+        for (int i = 0; i < enders.Length; i++)
+        {
+            string line = i < grumblers && grumbleOrder.Length > 0 ? grumbleOrder[i % grumbleOrder.Length]
+                : laughOrder.Length > 0 ? laughOrder[laughed++ % laughOrder.Length] : null;
+            if (line != null)
+                plan.Add((enders[i], line.Replace("{a}", leadName), 800 + random.Next(1_200)));
+        }
+        // The character's own laugh: not one that names it ({a}).
+        string[] ownLaughs = laughOrder.Where(line => !line.Contains("{a}")).ToArray();
+        if (ownLaughs.Length > 0)
+            plan.Add((0, ownLaughs[laughed % ownLaughs.Length], 1_000 + random.Next(1_000)));
+        return plan;
+    }
+
+    /// <summary>True for a line of the pal, buddy, guy chain (CrowdChainLine with any of the words).</summary>
+    public static bool IsChainLine(string line) =>
+        CrowdWords.Any(first => CrowdWords.Any(second => line == string.Format(CrowdChainLine, first, second)));
+
+    /// <summary>The chain's line after this many chain lines were said: pal, buddy; buddy, guy; guy, pal; ...</summary>
+    public static string ChainLine(int said) => string.Format(CrowdChainLine, CrowdWords[said % 3], CrowdWords[(said + 1) % 3]);
+
+    private static int NextCrowdSpeaker(int size, int previous, HashSet<int> spoken, Random random)
+    {
+        int[] fresh = Enumerable.Range(0, size).Where(speaker => speaker != previous && !spoken.Contains(speaker)).ToArray();
+        if (fresh.Length > 0 && random.Next(4) > 0)
+            return fresh[random.Next(fresh.Length)];
+        int other = random.Next(size - 1);
+        return other >= previous ? other + 1 : other;
+    }
+
+    /// <summary>
+    /// For "/dialogue scene": plays one pair scene by name now, in the realm's faction chat, with
+    /// online bots of that realm (of the pair's types when there are some, else any that can talk).
+    /// Returns what happened, for chat.
+    /// </summary>
+    public static string PlayNamedScene(eRealm realm, string pairName, string sceneName)
+    {
+        if (PairScenes.Find(pairName) is not { } pair)
+            return $"No pair '{pairName}'. Pairs: {string.Join(", ", PairScenes.All.Select(found => found.Name))}.";
+        bool crowd = pair.Rival == PairScenes.AnyRival && string.Equals(sceneName, PairScenes.CrowdSection, StringComparison.OrdinalIgnoreCase);
+        if (crowd && !pair.HasCrowd)
+            return $"{pair.Name} has no crowd lines ('~ crowd laugh' and '~ crowd grumble').";
+        SceneScript script = crowd ? PickScript(pair.Scenes, eSceneSize.Large, false, PersoperProperties.TONE_DOWN, Random.Shared)
+            : pair.Scenes.FirstOrDefault(scene => string.Equals(scene.Name, sceneName, StringComparison.OrdinalIgnoreCase));
+        if (script == null)
+            return $"No scene '{sceneName}' in {pair.Name}. Scenes: {string.Join(", ", pair.Scenes.Select(scene => scene.Name))}.";
+        if (script.Cheeky && PersoperProperties.TONE_DOWN)
+            return $"'{script.Name}' is a cheeky scene; it only plays with persoper_tone_down off.";
+
+        var cast = PersonalityTypes.Online()
+            .Where(found => found.Bot.Realm == realm && AutonomousBotChatCoordinator.CanSpeakInScene(found.Bot))
+            .Take(MaxCandidates)
+            .OrderBy(_ => Random.Shared.Next())
+            .ToList();
+        // A character's own scene ("shempenstein-any") needs that character's bot of this realm as A.
+        bool character = pair.Rival == PairScenes.AnyRival;
+        // Looked for among all online bots, not only the first few that can talk.
+        GameBot a = character
+            ? PersonalityTypes.Online().Select(found => found.Bot).FirstOrDefault(bot => bot.Realm == realm &&
+                NamedBots.EntryFor(bot.DatabaseID) is { } entry && PersonalityLines.CharacterKey(entry) == pair.Lead)
+            : cast.FirstOrDefault(found => found.Personality.TypeKey == pair.Lead).Bot ?? cast.FirstOrDefault().Bot;
+        if (character && a == null)
+            return $"{pair.Lead} of your realm isn't online.";
+        if (character && !AutonomousBotChatCoordinator.CanSpeakInScene(a))
+            return $"{a.Name} can't talk now ({(a.InCombat ? "fighting" : a.IsCasting ? "casting" : a.IsOnHorse || a.IsOnStableMasterRoute ? "riding" : "busy")}); try again in a moment.";
+        if (character)
+        {
+            // Not counted against the character's timing: a check, not the real thing.
+            List<GameBot> others = cast.Where(found => found.Bot != a).Select(found => found.Bot).ToList();
+            if (others.Count < (crowd ? MinCrowd - 1 : script.Speakers - 1))
+                return "Not enough bots of your realm can talk now.";
+            return PlayCharacterScene(a, pair, script, others, eSceneChannel.Faction, crowd)
+                ? $"Playing {pair.Name} '{(crowd ? "crowd" : script.Name)}' in faction chat: A = {a.Name}" +
+                    (crowd ? $", {Math.Min(others.Count + 1, MaxCrowd)} bots." : $", B = {others[0].Name}.")
+                : $"'{script.Name}' couldn't start.";
+        }
+        GameBot b = cast.FirstOrDefault(found => found.Bot != a && found.Personality.TypeKey == pair.Rival).Bot ??
+            cast.FirstOrDefault(found => found.Bot != a).Bot;
+        GameBot c = cast.FirstOrDefault(found => found.Bot != a && found.Bot != b).Bot;
+        if (a == null || b == null || script.Speakers > 2 && c == null)
+            return $"Not enough bots of your realm can talk now ('{script.Name}' needs {script.Speakers}).";
+
+        GameBot[] bots = [a, b, c];
+        List<SceneLine> lines = FillScript(script, bots.Select(member => member?.Name).ToArray(),
+            PersonalityReactions.SlotsFor(a, a.Level < a.MaxLevel ? a.Level + 1 : 0));
+        if (lines == null)
+            return $"'{script.Name}' can't be filled in for {a.Name} now (a {{zone}} or other slot isn't known).";
+        if (!Play(lines.Select(line => (bots[line.Speaker], line.Text)).ToList(), eSceneChannel.Faction, null, firstDelayMs: 0))
+            return $"'{script.Name}' couldn't start.";
+        return $"Playing {pair.Name} '{script.Name}' in faction chat: A = {a.Name}, B = {b.Name}" +
+            (script.Speakers > 2 ? $", C = {c.Name}." : ".");
+    }
+
     private static SceneVoice Voice(GameBot bot, string typeKey) =>
-        new(bot.Name, typeKey, PersonalityReactions.SlotsFor(bot, bot.Level < bot.MaxLevel ? bot.Level + 1 : 0));
+        new(bot.Name, typeKey, PersonalityReactions.SlotsFor(bot, bot.Level < bot.MaxLevel ? bot.Level + 1 : 0),
+            PersonalityReactions.MemoryKey(bot, BotPersonalities.For(bot)));
 
     private static bool InSameAudience(GameBot bot, GameBot other, eSceneChannel channel) => channel switch
     {
@@ -335,11 +597,67 @@ public static class PersonalityScenes
                 return false;
             index = 1;
         }
-        Hold(key, total);
+        Hold(key, total, lines.Select(line => line.Speaker));
         if (index < lines.Count)
             Next(lines, index, channel, group, key, index == 0 ? firstDelayMs : LineDelayMs(lines[index].Line, Random.Shared));
         return true;
     }
+
+    /// <summary>
+    /// Plays a crowd: each line after its own wait, holding the channel to the end. A bot that
+    /// can't talk just misses its line (a chain line goes to up to MaxStandIns others instead), and so
+    /// does one whose line would follow its own; the crowd goes on. Lines isChain picks out are worked out
+    /// when said (ChainLine), so a missed one doesn't break the pal, buddy, guy order.
+    /// False when the first line can't be said.
+    /// </summary>
+    private static bool PlayTimed(List<(GameBot Speaker, string Line, int DelayMs)> steps, eSceneChannel channel, Group group, Func<string, bool> isChain)
+    {
+        if (steps.Count == 0 || steps.Count > MaxTimedLines || channel == eSceneChannel.Group && group == null)
+            return false;
+        if (!AutonomousBotChatCoordinator.SpeakSceneLine(steps[0].Speaker, steps[0].Line, channel, group))
+            return false;
+        object key = KeyFor(steps[0].Speaker, channel, group);
+        Hold(key, steps.Sum(step => step.DelayMs) + 2_000, steps.Select(step => step.Speaker));
+        int at = 0;
+        int[] chainSaid = [0];
+        GameBot[] cast = steps.Select(step => step.Speaker).Where(bot => bot != null).Distinct().ToArray();
+        // Who said the last line: a bot whose turn follows its own line (the one between missed) skips it.
+        GameBot[] lastSpeaker = [steps[0].Speaker];
+        for (int i = 1; i < steps.Count; i++)
+        {
+            (GameBot speaker, string line, int delay) = steps[i];
+            at += delay;
+            bool last = i == steps.Count - 1;
+            bool chain = isChain(line);
+            _ = new ECSGameTimer(speaker, _ =>
+            {
+                string said = chain ? ChainLine(chainSaid[0]) : line;
+                // A busy bot's chain line goes to someone else in the crowd, so the chain doesn't stall.
+                IEnumerable<GameBot> tries = chain
+                    ? cast.Where(other => other != speaker).OrderBy(_ => Random.Shared.Next()).Take(MaxStandIns).Prepend(speaker)
+                    : [speaker];
+                foreach (GameBot candidate in tries)
+                {
+                    if (candidate == lastSpeaker[0] || !AutonomousBotChatCoordinator.SpeakSceneLine(candidate, said, channel, group))
+                        continue;
+                    lastSpeaker[0] = candidate;
+                    if (chain)
+                        chainSaid[0]++;
+                    break;
+                }
+                if (last)
+                    Release(key);
+                return 0;
+            }, at);
+        }
+        return true;
+    }
+
+    /// <summary>Others who try a busy bot's chain line in its place, at most.</summary>
+    private const int MaxStandIns = 3;
+
+    /// <summary>Lines a timed scene (a crowd) may have: its chain and everyone's ending.</summary>
+    private const int MaxTimedLines = 2 + MaxCrowdChain + MaxCrowd;
 
     /// <summary>Says line [index] after the delay, then schedules the next one. At most MaxSceneLines steps.</summary>
     private static void Next(List<(GameBot Speaker, string Line)> lines, int index, eSceneChannel channel, Group group, object key, int delayMs)
@@ -360,8 +678,9 @@ public static class PersonalityScenes
         }, delayMs);
     }
 
-    private static void Hold(object key, int ms)
+    private static void Hold(object key, int ms, IEnumerable<GameBot> cast)
     {
+        var speakers = new HashSet<GameBot>(cast.Where(bot => bot != null).Take(MaxTimedLines));
         long now = GameLoop.GameLoopTime;
         lock (Sync)
         {
@@ -369,15 +688,22 @@ public static class PersonalityScenes
             if (HeldUntil.Count >= MaxHeldEntries)
             {
                 foreach (object old in HeldUntil.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToArray())
+                {
                     HeldUntil.Remove(old);
+                    HeldCast.Remove(old);
+                }
             }
             HeldUntil[key] = now + ms;
+            HeldCast[key] = speakers;
         }
     }
 
     private static void Release(object key)
     {
         lock (Sync)
+        {
             HeldUntil.Remove(key);
+            HeldCast.Remove(key);
+        }
     }
 }

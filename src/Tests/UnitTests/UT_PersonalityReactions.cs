@@ -27,6 +27,20 @@ public class UT_PersonalityReactions
     }
 
     [Test]
+    public void MonsterName_TakesOnlyARealMonster()
+    {
+        Func<string, bool> monsters = name => name == "a grass snake";
+        Assert.That(PersonalityReactions.MonsterName("a grass snake", "Eirik", monsters), Is.EqualTo("a grass snake"));
+        // The speaker's own name, a player, bot or trainer, or nothing: unknown, so the line is skipped.
+        Assert.That(PersonalityReactions.MonsterName("Eirik", "Eirik", _ => true), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("Hildunarborg", "Eirik", monsters), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("", "Eirik", monsters), Is.Null);
+        Assert.That(PersonalityReactions.MonsterName("a grass snake", "Eirik", null), Is.Null);
+        var slots = new LineSlots(null, PersonalityReactions.MonsterName("Eirik", "Eirik", _ => true), 0, null, null);
+        Assert.That(PersonalityReactions.Fill("{0}, you're pulling {monster} one at a time?", slots, "Hild"), Is.Null);
+    }
+
+    [Test]
     public void EveryTypeVoice_HasLines()
     {
         Assert.That(PersonalityTypeVoices.All.Keys, Is.EquivalentTo(PersonalityLines.All.Keys));
@@ -129,5 +143,41 @@ public class UT_PersonalityReactions
         Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Grouping, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Banter));
         Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Grouping, sameGroup: false), Is.EqualTo(eAutonomousChatIntent.Grouping));
         Assert.That(AutonomousBotChatCoordinator.NotWhenGrouped(eAutonomousChatIntent.Dungeon, sameGroup: true), Is.EqualTo(eAutonomousChatIntent.Dungeon));
+    }
+
+    [Test]
+    public void UnplacedBotLines_GetBanter_NotTheLostMeFallback()
+    {
+        Assert.That(AutonomousBotChatCoordinator.BotToBot(eAutonomousChatIntent.Unknown), Is.EqualTo(eAutonomousChatIntent.Banter));
+        Assert.That(AutonomousBotChatCoordinator.BotToBot(eAutonomousChatIntent.Dungeon), Is.EqualTo(eAutonomousChatIntent.Dungeon));
+    }
+
+    [Test]
+    public void PickFilled_WithABotKey_SkipsWhatThatBotSaidLately()
+    {
+        // The shared picker: a key of its own keeps other tests' lines out.
+        string key = "test-" + Guid.NewGuid();
+        string[] pool = ["A {zone}.", "B {zone}.", "C {zone}.", "D {monster}."];
+        var random = new Random(3);
+
+        string[] picks = Enumerable.Range(0, 4).Select(_ => PersonalityReactions.PickFilled(pool, Full, null, random, key)).ToArray();
+        Assert.That(picks.Distinct().Count(), Is.EqualTo(4), "four picks from four lines repeat nothing");
+    }
+
+    [Test]
+    public void PickFilled_WithABotKey_StaysTalking_WhenMostLinesNeedAnUnknownSlot()
+    {
+        // Lines it can't fill now were never said, so they stayed "fresh" and crowded out the
+        // two it could say: after those two, every pick came back empty.
+        string key = "test-" + Guid.NewGuid();
+        string[] pool = ["A {zone}.", "B {zone}.", "C {monster}.", "D {monster}.", "E {monster}.", "F {monster}.",
+            "G {monster}.", "H {monster}.", "I {monster}.", "J {monster}."];
+        var noMonster = Full with { Monster = null };
+        var random = new Random(5);
+
+        string[] picks = Enumerable.Range(0, 20).Select(_ => PersonalityReactions.PickFilled(pool, noMonster, null, random, key)).ToArray();
+
+        Assert.That(picks, Has.None.Null);
+        Assert.That(picks.Distinct(), Is.SubsetOf(new[] { "A Myrkwood Forest.", "B Myrkwood Forest." }));
     }
 }

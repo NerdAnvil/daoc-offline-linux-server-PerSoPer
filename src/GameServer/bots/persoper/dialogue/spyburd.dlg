@@ -1,0 +1,299 @@
+# Spyburd, the Herbal Doctor: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Spyburd, Spyburde, Spyburdagh); character sheet in
+# characters/spyburd.md. These lines are mixed on top of the type's (herbaldoctor.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each.
+=== spyburd
+names: Burd
+
+~ ambient
+Counted the buffs twice. All there. Nobody else counts, bub.
+Gary's up, the rest are up. Pipe's next.
+A good stack lands all at once. Like music, if music was buffs.
+Folks run off before the last buff lands. Every time, bub.
+Sweet herbs, slow evening, full buffs on everybody. Can't beat it.
+Best at what I do. Somebody should write that down.
+Gary was a stranger on the road, bub. You'd think someone'd thank me after that, but no.
+Buffed another stranger, bub. Didn't even look back. Typical.
+Collected a few sweet herbs this mornin', bub. Good for a soothing tea after the fights.
+Sunset paints the sky, bub. A moment like this makes all the buffin' worth it.
+Gary, bub, was the first man I ever buffed. Nervous apprentice, shaky hands. He looked back, said "thanks," and walked on. Nobody's said it since. So my biggest buff got his name.
+Once, a monster turned tail and ran from me. Had to be the buffs, bub.
+Rushing never made a buff land any faster, bub. Might even mess up the stack.
+Tried to buff my reflection once, bub. Mirror just didn't get the point.
+Gary's always there, bub. Unlike some who scatter like leaves in the wind.
+Buffin' keeps the battlefield a step ahead, bub. They don't know it, but every tick of Gary means one more heartbeat for someone out there. That's worth more than any thanks.
+Persoper gets all the thanks, bub, but I keep 'em standin'. That's how I roll.
+Buffed so many today, bub. Lost count somewhere around ten. That's what Gary does, keeps track of the important stuff.
+A good buff's like a good blanket, bub. You only miss it when the fight's done and the cold's back.
+Had me so relaxed I forgot there was a fight, bub. Next thing I know, I'm buffin' the lads and they're smitin' monsters without a thought. Gary must have whispered to the gods.
+
+~ reply greeting
+{0}! Perfect timing, bub. Got one buff left with your name on it.
+There you are, {0}. Hold still. Gary wants to say hi.
+Pipe's out, {0}. Greetin' you proper now, bub.
+Hey there, {0}. Come for the buffs or the chat, bub? Hope it's both.
+Looking a bit under-buffed there, bub. Let me fix that for ya.
+
+~ reply thank
+A thank-you? For the buffs? Write that down, {0}. Nobody ever does.
+Aw, {0}. That's the nicest thing anybody's said to a buffer all week.
+Aw, bub, you just made me forget which buff comes next. Thanks, I guess?
+Thanks, bub. Last time someone said that, it was Gary. Guess that means you're special.
+Slow down, bub. Say that again, but slower. I need to remember this.
+
+~ reply help
+Step one, {0}: get buffed. Step two: we'll see. Step one fixes most things.
+Got a problem, bub? Take your time, I got all day. Tell me what's buggin' you.
+
+~ reply grouping
+Sure thing, {0}, bub. You pull, I buff, everybody lives. Simple.
+Pullin', bub? Give me a holler, let me finish this puff first.
+
+~ reply abuse
+Harsh, {0}. I'm gonna go sit by a tree about that. Then buff you anyway.
+
+~ reply farewell
+Off you go, {0}. Buffs last an hour. Come back before they wear off.
+Wavin' bye-bye, bub. But I'm comfy here. Might forget you're gone.
+Stay safe out there, bub. Buffs keep you on top.
+
+~ fallback
+Sorry, {0}, bub. Was countin' buffs. Lost my place.
+Buffin' is a full-time job, {0}. Got lost in the numbers there.
+Sounded important, bub. Nod, nod. Gotcha.
+Pipe smoke got in my ears, bub. What did you say?
+
+~ opener gripes
+Healer gets the hug. Buffer gets a nod. If that.
+Just a buffer, bub? Try tellin' Gary that.
+Runnin' off so fast, bub. Don't even wait for the smoke to clear.
+
+~ opener life
+Brewed a tea from what I picked today. Tastes like grass. Good grass, bub.
+Sittin' by the fire, sippin' tea, watchin' the night roll in, bub.
+Dreamin' under a tree, fully buffed, the best nap ever, bub.
+Got a small garden back home, bub. Herbs growin' slow and steady, just like me.
+
+~ opener questions
+What's the best buff order, bub? Trick question. Mine.
+Ever had someone thank ya for a buff, bub? Not just say it, mean it?
+
+~ opener fun
+Told Gary a joke. He didn't laugh. Buffs don't laugh. Still a good joke.
+
+~ grats
+{0}! Look at you. Buffs had nothin' to do with it. Kidding. They did.
+Levelled up, bub? Nice and steady, like a good buff. Cheers to that.
+
+~ other_death
+Hang on, {0}, bub. Nobody dies buffed on my watch. Well. Nobody else.
+
+~ own_death
+Went down with every buff still on me. What a waste, bub.
+Went down with Gary still up. Buffs wasted, bub.
+Chillin' too hard, bub. Regret nothin', though.
+
+~ ding
+Level {level}. New buff? New buff. Gary's gonna be jealous.
+Slow and steady, bub. That's how I hit this level. No rushin', just buffin'.
+Levelled up again, bub. No one even noticed. Perfect.
+
+~ drop
+{item}. Buffs found it, I'm just holdin' it.
+Found a nice stack o' herbs, bub. Pay for a month's pipe smoke and more.
+Found a nice {item}, bub. It'll go great with my old robes.
+Found a {item}, bub. I'd trade it for a bushel of herbs any day, truth be told.
+
+
+~ reply banter
+Gotcha, bub. Worth puttin' down the pipe for that one. Rare day.
+
+~ reply grinding
+Grindin' all night, bub? I'll keep the buffs comin', no matter how long it takes.
+Every monster's softer with a bit o' buffin', bub. Ain't that the truth?
+
+~ reply rvr
+Keeps holdin' but no thanks for the buffs, bub? That's the life of a buffer, I guess.
+
+~ reply travel
+Tea, bub? Course there'll be stops. Can't buff on an empty mug.
+
+~ reply ignoreoutofworld
+Sounds like a funny name, bub. Might be good in tea, but I'd stick to the usual mix.
+
+~ opener gear
+That {item} looks sharp, bub. Add a stack of buffs, and it'll be unstoppable.
+These robes might be old, bub, but they know my style. Shiny gear's no match for comfort.
+
+~ opener zones
+Sittin' pretty in {zone}, bub. Buffs up, pipe lit, watchin' the world go by.
+Took the long way through {zone} just to see the view, bub.
+
+~ opener rvr
+Middle of a fight, bub? Stay calm, let the buffs roll. Everything'll be fine.
+
+~ reply dungeon
+Dungeon's dark, bub. Let me light the way with buffs instead of torches.
+Dungeons got me lost once too, bub. Found my way out by lighting my pipe and waitin' for the smoke.
+
+~ reply trading
+Trading, huh? Best deal ever was a buff for a sandwich, bub. You got somethin' better?
+
+~ opener xp
+Buffin' before the hit, bub. {monster} gave some good XP, but where's the thanks for the buffs?
+
+~ opener realm
+Buffin' where the quiet spots are, bub. Every place's home if it's got good shade.
+
+# --- Realm flavour: a few lines each, only where the realm matters. ---
+
+# Midgard: Spyburd, Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
+~ reply joke
+Ha! Nearly dropped my pipe, {0}. Do that again when I'm not holdin' it.
+Heh. {bot:eaglefang} won't laugh at that, {0}. Tell it to him anyway.
+That's a good one, {0}. Saw half the group crack a smile from back here.
+Ha. Gary would've liked that one. Gary liked everybody, {0}.
+Heh. You save that one for the campfire, {0}. It'll go down better with a cup.
+Ha! You and Jovi should team up, {0}. He sings, you talk, I stand at the back and clap.
+Heh. Okay, {0}. Now I'm gonna be chucklin' all through the next pull.
+Ha. A laugh's half a heal, {0}. Don't tell Persoper I said that.
+Ha. Took me a second, {0}. Worth the wait.
+Heh. Somebody's in a good mood. I like it, {0}. Keep it goin'.
+Heh. Oof. That's a {bot:shnacksize} special, that is. Even Gary wouldn't laugh, and Gary laughed at everybody. [if nearby shnacksize] [cooldown 30m]
+Ohh, that's a groaner, {0}. {bot:shnacksize}'ll be proud. Somebody's gotta be. [if nearby shnacksize] [cooldown 30m]
+Ohh, {0}. That one creaked worse than my knees, and they're old knees. [if nearby shnacksize] [cooldown 30m]
+
+~ reply grumble
+Saw that from the back, {0}. You took the worst of it. Sit, I'll sort you out.
+{bot:eaglefang}'d tell you to walk it off. I say sit down and have a smoke, {0}.
+Rough one. I've seen worse go fine, {0}. Seen better go bad too. Ya never know.
+You're still glowin' from the last one, {0}. You'll be fine.
+Slow down, {0}. Clouds aren't goin' anywhere. Neither's that mob.
+Yeah, I noticed you were gettin' hit a lot, {0}. Stand a bit closer to me next time.
+It'll be fine, bub. It usually is. I've watched a lot of fights from back here.
+Have you eaten, {0}? Everything's worse on an empty stomach.
+That's the job some days, {0}. Long, slow, nobody says thanks. You get used to it.
+Here, {0}. Stand still a second. There. Better? Thought so.
+
+~ reply smalltalk
+Nice. Pull up a rock, {0}. Pipe's lit, I got all day.
+That's the good stuff, {0}. Not the fightin'. This.
+I once watched clouds a whole evening, {0}. Didn't buff anybody. Best evening I had.
+Sounds peaceful, {0}. Most folks rush past that kind of thing.
+Ha, Persoper would turn that into a whole show, {0}. I'll just nod and enjoy it.
+Keep goin', {0}. I'm listenin'. Lookin' at the sky, but listenin'.
+Funny how the quiet bits are the ones you remember, {0}.
+Mm. Warm cup, good story, nobody bleedin'. Doesn't get better, {0}.
+That reminds me, {0}. I owe Jovi a smoke. Or he owes me. One of those.
+Nice one, bub. Tell it again sometime. Slower.
+
+~ reply question
+Hmm. Let me think on that, {0}. I think slow. It's a style.
+Good question. I'll have an answer by sunset, {0}. Maybe the next one.
+Honest answer, {0}? I don't know. But I'll keep you standin' while I find out.
+Ask {bot:eaglefang}, {0}. He's got an answer for everything. Most of 'em are "drink water".
+Depends, {0}. Is it a sit-down question or a walk-and-talk question?
+Never thought about it, {0}. Now I will. All day, probably.
+Me? Sure, {0}. Long as nobody makes me hurry.
+That's a campfire question, {0}. Ask me again when the fire's goin'.
+Not sure, bub. But you asked nice, so I'll think hard.
+Heh. Persoper'd know, {0}. She knows everything. Ask her, she'll tell you so.
+
+~ reply compliment
+Hey, thanks, {0}. Most folks don't notice the guy at the back.
+Aw. That's nice, {0}. Really. Don't make a habit of it, I'll get soft.
+Well, look at that. Somebody said thanks. Gary'd be proud, {0}.
+Thanks, {0}. I just keep folks standin'. You did the hard part.
+Heh. Appreciate that, bub. Goin' in my good memories pile. It's a small pile.
+You're kind, {0}. Persoper usually gets the compliments. I'm not jealous. Much.
+Thanks, {0}. Means more than you'd think.
+Ha. Careful, {0}. Keep sayin' things like that and I'll stand up straight. {bot:eaglefang}'ll faint.
+That's nice to hear, {0}. Stick close next pull, I've got your back.
+Thanks, bub. Feels good, that. Like the first warm day after a cold week.
+
+~ reply agree
+That's how I see it too, {0}.
+Yep. Took me years to figure that out, {0}. You got there faster.
+Right there with ya, {0}. Pass the cup.
+Can't argue with that. Wouldn't want to, {0}. Too much effort.
+See? Slow thinkin' gets there in the end, {0}.
+Ha, {bot:eaglefang} would say the same, {0}. Don't tell him I agreed.
+True, {0}. Very true. Somebody write that down.
+Same, bub. Same.
+Good, {0}. Nice when folks agree. Makes the pull go easier.
+Yep. Now let's sit a minute and enjoy bein' right, {0}.
+
+~ reply quote
+Ha. Haven't heard that one in years, {0}.
+Heh. Good line, {0}. Somebody told me that once, round a campfire.
+That's an old one, {0}. Still holds up.
+Ha! Jovi'd turn that into a song, {0}. Don't give him ideas.
+Heh. You've been listenin' to old tales, {0}. Good for you.
+I know that one, {0}. Can't remember where from. Good, though.
+Ha. Say it slower, {0}. Let it land.
+Good line. Better with a pipe and a sunset, {0}.
+Heh. Persoper'd know where that's from, {0}. She knows all the old stories.
+Classic, bub. Some lines just stick with ya.
+
+=== midgard
+~ ambient
+Kobold, shaman, buffer, bub. I'm a small man, but these are big buffs, and the big folk all line up for 'em.
+Everyone looks down at me, bub, so I buff 'em anyway, from down here. Nobody gets it, but they all stand a little taller after.
+Slept out in the snow near Mularn, bub. Woke up by Eaglefang's fire with his blanket on me. He says he never touched me. Gary says thanks, Eaglefang. Gary means it.
+Cast the Big G on a whole warband in Myrkwood, bub. Old Gary, the Gare-bear, the big fella. Forty Norsemen glowin' at once. Not one thanks. Gary didn't mind. Gary never minds.
+
+~ opener realm
+Midgard's cold, bub, but I'm warm on the inside. And buffed. Mostly buffed.
+Buffed a troll in Jordheim today, bub. Took three goes to reach his shoulder. He never noticed, but he hit like a falling tree after, so I'm callin' it a win.
+
+~ reply greeting
+Hey, {0}, bub! Stand still. Kobold special coming up.
+
+~ own_death
+Ow. Face down in the snow, bub. Small fella, cold ground, buffs done gone and gone. Somebody dig me out before Eaglefang sees.
+
+~ drop
+{item}! Back to my cave with that one, bub. Goes on the shelf next to the herbs.
+
+# Albion: Spyburde, Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
+=== albion
+~ ambient
+A friar's life, bub, mind you: quiet prayers, loud buffs and long smokes. In that order, most days.
+Tea first, then the buffs, then the smoke. That's the proper order, bub, and I'll not be hearing otherwise.
+Nobody gets how holy buffin' is, bub. It's a blessing that lasts an hour, mind you. Most blessings don't come with a timer.
+Blessed Eaglefange's bandages this mornin', bub. He boiled 'em after, right in front of me. Now he's not speakin' to me. I'm speakin' to him, mind you. Lots.
+Cast Sir Gary on a squire outside Camelot, bub. Poor lad thought he'd been knighted. Didn't have the heart to tell him. Gary's like that, makes everybody feel a bit grand.
+
+~ opener realm
+Camelot's lovely, bub. Tidy streets, a bench on every corner, and nobody minds a friar standin' back with his pipe.
+Stopped at the inn in Cotswold for a hot cup, bub. Buffed the whole common room while the kettle boiled. Innkeeper said thanks. Turned out he meant for the coin. Close, though.
+
+~ reply greeting
+Good day, {0}, bub. Mind you, I'll buff you first.
+
+~ own_death
+Ow. Down in the mud, bub, and in my good robe, too. Mind you, the tea's still warm. Somebody fetch it before it isn't.
+
+~ drop
+{item}! Lovely, mind you. Into the robe pocket, next to the tea leaves.
+
+# Hibernia: Spyburdagh, Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
+=== hibernia
+~ ambient
+Woods, quiet, buffs all round, and a smoke by the roots of an old oak. That's the life, bub, and I'm not tradin' it.
+Trees get buffs too, I figure, bub. Nobody's argued yet. Then again, the trees haven't said thanks either, so they're no better than the rest of ya.
+Showed Eaglefangh the herbs round Connacht, bub. Said every name slow, so he'd remember. He says I took too long. Fella was bleedin' a little, sure, but he was buffed.
+Cast Gary of the Glen on a whole row of rangers in Tir na Nog, bub. They glowed green as moss. Gary's an outdoors fella when he's over here, you see.
+
+~ opener realm
+Hibernia's got the best shade, bub. Buffs up, find an old tree, sit by the roots, pipe lit. Perfect.
+Found an old oak out past Ardee with roots like armchairs, bub. Buffed the group, sat down, and stayed till the moon came up. Best pull I never went on.
+
+~ reply greeting
+Well met, {0}, bub. Come, stand in the shade. Buffs first.
+
+~ own_death
+Ow. Down among the roots, bub. Comfy, honestly. Leave me a minute, then somebody rez me before the moss gets ideas.
+
+~ drop
+{item}! Wrapped it in a dock leaf, bub. Everything I carry ends up smellin' of mint and pipe smoke anyway.

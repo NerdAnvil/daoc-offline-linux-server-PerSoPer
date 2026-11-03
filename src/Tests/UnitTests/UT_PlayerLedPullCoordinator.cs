@@ -114,6 +114,8 @@ namespace DOL.UnitTests
             public int Cancellations;
             public GameLiving LastTarget;
             public override bool OrderPull(GameLiving target) { Pulls++; LastTarget = target; return !RealPull || base.OrderPull(target); }
+            public int NamedPulls;
+            public override bool OrderNamedPull(GameLiving target) { NamedPulls++; LastTarget = target; return true; }
             public override void CancelOrderedPull(GameLiving target) { Cancellations++; }
         }
         private sealed class PetBrain : ControlledMobBrain
@@ -464,6 +466,53 @@ namespace DOL.UnitTests
             Assert.That(B(damage).Pulls, Is.EqualTo(1));
             Assert.That(B(healer).Pulls, Is.Zero);
             Assert.That(pet.Attacks, Is.EqualTo(1));
+        }
+
+        // "<bot>, pull this" (PersonalityOrders): the named bot pulls whatever its role, everyone else attacks at once.
+        [Test] public void NamedHealerPulls_TheRestAttackAtOnce()
+        {
+            var (player, tank, damage, healer, enemy) = Party();
+            PetBrain pet = AttachPet(player);
+            Assert.That(PlayerLedPullCoordinator.NamedPull(player, healer, enemy), Is.True);
+            Assert.That(B(healer).NamedPulls, Is.EqualTo(1));
+            Assert.That(B(healer).Pulls, Is.Zero, "the healer's pull is its own, not the attackers'");
+            Assert.That(B(tank).Pulls, Is.EqualTo(1));
+            Assert.That(B(damage).Pulls, Is.EqualTo(1), "no wait for tank contact");
+            Assert.That(PlayerLedPullCoordinator.IsWaiting(damage), Is.False);
+            Assert.That(pet.Attacks, Is.EqualTo(1));
+        }
+
+        [Test] public void NamedTankPulls_AttackersDoNotWaitForContact()
+        {
+            var (player, tank, damage, healer, enemy) = Party();
+            Assert.That(PlayerLedPullCoordinator.NamedPull(player, tank, enemy), Is.True);
+            Assert.That(B(tank).NamedPulls, Is.EqualTo(1));
+            Assert.That(B(damage).Pulls, Is.EqualTo(1));
+            Assert.That(B(healer).Pulls, Is.Zero, "healers keep their job");
+            Assert.That(B(healer).NamedPulls, Is.Zero);
+        }
+
+        [Test] public void NamedPull_CancelsAWaitingSlashPull()
+        {
+            var (player, tank, damage, _, enemy) = Party();
+            PlayerLedPullCoordinator.Begin(player, enemy);
+            Assert.That(PlayerLedPullCoordinator.IsWaiting(damage), Is.True);
+            PlayerLedPullCoordinator.NamedPull(player, damage, enemy);
+            Assert.That(PlayerLedPullCoordinator.IsWaiting(damage), Is.False);
+            Assert.That(B(tank).Cancellations, Is.EqualTo(1));
+            Assert.That(B(damage).NamedPulls, Is.EqualTo(1));
+        }
+
+        [Test] public void NamedPull_RefusedForABotOutsideTheGroup_OrNoTarget()
+        {
+            var (player, _, damage, healer, enemy) = Party();
+            Remove(healer);
+            Assert.That(PlayerLedPullCoordinator.NamedPull(player, healer, enemy), Is.False);
+            Assert.That(PlayerLedPullCoordinator.NamedPull(player, damage, null), Is.False);
+            Assert.That(B(healer).NamedPulls + B(damage).NamedPulls + B(damage).Pulls, Is.Zero);
+            Assert.That(PlayerLedPullCoordinator.PullTarget(player), Is.Null, "nothing targeted");
+            player.TargetObject = enemy;
+            Assert.That(PlayerLedPullCoordinator.PullTarget(player), Is.SameAs(enemy));
         }
 
         [Test] public void NoTank_DamageEngagesImmediately()

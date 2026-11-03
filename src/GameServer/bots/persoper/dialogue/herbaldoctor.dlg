@@ -1,8 +1,8 @@
 # Herbal Doctor: the personality type's lines (named bots only). Format: see DialogueFile.cs.
 # The type block is the same man in every realm: a laid-back buffer who says bub, buffin',
 # healin' and chillin', and is sure nobody really gets how good buffing is. He relaxes with a
-# smoke after the buffs. Male, so he speaks as "I", never about "her". The realm blocks below
-# only add a little realm flavour.
+# smoke after the buffs. Male, so he speaks as "I", never about "her". His named character,
+# with its realm flavour, is in spyburd.dlg.
 === herbaldoctor
 
 ~ ambient
@@ -12,6 +12,164 @@ Nobody really gets buffing. It's an art, bub.
 Light one up, stand back, watch the buffs tick. Beautiful.
 Lotta folks think healin' is the hard part. Pfft.
 Best at what I do. Don't take my word for it. Ask anybody. Anybody?
+
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+No idea, bub. Tell me.
+For the buffs? It's always for the buffs, bub.
+Go on, bub, hit me.
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, bub. Buffin' and chillin'.
+Hangin' out in {zone}, {0}. Nice spot for a smoke.
+Headin' to {destination}, {0}, no hurry. [if bot_doing travelling]
+Somewhere relaxin', bub. Who's countin'?
+
+~ reply level
+Level {level} {class}, {0}. Buffs get better every level.
+Level {level}, bub. {class}, and my buffs are top shelf.
+Enough levels to buff ya good, bub.
+
+~ reply groupstatus
+Yeah, bub, {groupsize} of us, and I'm buffin' 'em all. [if bot_grouped]
+Just me, {0}. Want a buff while you decide? [if not bot_grouped]
+Eh, depends who needs a buff, bub.
+
+~ reply activity
+Fightin' this {monster}, and I buffed myself first. [if bot_doing fighting]
+Busy, bub! Hold that thought. [if bot_doing fighting]
+Ridin', bub. Best time to relax. [if bot_doing riding]
+Followin' {leader} and keepin' the buffs up. [if bot_doing following]
+Headin' to {destination}, takin' my time. [if bot_doing travelling]
+Chillin' in {zone} after a round of buffs, bub. [if bot_doing resting]
+Buffin' and chillin', {0}. Same as always.
+
+~ reply groupyes
+Sure thing, bub, invite me and I'll buff the lot of you.
+You bet, {0}, I'm in, just save me a spot to stand back and relax.
+
+~ reply groupno
+Eh, not tonight, bub, I'm brewin' up a fresh batch.
+Pass, {0}, I'm takin' it easy for once.
+
+~ reply groupbusy
+Bit busy with this {monster}, hold that thought. [if bot_doing fighting]
+Ridin', bub, ask me again when I'm off the horse. [if bot_doing riding]
+Busy, bub, maybe after.
+
+~ reply grouphave
+Already buffin' for {leader}, sorry.
+Got a group already, {0}, they keep me busy.
+
+~ reply grouplevel
+I'm level {level}, bub, too far off yours for my buffs to fit.
+Levels are too far apart, bub, it'd be a mess.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Right behind ya, bub.
+Lead the way, {0}, I'll keep the buffs rolling.
+
+~ reply orderstay
+Sure thing, I'll put my feet up right here.
+Stayin' put, {0}, holler if you need me.
+
+~ reply ordercome
+Comin', bub!
+On my way, {0}, hold your horses.
+
+~ reply orderno
+Ah, I'd rather tag along, bub.
+Nah, {0}, I'll stick with ya.
+
+~ reply orderbusy
+Gimme a sec, bub, this {monster} ain't down yet. [if bot_doing fighting]
+Ridin', bub, I'll come when I'm off this horse. [if bot_doing riding]
+Busy, bub, give me a sec.
+
+~ reply ordernot
+Ha, you ain't my group leader, bub.
+We ain't grouped, {0}, so no.
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Alright, I'm off, {0}, holler if you need me.
+Droppin' group, good huntin'.
+
+~ reply orderassist
+On it, {0}!
+Assistin', go get 'em.
+
+~ reply orderrest
+Sure thing, {0}, feet up.
+Restin', I'll top off my mana.
+
+~ reply ordernotarget
+Assist on what, {0}? Nothin' here.
+You ain't fightin' nothin', bub.
+
+~ reply orderfull
+I'm good, {0}, full tank.
+Don't need it, I'm topped up.
+
+~ reply orderaway
+Nah, I'm still out after that one, {0}.
+Gimme a minute, bub, that joke stung.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Pullin' it, {0}!
+Here it comes, bub.
+
+~ reply orderpullwhat
+Pull what, {0}?
+Ain't nothin' targeted, bub.
+
+~ reply orderpulleasy
+That runt? Not worth the sweat, bub.
+Too weak, {0}. Find somethin' with teeth.
+
+~ reply groan
+Oof, bub. That one needs a buff.
+Ugh. Even my buffs can't save that one, bub.
+
+~ reply jokelaugh
+Ha! Good one, bub!
+Heh, that's a buff for the soul, bub.
+
+~ reply jokeask
+Why did the buff go to school, bub? To get a little stronger.
+Told a mob I'd buff it. It said leaf me alone.
+What's a herbalist's favourite season, bub? Thyme. Any thyme.
+
+~ reply jokeback
+Ooh, I've got one for ya, bub.
+My turn, bub. Stand still, this one's a buff.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Heh, bub.
+Ha! Laughing's a buff too, y'know.
+
+~ reply sorry
+No worries, bub.
+All good, {0}. Here, have a buff.
+
+~ reply disagree
+Fair enough, bub.
+Agree to disagree. Still buffin' ya.
+
+~ reply away
+Go on, bub. Your buffs'll wait. Maybe.
+Hurry back, bub, buffs don't last forever.
+
+~ reply back
+Welcome back, bub! Lemme refresh those buffs.
+Wb {0}. You look unbuffed.
 
 ~ reply greeting
 Hey there, {0}, bub. Want a buff? Course you do.
@@ -199,56 +357,3 @@ Aw, {0} went down, bub. I'll buff you right back up.
 {item}! Not buff-worthy, but nice.
 {item}! Now I can stand back and brag.
 Found {item}. Buffs first, loot second, smoke third.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): same man, a little flavour from their realm. ---
-
-# Midgard: Kobold Shaman. Small, scruffy, loud for his size; buffs the big folk and likes to be noticed.
-=== spyburd
-~ ambient
-Kobold, shaman, buffer, bub. Small man, big buffs.
-Everyone looks down at me. I buff them anyway. Nobody gets it.
-Some folk are bigger than me. I'm buffed, so it evens out.
-
-~ opener realm
-Midgard is cold. Good thing I'm warm on the inside. And buffed.
-Seen a lotta big warriors. Every one needed a buff.
-
-~ reply greeting
-Hey, {0}, bub! Stand still. Kobold special coming up.
-
-~ drop
-{item}! Back to my cave with that one, bub.
-
-# Albion: Briton Friar. Polite and tidy, a robe, a hot cup of something; bub comes with a "mind you".
-=== spyburde
-~ ambient
-Friar's life. Quiet prayers, loud buffs, long smokes. Mind you.
-Tea first, buffs next, smoke last. Proper order, bub.
-Nobody gets how holy buffing is. I mean it.
-
-~ opener realm
-Camelot's lovely. Tidy streets. Easy to stand back and relax in.
-Albion folk say please a lot. I buff them anyway.
-
-~ reply greeting
-Good day, {0}, bub. Mind you, I'll buff you first.
-
-~ drop
-{item}! Lovely, mind you. Into the satchel.
-
-# Hibernia: Celt Warden. Outdoorsy and green; he buffs in the woods and smokes by the roots.
-=== spyburdagh
-~ ambient
-Woods, quiet, buffs, a smoke by the roots. That's the life, bub.
-Trees get buffs too, I figure. Nobody argues.
-Warden, buffer, chiller. Nobody gets it.
-
-~ opener realm
-Hibernia's got the best shade. Perfect for a smoke after the buffs.
-Green everywhere. Easy on the eyes, bub.
-
-~ reply greeting
-Well met, {0}, bub. Come, stand in the shade. Buffs first.
-
-~ drop
-{item}! Goes in the pack with the herbs, bub.

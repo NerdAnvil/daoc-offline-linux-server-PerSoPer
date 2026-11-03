@@ -155,7 +155,8 @@ public static class KobaldjoviIdentity
     {
         random ??= Random.Shared;
         isSong = random.NextDouble() < SingChance;
-        string[] lines = isSong ? Songs : Asides;
-        return lines[random.Next(lines.Length)];
+        string line = DialoguePicker.Shared.Fresh(isSong ? Songs : Asides, "kobaldjovi", random);
+        DialoguePicker.Shared.Said("kobaldjovi", line);
+        return line;
     }
 }

@@ -8,6 +8,164 @@ Too many people in this zone.
 Solo.
 Don't follow me.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Go on.
+Hm. Don't know.
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}.
+In {zone}, {0}. Quiet here.
+Going to {destination}. Alone. [if bot_doing travelling]
+Away from people.
+
+~ reply level
+Level {level}, {class}.
+Level {level} {class}, {0}. Why?
+Enough.
+
+~ reply groupstatus
+In a group, for now. [if bot_grouped]
+Alone, {0}. As usual. [if not bot_grouped]
+Does it matter?
+
+~ reply activity
+Fighting this {monster}. [if bot_doing fighting]
+Busy. [if bot_doing fighting]
+Riding. [if bot_doing riding]
+Following {leader}, for now. [if bot_doing following]
+Walking to {destination}. [if bot_doing travelling]
+Resting in {zone}. Quietly. [if bot_doing resting]
+Nothing, {0}.
+
+~ reply groupyes
+Fine, {0}. Just this once.
+Invite me, {0}, before I change my mind.
+
+~ reply groupno
+No, {0}.
+I work alone.
+Not interested, {0}.
+
+~ reply groupbusy
+Fighting this {monster}. Later. [if bot_doing fighting]
+Riding, {0}. Ask later. [if bot_doing riding]
+Busy right now, {0}.
+
+~ reply grouphave
+Already with {leader}, for now.
+Already grouped. Don't get used to it.
+
+~ reply grouplevel
+I'm {level}. Wouldn't work.
+Wrong level for that, {0}.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Fine, lead the way, {0}.
+Following, {0}, don't make it a habit.
+
+~ reply orderstay
+I'll wait here, {0}, I'm used to it.
+Fine, {0}, I'll hold here on my own.
+
+~ reply ordercome
+Coming, {0}.
+On my way, {0}, no need to shout.
+
+~ reply orderno
+No, {0}, I'll keep my own pace.
+I'd rather not, {0}.
+
+~ reply orderbusy
+Fighting this {monster}, {0}, later. [if bot_doing fighting]
+Riding, {0}, wait. [if bot_doing riding]
+Busy, {0}.
+
+~ reply ordernot
+You're not my leader, {0}.
+I don't take orders from strangers, {0}.
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine by me, {0}, I'm off.
+Leaving, {0}, I prefer it that way anyway.
+
+~ reply orderassist
+Fine, {0}, on your target.
+Assisting, {0}.
+
+~ reply orderrest
+I'll rest, {0}.
+Fine, {0}, a quiet minute suits me.
+
+~ reply ordernotarget
+There's nothing to assist on, {0}.
+On what, {0}?
+
+~ reply orderfull
+I'm fine, {0}.
+No need, {0}, I'm full.
+
+~ reply orderaway
+Leave me be, {0}, I'm out.
+Not now, {0}, I walked off for a reason.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Fine, {0}, pulling.
+Pulling.
+
+~ reply orderpullwhat
+Pull what, {0}?
+On what, {0}?
+
+~ reply orderpulleasy
+Not worth it, {0}.
+Too weak.
+
+~ reply groan
+Hm.
+...no.
+
+~ reply jokelaugh
+Heh.
+Hm. Funny.
+
+~ reply jokeask
+Why do I travel alone? Fewer jokes.
+A skeleton walks into a tavern. Orders a drink and a mop.
+What's quiet and always alone? Me. That's the joke.
+
+~ reply jokeback
+...I have one.
+Hm. One.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Heh.
+Hm.
+
+~ reply sorry
+Fine.
+Hm.
+
+~ reply disagree
+Hm.
+Fine.
+
+~ reply away
+k.
+Hm.
+
+~ reply back
+wb.
+Hm.
+
 ~ reply greeting
 Hm.
 {0}.
@@ -312,119 +470,3 @@ Hm. {item}.
 {item}. Keeping it.
 Good drop.
 {item}. Nobody needs to know.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): a pet for company, doesn't want yours; philosophical when stirred. ---
-
-=== femurtamer
-~ ambient
-My skeletons don't talk. That's why I like them.
-Got my bones. Don't need yours.
-Every skeleton was someone once. Now it's company.
-Quiet. Just me and the femurs.
-No group. I have a commander. He listens.
-
-~ opener life
-Sat in {zone} with my skeletons. Nobody spoke. Perfect day.
-Is a bone lonely without its body? Thought about that in {zone}.
-Sunset over {zone}. My skeleton watched it too. I think.
-
-~ opener classes
-Bonedancer. I bring my own friends. They're dead. Easier that way.
-Other classes need groups. I need bones.
-A pet that never asks where we're going. Best kind.
-
-~ reply greeting
-{0}. My skeletons say hi. They don't.
-{0}. The bones rattled. That means hello.
-
-~ reply banter
-We're all bones under the skin, {0}. Think about it.
-Laugh now, {0}. One day you'll be someone's pet.
-
-~ reply grouping
-I have a group, {0}. It's dead.
-No. My bones and I are enough.
-
-~ ding
-Level {level}. More bones.
-Ding. The skeletons didn't clap. Fine.
-
-~ own_death
-Even bones break. Mine too.
-Dead. Now I know how my pets feel.
-
-=== deaditetamer
-~ ambient
-My pet does the fighting. I do the thinking. Nobody does the talking.
-I have a pet. I don't need yours.
-Death is just a quieter way to group.
-My shade and I. That's the whole guild.
-Albion's loud. My pet isn't.
-
-~ opener life
-Stood in {zone} as a shade for an hour. Very peaceful. No one saw me.
-Do pets dream? Mine stares at walls in {zone}. Probably yes.
-Fog in {zone} today. Fitting.
-
-~ opener classes
-Necromancer. My pet takes the hits. I take the silence.
-Groups ask questions. Pets just obey.
-Some people buy a horse. I raised a servant. Cheaper.
-
-~ reply greeting
-{0}. My pet noticed you. I didn't.
-...{0}. Hello, I suppose.
-
-~ reply banter
-Everything ends, {0}. Even this joke.
-Is a laugh still a laugh if no one cares, {0}?
-
-~ reply grouping
-I have a group, {0}. It's one big angry pet.
-No. Thank you. No.
-
-~ ding
-Level {level}. My pet got bigger. I got quieter.
-Ding. Nobody needs to know.
-
-~ own_death
-Died. My pet went with me. Loyal.
-Dead again. Death and I are on first-name terms.
-
-=== shroomtamer
-~ ambient
-My mushrooms don't talk. Best company there is.
-Got my shrooms. Don't need your pet.
-A mushroom grows alone in the dark and it's fine. So am I.
-Quiet. Just me and the turrets.
-No group needed. I plant my own.
-
-~ opener life
-Planted shrooms in {zone}. Watched them grow. Didn't talk to anyone. Lovely.
-Does a mushroom know it's a mushroom? Wondered that all day in {zone}.
-Rain in {zone}. The shrooms liked it. So did I.
-
-~ opener classes
-Animist. My friends grow from the ground. They stay where I put them.
-Other classes chase their pets around. Mine sit still.
-Turrets don't ask for buffs. Or chat.
-
-~ reply greeting
-{0}. The mushrooms saw you first.
-{0}. The spores are watching.
-
-~ reply banter
-We all grow from something, {0}. Most of us from dirt.
-Funny, {0}. The shrooms didn't laugh. Neither did I.
-
-~ reply grouping
-I have a group, {0}. It's planted.
-No. My shrooms and I are fine.
-
-~ ding
-Level {level}. Bigger shrooms.
-Ding. The mushrooms grew a little. So did I.
-
-~ own_death
-Stepped on. Like a mushroom.
-Dead. Something will grow here.

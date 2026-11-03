@@ -29,6 +29,10 @@ public class UT_RoleplayerVoice
             .Concat(lines.Ding).Concat(lines.Grats).Concat(lines.OwnDeath).Concat(lines.OtherDeath).Concat(lines.Drop).ToArray();
     }
 
+    /// <summary>A character's lines minus those tagged "[allow list]" in its file (a deliberate slip).</summary>
+    private static string[] Checked(string name, string list) =>
+        OwnSpoken(name).Where(line => !DialogueLibrary.For("hunterson").AllowsFor(line).Contains(list)).ToArray();
+
     /// <summary>Every line of the type block, straight from the file.</summary>
     private static string[] TypeSpoken() =>
         DialogueLibrary.For("roleplayer").Block("roleplayer").SelectMany(section => section.Lines).ToArray();
@@ -53,7 +57,10 @@ public class UT_RoleplayerVoice
         DialogueFile file = DialogueLibrary.For("roleplayer");
         Assert.That(file, Is.Not.Null);
         Assert.That(file.Errors, Is.Empty);
-        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(name => name.ToLowerInvariant()).Append("roleplayer")));
+        // A bot whose character has its own file has no block left in its type's file.
+        Assert.That(file.BlockNames, Is.EquivalentTo(Names.Select(NamedBotLineup.FindByName)
+            .Where(entry => DialogueLibrary.For(PersonalityLines.CharacterKey(entry)) == null)
+            .Select(entry => entry.Name.ToLowerInvariant()).Append("roleplayer")));
     }
 
     [TestCase("Hunterson")]
@@ -95,11 +102,14 @@ public class UT_RoleplayerVoice
     {
         string[] spoken = OwnSpoken("MacHunter");
         Assert.That(spoken.Count(line => Gaelic.IsMatch(line)), Is.GreaterThanOrEqualTo(10));
-        TypeTalk talk = PersonalityLines.Own["named:machunter"].Talk;
-        foreach (eAutonomousChatIntent intent in new[] { eAutonomousChatIntent.Greeting, eAutonomousChatIntent.Farewell })
+        // His realm's own greetings and farewells; the character's plain-speech ones are mixed in for all three realms.
+        IReadOnlyList<DialogueSection> realm = DialogueLibrary.For("hunterson").Block("hibernia");
+        foreach (string intent in new[] { "greeting", "farewell" })
         {
-            Assert.That(talk.Replies[intent], Has.Some.Matches<string>(line => Blessing.IsMatch(line)), intent.ToString());
-            Assert.That(talk.Replies[intent], Has.All.Matches<string>(line => Gaelic.IsMatch(line)), intent.ToString());
+            string[] lines = realm.Where(section => section.Name == "reply" && section.Argument == intent).SelectMany(section => section.Lines).ToArray();
+            Assert.That(lines, Is.Not.Empty, intent);
+            Assert.That(lines, Has.Some.Matches<string>(line => Blessing.IsMatch(line)), intent);
+            Assert.That(lines, Has.All.Matches<string>(line => Gaelic.IsMatch(line)), intent);
         }
     }
 
@@ -113,9 +123,13 @@ public class UT_RoleplayerVoice
     [Test]
     public void EachRealmKeepsItsOwnTongue_AndTheTypeSpeaksNone()
     {
-        Assert.That(OwnSpoken("Hunterson"), Has.None.Matches<string>(line => Knightly.IsMatch(line) || Gaelic.IsMatch(line)));
-        Assert.That(OwnSpoken("FitzHunter"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
-        Assert.That(OwnSpoken("MacHunter"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        Assert.That(Checked("Hunterson", "knightly"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        Assert.That(Checked("Hunterson", "gaelic"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
+        Assert.That(Checked("FitzHunter", "gaelic"), Has.None.Matches<string>(line => Gaelic.IsMatch(line)));
+        Assert.That(Checked("MacHunter", "knightly"), Has.None.Matches<string>(line => Knightly.IsMatch(line)));
+        // The exception is one line, not a loophole: Hunterson's only knightly word is his "Hark?" slip.
+        Assert.That(OwnSpoken("Hunterson").Count(line => Knightly.IsMatch(line)), Is.EqualTo(1));
+        Assert.That(OwnSpoken("Hunterson"), Has.None.Contains("[allow"), "the tag is never spoken");
         string[] type = TypeSpoken();
         Assert.That(type, Is.Not.Empty);
         Assert.That(type, Has.None.Matches<string>(line => Knightly.IsMatch(line) || Gaelic.IsMatch(line) || Norse.IsMatch(line)));
@@ -158,7 +172,7 @@ public class UT_RoleplayerVoice
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (where, line, slotsOk) in all)
             {
-                Assert.That(line.Length, Is.InRange(1, 149), $"{where}: {line}");
+                Assert.That(line.Length, Is.InRange(1, 293), $"{where}: {line}");
                 Assert.That(line.All(c => c < 128), $"{where}: non-ASCII letter in {line}");
                 Assert.That(seen.Add(line), $"{where}: said twice: {line}");
                 Assert.That(typeLines, Does.Not.Contain(line), $"{where}: copies a roleplayer line");

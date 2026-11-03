@@ -10,7 +10,7 @@ namespace DOL.GS;
 /// have no personality and keep the generic replies.
 /// Reply lines use {0} for the name of whoever spoke to it.
 /// </summary>
-public sealed record BotPersonality
+public sealed partial record BotPersonality
 {
     private readonly IReadOnlyList<string> _nicknames = [];
     private readonly IReadOnlyDictionary<eAutonomousChatIntent, string[]> _replies = new Dictionary<eAutonomousChatIntent, string[]>();
@@ -64,23 +64,82 @@ public sealed record BotPersonality
     public string TypeKey { get; init; }
 
     /// <summary>
-    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (bot to bot, tests)
+    /// A reply by the dialogue rules (DialoguePicker). Without <paramref name="facts"/> (tests)
     /// lines with conditions are left out; [once], cooldowns and recent lines still count.
+    /// botKey: whose recent lines to skip when there are no facts (PersonalityReactions.MemoryKey).
     /// </summary>
-    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null)
+    public string Reply(eAutonomousChatIntent intent, string speakerName, bool toneDown, Random random, DialogueFacts facts = null, string botKey = null)
     {
         random ??= Random.Shared;
-        string[] lines = Replies.GetValueOrDefault(intent) ?? FallbackReplies;
+        // A small-talk intent this bot has no lines for gets its banter, not the "you've lost me" fallback.
+        string[] lines = Replies.GetValueOrDefault(intent)
+            ?? (AutonomousChatIntentModel.IsSmallTalk(intent) ? Replies.GetValueOrDefault(eAutonomousChatIntent.Banter) : null)
+            ?? FallbackReplies;
         if (!toneDown && CheekyReplies?.GetValueOrDefault(intent) is { Length: > 0 } cheeky && random.Next(2) == 0)
             lines = cheeky;
-        string botKey = facts?.BotId ?? Key;
+        lines = WithoutStateSlots(lines) is { Length: > 0 } plain ? plain : FallbackReplies;
+        // Before string.Format, which can't read a {bot:...}; Midgard's names when the realm isn't known (tests).
+        lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
+        string[] fallbacks = DialogueBotNames.Fill(FallbackReplies, facts?.Realm);
+        botKey = facts?.BotId ?? botKey ?? Key;
         DateTime now = DateTime.UtcNow;
         string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, botKey, now, random)
-            ?? DialoguePicker.Shared.Pick(FallbackReplies, DialogueLibrary.RuleFor, facts, botKey, now, random)
-            ?? FallbackReplies.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
+            ?? DialoguePicker.Shared.Pick(fallbacks, DialogueLibrary.RuleFor, facts, botKey, now, random)
+            ?? fallbacks.FirstOrDefault(fallback => DialogueLibrary.RuleFor(fallback) == null)
             ?? lines[random.Next(lines.Length)];
         return string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
     }
+
+    /// <summary>
+    /// A reply from only the lines with conditions ([if ...]) that hold, or null when none does. Lets a
+    /// situation line (a groan with Shnacksize nearby) win over the usual topic answer.
+    /// </summary>
+    public string ConditionalReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts)
+    {
+        if (facts == null || WithoutStateSlots(Replies.GetValueOrDefault(intent)) is not { Length: > 0 } lines)
+            return null;
+        string[] conditional = NotNaming(DialogueBotNames.Fill(lines, facts.Realm), speakerName).Where(line => DialogueLibrary.RuleFor(line)?.Conditions.Count > 0).ToArray();
+        string line = DialoguePicker.Shared.Pick(conditional, DialogueLibrary.RuleFor, facts, facts.BotId ?? Key, DateTime.UtcNow, random ?? Random.Shared);
+        return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+    }
+
+    /// <summary>
+    /// A line from this intent's own lines only, or null when it has none or none may be said now
+    /// ([once], cooldowns, recent lines). No banter or "you've lost me" stand-in: a short reaction
+    /// ("heh" to a "lol") is better left unsaid than answered with something long.
+    /// </summary>
+    public string OwnReply(eAutonomousChatIntent intent, string speakerName, Random random, DialogueFacts facts = null, string botKey = null)
+    {
+        if (WithoutStateSlots(Replies.GetValueOrDefault(intent)) is not { Length: > 0 } lines)
+            return null;
+        lines = NotNaming(DialogueBotNames.Fill(lines, facts?.Realm), speakerName);
+        string line = DialoguePicker.Shared.Pick(lines, DialogueLibrary.RuleFor, facts, facts?.BotId ?? botKey ?? Key, DateTime.UtcNow, random ?? Random.Shared);
+        return line == null ? null : string.Format(line, string.IsNullOrWhiteSpace(speakerName) ? "friend" : speakerName);
+    }
+
+    /// <summary>
+    /// The lines without a state slot ({zone}, {level}...): those are filled only by PersonalityStateAnswers, and
+    /// string.Format can't read them. What's left of a "~ reply where" is its shrug.
+    /// </summary>
+    private static string[] WithoutStateSlots(string[] lines) =>
+        lines == null || !lines.Any(PersonalityStateAnswers.HasSlot) ? lines : lines.Where(line => !PersonalityStateAnswers.HasSlot(line)).ToArray();
+
+    /// <summary>
+    /// The lines that don't talk about the speaker as someone else ("Ask Eaglefang" said to
+    /// Eaglefang): a capitalised word of 4+ letters that is part of the speaker's first name
+    /// ("Jovi" in Kobaldjovi). All of them when that would leave none.
+    /// </summary>
+    public static string[] NotNaming(string[] lines, string speakerName)
+    {
+        string first = speakerName?.Trim().Split(' ')[0];
+        if (string.IsNullOrEmpty(first) || first.Length < 4 || lines is not { Length: > 0 })
+            return lines;
+        string[] kept = lines.Where(line => !NameWord().Matches(line).Any(word => first.Contains(word.Value, StringComparison.OrdinalIgnoreCase))).ToArray();
+        return kept.Length > 0 ? kept : lines;
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex("[A-Z][a-z]{3,}")]
+    private static partial System.Text.RegularExpressions.Regex NameWord();
 }
 
 /// <summary>

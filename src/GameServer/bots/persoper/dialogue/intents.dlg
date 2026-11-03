@@ -1,10 +1,217 @@
 # Words and phrases that sort what a player says into an intent. Format: see IntentPhrases.cs.
 # Commas split phrases. A phrase counts when its words appear in a row; the longest one wins.
 # Rude and real-world words are checked before this file, so "thanks, idiot" stays rude.
+# Chat shorthand is read as its words first (grp = group, wanna = want to, cya = see you, ...;
+# the list is Shorthand in AutonomousChatIntentModel.cs), so write phrases in full words.
 # Intents: greeting, banter, abuse, grouping, grinding, travel, dungeon, rvr, trading, help,
-# farewell, ignoreoutofworld, thank. Bots answer in their "~ reply <intent>" section.
+# farewell, ignoreoutofworld, thank, groupcall, and the small talk ones: joke, grumble, smalltalk,
+# question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
+# howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words, and the
+# orders orderfollow, orderstay, ordercome, orderleave, orderassist, orderrest and orderpull (read as command).
+# The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
+# real zone, level, class, group and task: "~ reply where" and so on, see PersonalityStateAnswers.cs.
+# Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
+# answers from "~ reply banter". The short reactions (laugh, sorry, disagree, away, back) get
+# one brief line from one bot now and then, and no answer otherwise. The other newest intents
+# are answered as their nearest older one for now (Collapse in AutonomousChatIntentModel.cs).
+# A game word (group, dungeon, buy, frontier...) beats small talk, greetings and farewells:
+# "yeah, want to group" is grouping. A grouping phrase with a dungeon or realm word in the line
+# is that dungeon or frontier trip ("who's up for a keep?").
 === intents
+
+~ intent greeting
+hello, hi, hey, heya, hiya, howdy, hail, greetings, yo, what's up, well met, good morning
+good evening, good afternoon, evening all, morning all, evening everyone, morning everyone
+
+~ intent farewell
+bye, goodbye, bye bye, see you, see you later, later guys, later all, laters, good night, night all
+logging off, logging out, log off, off to bed, heading to bed, got to go, i'm out, take care
+safe travels, farewell, until next time, see you tomorrow
 
 ~ intent thank
 thanks, thank, thankyou, thx, thnx, ty, tyvm, cheers, ta
 appreciate it, much appreciated, many thanks, you're the best, you are the best, lifesaver
+saved me, you saved, owe you, owe you one, saved my life
+
+~ intent abuse
+go die, stfu, shut up, kill yourself, nobody likes you, get lost, piss off
+
+~ intent banter
+you're so, you are so, you look like, you smell, your mom, hit like, is that all, you call that
+slowpoke, noob, nub, scrub, shorty, you're fat, fatty, loser buys, race you, ugly, taller than you
+shorter than you, bet you can't, nice try, too slow, are you a
+
+~ intent grouping
+looking for power, power level, can join, can i join, room for, join you, join your, invite me, invite please
+need healer, need a healer, need a tank
+
+# An open call to group: read as grouping (or its dungeon or frontier trip), and personality world bots
+# answer it yes, no, busy, already grouped or "wrong level" (PersonalityGroupCalls.cs). Asking to join
+# ("can I join?") stays plain grouping above.
+~ intent groupcall
+who wants to, anyone want to, anybody want to, anyone up for, anybody up for, who's up for, up for some
+looking for group, looking for more, looking for people, lfg, lfm, team up
+
+~ intent grinding
+where to level, place to level, spot to level, good spot, good place to level, what should hunt
+camping the, farming, farm these, xp, leveling, level up, how much xp
+
+~ intent dungeon
+dungeon, dungeon run, entrance to, spraggon den, cursed tomb, darkness falls, keltoi fogou, nisse's lair
+big pull inside
+
+~ intent rvr
+keep under attack, take a keep, take keep, relic raid, realm points, the frontier, to the frontier
+emain, albion, midgard, hibernia, at the bridge
+
+~ intent travel
+how do get to, how do i get to, which way to, way to, stable master, how far, where am i, take me to
+where do i find, where's the, where is the, horse to, lost again
+
+~ intent trading
+want to sell, want to buy, want to trade, how much for, selling, for sale, worth, price check
+craft me, realm exchange
+
+~ intent help
+how do i, how does, what does, i'm stuck, stuck, can someone help, can anyone help, help me
+what class should, how do spec, explain
+
+~ intent joke
+why did the, why do, why don't, what do you call, what did the, walks into, walked into a
+knock knock, want to hear a joke, did you hear, heard the one, joke, kidding, just kidding, i'm kidding, jk
+why did a, why was the, why can't, why is the, want to know why, know why the, guess why
+what's the difference between, how do you make, here's one, heard about the
+riddle me, a riddle
+
+~ intent jokeask
+tell me a joke, tell us a joke, tell a joke, know a joke, know a good joke, know any jokes
+got a joke, got any jokes, something funny, make me laugh
+
+~ intent laugh
+lol, lmao, rofl, haha, hahaha, hehe, heh, that's funny, that is funny, so funny, good one
+
+~ intent grumble
+ugh, argh, sigh, meh, sucks, this sucks, so slow, so boring, annoying, so annoying
+waste of time, taking forever, takes forever, hate this, hate when, so tired of
+keep dying, died again, nothing drops, no drops, what a pain, not again, killing me, lag, laggy
+hit too hard, hits too hard, way too hard, another death, everything aggro, my back hurts
+
+~ intent smalltalk
+once saw, once had, once met, back home, when i was, story time, fun fact, long day, long night
+weather, raining, sunny, snowing, cold out, hungry, dinner, lunch, breakfast, coffee, pizza
+music, song, favourite song, favorite song, my dog, my cat, nice view, pretty view, the view
+up this late, fell asleep, just had, at work
+
+~ intent question
+what do you think, what's your favourite, what's your favorite, what is your favourite
+what is your favorite, have you ever, do you like, do you ever, ever been, ever tried
+what about you, how about you, are you sure, you ever, why do you, where are you from
+how old, what's your story, tell me about, ever killed, what's that, what is that, who are you
+do you dream
+
+~ intent compliment
+nice heal, great heal, good heal, nice heals, great heals, good heals
+nice job, good job, great job, well done, nicely done, nice work, good work, nice one
+you rock, you're awesome, you are awesome, awesome, amazing, you're great, you are great
+good pull, great pull, nice pull, love you, you're a legend, you are a legend, legend, good game
+well played, look great, looks great, looking good, love your, best
+
+~ intent agree
+yeah, yep, yup, yes, true, agreed, agree, fair enough, exactly, indeed, sounds good, sure
+same, same here, me too, for sure, good point, makes sense, you're right, you are right
+totally, absolutely, of course, ok, okay, right on, so true, deal, no problem, no worries
+
+~ intent disagree
+no, nope, nah, nay, disagree, not true, that's not true, don't think so, no way, wrong
+
+~ intent sorry
+sorry, my bad, oops, whoops, apologies, my fault
+
+~ intent away
+brb, afk, bio, bio break, be right back, one sec
+
+~ intent back
+i'm back, back now, back again, ok back
+
+~ intent activity
+what are you doing, what are you up to, what you up to, everyone up to
+where are you headed, where you headed, where are you going, what you doing
+where you going, are you busy, you busy, busy right now
+
+# Questions about the bot itself, answered from what it really is and does (its zone, level,
+# class, group). "where are you from" stays a question and "where are you headed" an activity:
+# their phrases are longer.
+~ intent where
+where are you, where you at, where are you at, whereabouts are you, where in the world are you
+what zone are you, what zone you in, which zone are you, what area are you, where did you go
+
+~ intent level
+what level are, what level you, what's your level, what is your level, how high are you
+what class are, what class you, what's your class, what is your class, what are you playing
+what do you play, level and class
+
+~ intent groupstatus
+are you in group, you in group, are you grouped, you grouped, are you solo, you solo
+are you alone, you alone, who are you with, who you with, who are you grouped with
+are you in party, you in party
+
+~ intent howgoing
+how are you, how are you doing, how you doing, how's it going, how is it going, how goes
+how's things, how are things, how's your day, how is your day, you ok, you alright
+
+~ intent mood
+are you mad, you mad, are you angry, you angry, you upset, are you upset, grumpy, in a mood
+bad mood
+
+~ intent flirt
+you're cute, you are cute, marry me, you're hot, you are hot, date me, kiss me, be mine
+you're pretty, you are pretty
+
+~ intent outofworldchat
+football, basketball, baseball, hockey, soccer, game last night, netflix, movie, tv show
+television
+
+~ intent quote
+i'll be back, call me snake, may the force be with you, here's johnny, i see dead people
+you're gonna need a bigger boat, life moves pretty fast, bueller, inconceivable, as you wish
+wax on, wax off, there can be only one, hasta la vista, get to the choppa, game over man
+great scott, nobody puts baby in, be excellent to each other, party on, i have the power
+say hello to my little friend, i am your father, these aren't the droids, by your command
+you shall not pass
+
+~ intent command
+go pull, you pull, start pulling
+
+# Orders bots obey (PersonalityOrders.cs): read as command; these say which. Stay, wait, stop, follow
+# and come on their own (or after the bot's name) count too, see ReadOrder in AutonomousChatIntentModel.cs.
+~ intent orderfollow
+follow me, follow along, come with me, stick with me, stay with me, stay close, resume following
+start following, follow us
+
+~ intent orderstay
+stay here, stay there, stay put, wait here, wait there, wait for me, wait up, hold up, hold here
+hold position, stop here, stop following, don't move, do not move, sit tight, stand still, stay back
+
+~ intent ordercome
+come here, come to me, come over here, get over here, come back here, regroup, gather up, rally to me
+
+# Leave is only taken by a bot named in it ("shemp, leave the group"); an open one goes to nobody.
+~ intent orderleave
+leave the group, leave group, leave the party, leave party, make space, make room, drop group
+
+~ intent orderassist
+assist me, assist please, help me fight, help me kill, attack my target, hit my target, on my target
+kill my target, assist on me
+
+~ intent orderrest
+rest up, go rest, go sit, sit down, sit there, sit here, med up, catch your breath, get your mana back
+regen up, rest here
+
+# Pull: a bot named in it pulls the speaker's target whatever its role, and the rest attack at once;
+# with no name it is the plain /pull.
+~ intent orderpull
+pull this, pull that, pull it, pull him, pull her, pull them, pull this one, pull that one, pull the mob
+pull for us, pull please
+
+~ intent combatcall
+heal me, heals please, need heals, need a heal, adds, incoming, run, train

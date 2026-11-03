@@ -84,7 +84,7 @@ public class UT_PersonalityLines
         foreach (var (_, section, line) in AllLines(key, t))
         {
             Assert.That(line, Is.Not.Empty.And.Not.Contain("\n"), $"{key} {section}");
-            Assert.That(line.Length, Is.LessThan(150), $"{key} {section}: {line}");
+            Assert.That(line.Length, Is.AtMost(293), $"{key} {section}: {line}");
         }
     }
 

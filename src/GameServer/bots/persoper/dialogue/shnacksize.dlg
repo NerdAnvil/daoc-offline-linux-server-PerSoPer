@@ -1,0 +1,319 @@
+# Shnacksize, the Joker: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Shnacksize, Shnacksizer, Shnacksizey); character sheet in
+# characters/shnacksize.md. These lines are mixed on top of the type's (joker.dlg). The main block
+# fits every realm; the realm blocks below add a little flavour each.
+=== shnacksize
+names: Shnacki
+
+~ ambient
+Ducked behind the tank. Taunted the mob. Ducked again. Teamwork!
+That fall was on purpose. I was testing the ground. Verdict: hard.
+Named today's plan Operation Sparkle. It failed beautifully.
+Miss the ScottsIrish cows. Ginger, shaggy, mad for the Glopeldink. Good girls, all of them.
+Is anyone talking? Somebody talk. Fine, I'll start. Hello!
+In Swissland we have a word for this. Glopeldink. It means... this.
+Today I'm Captain {bot:shnacksize}, Admiral of Swissland, and Queen of the ScottsIrish cows. Whew, that's a mouthful!
+{bot:eaglefang} told me to sit still, and I tried, but sitting is like a foreign language to me!
+Practised my grand entrance. Tripped on the doorstep. Change of plan! Now it's a grand exit!
+Found my joke list. Turns out the jokes were better than the list.
+Night fell, and I jumped at my shadow! I mean, I was just... testing my reflexes! [if time_of_day night]
+Night's too quiet? Let's talk about the Glopeldink! It's... less scary than the dark, right? [if time_of_day night]
+The dark? Scared of me! I'm not scared... not at all... whoo! [if time_of_day night]
+An owl hooted, and I hid behind the nearest person, checking their armour for any weak spots. It was research, not fear! [if time_of_day night]
+Counting stars, one, two, three... Better than counting shadows, trust me. [if time_of_day night]
+Night fell, and shadows danced. A twig snapped, and I whipped out both blades. What's in the bush, you naughty glopeldink? [if time_of_day night]
+It's not that I'm afraid of the dark, I'm just taking a Swissland-style power nap with my eyes open! [if time_of_day night]
+
+~ reply greeting
+Ta-daa! {0}, your day just got flashier.
+{0}! Don't look so pleased to see me. Actually, do. I love it.
+Ta-daaa! {0}, the crowd goes wild for you too!
+Hoi {0}! I was just planning my grand entrance! See? Timing is everything!
+
+~ reply thank
+A thank-you from {0}? Somebody stitch that on a yellow flag.
+{0}, shout it again! The folks in the back need to hear your gratitude!
+
+~ reply help
+Help, {0}? Step one: duck. Step two: insult it from behind someone big. There is no step three.
+Need help, {0}? First, I have to figure out which end of the sword isn't the blunt one!
+
+~ reply grouping
+Group with you, {0}? Yes! I'll talk the whole way. You're welcome.
+Group with you, {0}? Absolutely! Let's call it the "Society of Swissland's ScottsIrish Cows." You're welcome!
+Group with you, {0}? Great! I'll keep the snacks coming and the spirits high. You're welcome!
+
+~ reply abuse
+Ooh, {0}, harsh! I'd answer back, but I'm busy being adorable.
+Ooh, {0}, you're such a Glopeldink-hater! That's like calling me short!
+Adding you to my book of grumpy people! I'll cheer up the whole zone.
+
+~ reply farewell
+Leaving, {0}? Fine. I'll talk to the mobs. They listen. Briefly.
+Waving! Can't see you anymore, {0}? I'll keep waving until I run out of arms!
+
+~ reply joke
+Ha! Good one, {0}. It's going in my act. No credit, sorry.
+Groan! {0}, that's the Swissland seal of approval right there.
+
+~ reply compliment
+Flattery, {0}! Keep going. I'm not stopping you.
+Oh, {0}, modesty is overrated! I'm just charmingly tiny.
+
+~ fallback
+Sorry, {0}, I was telling a joke in my head. It was great. You missed it.
+Sorry, {0}, I was busy insulting the ogre. Could you say that again? Please?
+Sorry, {0}, I was having a heated debate with a squirrel. As you can imagine, I lost spectacularly.
+
+~ opener gripes
+Someone called me small again. I'm travel size. Pack me anywhere.
+My best joke today? Crickets. I guess they're on strike for better punchlines.
+Talking too much? Silence is overrated. At least I'm not a boring echo in the darkness.
+
+~ opener life
+Followed {bot:eaglefang} around all morning. Six "go away"s. That's progress.
+I left Swissland for reasons. Today's reason: the cheese got too loud.
+The ScottsIrish cows back home would love this place. Not as much as the Glopeldink, but close.
+My sword's name is Sparkles, and my dagger is Dainty.
+
+~ opener questions
+Why do mobs never laugh at my insults? Too clever, right? That's it.
+Are we there yet? Doesn't matter where. Are we?
+Do mobs have feelings, or am I just that good at hurting them with my words?
+
+~ opener fun
+Oi, {monster}! You fight like a training dummy! ...It's coming. Change of plan!
+New plan: same as the old plan, but louder.
+What is the Glopeldink? Hard to say. Ask a ScottsIrish cow. They know.
+What has four legs in the morning, two legs in the afternoon, and three legs in the evening? A Swissland staircase!
+Why did the skeleton join a band? Because he had a lot of bass in his bones!
+Why did the horse go to the bar? To get away from all the stable situations!
+Why did the bard write his songs on graph paper? To keep his notes in line!
+Why did the ScottsIrish cow cross the road? To get to the Glopeldink on the other side!
+Why did the shield join the gym? To get buff and block more hits!
+Why did the bear sit on the flagpole? To see the bear necessities!
+Taking an arrow to the knee? That was the plan, I swear! It was a brilliant plan!
+
+~ grats
+{0}! Look at you! Nearly as flashy as me. Nearly.
+Congratulations, {0}! Parade's at noon, don't be late!
+Congratulations, {0}! You're practically a hero now, just like me. Almost.
+
+~ other_death
+Up, {0}, up! No? Fine. I'll talk to you till you get up.
+Oh, {0}. That one wasn't funny. Hold on, I've got you.
+Oh no, {0}. Stay with me. And yes, this is definitely the plan.
+Oh no, {0}. Take a breath, you'll be back up in no time.
+
+~ own_death
+Died. That was the plan! It was a terrible plan.
+Lying down on purpose. Very dramatic. Somebody clap.
+Died. Tactical lie-down. The plan is still on, folks!
+
+~ ding
+Level {level}! Make way! Tiny legend coming through!
+Ding! Level up! I'm tinier, flashier, and still the bravest person behind a wall!
+Ding! Travel size, but now I'm packing more punch!
+
+~ drop
+{item}! Useless? Perfect. It's shiny.
+Found {item}? Now it's the "Glopeldinkinator"!
+That {item}? Found it on the ground? That was the plan all along, sunshine!
+
+~ cheeky_reply banter [if tone_down off]
+Is it hot in here, {0}, or is that my rage?
+
+~ reply banter
+That's got to be a ten, {0}. But I'd give it an eleven, because I'm the judge here.
+{0}, how dare you? That's my job, and you're stealing it!
+Is Shemp putting on weight, or is the ground just leaning towards him? Ha! [if nearby shempenstein] [cooldown 1h]
+Shemp says it's his aunt's sweater. {0}, that sweater has been eating very well. [if nearby shempenstein] [cooldown 1h]
+
+~ reply grinding
+Every kill gets a joke, whether you want one or not! I'm the spice in this grind, {0}.
+That's my nemesis over there, {0}. I'll be back in a sec - just going to name it something embarrassing.
+
+~ reply travel
+Are we there yet? But I promise, this time I won't ask... wait, are we there yet?
+Are we there yet? I packed three jokes and no food, just in case this was the plan.
+
+~ reply question
+Sure, {0}! The capital of Swissland is the Glopeldink, of course!
+
+~ opener xp
+That {monster} was just my warm-up act! The real show starts now!
+Level {level}, here I come! Party of one, RSVP accepted.
+
+~ opener gear
+That {item} would look way better on me! Everything looks better on me!
+New {item}? That must mean I'm one step closer to world domination! Or at least shinier trash.
+
+~ opener zones
+Taunting {zone}? That's like shouting at a storm! But hey, someone had to start.
+In {zone}, I'm like a gnat at a monster convention!
+
+~ opener dungeons
+Echoing walls, twice the jokes, double the fun!
+
+~ opener trading
+I haggled till he paid me just to go away!
+I'll hush up, but only if you call me Captain {bot:shnacksize}, sir!
+
+~ reply trading
+Trade, {0}? Here, have this hilarious joke. I insist!
+
+~ reply grumble
+Grumble, grumble? Let me take care of that... from behind a big shield, of course.
+Grumble, grumble? You're doing it wrong! Add some flair, sunshine. Like this: ARRRGHHH!!
+
+~ reply smalltalk
+{0}, did you know the ScottsIrish cows in Swissland can juggle Glopeldinks? It's true!
+That reminds me of a story... Oh wait, it's gone! Curse my tiny memory!
+
+~ reply agree
+Agree with me, {0}? Wow, I must be on fire today!
+Got it, {0}? Write that down, or I'll forget to take credit for it later!
+
+~ opener rvr
+Taunting the keep from the bottom of the hill? I call it "the plan." Now where did I hide my Swissland flag?
+
+~ reply rvr
+Heading to the frontier, {0}? I'll be the distraction - mostly by talking!
+{0}, if we take a keep, I'll wave a flag of my own design. It's better than any you've seen!
+
+~ reply dungeon
+Are we really starting a dungeon crawl without a clear leader? I'm travel size, so I vote someone else goes first!
+Heading into the dungeon, {0}? Let's hope the mobs have a sense of humour!
+
+~ reply quote
+That's an old Swissland saying, but I think I got it wrong again. In Swissland, we say it with more holes!
+
+~ opener classes
+Saw a {class} who hasn't smiled since level one. Challenge accepted!
+Wanted to be a {class} once. Then I saw the outfit. Not flashy enough.
+
+# --- Realm flavour: the old named lines from joker.dlg, one block per realm. ---
+
+# Midgard: Shnacksize, Valkyn Berserker.
+=== midgard
+~ ambient
+Back home in Swissland we'd call the mountains round Jordheim a little bump. Everything's bigger in Swissland, except me. I'm travel size, and that's different!
+Went full Zerker on a wolf outside Mularn. Screamed so loud the wolf ran off and two guards came to check on me. I told them it was a war cry. It was mostly a war squeak, but they were very nice about it!
+Eaglefang says a Zerker should rage quietly. That's not a thing, big grump! That's just sulking with an axe, and they've already got that job covered.
+Somebody said the spiders in Spindelhalla are the size of a troll. Not scared! I'm just going to stand right behind the biggest troll in Jordheim and tell jokes until the spiders laugh themselves to death.
+
+~ opener realm
+In Swissland the trolls are polite, the cheese has square holes for ventilation, and the snow is warm. Jordheim's trolls could learn a thing or two, honestly.
+Jordheim is great! Everybody's twice my size, so I get to taunt the mobs from behind a different troll every day. Today's troll doesn't know yet.
+
+~ opener life
+The mountains in {zone} are nice, really nice! In Swissland they're yellow, they've got holes in them, and on Tuesdays they hum. Nobody knows why. Nobody asks the mountains.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice axe'. Say it to a troll and see if he smiles. If he doesn't, it means 'run'!
+My frenzy has a name today: the Big Snack Attack! Yesterday it was the Travel-Size Tempest, and tomorrow, well, change of plan, it'll be whatever I scream first.
+
+~ reply greeting
+Hoi, {0}! That's Swisshlish for hello, and also for 'look at me', and on Tuesdays it means 'duck'. Hoi!
+Heya, {0}! Hold my axe, I'm making an entrance. ...Okay, give it back now. Wait, why is it heavier??
+
+~ reply banter
+Ha! In Swissland that joke would win a medal, {0}. A yellow one, on a yellow ribbon, handed over by a very proud ScottsIrish cow. Highest honour there is!
+Ha, {0}! That one was so cold it could freeze a fjord. Good thing I'm a Zerker, because I run hot!
+I'm a Valkyn too, {0}, and I didn't know we could get chunky. Shemp found a way! [if nearby shempenstein] [cooldown 1h]
+
+~ ding
+Level {level}! Tonight they'll ring the yellow bells in Swissland, all of them, even the ones with holes in. You can't hear them from Midgard, but trust me, they're loud.
+Level {level}! Somebody tell the skalds in Jordheim, and tell them it has to rhyme with Shnacksize. Good luck with that!
+
+~ own_death
+Ow. Died. In Swissland we call that a little nap, and Zerkers nap hard. Wake me when somebody's got a rez and a snack.
+Ow! Face down in the snow, and my frenzy's still going. Somebody rez me before I rage at the ground. The ground started it!
+Ow... Hello ground, my old nemesis, we meet again.
+
+~ drop
+{item}! Flashy! It goes perfectly with my Swissland flag, a yellow circle on-a-stick. You can't see it? It's right here! I'm saluting it!
+{item}! Into the pack it goes, right next to the other shiny junk from Myrkwood. Snack size, travel size, treasure size!
+
+# Albion: Shnacksizer, Saracen Mercenary.
+=== albion
+~ ambient
+Back home in Swissland this would barely count as a castle. Camelot's lovely, but our castles have square holes in the walls so the cows can look out. Very nosy, ScottsIrish cows.
+Two blades and one sales pitch! Sold a guard in Cotswold his own boots this morning. He was wearing them at the time. Best deal I ever made!
+Eaglefange says I talk too much. I said I'd stop for a fee, and they paid me! Then I kept talking, because a Merc has to keep up her reputation.
+The Catacombs under Camelot are so dark. Not scared! I just like walking right behind Spyburde, because his pipe makes a nice little light, and the ghosts can't see me behind his robe.
+
+~ opener realm
+In Swissland knights joust on goats. Small goats, small knights, very small lances. The ScottsIrish cows keep score, and they always give it to the goat.
+Camelot has a jousting field, a market and a hundred knights in shiny armour. I've already taunted forty of them from behind the market stalls. Sixty to go!
+
+~ opener life
+The hills in {zone} remind me of Swissland, only less yellow and with fewer cows on top. Somebody should fix that. I'd start with the cows.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'nice sword'. Say it twice and it means 'two nice swords'. I say it a lot. Gruezi-wuezi-gruezi-wuezi!
+When Sparkles and Dainty hit at the same time, that's the Double Snack Attack! When they both miss, it's a warm-up. When I fall over, that was the plan.
+
+~ reply greeting
+Hoi, {0}! That's how we say hello in Swissland. A ScottsIrish cow would say it back with a moo, but I'll take a wave.
+Ta-daa, {0}! Shnacksizer, at your service, for a very reasonable fee. The first entrance is free. The second one costs extra!
+
+~ reply banter
+That joke would get a yellow medal in Swissland, {0}, and the cows would stamp their hooves for you. Well, one cow. Old Ginger. She stamps for everything.
+Ha, {0}! That one's got more bite than a wolf on the Salisbury Plains, and I'd know, because I've been bitten by all of them.
+A chunky Saracen! Shemp, they're built for the desert, not the dessert! [if nearby shempenstein] [cooldown 1h]
+
+~ ding
+Level {level}! Swissland just declared a holiday. Everybody gets the day off, the cows get extra Glopeldink, and somebody polishes the flag. It's a yellow circle on-a-stick, so that takes a while.
+Level {level}! Fetch me a herald in Camelot. Tell him to shout it from the tallest tower, and tell him I'm taller than I look. Travel size, thank you!
+
+~ own_death
+Ow. Died. In Swissland that's called taking a little break, and a Merc never says no to a paid break. Who's paying? Somebody rez me and we'll talk terms.
+Ow! Face down in the mud of Avalon Marsh. A Merc should get paid for this. Somebody send Eaglefange the bill, and tell them I'll take a rez as a tip.
+Ow... Knocked flat outside Camelot, right in front of the knights. Quick, everybody, pretend this was a very low bow!
+Ow! Died on the Salisbury Plains, and now the wolves are laughing. Finally, an audience that gets my jokes!
+
+~ drop
+{item}! So flashy! Swissland would approve, and the cows would want one each. I'll sell them a copy. Cows pay in Glopeldink, which is totally worth a lot... ::looks around shiftily::
+{item}! I'll sell it in Camelot for twice what it's worth and throw in a joke for free. Honestly, the joke's worth more.
+
+# Hibernia: Shnacksizey, Elf Blademaster.
+=== hibernia
+~ ambient
+Back home in Swissland this tree would count as a whole forest, and the cows would be up in it. ScottsIrish cows love a good tree. Nobody knows how they get up there.
+Spun so hard at Lough Derg I fell in the lake. That was the plan! I was checking it for fondue. Verdict: not fondue. Very wet.
+Eaglefangh says a Blademaster should be graceful. I am graceful! I've just got a lot of grace, and it all comes out at once, mostly sideways.
+The Cursed Forest at night? Totally fine. Not scared. I'm only holding Spyburdagh's sleeve because it looked lonely. The sleeve. The sleeve looked lonely.
+
+~ opener realm
+In Swissland the faeries wear little yellow hats. It's the law. The ones in Hibernia don't, and I've been far too polite to mention it. Until now. Put a hat on!
+Everyone in Tir na Nog floats about like they're in a painting. I tried floating and tripped over a fountain. Elegance is just a joke with good timing, and mine was early.
+
+~ opener life
+The lakes in {zone} are lovely. In Swissland they're full of fondue, and the cows wade in up to their horns. Warm lakes, square holes, happy cows. Perfect, except Tuesdays.
+
+~ opener fun
+In Swisshlish 'Gruezi-wuezi' means 'pretty blades', but only while you're spinning. Standing still, it means 'please clap'.
+My spin attack has a name today: the Twirly Whirly Shnacky Swirl! It's elegant, it's deadly, and it makes me so dizzy I taunt the wrong mob. Change of plan!
+
+~ reply greeting
+Hoi, {0}! That's Swisshlish for hello. Say it back with a little spin, the way they do in Swissland. ...No? Fine, I'll spin for both of us!
+Ta-daa, {0}! A spin, a bow and a wink. That's the full Shnacksizey entrance, and you got it for free!
+
+~ reply banter
+In Swissland you'd get a yellow ribbon for that one, {0}, and the cows would tie it round your horns. You haven't got horns? We'll work something out.
+Ooh, {0}, that pun was so bad the trees in Connacht dropped their leaves. Do another one. I'm collecting them.
+A chunky Sylvan! Shemp, you're meant to grow tall, not wide! [if nearby shempenstein] [cooldown 1h]
+
+~ ding
+Level {level}! The Swissland fondue fountain flows in my honour tonight, and the cows get first dip. Then me. Then the cows again, because they push.
+Level {level}! Somebody tell the bards in Tir na Nog. Tell them I spun the whole way up, and that I'm only a little dizzy.
+
+~ own_death
+Ow. Died. In Swissland that's just a lie-down, and a Blademaster lies down with style. Look at that pose! Somebody take a screenshot before I lose it!
+Ow! Spun right into a club in the Silvermine Mountains. Very flashy, though. Did anyone see? Somebody tell me it looked good.
+Ow! That was not flashy at all. Do over! Rez me, and this time I'll fall down elegantly, with a spin.
+
+~ drop
+{item}! Swissland approves! I'll stick a little Swissland flag on it, a yellow circle on-a-stick, so everyone knows it's mine. You can't see the flag? That's on you, sunshine.
+{item}! Pretty! It's no use at all, so it goes straight to the top of the pack, above the potions. Priorities, sunshine.

@@ -13,6 +13,163 @@ Housing rent's due. Worth it, though. Oh, you betcha.
 Could use one more head for the wall. Big one. Over the fireplace.
 I dust the trophies twice a week. Once for them, once for me.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Oh, I dunno. Tell me!
+Oh gosh, to get home? I'd go home.
+Oh, you got me there.
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+Oh, {zone}, {0}. Nice enough, but it's no house.
+{zone}, you betcha. Long way from home, though.
+Headed for {destination}, dontcha know. [if bot_doing travelling]
+Oh gosh, {0}, I'd have to look at a map.
+
+~ reply level
+Level {level} {class}, {0}. Paid the mortgage with every one of 'em.
+Level {level}, {class}. Not bad for a homebody, huh?
+Oh, I don't keep track, {0}. Too busy with the house.
+
+~ reply groupstatus
+Oh sure, {groupsize} of us. Real nice folks. [if bot_grouped]
+Just me, {0}. Wanna come see the house after? [if not bot_grouped]
+Oh, ya know, {0}, depends on the day.
+
+~ reply activity
+Ope, fighting this {monster} here, {0}! [if bot_doing fighting]
+Bit busy, {0}! Ope, ope, ope! [if bot_doing fighting]
+Riding, and my back's gonna feel it tomorrow. [if bot_doing riding]
+Following {leader} around, just happy to be here. [if bot_doing following]
+On the way to {destination}, should be back by supper. [if bot_doing travelling]
+Taking a breather in {zone}, {0}. My feet are done. [if bot_doing resting]
+Oh, just keeping busy, {0}. You know how it is.
+
+~ reply groupyes
+Oh sure, {0}! Invite me, I'll grab my good boots.
+You betcha, {0}, long as we're back before supper.
+
+~ reply groupno
+Oh, not tonight, {0}, I gotta finish the porch.
+Ah, gee, {0}, I promised I'd stay home and sort the shelves.
+
+~ reply groupbusy
+Ope, bit busy with this {monster}, {0}! [if bot_doing fighting]
+Riding right now, {0}, and my back's already sore. [if bot_doing riding]
+Oh, kinda busy, {0}, maybe after?
+
+~ reply grouphave
+Already with {leader}, {0}, real nice bunch too.
+Oh, I'm grouped up already, {0}, sorry about that.
+
+~ reply grouplevel
+Gosh, I'm level {level}, {0}, that's a ways off from you.
+Our levels are a bit far apart, {0}, wouldn't feel right.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Oh sure, {0}, right behind you!
+Following, {0}, lead the way, I'll keep up.
+
+~ reply orderstay
+Okie dokie, {0}, I'll wait right here.
+I'll stay put, {0}, don't forget about me now.
+
+~ reply ordercome
+On my way, {0}!
+
+~ reply orderno
+Oh, I'd rather not stand here all alone, {0}.
+Sorry, {0}, I'll just come along if that's okay.
+
+~ reply orderbusy
+Ope, just a sec, {0}, this {monster} won't quit! [if bot_doing fighting]
+Riding right now, {0}, I'll come when we stop. [if bot_doing riding]
+Oh, kinda busy, {0}, one sec?
+
+~ reply ordernot
+Oh, you're not my group leader, {0}, sorry!
+I'm not in your group, {0}, but thanks for asking!
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Oh, okay, {0}, I'll head on home then, take care now!
+Leaving the group, {0}, it was real nice!
+
+~ reply orderassist
+You betcha, {0}, on your target!
+Oh, I'll help, {0}, here I come!
+
+~ reply orderrest
+Oh, a sit-down sounds lovely, {0}.
+Sure, {0}, I'll put my feet up a minute.
+
+~ reply ordernotarget
+Help with what, {0}? I don't see anything.
+Oh, you're not fighting anything, {0}, are you?
+
+~ reply orderfull
+Oh, I'm just fine, {0}, thanks for asking!
+No need, {0}, I'm feeling right as rain.
+
+~ reply orderaway
+Not just now, {0}, that joke still stings a bit.
+I'm still out, {0}, gimme a sec, okay?
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Oh, you betcha, {0}, pulling!
+Here it comes, {0}, get ready now!
+
+~ reply orderpullwhat
+Pull what, {0}? I don't see anything.
+Which one, {0}? You've got nothing picked.
+
+~ reply orderpulleasy
+Oh, that little thing, {0}? Not worth the bother.
+Too easy, {0}, let's find a real one.
+
+~ reply groan
+Oh, for Pete's sake.
+Oh, that's a real groaner, that is.
+
+~ reply jokelaugh
+Oh, ha! That's a good one!
+Oh, you're a hoot.
+
+~ reply jokeask
+Why did the house go to the healer? It had window pains. Oh, I love that one.
+What did one wall say to the other? Meet you at the corner, you betcha.
+My roof's the best in town. Well, it's over the top.
+
+~ reply jokeback
+Oh, that reminds me of one, {0}!
+Oh, oh, I've got one too!
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Oh, ha!
+Heh, oh you.
+
+~ reply sorry
+Oh, don't worry about it, {0}.
+Oh no, you're fine. Really.
+
+~ reply disagree
+Well, okay then.
+Oh, sure, sure. You betcha. Maybe.
+
+~ reply away
+You go ahead, {0}, I'll be here.
+Okay! Take your time, hon.
+
+~ reply back
+Oh, welcome back, {0}!
+There you are! Welcome back.
+
 ~ reply greeting
 Well hey there, {0}! You oughta come see the house sometime.
 Oh, hi {0}! Come on over, I'll put the kettle on. Figuratively.
@@ -199,56 +356,3 @@ Aw, {0}. Up you get, nobody wants you dead on a Tuesday.
 {item}! That's going straight over the mantel.
 {item}! Real nice. Gary will be so jealous.
 Found {item}. Don't tell the landlord.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): same person, house in their realm's housing. ---
-
-# Midgard: Troll Savage. Big, rough, gentle underneath; house is a cosy hall in Jordheim housing.
-=== barbalicious
-~ ambient
-Hall's got a good fire going. Come on in, dontcha know. Duck at the door.
-Got a boar's head over the hearth. Real nice. Its eyes follow you.
-Big hands, small house. Ope, watch the mead cups.
-
-~ opener realm
-Jordheim housing's quiet. Bit of snow, bit of mead. Perfect.
-Midgard has the best halls. Mine's the cosiest one.
-
-~ reply greeting
-Skol, {0}! Oh, you betcha, come see the hall!
-
-~ drop
-{item}! Over the hearth it goes. Next to the boar.
-
-# Albion: Inconnu Reaver. A bit dark and brooding, but invites tea; house in Albion housing.
-=== barbaliciouse
-~ ambient
-Kettle's on, parlour's warm. Come on over, dontcha know.
-Mounted a nice pair of antlers by the window. Ope, mind your head.
-Nice cottage. Crooked chimney. Real nice, though.
-
-~ opener realm
-Camelot's housing is lovely. Neat hedges, nice neighbours.
-Albion's got the best tea. And my parlour has the best chairs.
-
-~ reply greeting
-Well hello, {0}! You oughta come for tea. Oh, you betcha.
-
-~ drop
-{item}! For the parlour wall. Real nice.
-
-# Hibernia: Firbolg Valewalker. Gentle and green, garden-minded; house in Hibernia housing.
-=== barbalicioush
-~ ambient
-Garden's coming along real nice. Come see the roses. Dontcha know.
-Put a stag's skull over the door. Gives the house character.
-Ope, the moss is growing on the porch again. It's lovely.
-
-~ opener realm
-Tir na Nog housing is green and quiet. My kinda place.
-Hibernia's got the best gardens. Mine's the best of those.
-
-~ reply greeting
-Hi there, {0}! Come see the garden, you betcha.
-
-~ drop
-{item}! For the hall by the garden. Real nice.

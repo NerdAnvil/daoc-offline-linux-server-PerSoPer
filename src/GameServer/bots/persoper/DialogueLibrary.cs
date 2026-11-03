@@ -145,8 +145,10 @@ public static class DialogueLibrary
         var rules = new Dictionary<string, DialogueRule>(StringComparer.Ordinal);
         foreach (DialogueFile file in files.Values)
             foreach ((string text, DialogueRule rule) in file.Rules)
-                if (!rules.TryAdd(text, rule))
-                    errors.Add($"{file.FileName}: the tagged line '{text}' is also in another file; only the first one's tags count");
+                // A line with {bot:...} is said with each realm's name filled in; the tags go with every version.
+                foreach (string said in DialogueBotNames.Variants(text).Prepend(text).Distinct())
+                    if (!rules.TryAdd(said, rule))
+                        errors.Add($"{file.FileName}: the tagged line '{said}' is also in another file; only the first one's tags count");
 
         var report = new DialogueLoadReport(version, folder, fromFolder,
             files.Keys.Except(fromFolder, StringComparer.OrdinalIgnoreCase).Order(StringComparer.Ordinal).ToList(),

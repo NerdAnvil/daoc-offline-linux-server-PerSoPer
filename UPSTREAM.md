@@ -29,6 +29,62 @@ Policy: **static snapshot, manual pulls.** See docs/ARCHITECTURE.md §9.
 - The Sluaghbinder ("b" edition) code stays in, switched off by `classes / enable_sluaghbinder = False`,
   as upstream does for its plain edition.
 
+## Our fixes to upstream code
+
+In this section "we" and "our" mean this repository, the PerSoPer fork (NerdAnvil/daoc-offline-linux-server-PerSoPer).
+Bug fixes we made in Offline DAoC's own files (`GameServer`, `CoreServer` and so on), listed so the
+upstream maintainer can take them, and so we re-apply them after a sync. Checked against upstream
+v0.37c and its development head `9da9091` (2026-10-20). "Made by" is catastrophic-impact (our parent
+fork, github.com/catastrophic-impact/daoc-offline-linux-server-bots, whose first commit `3e3ffd0`
+is where we forked) or the PerSoPer fork. Features and our own code (PerSoPer personality code, admin
+tools, build scripts, docs) are not listed.
+
+1. **Cross-zone invite: bots invited from another zone walk off the navmesh and the stuck watchdog
+   sends them to their capital** (and out of the group).
+   - Files: `bots/BotBrain.cs` (`FollowFormation`), `bots/BotGroupInvite.cs`,
+     `bots/autonomous/AutonomousStuckWatchdog.cs`, test files.
+   - Commit: `5105912` (2026-10-26). Made by: PerSoPer fork. Seen in: v0.36, still in v0.37c.
+   - Status: open upstream.
+2. **A failed quest-name read removes companions from the world.** `QuestTalkTruce` loaded its names
+   through a `Lazy<T>`, which keeps a failed load's exception: one read that met a locked SQLite
+   database made every later aggro check throw, and each companion that asked was removed.
+   - Files: `quests/QuestsMgr/QuestTalkTruce.cs`, a new test.
+   - Commit: `fb28bff` (2026-10-26). Made by: PerSoPer fork. Seen in: v0.37c.
+   - Status: open upstream.
+3. **A dead companion bot is drawn standing.** The NPC create packet has no dead state, so a kept
+   bot corpse re-sent to a client stood up; a released companion was also revived after the move,
+   leaving a dying copy at the death spot. Trade-off: a sunk body can't be targeted for a rez.
+   - Files: `bots/GameBot.cs`, `packets/Server/PacketLib168.cs`, `PacketLib171.cs`, `PacketLib1124.cs`,
+     a test.
+   - Commit: `ab6a45a` (2026-10-17). Made by: PerSoPer fork. Seen in: v0.35, still in v0.37c.
+   - Status: open upstream. (Upstream 0.38 work on dead gamebots staying where they fall is a
+     different change.)
+4. **Plain bots quote an old trip in nearby chat.** A bot standing still answered with its saved
+   destination or target.
+   - Files: `bots/autonomous/AutonomousBotChatCoordinator.cs` (`GenerateLocalReply`), a test.
+   - Commit: `116220f` (2026-10-23). Made by: PerSoPer fork. Seen in: v0.37c.
+   - Status: open upstream.
+5. **Bot Skalds, Bards and Minstrels overwrite a groupmate's song.** A player's speed chant was
+   replaced by the bot's own song of the same type.
+   - Files: `bots/BotSongTwistPolicy.cs`, `bots/BotBrain.cs`, a test.
+   - Commit: `e510565` (2026-10-23). Made by: PerSoPer fork. Seen in: v0.37c.
+   - Status: open upstream.
+6. **Headless server spins a CPU core when stdin closes.** The console loop did `continue` on a
+   null line.
+   - Files: `CoreServer/Actions/ConsoleStart.cs`.
+   - Commit: `3e3ffd0` (2026-10-02, our first commit). Made by: catastrophic-impact. Seen in:
+     fork point `08ebffe`.
+   - Status: fixed upstream in v0.35 (`c1c465c`, Thomas Farral, 2026-10-05); we kept our own version
+     on the sync.
+7. **An effect ended before its start was processed ticks forever.** Ending an effect removes it
+   from the effect service at once, but its start step waits in a queue and then added it anyway.
+   An ended effect can't end again, so EffectService kept ticking it and its tick time grew all
+   night (0.29 to 1.53 ms in 12 h with ~535 bots). Same leak as fixed in rambodolphin13's
+   DividedRealms fork.
+   - Files: `ECS-Components/EffectListComponent.cs`, a new test.
+   - Commit: the 2026-11-01 effect leak fix. Made by: PerSoPer fork. Seen in: v0.37c.
+   - Status: open upstream.
+
 ## World data and navmeshes (from the v0.37 release)
 
 - Upstream ships its world DB and navmeshes only in release assets, never in git. From 0.37 on there is

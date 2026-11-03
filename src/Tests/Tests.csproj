@@ -52,6 +52,9 @@
     <ItemGroup>
       <Folder Include="IntegrationTests\" />
     </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="UnitTests\Data\intent-audit-*.json" LogicalName="%(Filename)%(Extension)" />
+    </ItemGroup>
     <Target Name="CopyFiles" AfterTargets="AfterBuild">
         <Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptFiles->'$(MSBuildProjectDirectory)\$(OutputPath)\..\scripts\%(RecursiveDir)%(Filename)%(Extension)')" />
         <Copy SourceFiles="@(DbUpdaterFiles)" DestinationFiles="@(DbUpdaterFiles->'$(MSBuildProjectDirectory)\$(OutputPath)\..\scripts\dbupdater\%(RecursiveDir)%(Filename)%(Extension)')" />

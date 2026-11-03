@@ -25,8 +25,8 @@ public static class PersonalityChatter
     /// <summary>Seconds between nearby lines per region at a volume: 15-30 at 50, never under 10. Null = off.</summary>
     public static (double Min, double Max)? LocalGap(int volume) => Gap(volume, 15, 30);
 
-    /// <summary>Seconds between group-chat conversations per group with a player: 45-90 at 50. Null = off.</summary>
-    public static (double Min, double Max)? GroupGap(int volume) => Gap(volume, 45, 90);
+    /// <summary>Seconds between group-chat conversations per group with a player: 90-180 at 50 (45-90 made a group of chatty bots repeat fast). Null = off.</summary>
+    public static (double Min, double Max)? GroupGap(int volume) => Gap(volume, 90, 180);
 
     private static (double Min, double Max)? Gap(int volume, double min, double max)
     {
@@ -81,6 +81,7 @@ public static class PersonalityChatter
         if (FactionGap(volume) is not { } factionGap || LocalGap(volume) is not { } localGap || GroupGap(volume) is not { } groupGap)
             return;
         DateTime now = DateTime.UtcNow;
+        PersoperAsks.Tick(now);
         var typed = PersonalityTypes.Online().Where(pair => pair.Personality.Ambient is { Length: > 0 }).ToList();
         if (typed.Count == 0)
             return;

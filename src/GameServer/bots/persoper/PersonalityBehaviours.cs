@@ -276,8 +276,16 @@ public static class PersonalityBehaviours
             !Rolls(PersoperProperties.LEEROY_BATTLE_CRY_PERCENT, Random.Shared))
             return;
         bot.TempProperties.SetProperty(NextBattleCryKey, now + BattleCryCooldownMs);
-        string cry = BehaviourLines.LeeroyBattleCries[Random.Shared.Next(BehaviourLines.LeeroyBattleCries.Length)];
+        string cry = BattleCry(bot.InternalID, Random.Shared);
         Later(bot, 300, () => AutonomousBotChatCoordinator.SpeakReaction(bot, cry));
+    }
+
+    /// <summary>A battle cry this bot hasn't shouted lately (DialoguePicker), remembered as said.</summary>
+    public static string BattleCry(string botKey, Random random)
+    {
+        string cry = DialoguePicker.Shared.Fresh(BehaviourLines.LeeroyBattleCries, botKey, random);
+        DialoguePicker.Shared.Said(botKey, cry);
+        return cry;
     }
 
     /// <summary>In a group led by a player, with nothing happening, he may run at something on his own.</summary>

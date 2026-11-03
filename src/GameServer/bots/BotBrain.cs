@@ -56,6 +56,7 @@ namespace DOL.AI.Brain
         {
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             ClearAggroList();
             FSM.SetCurrentState(eFSMStateType.FOLLOW);
         }
@@ -587,6 +588,11 @@ namespace DOL.AI.Brain
         private GamePlayer _subscribedAssistedPlayer;
         private GameLiving _orderedPullTarget;
         private bool _returnToFormationAfterPull;
+        // A support bot named in "<bot>, pull this" attacks until the mob is in a fight (or this time passes), then
+        // goes back to its support job.
+        private GameLiving _supportPullTarget;
+        private long _supportPullUntil;
+        public const int SupportPullMs = 15_000;
         private GamePlayer _activityTrackedLeader;
         private int _leaderLastX;
         private int _leaderLastY;
@@ -703,6 +709,44 @@ namespace DOL.AI.Brain
             return true;
         }
 
+        /// <summary>
+        /// "&lt;bot&gt;, pull this": the named bot pulls whatever its role. A tank or attacker pulls as for /pull
+        /// (<see cref="OrderPull"/>); a healer or buffer attacks until the mob is in a fight, at most
+        /// <see cref="SupportPullMs"/>, then goes back to its support job.
+        /// </summary>
+        public virtual bool OrderNamedPull(GameLiving target)
+        {
+            if (!BotPartyRoles.IsSupport(BotBody))
+                return OrderPull(target);
+            if (target == null || !target.IsAlive || !CanAggroTarget(target))
+                return false;
+            _supportPullTarget = target;
+            _supportPullUntil = GameLoop.GameLoopTime + SupportPullMs;
+            _orderedPullTarget = target;
+            _returnToFormationAfterPull = BotBody?.IsPlayerLedGroup == true;
+            AddToAggroList(target, Math.Max(100, target.EffectiveLevel * 10));
+            FSM.SetCurrentState(eFSMStateType.AGGRO);
+            AttackMostWanted();
+            return true;
+        }
+
+        /// <summary>True while a support bot named in a pull still has to make contact; false (and forgotten) after.</summary>
+        internal bool SupportPulling
+        {
+            get
+            {
+                GameLiving target = _supportPullTarget;
+                if (target == null)
+                    return false;
+                if (target.IsAlive && target.ObjectState == GameObject.eObjectState.Active && !target.InCombat &&
+                    GameLoop.GameLoopTime < _supportPullUntil && BotPartyRoles.IsSupport(BotBody))
+                    return true;
+                log.Info($"NAMED_PULL support done bot=\"{Body?.Name}\" target=\"{target.Name}\" contact={target.InCombat}");
+                _supportPullTarget = null;
+                return false;
+            }
+        }
+
         public void AssistPlayerAttack(GameLiving target)
         {
             CompanionEngagementMode.RememberPull(AssistedPlayer, target);
@@ -728,6 +772,7 @@ namespace DOL.AI.Brain
         {
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             ClearAggroList();
             Body.StopAttack();
             Body.StopFollowing();
@@ -743,6 +788,7 @@ namespace DOL.AI.Brain
             if (_orderedPullTarget != target) return;
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             RemoveFromAggroList(target);
             if (!HasAggro)
             {
@@ -794,7 +840,7 @@ namespace DOL.AI.Brain
             BotBody.CharacterClass?.ID == (int)eCharacterClass.Minstrel;
 
         private bool HoldsExclusiveSupportRole() =>
-            BotPartyRoles.IsSupport(BotBody) &&
+            BotPartyRoles.IsSupport(BotBody) && !SupportPulling &&
             ((eCharacterClass?)BotBody?.CharacterClass?.ID != eCharacterClass.Minstrel ||
              RecentDirectAttacker() is not GameLiving attacker ||
              !Body.IsWithinRadius(attacker, Body.MeleeAttackRange + 35));
@@ -1108,6 +1154,15 @@ namespace DOL.AI.Brain
                 return;
             }
 
+            // Told to stay in chat (PersonalityOrders): hold here, capped in time, until "follow" or "come".
+            if (BotBody != null && PersonalityOrders.Holds(BotBody.ObjectID, leader.CurrentRegionID, GameLoop.GameLoopTime))
+            {
+                _ambientWanderMovement = false;
+                if (Body.IsMoving && !HasAggro)
+                    Body.StopMoving();
+                return;
+            }
+
             bool tightInterior = Body.CurrentRegion?.IsDungeon == true;
             bool companionTravel = CompanionFollowPolicy.Applies(BotBody);
             // Do not run native owner-follow and formation orders concurrently.
@@ -1132,6 +1187,8 @@ namespace DOL.AI.Brain
             AutonomousFormation.Offset formation = ambientWander
                 ? AutonomousFormation.ForIdleWander(BotBody.Name, tightInterior, (int)(GameLoop.GameLoopTime / IDLE_WANDER_CYCLE_MS))
                 : AutonomousFormation.For(BotBody.Name, tightInterior);
+            // A mock-offended walk-off (PersonalityWalkOff) pushes the spot far out for a few seconds.
+            formation = PersonalityWalkOff.Adjust(BotBody, leader, formation, GameLoop.GameLoopTime);
             double radians = formation.AngleDegrees * Math.PI / 180d;
             var destination = new Point3D(
                 leader.X + (int)Math.Round(Math.Cos(radians) * formation.Distance),
@@ -1153,11 +1210,55 @@ namespace DOL.AI.Brain
                 _ambientWanderMovement = ambientWander;
                 if (companionTravel && !ambientWander)
                     Body.PathTo(destination, speed);
-                else
+                else if (ambientWander || !TryFollowLeaderAcrossZoneSeam(destination, speed))
                     Body.WalkTo(destination, speed);
             }
             else if (!Body.IsMoving)
                 _ambientWanderMovement = false;
+        }
+
+        private AutonomousZoneBoundaryRouting.Step? _leaderSeamStep;
+        private Zone _leaderSeamFrom, _leaderSeamTo;
+
+        // GameBot.WalkTo only uses the navmesh inside the bot's own zone. A
+        // persistent bot in a human's party whose leader is in another zone
+        // crosses at a validated zone seam, as its own routes do; the straight
+        // walk took it over hills and zone gaps, off the mesh, and the stuck
+        // watchdog then pulled it out of the party.
+        private bool TryFollowLeaderAcrossZoneSeam(Point3D destination, short speed)
+        {
+            if (BotBody is not { IsAutonomousWorldBot: true, IsPlayerLedGroup: true } bot)
+                return false;
+            Zone from = bot.CurrentZone;
+            Zone to = bot.CurrentRegion?.GetZone(destination.X, destination.Y);
+            if (from == null || to == null || from == to)
+                return false;
+
+            Vector3 current = new(bot.X, bot.Y, bot.Z);
+            Vector3 goal = new(destination.X, destination.Y, destination.Z);
+            if (!_leaderSeamStep.HasValue || _leaderSeamFrom != from || _leaderSeamTo != to)
+            {
+                // Failed and solved steps are remembered by the itinerary, so a
+                // repeat on the next follow turn is a cache lookup.
+                _leaderSeamStep = null;
+                if (!AutonomousZoneItinerary.TryNextStep(bot.CurrentRegion, from, to, current, goal,
+                        PathfindingProvider.Instance, out var resolved,
+                        zone => AutonomousRealmBoundary.Allows(bot.Realm, bot.CurrentRegionID, zone.ID)))
+                    return false;
+                _leaderSeamStep = resolved;
+                _leaderSeamFrom = from;
+                _leaderSeamTo = to;
+            }
+
+            AutonomousZoneBoundaryRouting.Step step = _leaderSeamStep.Value;
+            if (Vector3.DistanceSquared(current, step.Inside) <= 96 * 96)
+                bot.WalkTo(step.Outside, speed);
+            else if (bot.movementComponent is NpcMovementComponent mover)
+                mover.PathAcrossValidatedSeam(step.Inside, step.Outside,
+                    to == bot.CurrentRegion.GetZone((int)step.Outside.X, (int)step.Outside.Y) ? goal : null, speed);
+            else
+                bot.PathTo(step.Inside, speed);
+            return true;
         }
 
         private void MaybeIdleRoleplay()
@@ -1470,13 +1571,18 @@ namespace DOL.AI.Brain
 
             MaybeAutonomousWorldChat();
 
-            if (TryHandleAutonomousMerchantService())
+            // A bot storming off after a bad joke (PersonalityWalkOff) is back in a few seconds: no new trips meanwhile.
+            // A GM test hold (/dialogue hold) pauses them the same way.
+            bool walkingOff = PersonalityWalkOff.IsAway(BotBody, GameLoop.GameLoopTime) ||
+                BotBody != null && PersonalityGroupCalls.IsHeld(BotBody.ObjectID, GameLoop.GameLoopTime);
+
+            if (!walkingOff && TryHandleAutonomousMerchantService())
                 return;
 
-            if (TryHandleAutonomousRealmExchange())
+            if (!walkingOff && TryHandleAutonomousRealmExchange())
                 return;
 
-            if (BotBody?.IsAutonomousWorldBot == true && !BotBody.IsPlayerLedGroup)
+            if (BotBody?.IsAutonomousWorldBot == true && !BotBody.IsPlayerLedGroup && !walkingOff)
             {
                 _autonomousWorldController ??= new AutonomousWorldBotController();
                 if (_autonomousWorldController.Tick(this))

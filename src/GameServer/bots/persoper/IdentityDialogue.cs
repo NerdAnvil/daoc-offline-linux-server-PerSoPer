@@ -54,6 +54,10 @@ public sealed class IdentityDialogue
         }
     }
 
+    /// <summary>The "~ ask" sections (question and answers) of the bot's block, in file order.</summary>
+    public IReadOnlyList<DialogueSection> Asks =>
+        _current.Value.Sections.Where(section => section.Name == DialogueFile.AskSection && section.Argument != null).ToList();
+
     private Snapshot Load()
     {
         DialogueFile file = DialogueLibrary.For(_name);
@@ -99,6 +103,9 @@ public sealed class IdentityDialogue
         foreach (DialogueSection section in sections.Where(section => section.Name is "reply" or "cheeky_reply"))
             if (ToIntent(section) == null)
                 problems.Add($"{file.FileName}:{section.LineNumber}: unknown intent '{section.Argument}'");
+        if (name != "persoper")
+            foreach (DialogueSection section in sections.Where(section => section.Name == DialogueFile.AskSection))
+                problems.Add($"{file.FileName}:{section.LineNumber}: only Persoper asks questions for now; '~ ask {section.Argument}' isn't read");
         return problems;
     }
 

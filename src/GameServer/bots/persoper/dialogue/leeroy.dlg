@@ -11,6 +11,164 @@ Strategy: go in. Phase two: see what happens.
 Anyone got a res? Asking for me.
 I'm not reckless, I'm EFFICIENT at dying.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Tell me! TELL ME!
+To CHARGE the other side!
+I dunno! What?!
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}! Come on, there's stuff to pull!
+IN {zone}! Right where the action is!
+Running to {destination}! Can't stop now! [if bot_doing travelling]
+No idea, {0}! I just ran in!
+
+~ reply level
+LEVEL {level} {class}, {0}! Strong enough to pull anything!
+LEVEL {level}! {class}! Let's GO!
+Who cares, {0}? I'm pulling anyway!
+
+~ reply groupstatus
+Grouped! {groupsize} of us, so I'll pull for everyone! [if bot_grouped]
+Solo, {0}! Which means I pull ALL of it! [if not bot_grouped]
+Doesn't matter, {0}! I'm going in!
+
+~ reply activity
+Fighting this {monster}! IT'S MINE! [if bot_doing fighting]
+FIGHTING, {0}! Hang on! [if bot_doing fighting]
+Riding! Too slow! I want to RUN! [if bot_doing riding]
+Following {leader}! Tell me when I can pull! [if bot_doing following]
+Charging toward {destination}! [if bot_doing travelling]
+Resting in {zone}, and it's KILLING me, {0}! [if bot_doing resting]
+Getting ready to pull something huge, {0}!
+
+~ reply groupyes
+YES {0}! Invite me, I'll pull!
+I'M IN! Send the invite, {0}, I'm already running!
+
+~ reply groupno
+Nah {0}, I'm soloing EVERYTHING tonight!
+Can't, {0}, I've got a huge pull lined up!
+
+~ reply groupbusy
+Busy hitting this {monster}! Hang on, {0}! [if bot_doing fighting]
+Riding! Too slow! Ask me when I'm off, {0}! [if bot_doing riding]
+Hang on, {0}, I'm in the middle of something!
+
+~ reply grouphave
+Already pulling for {leader}, {0}!
+Got a group already, {0}! They can't keep up though!
+
+~ reply grouplevel
+I'm level {level}, {0}! Doesn't matter! Wait, it does, never mind!
+We're too far apart in levels, {0}, somebody dies on the first pull!
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+RIGHT BEHIND YOU {0}! Unless I see a mob!
+Following! Go faster, {0}!
+
+~ reply orderstay
+Stay?! Ugh, fine, {0}, but only for a second!
+Okay okay, I'm staying, {0}, this is torture!
+
+~ reply ordercome
+COMING {0}!
+On my way, {0}, is there a pull?!
+
+~ reply orderno
+Stay? Nah, {0}, there's mobs over there!
+Can't stay, {0}, my legs won't let me!
+
+~ reply orderbusy
+Busy hitting this {monster}, {0}! Hang on! [if bot_doing fighting]
+Riding! I'll come when this horse stops, {0}! [if bot_doing riding]
+Hang on, {0}, I'm in the middle of something!
+
+~ reply ordernot
+You're not my leader, {0}! My leader says charge!
+Ha, you can't tell me what to do, {0}, we're not even grouped!
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine, {0}, more mobs for me then!
+Leaving! Don't miss me too much, {0}!
+
+~ reply orderassist
+ASSISTING! Finally, {0}!
+On it, {0}, let's GO!
+
+~ reply orderrest
+Rest?! Ugh, fine, {0}, ten seconds!
+Sitting, {0}, but I'm not happy about it!
+
+~ reply ordernotarget
+Assist on WHAT, {0}? Pull something!
+There's nothing to hit, {0}, that's the whole problem!
+
+~ reply orderfull
+I'm FULL, {0}, let's pull instead!
+Rest? I'm topped up, {0}, go go go!
+
+~ reply orderaway
+Nope, still out, {0}, that joke was worse than a wipe!
+I'm OUT, {0}, ask me later!
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+PULLING! Finally, {0}!
+Mine! Watch this, {0}!
+
+~ reply orderpullwhat
+Pull WHAT, {0}? Pick something!
+Target something, {0}, I'm ready!
+
+~ reply orderpulleasy
+That thing? It's not even worth a charge, {0}!
+Too easy, {0}! Find me something BIGGER!
+
+~ reply groan
+NOOO!
+Ugh! Worse than a wipe!
+
+~ reply jokelaugh
+HAHA! Good one!
+Ha! I'm telling everyone that!
+
+~ reply jokeask
+Why did I run into the room? BECAUSE IT WAS THERE!
+What's the best plan? Charging! Second best? More charging!
+Knock knock! Who cares, I'm already through the door!
+
+~ reply jokeback
+OOH! I've got one!
+My turn! My turn!
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+HA!
+Haha! Ok, let's go!
+
+~ reply sorry
+No worries, let's go!
+Eh, it's fine!
+
+~ reply disagree
+Ok, ok!
+Fine, I'll just run in anyway.
+
+~ reply away
+Hurry! I'm not waiting!
+Ok! I'm gonna pull something.
+
+~ reply back
+WB! Let's GO!
+{0}! You're back! Pulling!
+
 ~ reply greeting
 {0}! Let's GO!
 Hey {0}! Wanna pull something big?
@@ -331,119 +489,3 @@ Running in shirtless next time. For speed. Only speed.
 I don't flirt. I charge. Same energy.
 Nobody wants to hear my stories. Too bad, they all end in a res.
 Watch my good side. It's the one facing the enemy.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): charges first, thinks never; at least he has a chicken. ---
-
-=== therioustham
-~ ambient
-THERIOUS THAAAM! Sorry. Practising.
-Where's my chicken? Has anyone seen my chicken?
-Wait. There are no chicken pets in this game?! Who decided that?!
-Big Troll, big hammer, small plan. Perfect.
-Thunder first, questions never!
-I don't pull mobs. I invite them all at once.
-
-~ opener fun
-Taught my battle cry to a guard in {zone}. He's not allowed to use it.
-My chicken would love {zone}. If I had a chicken. WHY CAN'T I HAVE A CHICKEN.
-New battle cry: THERIOUS THAAAM! Rate it out of ten. It's a ten.
-
-~ opener dungeons
-Ran into a dungeon in {zone}. Ran out faster. Still counts!
-Dungeons are just mob buffets with doors. CHARGE!
-Lost the group in a dungeon. They're probably lost. Not me. I'm charging.
-
-~ reply greeting
-{0}! THERIOUS THAAAM! That means hello!
-{0}! Got a chicken? No? Me neither!
-
-~ reply grouping
-I'm in, {0}! I'll go first! I always go first!
-Group up, {0}! I'll pull! All of them!
-
-~ ding
-LEVEL {level}! THERIOUS THAAAM!
-Ding! Still no chicken, but more thunder!
-
-~ own_death
-Worth it! Mostly!
-That was the charge of a lifetime! A short lifetime!
-
-~ drop
-{item}! Does it make me charge faster?!
-
-=== theriousthamm
-~ ambient
-THERIOUS THAAAMM! For Albion! And for my chicken!
-Has anyone in Camelot seen my chicken?
-Hold on. Paladins don't get chicken pets either?! Outrageous!
-Chant on, sword up, brain off. CHARGE!
-The plan is the charge. The charge is the plan.
-I put on my heaviest plate so I can run into more things at once.
-
-~ opener fun
-Taught my battle cry to the knights in {zone}. They've asked me to leave.
-My chicken would look grand in a little helmet in {zone}. If I HAD A CHICKEN.
-New battle cry: THERIOUS THAAAMM! Two m's. For extra charge.
-
-~ opener dungeons
-Charged into a dungeon in {zone}. Chanted all the way in. Died all the way out.
-Dungeon? I see a hallway full of glory! CHARGE!
-The group said wait at the door. I didn't hear them. I was charging.
-
-~ reply greeting
-{0}! THERIOUS THAAAMM! That's Albish for hello!
-{0}! Have you seen a chicken? Any chicken?
-
-~ reply grouping
-Count me in, {0}! I'll lead the charge! I always do!
-Group? Splendid, {0}! I'll pull. All of it!
-
-~ ding
-LEVEL {level}! THERIOUS THAAAMM!
-Ding! More chants, more charging, still no chicken!
-
-~ own_death
-For Albion! And also, ouch!
-Glorious! Short, but glorious!
-
-~ drop
-{item}! Is it shiny enough to charge in?!
-
-=== theriousthamh
-~ ambient
-THERIOUS THAAAMH! The h is silent. The charge is not!
-Anyone in Tir na Nog seen my chicken?
-No chicken pets? Not even in Hibernia? Not even a tiny magic one?!
-Big sword, big shout, no plan. Champion stuff.
-I debuff them, then I charge. Mostly I charge.
-I don't flank. I go straight through.
-
-~ opener fun
-Taught my battle cry to the faeries in {zone}. They cried for real.
-My chicken would love the meadows in {zone}. If there were chickens. THERE ARE NO CHICKENS.
-New battle cry: THERIOUS THAAAMH! Silent h, loud everything else.
-
-~ opener dungeons
-Charged a dungeon in {zone}. Found the boss. Boss found me back.
-Dungeon in {zone}? More like a charging lane!
-Our healer said slow down. I sped up. Healer's still running.
-
-~ reply greeting
-{0}! THERIOUS THAAAMH! Means hello! And charge!
-{0}! Got a chicken? Know a chicken? Anything?
-
-~ reply grouping
-I'm in, {0}! Point me at something big!
-Group, {0}? I'll pull! Everything in sight!
-
-~ ding
-LEVEL {level}! THERIOUS THAAAMH!
-Ding! Still chickenless, still charging!
-
-~ own_death
-Charged a bit too hard. Is there such a thing?
-Worth every step! All twelve of them!
-
-~ drop
-{item}! Will it help me charge?!

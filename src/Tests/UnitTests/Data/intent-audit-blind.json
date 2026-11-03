@@ -1,0 +1,32 @@
+{
+  "about": "The owner's blind set (2026-10-31): written without seeing the intents, scored but never tuned against. 'expect' maps the owner's 'what I meant'; names the game doesn't have (activity, howgoing, ...) count as meanings with no intent yet.",
+  "lines": [
+    { "text": "whats every one up to?", "expect": "activity", "note": "a few bots say what they're doing" },
+    { "text": "whacha doin?", "expect": "activity", "note": "one bot, a fuller answer" },
+    { "text": "How are you doing/how ya doin?", "expect": "howgoing", "note": "how the play session is going" },
+    { "text": "Shnacki, do you know a good joke?", "expect": "jokeask", "to": "Shnacksize" },
+    { "text": "ne one want to grp?", "expect": "grouping" },
+    { "text": "who wants to farm?", "expect": "grouping" },
+    { "text": "who wants to live forever?", "expect": "grouping" },
+    { "text": "anyone want to go spelunking?", "expect": "dungeon" },
+    { "text": "hey eagle, what was your worst case?", "expect": "question", "to": "Eaglefang", "note": "asking for a medical or war story" },
+    { "text": "whos up for Spindle?", "expect": "dungeon", "note": "group for Spindelhalla" },
+    { "text": "Any one want to kill some spiders?", "expect": "dungeon", "note": "group for Spindelhalla" },
+    { "text": "Shnacki, can you leave the group?", "expect": "command", "to": "Shnacksize", "note": "asking them to leave the group" },
+    { "text": "Shnacki, can you make space for Barb?", "expect": "command", "to": "Shnacksize", "note": "asking them to leave the group" },
+    { "text": "Who wants to spill some elf blood?", "expect": "rvr" },
+    { "text": "Who wants to spill some troll blood?", "expect": "rvr" },
+    { "text": "Who wants to spill some Alb blood?", "expect": "rvr" },
+    { "text": "Any one up for xp?", "expect": "grouping" },
+    { "text": "wanna do a quest?", "expect": "grouping" },
+    { "text": "hows things?", "expect": "howgoing", "note": "how the play session is going" },
+    { "text": "hows the weather?", "expect": "question", "note": "the current in-game weather" },
+    { "text": "do you have the gwumpies?", "expect": "mood", "note": "is the bot mad at the player or someone" },
+    { "text": "did you see that?", "expect": "recentevent", "note": "the latest big thing, e.g. an RvR death announced" },
+    { "text": "how bout dem bears, Satin?", "expect": "outofworldchat", "to": "NataSehS", "note": "their sportball team" },
+    { "text": "you just gonna sit there??", "expect": "command", "note": "pull or heal, by role" },
+    { "text": "where ya headed?", "expect": "activity", "note": "what they're going to do next" },
+    { "text": "How did you get up there?!", "expect": "question", "note": "how they got to a place" },
+    { "text": "wtf is that?", "expect": "question", "note": "what a mob is" }
+  ]
+}

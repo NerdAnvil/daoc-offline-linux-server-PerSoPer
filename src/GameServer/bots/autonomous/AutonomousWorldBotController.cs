@@ -3092,6 +3092,7 @@ namespace DOL.GS
                 // other melee classes. Only dungeons and audited risky camps
                 // require the extra reversible approach proof below.
                 .Where(npc => GameServer.ServerRules.IsAllowedToAttack(bot, npc, true))
+                .Where(npc => !AutonomousPveTargetPolicy.IsEngagedByOutsider(bot, npc))
                 .OrderByDescending(npc => _groupDirective?.IsDynamic == true ? npc.EffectiveLevel : 0)
                 .ThenBy(npc => bot.GetDistanceTo(npc) + Math.Abs((int)ConLevels.GetConColor(bot.GetConLevel(npc))) * 220)
                 // Run native checks only after cheap filters and sorting, and
@@ -4845,7 +4846,7 @@ namespace DOL.GS
         // Level 0 creatures are real XP targets (5 XP each; blue to a level 1
         // character), so they are no longer excluded. Pets, guards, service
         // NPCs and untargetable/peaceful objects remain excluded below.
-        private static bool IsExperienceMonster(GameNPC npc) =>
+        internal static bool IsExperienceMonster(GameNPC npc) =>
             npc?.ObjectState is GameObject.eObjectState.Active && npc.Realm == eRealm.None && npc.Brain != null &&
             (npc.Flags & (GameNPC.eFlags.PEACE | GameNPC.eFlags.CANTTARGET)) == 0 &&
             npc is not GameMerchant && npc is not GameGuard && npc is not GameTaxi &&

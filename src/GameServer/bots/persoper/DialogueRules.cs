@@ -15,7 +15,8 @@ public sealed record DialogueCondition(string Fact, bool Negated, string Operato
 /// Again, {0}? [if player_dead, deaths_today >= 3] [once]
 /// Nice drop! [if recent loot] [cooldown 11m]
 /// </code>
-/// Conditions are about the player the bot is talking to (see <see cref="DialogueFacts"/>).
+/// Conditions are about the player the bot is talking to (see <see cref="DialogueFacts"/>), except
+/// bot_doing and bot_grouped, which are about the bot itself.
 /// </summary>
 public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Conditions, bool Once, TimeSpan Cooldown)
 {
@@ -25,7 +26,7 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     public static readonly TimeSpan MaxCooldown = TimeSpan.FromHours(24);
 
     /// <summary>Facts that are true or false: "[if player_dead]", "[if not in_combat]".</summary>
-    public static readonly IReadOnlySet<string> YesNoFacts = new HashSet<string> { "player_dead", "in_combat" };
+    public static readonly IReadOnlySet<string> YesNoFacts = new HashSet<string> { "player_dead", "in_combat", "bot_grouped" };
 
     /// <summary>Facts compared with a number: "[if health < 30]".</summary>
     public static readonly IReadOnlySet<string> NumberFacts = new HashSet<string> { "health", "group_size", "deaths_today" };
@@ -36,10 +37,21 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
         ["mood"] = new HashSet<string> { "warm", "neutral", "cool" },
         ["time_of_day"] = new HashSet<string> { "morning", "day", "evening", "night" },
         ["recent"] = new HashSet<string> { "death", "kill", "loot", "level_up" },
+        // The bot's own task, for its answers to "what are you doing?" (PersonalityStateAnswers).
+        ["bot_doing"] = new HashSet<string> { "fighting", "riding", "following", "travelling", "resting" },
     };
 
     /// <summary>Facts with any text value: "[if zone camelot city]", "[if nearby kobaldjovi]".</summary>
-    public static readonly IReadOnlySet<string> TextFacts = new HashSet<string> { "zone", "nearby" };
+    public static readonly IReadOnlySet<string> TextFacts = new HashSet<string> { "zone", "nearby", LikesFact };
+
+    /// <summary>"[if player_likes metal]": the player's saved answer to some question is "metal" (see DialogueFile's ask).</summary>
+    public const string LikesFact = "player_likes";
+
+    /// <summary>
+    /// Word lists a voice test checks a character's lines against. "[allow knightly]" lets one line
+    /// use such a word anyway (a deliberate slip); every other line is still checked.
+    /// </summary>
+    public static readonly IReadOnlySet<string> KnownAllows = new HashSet<string> { "knightly", "gaelic", "norse" };
 
     /// <summary>The most specific line wins: the one with the most conditions.</summary>
     public int Specificity => Conditions.Count;
@@ -48,23 +60,42 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
     /// Splits the tags off the end of a line. Returns the plain text and the rule (null when the line
     /// has no tags). Problems go to <paramref name="errors"/> as plain messages.
     /// </summary>
-    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors)
+    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors) => Split(line, errors, out _);
+
+    /// <summary>
+    /// As <see cref="Split(string, List{string})"/>, and also returns the line's "[allow ...]" tags
+    /// (empty when it has none). An allow tag is a note for the voice tests, not a rule, so it never
+    /// makes a rule on its own and may go on a line in any section.
+    /// </summary>
+    public static (string Text, DialogueRule Rule) Split(string line, List<string> errors, out IReadOnlySet<string> allows)
     {
         var conditions = new List<DialogueCondition>();
+        var allowed = new HashSet<string>(StringComparer.Ordinal);
+        allows = allowed;
         bool once = false;
         TimeSpan cooldown = TimeSpan.Zero;
         bool tagged = false;
+        bool anyTag = false;
         string text = line;
         for (int i = 0; i < 4; i++)
         {
             Match tag = TrailingTag().Match(text);
             if (!tag.Success)
                 break;
-            tagged = true;
+            anyTag = true;
             text = text[..tag.Index].TrimEnd();
             string body = tag.Groups["body"].Value.Trim();
             string keyword = body.Split(' ', 2)[0].ToLowerInvariant();
             string rest = body.Length > keyword.Length ? body[keyword.Length..].Trim() : string.Empty;
+            if (keyword == "allow")
+            {
+                if (KnownAllows.Contains(rest.ToLowerInvariant()))
+                    allowed.Add(rest.ToLowerInvariant());
+                else
+                    errors.Add($"unknown allow '{rest}' (known: {string.Join(", ", KnownAllows.Order())})");
+                continue;
+            }
+            tagged = true;
             switch (keyword)
             {
                 case "if" when conditions.Count > 0: errors.Add("more than one [if ...]; put all conditions in one, split by commas"); break;
@@ -77,9 +108,9 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
         }
         if (TrailingTag().IsMatch(text))
             errors.Add("more than 4 tags on one line");
-        if (tagged && text.Length == 0)
+        if (anyTag && text.Length == 0)
             errors.Add("a line with tags but no text");
-        return tagged ? (text, new DialogueRule(conditions, once, cooldown)) : (line, null);
+        return (anyTag ? text : line, tagged ? new DialogueRule(conditions, once, cooldown) : null);
     }
 
     private static IEnumerable<DialogueCondition> ParseConditions(string text, List<string> errors)
@@ -136,6 +167,8 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
             string value = match.Groups["value"].Value.Trim();
             if (value.Length == 0 || match.Groups["op"].Success)
                 error = $"'{fact}' needs a name, for example [if {fact} camelot city]";
+            else if (fact == LikesFact && (value == DialogueFile.OtherAnswer || !LikedWord().IsMatch(value)))
+                error = $"'{fact}' needs one answer word from an ask (not '{DialogueFile.OtherAnswer}'), for example [if {fact} metal]";
             else
                 return new DialogueCondition(fact, false, null, 0, value);
         }
@@ -165,6 +198,9 @@ public sealed partial record DialogueRule(IReadOnlyList<DialogueCondition> Condi
 
     [GeneratedRegex(@"^(?<n>\d+)\s*(?<unit>[smh])$")]
     private static partial Regex Duration();
+
+    [GeneratedRegex(@"^[a-z0-9_-]{1,32}$")]
+    private static partial Regex LikedWord();
 }
 
 /// <summary>
@@ -178,6 +214,9 @@ public sealed class DialogueFacts
     public string BotId { get; init; }
     public string PlayerId { get; init; }
 
+    /// <summary>The speaker's realm: which name a {bot:...} in its line gets (DialogueBotNames).</summary>
+    public eRealm? Realm { get; init; }
+
     public bool? PlayerDead { get; init; }
     public bool? InCombat { get; init; }
     public int? Health { get; init; }
@@ -189,8 +228,17 @@ public sealed class DialogueFacts
     public IReadOnlySet<string> Recent { get; init; }
     public IReadOnlySet<string> Nearby { get; init; }
 
+    /// <summary>The player's saved answers to the bots' questions, as the answer words ("metal"); never "other".</summary>
+    public IReadOnlySet<string> Likes { get; init; }
+
+    /// <summary>The bot's own state, not the player's: what it is doing (PersonalityStateAnswers.Doing) and whether it is in a group.</summary>
+    public string BotDoing { get; init; }
+    public bool? BotGrouped { get; init; }
+
     public bool Holds(DialogueCondition condition) => condition.Fact switch
     {
+        "bot_doing" => BotDoing == condition.Value,
+        "bot_grouped" => BotGrouped is { } grouped && grouped != condition.Negated,
         "player_dead" => PlayerDead is { } dead && dead != condition.Negated,
         "in_combat" => InCombat is { } fighting && fighting != condition.Negated,
         "health" => Compare(Health, condition),
@@ -201,6 +249,7 @@ public sealed class DialogueFacts
         "zone" => string.Equals(Zone, condition.Value, StringComparison.OrdinalIgnoreCase),
         "recent" => Recent?.Contains(condition.Value) == true,
         "nearby" => Nearby?.Contains(condition.Value) == true,
+        DialogueRule.LikesFact => Likes?.Contains(condition.Value) == true,
         _ => false,
     };
 
@@ -228,13 +277,15 @@ public sealed class DialogueFacts
 /// Picks a line from a pool by the rules (docs/DIALOGUE-DESIGN.md, "How a line is picked"):
 /// drop lines whose conditions are false, [once] lines already said to this player and lines on
 /// cooldown; keep the most specific; skip this bot's recent lines where possible; pick at random.
+/// The recent lines are one memory per bot for everything it says in chat (openers, topic
+/// answers, reactions and replies), so a line only comes back once the others have had a turn.
 /// What it remembers lives in memory only, so it starts fresh when the server restarts.
 /// </summary>
 public sealed class DialoguePicker
 {
     /// <summary>Lines looked at per pick, lines remembered as recent per bot, and entries remembered at most.</summary>
     public const int MaxPool = 2000;
-    public const int RecentPerBot = 4;
+    public const int RecentPerBot = 40;
     public const int MaxRemembered = 20000;
 
     public static readonly DialoguePicker Shared = new();
@@ -273,12 +324,32 @@ public sealed class DialoguePicker
             if (allowed.Count == 0)
                 return null;
 
-            List<string> recent = _recent.GetValueOrDefault(botKey);
-            var fresh = recent == null ? allowed : allowed.Where(candidate => !recent.Contains(candidate.Line)).ToList();
-            (string line, DialogueRule rule) picked = (fresh.Count > 0 ? fresh : allowed)[random.Next(fresh.Count > 0 ? fresh.Count : allowed.Count)];
+            (string line, DialogueRule rule) picked = Choose(allowed, candidate => candidate.Line, botKey, random);
             Remember(picked.line, picked.rule, botKey, playerKey, now);
             return picked.line;
         }
+    }
+
+    /// <summary>
+    /// A random line of the pool this bot hasn't said lately, else the one it said longest ago;
+    /// null for an empty pool. Not remembered until <see cref="Said"/> (the caller may still drop it).
+    /// </summary>
+    public string Fresh(IReadOnlyList<string> pool, string botKey, Random random)
+    {
+        if (pool is not { Count: > 0 })
+            return null;
+        random ??= Random.Shared;
+        lock (_lock)
+            return Choose(pool.Take(MaxPool).ToList(), line => line, botKey ?? string.Empty, random);
+    }
+
+    /// <summary>Remembers a line as said by this bot, so Fresh and Pick skip it for a while.</summary>
+    public void Said(string botKey, string line)
+    {
+        if (string.IsNullOrEmpty(line))
+            return;
+        lock (_lock)
+            RememberRecent(botKey ?? string.Empty, line);
     }
 
     /// <summary>Forgets everything said (tests).</summary>
@@ -308,19 +379,33 @@ public sealed class DialoguePicker
             _saidOnce.Clear();
         if (_cooldownUntil.Count >= MaxRemembered)
             _cooldownUntil.Clear();
-        if (_recent.Count >= MaxRemembered)
-            _recent.Clear();
-
         if (rule?.Once == true)
             _saidOnce.Add(OnceKey(botKey, playerKey, line));
         if (rule?.Cooldown > TimeSpan.Zero)
             _cooldownUntil[CooldownKey(botKey, line)] = now + rule.Cooldown;
+        RememberRecent(botKey, line);
+    }
+
+    private void RememberRecent(string botKey, string line)
+    {
+        if (_recent.Count >= MaxRemembered)
+            _recent.Clear();
         if (!_recent.TryGetValue(botKey, out List<string> recent))
             _recent[botKey] = recent = [];
         recent.Remove(line);
         recent.Add(line);
         if (recent.Count > RecentPerBot)
             recent.RemoveAt(0);
+    }
+
+    /// <summary>A random candidate this bot hasn't said lately; when it said them all, the one said longest ago.</summary>
+    private T Choose<T>(List<T> candidates, Func<T, string> lineOf, string botKey, Random random)
+    {
+        List<string> recent = _recent.GetValueOrDefault(botKey);
+        if (recent == null)
+            return candidates[random.Next(candidates.Count)];
+        var fresh = candidates.Where(candidate => !recent.Contains(lineOf(candidate))).ToList();
+        return fresh.Count > 0 ? fresh[random.Next(fresh.Count)] : candidates.MinBy(candidate => recent.IndexOf(lineOf(candidate)));
     }
 
     private static string OnceKey(string botKey, string playerKey, string line) => botKey + "\n" + playerKey + "\n" + line;

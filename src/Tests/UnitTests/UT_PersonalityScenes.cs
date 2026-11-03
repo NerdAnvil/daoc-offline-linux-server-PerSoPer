@@ -73,8 +73,19 @@ public class UT_PersonalityScenes
         Assert.That(PairScenes.For("joker", "joker"), Is.Null);
         Assert.That(PairScenes.RivalsOf("loner"), Is.EquivalentTo(new[] { "joker" }));
         Assert.That(PairScenes.RivalsOf("nobody"), Is.Empty);
-        foreach (TypePair pair in PairScenes.All)
+        foreach (TypePair pair in PairScenes.All.Where(pair => pair.Rival != PairScenes.AnyRival))
             Assert.That(PersonalityLines.All.Keys, Does.Contain(pair.Lead).And.Contain(pair.Rival));
+        foreach (TypePair pair in PairScenes.All.Where(pair => pair.Rival == PairScenes.AnyRival))
+            Assert.That(PersonalityLines.IsCharacterFile(pair.Lead), pair.Lead);
+    }
+
+    [Test]
+    public void Shempenstein_HasThePalBuddyGuyBit_AndACrowd()
+    {
+        TypePair pair = PairScenes.ForCharacter("shempenstein");
+        Assert.That(pair.Scenes, Has.Some.Matches<SceneScript>(scene => scene.Speakers == 2 && !scene.Cheeky));
+        Assert.That(pair.Scenes.All(scene => scene.Lines[1].Text == "I'm not your pal, buddy."), Is.True);
+        Assert.That(pair.HasCrowd, Is.True);
     }
 
     [Test]
@@ -101,7 +112,8 @@ public class UT_PersonalityScenes
     [Test]
     public void EveryPair_HasAShortScene_WithoutAThirdSpeakerOrCheek()
     {
-        foreach (TypePair pair in PairScenes.All)
+        // A character's own scenes fall back to any size (PersonalityScenes.PlayCharacterScene), so only type pairs need a short one.
+        foreach (TypePair pair in PairScenes.All.Where(pair => pair.Rival != PairScenes.AnyRival))
             Assert.That(pair.Scenes.Any(s => s.Size == eSceneSize.Short && s.Speakers == 2 && !s.Cheeky), pair.Lead);
     }
 
@@ -238,5 +250,88 @@ public class UT_PersonalityScenes
                 Assert.That(cheeky.Any(raw => PersonalityReactions.Fill(raw, Full, "Alda") == line.Text ||
                     PersonalityReactions.Fill(raw, Full, "Bryn") == line.Text), Is.False, line.Text);
         }
+    }
+
+    private static readonly string[] Laughs = ["Ha! Good one, {a}.", "Heh."];
+    private static readonly string[] Grumbles = ["Children, the lot of you."];
+
+    [TestCase(20)]
+    [TestCase(4)]
+    public void PlanCrowd_OpensWithTheBit_EveryoneEnds_AboutAMinute(int size)
+    {
+        for (int seed = 0; seed < 50; seed++)
+        {
+            var plan = PersonalityScenes.PlanCrowd("Sure thing, pal.", size, Laughs, Grumbles, "Shempenstein", new Random(seed), ["wtf is happening"]);
+            Assert.That(plan[0], Is.EqualTo((0, "Sure thing, pal.", 0)));
+            Assert.That(plan[1], Is.EqualTo((1, "I'm not your pal, buddy.", plan[1].DelayMs)));
+            Assert.That(plan[2].Speaker, Is.Zero);
+            Assert.That(plan[2].Line, Is.EqualTo("I'm not your buddy, guy."));
+            Assert.That(plan[3].Line, Is.EqualTo("I'm not your guy, pal."));
+
+            var chain = plan.Take(plan.Count - size).ToList();
+            for (int i = 1; i < chain.Count; i++)
+                Assert.That(chain[i].Speaker, Is.Not.EqualTo(chain[i - 1].Speaker), "nobody answers themself");
+            Assert.That(chain[1].DelayMs, Is.GreaterThanOrEqualTo(3_500), "a beat before the chain starts");
+            // Someone who hadn't spoken asks after five chain lines; in a small crowd everyone may have spoken by then.
+            int asked = chain.FindIndex(step => step.Line == "wtf is happening");
+            if (size == 20 || asked >= 0)
+            {
+                Assert.That(asked, Is.EqualTo(1 + PersonalityScenes.ConfusedAfter));
+                Assert.That(chain.Take(asked).Select(step => step.Speaker), Does.Not.Contain(chain[asked].Speaker));
+            }
+            var ends = plan.Skip(chain.Count).ToList();
+            Assert.That(ends.Select(step => step.Speaker), Is.EquivalentTo(Enumerable.Range(0, size)), "everyone ends once, the character last");
+            Assert.That(ends[^1].Speaker, Is.Zero);
+            Assert.That(ends[^1].Line, Does.Not.Contain("Shempenstein"), "the character doesn't name itself");
+            int grumbles = ends.Count(step => step.Line == Grumbles[0]);
+            Assert.That(grumbles, Is.EqualTo(size >= 5 ? Math.Max(1, (size - 1) / 5) : 0), "a few grumble");
+
+            int seconds = plan.Sum(step => step.DelayMs) / 1000;
+            Assert.That(seconds, Is.InRange(40, 85));
+            Assert.That(plan.Count, Is.LessThanOrEqualTo(2 + PersonalityScenes.MaxCrowdChain + PersonalityScenes.MaxCrowd));
+        }
+    }
+
+    [Test]
+    public void PlanCrowd_EndingLines_DontRepeatUntilAllAreSaid()
+    {
+        string[] laughs = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+        var plan = PersonalityScenes.PlanCrowd("Hi, pal.", 10, laughs, Grumbles, "Shemp", new Random(3));
+        var said = plan.Select(step => step.Line).Where(laughs.Contains).ToList();
+        Assert.That(said, Has.Count.EqualTo(9));
+        Assert.That(said, Is.Unique);
+    }
+
+    [Test]
+    public void ChainLine_FollowsPalBuddyGuy_AndIsRecognised()
+    {
+        Assert.That(Enumerable.Range(0, 4).Select(PersonalityScenes.ChainLine),
+            Is.EqualTo(new[] { "I'm not your pal, buddy.", "I'm not your buddy, guy.", "I'm not your guy, pal.", "I'm not your pal, buddy." }));
+        Assert.That(PersonalityScenes.IsChainLine("I'm not your guy, pal."), Is.True);
+        Assert.That(PersonalityScenes.IsChainLine("I'm not your anything. Leave me out of it."), Is.False);
+    }
+
+    [Test]
+    public void PlanCrowd_CapsTheCrowdAtTwenty()
+    {
+        var plan = PersonalityScenes.PlanCrowd("Hi, pal.", 50, Laughs, Grumbles, "Shemp", new Random(1));
+        Assert.That(plan.Max(step => step.Speaker), Is.LessThan(PersonalityScenes.MaxCrowd));
+    }
+
+    [Test]
+    public void PlanTopicScene_WithAMemoryKey_ABotDoesNotCloseTwoScenesWithTheSameLine()
+    {
+        // "Exit, stage left." closed two scenes in a row (2026-10-26): each scene only knew its own lines.
+        var random = new Random(3);
+        string key = "test-joker-" + Guid.NewGuid();
+        var voices = new List<SceneVoice> { new("Alda", "joker", Full, key), new("Bryn", "loner", Full) };
+        HashSet<string> closers = SceneLines.All["joker"].Closers.Select(line => line.Replace("{0}", "Bryn")).ToHashSet();
+        var said = new List<string>();
+        for (int scene = 0; scene < 5; scene++)
+            said.AddRange(PersonalityScenes.PlanTopicScene(eSceneSize.Medium, eChatTopic.Xp, voices, toneDown: true, random)
+                .Where(line => line.Speaker == 0).Select(line => line.Text));
+        List<string> saidClosers = said.Where(closers.Contains).ToList();
+        Assert.That(saidClosers, Has.Count.GreaterThanOrEqualTo(3), "the joker closed most of the scenes");
+        Assert.That(saidClosers, Is.Unique, "no closer twice while it has others left");
     }
 }

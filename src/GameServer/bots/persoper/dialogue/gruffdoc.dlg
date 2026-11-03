@@ -2,7 +2,8 @@
 # The type block is the same doctor in every realm: a former army field-hospital medic, clipped
 # and blunt, who says "Sit still", "Walk it off" and "Don't make me patch you twice". Serious
 # when things go wrong, a softy underneath who hates admitting it. Gender is random, so no line
-# uses he or she; all lines speak as "I". The realm blocks below only add a little realm flavour.
+# uses he or she; all lines speak as "I". Its named character, with its realm flavour, is in
+# eaglefang.dlg.
 === gruffdoc
 
 ~ ambient
@@ -12,6 +13,164 @@ Slow day. Good. Slow days mean nobody's bleeding. Time for a martini.
 Don't thank me. Just stay out of trouble. Please.
 Seen worse. Seen a lot worse. Let's leave it there.
 Not soft. Just tired of patching people up.
+
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Go on.
+Don't know. Tell me.
+Concussion? It's usually a concussion.
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Close enough to patch you up.
+In {zone}, where the wounded are.
+Moving to {destination}, so don't get hurt till I'm back. [if bot_doing travelling]
+Where I'm needed, {0}. That's all you need to know.
+
+~ reply level
+Level {level} {class}, {0}. Old enough to have seen worse.
+Level {level}, {class}, and I've mended every one of those levels.
+High enough, {0}. Sit still.
+
+~ reply groupstatus
+In a group of {groupsize}, and I'm watching every health bar. [if bot_grouped]
+On my own, {0}. Nobody to patch but me. [if not bot_grouped]
+Ask me when someone's bleeding, {0}.
+
+~ reply activity
+Fighting this {monster}. Stay back, {0}. [if bot_doing fighting]
+Busy, {0}! Keep your head down. [if bot_doing fighting]
+Riding, and I hate horses, they kick. [if bot_doing riding]
+Following {leader}, close enough to reach them. [if bot_doing following]
+Headed for {destination}. Try not to need me. [if bot_doing travelling]
+Resting in {zone} while nobody's bleeding, {0}. [if bot_doing resting]
+My job, {0}. Somebody always needs mending.
+
+~ reply groupyes
+Fine, {0}. Invite me, and stay where I can reach you.
+Count me in, {0}, somebody has to keep you breathing.
+
+~ reply groupno
+Not tonight, {0}. I've patched enough fools this week.
+No, {0}. Find another healer, I need a rest.
+
+~ reply groupbusy
+Fighting this {monster}, {0}, ask me when it's down. [if bot_doing fighting]
+On a horse, {0}, and it already kicked me twice. [if bot_doing riding]
+Busy, {0}. Later.
+
+~ reply grouphave
+Already keeping {leader} and the rest alive, {0}.
+Got a group, {0}, and they bleed plenty without you.
+
+~ reply grouplevel
+I'm {level}, {0}, too far off your level for my heals to fit.
+Levels too far apart, {0}. Someone would die, and I'd get blamed.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following, {0}, stay where I can reach you.
+Right behind you, {0}, try not to run into anything.
+
+~ reply orderstay
+Holding here, {0}, don't wander off and get yourself hurt.
+Fine, I'll wait, {0}, call if you need patching up.
+
+~ reply ordercome
+Coming, {0}, what did you break?
+On my way, {0}, keep still.
+
+~ reply orderno
+No, {0}, I don't let my patients out of my sight.
+I'm not leaving you alone out there, {0}.
+
+~ reply orderbusy
+Fighting this {monster}, {0}, give me a moment. [if bot_doing fighting]
+On a horse, {0}, and it doesn't listen either. [if bot_doing riding]
+Busy, {0}, later.
+
+~ reply ordernot
+You're not my leader, {0}, find your own healer.
+I'm not in your group, {0}, so no.
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Fine, {0}, I'm off, try to stay alive without me.
+Leaving, {0}, and don't call me when you're bleeding.
+
+~ reply orderassist
+On it, {0}, and don't take more hits than you need.
+Assisting, {0}, with one eye on your health.
+
+~ reply orderrest
+About time, {0}, sit down and let it mend.
+Resting, {0}, and you should too.
+
+~ reply ordernotarget
+Assist on what, {0}? You're not fighting anything.
+There's nothing to hit, {0}, so sit still.
+
+~ reply orderfull
+I'm fine, {0}, it's you I worry about.
+Don't need it, {0}, I'm topped up.
+
+~ reply orderaway
+Not after that joke, {0}, I need a minute.
+I said I'm out, {0}, go bother someone else for a bit.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Pulling, {0}, and don't make me regret it.
+Fine, {0}, I'll pull, you heal yourselves first.
+
+~ reply orderpullwhat
+Pull what, {0}?
+There's nothing targeted, {0}.
+
+~ reply orderpulleasy
+That's grey, {0}. I'm not wasting mana on it.
+Too weak, {0}. Pick something worth healing through.
+
+~ reply groan
+Hm. Terrible.
+That hurt more than a broken arm.
+
+~ reply jokelaugh
+Heh. Fine, that was funny.
+Ha. Don't tell the others I laughed.
+
+~ reply jokeask
+Patient says, doc, it hurts when I do this. I say, then stop doing that. Next.
+Why don't skeletons need healers? Nothing left to bandage. Lucky them.
+What do you call a tank who ignores his healer? Dead. Not really a joke.
+
+~ reply jokeback
+Fine. I've got one. Field hospital humour.
+My turn, {0}. Don't laugh with stitches in.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Hm. Funny.
+Heh. Laughing's good for you. Don't overdo it.
+
+~ reply sorry
+Noted.
+It's fine, {0}. Don't do it again.
+
+~ reply disagree
+Your call. Your funeral.
+Fine.
+
+~ reply away
+Go. Drink some water.
+Back soon, {0}. That's an order.
+
+~ reply back
+Welcome back. You look fine.
+{0}. Good, sit.
 
 ~ reply greeting
 Hm. {0}. You look fine. Good. Don't make me check.
@@ -199,56 +358,3 @@ Don't move, {0}. I'm coming. Don't you dare die on me.
 {item}. Could be worse. Into the pouch.
 Found {item}. Bandages first, loot second.
 {item}! Hm. Well. Don't tell anyone I'm pleased.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): same doctor, a little flavour from their realm. ---
-
-# Midgard: Dwarf Healer. Stocky, stubborn, plain-spoken; patches people by the forge and the fire.
-=== eaglefang
-~ ambient
-Dwarf, healer, medic. Short, tough, stubborn. Like my patients should be.
-Forge's warm, bandages are boiled. Good day.
-Everyone's bigger than me. Everyone still comes to me. Funny.
-
-~ opener realm
-Midgard's cold. Wounds heal slow in the cold. Wear a scarf.
-Seen big warriors cry over a splinter. Don't tell them.
-
-~ reply greeting
-Hm. {0}. Come in by the fire. Let me look at you.
-
-~ drop
-{item}. Good solid thing. Dwarf-made, I'd wager.
-
-# Albion: Highlander Cleric. Plain, proud, a little dry; patches soldiers like it's a field hospital still.
-=== eaglefange
-~ ambient
-Cleric, medic, nuisance. In that order.
-Good wool, good boots, good sense. Three rules for the road.
-Highlands taught me to bandage in the wind. Hard to keep tidy.
-
-~ opener realm
-Albion folk say please a lot. Wounded ones say it more.
-Camelot's tidy. I'd still bandage a wall if it bled.
-
-~ reply greeting
-Good day, {0}. You look wobbly. Sit.
-
-~ drop
-{item}. Fine. Into the satchel.
-
-# Hibernia: Firbolg Druid. Big, quiet, tender with plants; hates admitting the herbs are the favourite part.
-=== eaglefangh
-~ ambient
-Druid, medic, nuisance. Herbs first, fuss later.
-Moss on a cut works better than people think.
-Tall folk fall hard. I've mended plenty.
-
-~ opener realm
-Hibernia's green. Plenty of herbs. Plenty of patients.
-Good shade, good water. Everything a medic wants.
-
-~ reply greeting
-Well met, {0}. Sit in the shade. Let me see that.
-
-~ drop
-{item}. Goes in with the herbs.

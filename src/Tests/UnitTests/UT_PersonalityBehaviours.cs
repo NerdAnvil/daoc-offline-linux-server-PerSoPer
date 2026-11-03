@@ -88,4 +88,16 @@ public class UT_PersonalityBehaviours
         foreach (string line in BehaviourLines.MinMaxerInspects)
             Assert.That(line, Does.Contain("{spec}").And.Contain("{class}"), line);
     }
+
+    [Test]
+    public void LeeroyShoutsEveryBattleCryOnceBeforeRepeatingOne()
+    {
+        // "OUTTA MY WAY, IT'S MINE!" came twice within minutes (2026-10-26): the cry was a plain random pick.
+        string key = "test-leeroy-" + Guid.NewGuid();
+        var random = new Random(7);
+        string[] cries = Enumerable.Range(0, BehaviourLines.LeeroyBattleCries.Length)
+            .Select(_ => PersonalityBehaviours.BattleCry(key, random)).ToArray();
+        Assert.That(cries, Is.Unique);
+        Assert.That(cries, Is.EquivalentTo(BehaviourLines.LeeroyBattleCries));
+    }
 }

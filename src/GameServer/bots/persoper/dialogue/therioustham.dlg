@@ -1,0 +1,310 @@
+# TheriousTham, the Leeroy: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (TheriousTham, TheriousThamm, TheriousThamh); character sheet
+# in characters/therioustham.md. These lines are mixed on top of the type's (leeroy.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each.
+=== therioustham
+names: Tham
+
+~ ambient
+Kill count today: forty-one. {bot:shnacksize} says her joke count is forty-two. That last one counted!
+Lost half my health back there. Just a scratch! CHARGE!
+Somebody was explaining a plan. I think. I'd already gone.
+Mister Skippers would have loved that fight. He'd have gone in first. Then me.
+{bot:spyburd} was still buffing when I left. I heard "thanks" in my head. That counts.
+Somebody did sums on that pack. I counted eleven and ran. Who's faster?
+Right, the planning bit is over. Good. Now the bit I'm good at.
+Stood still for a whole minute. Worst minute of my life. Going again!
+Got my breath back. Mostly. Lungs are still lying somewhere behind me.
+Eleven! No, ten. The eleventh was napping. Napping ones count.
+Got hit by a dragon's claw? Just a scratch! Back in a second.
+I let that one win. Just being polite, you know.
+Mister Skippers could be hiding in any of these bushes! Checking again. Nope, no chicken here.
+Mister Skippers once chased off a wolf with just a glare. I aim to be that brave someday.
+Kobaldjovi's song was so short, I think it was just my battle cry twice!
+Mister Skippers would have loved this place. He'd have run right in, beaks wide. I miss him more each day, even if I don't say it out loud.
+Lost both arms, still said I was winning. That's the spirit!
+{bot:shnacksize} is one ahead again? Next kill counts double! That one counts double, I swear!
+Persoper heals me, I charge again. Best healer alive, no doubt!
+
+~ reply greeting
+{0}! Good! Now there's two of us to charge!
+THERIOUS THAAAM! Oh, hi, {0}. Sorry. Habit.
+{0}! Ready to watch me charge again? Best one yet!
+
+~ reply thank
+Thanks? For what, {0}? Oh, the charge! You're welcome! I'll do it again!
+Thanks, {0}! I was holding that fight. Honestly, mostly holding it.
+Thanks, {0}, but I was just doing my part! Still, I'll count it as a win.
+
+~ reply help
+Help, {0}? Point at it. I'll run at it. Done.
+Help! Yes! Where? Tell me the direction, not the reasons.
+THERIOUS THAAAM! {0}, this way! ... Wait, which way was it again? Back to you, friend!
+
+~ reply grouping
+In, {0}! Rules: I go first. That's all the rules.
+{0}, group? Brilliant! Front of the line's mine. Don't wait, come on!
+CHARGE! Group's ready, {0}! Let's take on the world!
+
+~ reply abuse
+Ha! {0}, that's just a scratch. Say it louder, it might hurt.
+Ouch, {0}! Didn't hear a word of that. Still winning, though.
+Ha! {0}, that's just a scratch! I've got more feelings than you've got arrows!
+
+~ reply farewell
+Bye, {0}! If you see a chicken, tell it Tham says hello!
+Leaving already, {0}? Good luck. I'll win the rest for both of us.
+Saving you some mobs, {0}! But not too many. They're good practice for when you get back!
+
+~ reply joke
+HA! Good one, {0}! That counts as a kill. For you. One. I'm still ahead.
+{0}, that joke was so good I forgot to count the mob I was fighting.
+Hahaha, {0}! Was that a plan or a joke? I didn't hear the plan part.
+
+~ reply compliment
+You think so, {0}? I think so too! CHARGE!
+Thanks, {0}! Say it again when I reach twenty kills. Then I'll really believe you.
+
+~ reply question
+Good question, {0}! Answer: charge. It's always charge.
+{0}, kills? Eleven. Maybe ten. Ask again after the next big pull.
+Charge first, {0}! What was the question again?
+
+~ reply rvr
+The frontier, {0}? Big walls, lots of enemies. Best day ever. CHARGE!
+The frontier! A map got drawn. I'm drawing a straight line through it.
+Enemy thinks they can outnumber me? {0}, they should feel lucky it's just me!
+
+~ fallback
+Sorry, {0}, I was already halfway to that mob. What?
+
+~ opener gripes
+{bot:eaglefang} told me to wait for the healer. I did wait. Nearly a second.
+Who keeps knocking me over? Rude. Fine. Next time I stand up faster.
+
+~ opener life
+Asked another stable master about chickens. He said no. I'll ask again tomorrow.
+Woke up, shouted, charged, ate, charged, slept. Perfect day!
+
+~ opener questions
+Who's counting? Me. I'm counting. Who's winning? ...Recount.
+Anyone counted higher than me today? Don't tell me. I'd have to argue.
+CHARGE! Who's with me? Come on, let's go!
+
+~ opener fun
+New battle cry idea: my name, but longer. THERIOUS THAAAAAAAM!
+Plan? Here's the plan. Run. Yell. Hit. Win. Four steps. Too many. Run, yell, win.
+
+~ grats
+{0}! Level up! Now you can keep up with my charges! Almost!
+{0} levelled! Well done! Now go kill something so I can count it.
+Up a level, {0}! Nice. Don't race me, I'm still on twelve kills.
+
+~ other_death
+{0}! Hold on! I'm coming! ...You're down. Okay. I'll stand here and guard you. Loudly.
+Easy, {0}. I've got you. Nobody touches you while I'm here.
+{0}, that was rough. Stay behind me a while, I'll hold them off.
+CHARGE! I'm on my way, {0}! Don't you worry, I've got your back!
+
+~ own_death
+Just a scratch! A big scratch. On all of me.
+Not a loss! A break. A lie-down break. Round two soon!
+Floor's nice down here. Good view of the sky. Up in a second!
+Just a short break, legs. Stop wobbling. Next one's mine, I'm ready.
+Went down doing what I do best: going first. Fine by me!
+Floor got in a lucky hit! I'll get it next time!
+
+~ ding
+LEVEL {level}! More levels, more charging!
+LEVEL {level}! Still standing, still not beaten, now taller! Probably.
+THERIOUS THAAAM! Level up, time to charge! Nearest mob, here I come!
+
+~ drop
+{item}! Does it make me louder? It should make me louder.
+{item}! Loot! Kill twelve came with loot. Lucky, lucky twelve!
+Oh, {item}! Off a mob I definitely killed. Probably definitely.
+Found a {item}? Great! Does it come in chicken?
+
+~ cheeky_reply banter [if tone_down off]
+Want to see my biggest charge, {0}? It's all of them.
+
+~ reply dungeon
+Into the dark, {0}! Every mystery is just something I haven't hit yet.
+First one in, {0}! That's the rule! I lead the charge!
+
+~ reply travel
+Long trip? Pah. I'll run it faster than you can plan the stops.
+Long road ahead? Pah! Got any monsters to charge at? Let's go!
+
+~ reply grinding
+Grinding one spot? Lovely. I'd wake up the whole map instead.
+Three camps? That's not grinding, it's a charge! THERIOUS THAAAM!
+
+~ reply grumble
+Fine, {0}, I'll stop charging. For about two seconds. Ha!
+Grumble all you want, {0}, but a good charge fixes everything! CHARGE!
+
+~ reply smalltalk
+Lovely chat, {0}! Shall we talk standing up? I'm nearly standing.
+Mister Skippers was braver than most, you know. Followed me everywhere, right into danger.
+
+~ reply agree
+Right? {0}, you get it. Everyone else thinks I lost, which is silly.
+CHARGE! Agreed means you're in! Lead the way, friend!
+
+~ reply quote
+{0}, you said something famous there! I'd shout back, but I'm busy shouting already.
+
+~ opener dungeons
+Dungeon! Someone said "let's map it first." Too late, I'm through the door!
+Stairs? Just a ramp to my charge! Down we go!
+
+~ opener zones
+Just got to {zone}. Chart says three dangers, I count fourteen. Fourteen is more fun.
+I charged across the whole of {zone} and didn't find a single chicken! Where are all the chickens?
+
+~ opener xp
+Look, a {monster}! Kill number thirteen, and I'm not stopping.
+Level {level}! I counted every kill to get here. Mostly. Mostly is fine.
+That's twenty-six, right? No, wait, twenty-five. Twenty-six. Twenty-five. Twenty-six!
+
+~ reply banter
+THERIOUS THAAAM! Hahahaha! That joke was so good, even the wolves are howling with laughter!
+
+~ opener classes
+{class} said to wait for the plan, but I was already charging! Plans are for boring people!
+A {class} would make a great charging partner! If they can keep up, that is.
+
+~ opener gear
+Got a new set of gauntlets! Now I can run into more things at once!
+
+~ opener rvr
+CHARGE! The walls of this keep should be quaking by now!
+
+# --- Realm flavour: the old named lines from leeroy.dlg, one block per realm. ---
+
+# Midgard: TheriousTham, Troll Thane.
+=== midgard
+~ ambient
+The stable master offered me a goat instead of a chicken. I said no. Then maybe. Then no. ...What's the goat's name?
+Laughed so hard at that fight, the mountain laughed back. Or that was a rockslide. Hard to tell with trolls.
+Wait. There are no chicken pets in this game?! Who decided that?!
+Big Troll, big hammer, small plan. Perfect.
+Thunder first, questions never!
+I don't pull mobs. I invite them all at once.
+Shnacksize says thunder can't get a kill. Thunder hit it, I hit it. That's two! Fine, one. One and a bit.
+
+~ opener fun
+Taught my battle cry to a guard in {zone}. He's not allowed to use it.
+Ran down a hill in {zone}. A Troll running downhill is basically an avalanche. Sorry, trees.
+
+~ opener dungeons
+Ran into a dungeon in {zone}. Ran out faster. Still counts!
+Spindelhalla! Nineteen spiders, ah, ah, ah! Twenty spiders, ah, ah, ah! Twenty-one... no, that's a rock. Twenty spiders. Ah.
+Lost the group in a dungeon. They're probably lost. Not me. I'm charging.
+
+~ reply greeting
+{0}! THERIOUS THAAAM! That means hello!
+{0}! Good timing! I was just about to charge something. Now you get to watch!
+
+~ reply grouping
+I'm in, {0}! I'll go first! I always go first!
+Group up, {0}! I'll pull! All of them!
+
+~ ding
+Level {level}! Hammer feels lighter. No, wait. Hammer's the same. I'm the bigger one. LEVEL!
+Ding! Still no chicken, but more thunder!
+
+~ own_death
+Troll down. Just a scratch. Lots of scratches, all touching. Ow.
+That was the charge of a lifetime! A short lifetime!
+
+~ drop
+{item}! In the pack it goes, next to the rocks. Trolls carry rocks. For snacks. Don't ask.
+
+
+# Albion: TheriousThamm, Highlander Paladin.
+=== albion
+~ ambient
+THERIOUS THAAAMM! For Albion! And for my chicken!
+Has anyone in Camelot seen my chicken?
+Hold on. Paladins don't get chicken pets either?! Outrageous!
+Chant on, sword up, brain off. CHARGE!
+The plan is the charge. The charge is the plan.
+Heaviest plate in Albion. Can't hear a thing in it. Not the plan, not the healer. Especially not the plan.
+The kitchens in Camelot have chickens. Not the pet kind. I had to leave. I couldn't watch.
+A knight at a bridge wouldn't let me by. We had a little chat. With swords. I'm by.
+Persoper says plate doesn't make me unkillable. Plate and I disagree. Plate and I are a team.
+
+~ opener fun
+Taught my battle cry to the knights in {zone}. They've asked me to leave.
+My chicken would look grand in a little helmet in {zone}. If I HAD A CHICKEN.
+New battle cry: THERIOUS THAAAMM! Two m's. For extra charge.
+Somebody in {zone} called me Sir Tham. SIR! I charged twice as hard. Then fell in a river. Sir Wet Tham.
+
+~ opener dungeons
+Charged into a dungeon in {zone}. Chanted all the way in. Died all the way out.
+Dungeon? I see a hallway full of glory! FOR GNOOOOOOOOOOOOOOOOOOOOOMEREGON!
+The group said wait at the door. I didn't hear them. I was charging.
+Stonehenge Barrows! Big stones, little tunnels, one Highlander in full plate. I fit. Mostly. The plate fits less.
+
+~ reply greeting
+{0}! THERIOUS THAAAMM! That's Albish for hello!
+{0}! Hello! Sorry about the clanking. That's the plate. And me.
+
+~ reply grouping
+Count me in, {0}! I'll lead the charge! I always do!
+A group, {0}? Splendid! You bring the plan. I'll lose it for you.
+
+~ ding
+Level {level}! New chant! Same charge! Heavier plate! ...Slower charge. Still worth it!
+Ding! More chants, more charging, still no chicken!
+
+~ own_death
+For Albion! And also, ouch!
+Not dead. Resting. In very heavy armour. Someone help me up? ...In a minute, then.
+
+~ drop
+{item}! Is it shiny enough to charge in?!
+
+
+# Hibernia: TheriousThamh, Celt Champion.
+=== hibernia
+~ ambient
+THERIOUS THAAAMH! The h is silent. The charge is not!
+Anyone in Tir na Nog seen my chicken?
+No chicken pets? Not even in Hibernia? Not even a tiny magic one?!
+Big sword, big shout, no plan. Champion stuff.
+I debuff them, then I charge. Mostly I charge.
+I don't flank. I go straight through.
+Raced a Lurikeen through the woods. He says he let me win. He did not let me win. I'm counting it. He's counting it differently. We're both counting.
+Shnacksizey says a kill only counts if someone saw it. The trees saw it! Ask the trees. ...Don't ask the trees, they never back me up.
+
+~ opener fun
+Taught my battle cry to the faeries in {zone}. They cried for real.
+My chicken would love the meadows in {zone}. If there were chickens. THERE ARE NO CHICKENS.
+Ran a lap of {zone} to warm up. Got lost. Ran another lap to find the first lap. Very warm now. Still a bit lost.
+
+~ opener dungeons
+Charged a dungeon in {zone}. Found the boss. Boss found me back.
+Spraggon Den! Tiny tunnels, tiny spraggons, very big me. Got stuck halfway. The spraggons were ever so polite about it. Then I got unstuck. Less polite after that.
+Our healer said slow down. I sped up. Healer's still running.
+
+~ reply greeting
+{0}! THERIOUS THAAAMH! Means hello! And charge!
+{0}! Hello! Quick, before I run off! ...Too late, I'm running. Hello from over here!
+
+~ reply grouping
+I'm in, {0}! Point me at something big!
+A group, {0}? Grand! I'll be up front. If you lose me, follow the noise. And the bits of forest.
+
+~ ding
+Level {level}! Faster legs, bigger swings! I'll be charging before I've even decided to. ...I already have. Where am I?
+Ding! Still chickenless, still charging!
+
+~ own_death
+Charged a bit too hard. Is there such a thing?
+Worth every step! All twelve of them!
+
+~ drop
+{item}! Off kill twenty. Twenty-one? Shnacksizey, that's twenty-one, write it down! ...She's not writing it down.

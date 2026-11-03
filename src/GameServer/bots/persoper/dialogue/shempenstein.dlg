@@ -1,0 +1,224 @@
+# Shempenstein, the Casual: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Shempenstein, Shempenshire, Shempenmore); character sheet
+# in characters/shempenstein.md. These lines are mixed on top of the type's (casual.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each.
+# Waiting for a scripted scene or code step: the pal/buddy/guy routine (see the character sheet).
+=== shempenstein
+names: Shemp
+
+~ ambient
+No rush. The mobs will still be here after lunch.
+Found a nice spot by the water. Line's in. Wake me if something bites, eh.
+Tried the diet food today. Then a second lunch, to be fair to it.
+My aunt knitted me a new sweater. Big stripes. Sideways. Very warm, eh.
+The one that got away was this big. Okay, this big. Okay, it was big, buddy.
+Imps. Don't get me started on imps. They know what they did.
+Sorry, was I humming? I hum when there's a lot of people aboot.
+Tham's chicken looked hungry today. Anyone know what chickens eat? Besides bugs.
+Found a comfy spot. Might as well rest a bit, eh.
+Swinging my two-hander, feeling the weight. Life's good, eh.
+Should I save this for later, or just dig in, eh? It's a tough choice.
+Smells like something's cooking over here. Want a bite, buddy?
+
+~ reply greeting
+Hey there, {0}. Pull up a rock, eh. No rush.
+Oh hi, {0}. Sorry, didn't see you there. I was thinking aboot lunch.
+Hey there, {0}. How's your day going, eh? No rush.
+Oh hi, {0}. Sorry, I was miles away, thinking aboot fishing.
+
+~ reply grouping
+Sure, {0}. I'll tank. A bit. Hand me your bags while we're at it.
+Count me in, buddy. Just don't pull the whole room, eh.
+
+~ reply abuse
+Oof. Okay, {0}. I'll just be over here, being sorry aboot it.
+Hey now, guy. No need for that. Want a snack?
+Sorry to hear you feel that way, pal. No hard feelings, eh?
+
+~ reply jokequit
+Oh, buddy, that was rough. I'm gonna go walk that one off, eh.
+Sorry, {0}, that one hurt. I need some air aboot it, back in a bit.
+Okay, I'm out, pal, and I'm taking my snacks with me.
+
+~ reply jokereturn
+Alright, I'm back, eh. Still thinking aboot that joke, though.
+Sorry I left, guy. It was a real stinker, but I missed you all.
+Back, buddy. I ate a snack and feel much better aboot it now.
+
+~ reply compliment
+Ah, thanks, {0}. It's my aunt's sweater, though. She's convinced chunky is charming.
+
+~ reply banter
+Ah, the sweater's fault, {0}. My aunt knits me stuff that makes me look chunky. Eh, I wear it anyway, to be nice.
+No rush, pal. Slow and steady wins the race, even if I'm the tortoise.
+
+~ reply trading
+Is it a two-hander, eh? If not, at least it's a snack, right?
+
+~ reply travel
+Sure thing, pal. I know a scenic route that takes a while, but it's worth it. Eh, no rush.
+
+~ reply dungeon
+Sure thing, pal. I'm bringing snacks. No rush getting in, eh?
+
+~ reply help
+Need a hand, {0}? Hand it here, pal, I'll carry it.
+
+~ reply joke
+Heh. Heh heh. Oh, I get it. That's a good one, {0}.
+
+~ reply farewell
+See ya, {0}. Take the long way. It's nicer.
+
+~ opener gear
+Saw a guy with {item} today. Nice. Is it two-handed? It should be two-handed.
+A shield would leave one hand free for a sandwich. Tempting, but I'd miss my two-hander's hug.
+
+~ opener dungeons
+Dungeons are okay, but where can I cast my line around here? Eh.
+
+~ opener fun
+The best part of a fight is the sit-down after, eh. No rush.
+
+~ opener life
+My aunt set me up with someone again. We talked aboot sweaters. Went okay, I think.
+Used to deliver parcels before all this. Always got there. In the end.
+# Off-game (the player): own lines, for a later [ooc] switch.
+Early shift tomorrow, pals. I'm off at the bell, same as always.
+Poured myself a little cognac. Long shift. Good stuff, eh.
+
+~ opener zones
+Took the long way through {zone}. Scenic. Got a bit lost. Still scenic.
+{zone} has a nice spot to sit and watch the clouds drift by, eh.
+
+~ ding
+Level {level}? Oh, nice. When did that happen, eh?
+
+~ grats
+Level up, {0}? Now that's what I call... fast delivery.
+Well done, {0}. Here's to the next level. Hand me that cake, pal, I'll carry it.
+
+~ own_death
+Eh, it's fine. It'll buff right out.
+Ooohhh.... Thaaaaaat's not gonna buff out.
+Floor's comfy. I'll get up in a minute. Or five.
+Sorry, pal. I was a bit slow there. No harm done, eh.
+
+~ other_death
+Oh no, {0}. Sorry, buddy. I'll carry your stuff back, eh.
+
+~ drop
+{item}? Delivered. Eventually.
+Hand it here, pal, I'll carry it. This {item} is heavy, which is great. I love carrying things.
+Found {item}; hope it's a two-hander. If not, makes a great doorstop, eh?
+
+~ cheeky_reply banter [if tone_down off]
+Too big to swing, eh, {0}? That's what she said. Sorry.
+
+~ cheeky_reply grouping [if tone_down off]
+Grouping up, eh? No rush, pal. That's what she said. Sorry, couldn't help it.
+
+# Midgard: Shempenstein, Valkyn Warrior, from Gna Faste. His heckler is the wee wolf.
+=== midgard
+~ ambient
+Big two-handed axe, happy Valkyn. Life is good, eh.
+Tanking a bit today. Like, a little bit. Don't pull too much, pal.
+Gonna sit by the fire in Gna Faste for a while. Pull up a log.
+My two-hander's taller than me, and I love it.
+Someone said shields. Never heard of her.
+
+~ opener gear
+Found a new two-hander. It's huge. No idea if it's better.
+My axe has a name now. It's Axe.
+
+~ opener life
+Napped in {zone} for a bit. Ten out of ten, would nap again.
+There's a nice rock in {zone}. I sat on it. Good rock.
+Tried to say a few words to the group today. A wee wolf heckled me the whole time. A wee wolf, pal.
+
+~ reply greeting
+Heyyy, {0}! Wanna hit stuff slowly?
+Oh hi, {0}. I was just admiring my axe.
+
+~ reply grouping
+Sure, {0}. Me and Axe are in.
+
+~ ding
+Level {level}. Bigger axe soon, hopefully.
+
+~ own_death
+Died. At least my axe looked cool.
+Got knocked down by a wee wolf. Sorry. Don't tell anyone, eh.
+
+~ drop
+{item}! Is it two-handed? Please be two-handed.
+
+# Albion: Shempenshire, Saracen Armsman, from Snowdonia Fortress. His heckler is the gray wolf pup.
+=== albion
+~ ambient
+Big two-handed sword, happy Saracen. Life is good, eh.
+No rush. Camelot's not going anywhere.
+Two-handed swords are just hugs with extra steps.
+The trainer said shield. I said polearm. We're not talking now.
+Gonna sit outside Snowdonia Fortress for a while and watch the clouds.
+
+~ opener gear
+Got a new polearm. It's longer than the old one. That's how it works, right?
+My great sword's called Gerald. Say hi, Gerald.
+
+~ opener life
+Had a little picnic in {zone}. The bandits didn't join.
+Someone in {zone} said hurry up. I didn't.
+Tried to say a few words to the group today. A gray wolf pup heckled me the whole time. A pup, buddy.
+
+~ reply greeting
+Heyyy, {0}! Wanna swing big swords slowly?
+Oh hi, {0}. Me and Gerald were just chilling.
+
+~ reply grouping
+Yeah, {0}, I'm in. Gerald's in too.
+
+~ ding
+Ding! Gerald's proud of me.
+
+~ own_death
+Oops. Gerald's fine, though.
+A gray wolf pup got me. Sorry. It was a very rude pup.
+
+~ drop
+{item}! Is it a big sword? Please be a big sword.
+
+# Hibernia: Shempenmore, Sylvan Hero, from Druim Ligen. His heckler is the lough wolf cadger.
+=== hibernia
+~ ambient
+Big two-handed sword, happy Sylvan. Life is good, eh.
+Tanking a little. Like a tree. A lazy tree.
+No rush. Trees take hundreds of years, and they're fine.
+Someone told me to grab a shield. I grabbed a snack.
+Gonna sit outside Druim Ligen for a while. Nice and quiet.
+
+~ opener gear
+Who needs a shield when you've got a sword the size of a branch?
+My big sword's called Twig. It's not a twig.
+
+~ opener life
+Took root in {zone} for an hour. Just standing. It was great.
+Someone in {zone} asked if I was asleep. Nope. Just relaxing.
+Tried to say a few words to the group today. A lough wolf cadger heckled me the whole time. Tiny thing. So rude.
+
+~ reply greeting
+Heyyy, {0}! Wanna bonk things slowly?
+Oh hi, {0}. I was just being a tree.
+
+~ reply grouping
+Sure, {0}, I'll tank. A bit. Like a sleepy oak.
+
+~ ding
+Level {level}? Neat. I'll grow into it.
+
+~ own_death
+Oops. Got chopped. Happens to trees.
+A lough wolf cadger got me. Sorry. Little guy had a mouth on him.
+
+~ drop
+{item}! Is it two-handed? Please be two-handed.

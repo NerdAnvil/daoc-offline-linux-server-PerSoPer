@@ -486,7 +486,12 @@ namespace DOL.GS
                             if (start)
                                 effect.OnStartEffect();
 
-                            ServiceObjectStore.Add(effect);
+                            // The effect may have been ended before this queued start ran. Its removal
+                            // from the store then found nothing to remove, so adding it now would leave
+                            // an ended effect ticking forever. Same leak as fixed in rambodolphin13's
+                            // DividedRealms fork.
+                            if (!effect.IsEnded)
+                                ServiceObjectStore.Add(effect);
                             effect.Owner.effectListComponent.RequestPlayerUpdate(EffectHelper.GetPlayerUpdateFromEffect(effect.EffectType));
 
                             // Animations must be sent after calling `OnStartEffect` to prevent interrupts from interfering with them.

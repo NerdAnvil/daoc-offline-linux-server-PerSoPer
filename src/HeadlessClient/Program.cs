@@ -29,7 +29,12 @@ public static class Program
         "                       with --create of the same name, at the end, after /quit back to the character screen\n" +
         "  --send=TEXT          after entering, send a typed line (\"/persoper\", \"hello\"); repeatable\n" +
         "  --send-late=TEXT     like --send, but after --listen and --goto, once the character has arrived; repeatable\n" +
+        "  --send-late-gap=N    wait N seconds (0 to 60, default 0), still reading messages, after each --send-late line;\n" +
+        "                       the game drops chat typed too fast (\"Slow down!\"), so use 3 or more with several lines\n" +
         "  --listen=SECONDS     how long to print server messages after entering, then who is nearby (default 5)\n" +
+        "  --wait-for=NAME      after --listen, wait until NAME is in view and within /say range (a bot just invited,\n" +
+        "                       riding to the end of its route first); fails after --wait-for-seconds\n" +
+        "  --wait-for-seconds=N how long --wait-for may wait (1 to 600, default 180)\n" +
         "  --goto=NAME|X,Y      then walk to someone nearby (\"Persoper\": full name, first name or part of it) or to a\n" +
         "                       spot in the region; stops within 150 units, or fails after 120 s\n" +
         "  --record=FILE        write the server's messages from entering the world on to FILE (time, type, text), and\n" +
@@ -158,6 +163,11 @@ public static class Program
         var follow = o.Follow == null ? null : new FollowStats();
         if (!Listen(c, o, DateTime.UtcNow.AddSeconds(o.ListenSeconds), follow)) return Fail("listen", "disconnected");
         PrintNearby(Me);
+        if (o.WaitFor != null)
+        {
+            string? why = WaitUntilNear(c, o, o.WaitFor, DateTime.UtcNow.AddSeconds(o.WaitForSeconds));
+            if (why != null) return Fail("wait-for", why);
+        }
         if (o.Goto != null)
         {
             string? why = Walk(c, o, o.GotoName, o.GotoX, o.GotoY, DateTime.UtcNow.AddSeconds(MaxWalkSeconds), true);
@@ -167,6 +177,8 @@ public static class Program
         {
             Console.WriteLine($"> {line}");
             c.Send(Packets.PlayerCommand, Packets.Command(Packets.TypedLine(line)));
+            if (o.SendLateGapSeconds > 0 && !Pump(c, o, DateTime.UtcNow.AddSeconds(o.SendLateGapSeconds)))
+                return Fail("send-late", "disconnected");
         }
         if (Recorder != null)
         {
@@ -179,6 +191,23 @@ public static class Program
         // 5. Back to the character screen the way the new client leaves (Run sends /quit: sit, the server's countdown
         // of up to 20 s, more after a fight, then Quit).
         return 0;
+    }
+
+    // --wait-for: reads packets until NAME is in view and within /say range; null then, else why not.
+    static string? WaitUntilNear(Connection c, Options o, string name, DateTime until)
+    {
+        var started = DateTime.UtcNow;
+        while (DateTime.UtcNow < until)
+        {
+            if (FindNearby(Nearby.Values, name, Me) is { } target && target.DistanceTo(Me) <= SayDistance)
+            {
+                Console.WriteLine($"wait-for: {target.Name} is {target.DistanceTo(Me):0} away after {(DateTime.UtcNow - started).TotalSeconds:0} s");
+                return null;
+            }
+            var next = DateTime.UtcNow.AddSeconds(1);
+            if (!Pump(c, o, next < until ? next : until)) return "disconnected";
+        }
+        return $"{name} not within {SayDistance} units after {o.WaitForSeconds} s";
     }
 
     // Reads packets until the deadline; with --follow, checks every FollowCheckMilliseconds how far the one followed is and
@@ -539,6 +568,7 @@ public sealed class Options
     public bool Verbose;
     public List<string> Send = new();
     public List<string> SendLate = new();
+    public int SendLateGapSeconds;
     public int ListenSeconds = 5;
     public int TimeoutSeconds = 20;
     public string? Create, Delete;
@@ -546,7 +576,8 @@ public sealed class Options
     public float GotoX, GotoY;
     public int Realm, RaceId, ClassId;
     public bool Female;
-    public string? Record, RecordFrom, Follow;
+    public string? Record, RecordFrom, Follow, WaitFor;
+    public int WaitForSeconds = 180;
     public int RecordSeconds = 30;
     public bool Overwrite;
 
@@ -572,6 +603,7 @@ public sealed class Options
                 case "--verbose": o.Verbose = true; break;
                 case "--send": o.Send.Add(value); break;
                 case "--send-late": o.SendLate.Add(value); break;
+                case "--send-late-gap": o.SendLateGapSeconds = Math.Min(Seconds(key, value, 0), 60); break;
                 case "--listen": o.ListenSeconds = Seconds(key, value, 0); break;
                 case "--timeout": o.TimeoutSeconds = Seconds(key, value, 1); break;
                 case "--create": o.Create = value; break;
@@ -583,6 +615,8 @@ public sealed class Options
                 case "--goto": o.Goto = value; break;
                 case "--record": o.Record = value; break;
                 case "--follow": o.Follow = value.Trim(); break;
+                case "--wait-for": o.WaitFor = value.Trim(); break;
+                case "--wait-for-seconds": o.WaitForSeconds = Math.Min(Seconds(key, value, 1), 600); break;
                 case "--record-seconds": o.RecordSeconds = Seconds(key, value, 0); recordOption = true; break;
                 case "--record-from": o.RecordFrom = value; recordOption = true; break;
                 case "--overwrite": o.Overwrite = true; recordOption = true; break;

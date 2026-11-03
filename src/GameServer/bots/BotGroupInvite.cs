@@ -1,4 +1,6 @@
 using System;
+using System.Numerics;
+using DOL.AI.Brain;
 
 namespace DOL.GS;
 
@@ -34,8 +36,10 @@ public static class BotGroupInvite
             return false;
         }
 
-        // A Loner-type bot usually turns invites down (less often for someone it knows).
-        if (countQuickRecall && PersonalityBehaviours.LonerDeclines(player, bot, out string refusal))
+        // A Loner-type bot usually turns invites down (less often for someone it knows), unless it just said yes to
+        // this player's group call.
+        if (countQuickRecall && !PersonalityGroupCalls.Promised(bot.ObjectID, player.InternalID, GameLoop.GameLoopTime) &&
+            PersonalityBehaviours.LonerDeclines(player, bot, out string refusal))
         {
             ChatUtil.SendSystemMessage(player, refusal);
             return false;
@@ -64,13 +68,47 @@ public static class BotGroupInvite
         if (!player.Group.AddMember(bot) || !bot.EnterPlayerLedGroup(player))
             return false;
 
-        bot.PathTo(player, bot.MaxSpeed);
-        ChatUtil.SendSystemMessage(player, $"{bot.Name} joins your group and starts moving to you.");
+        // A party follower only walks within one region, so a bot in another
+        // region (a dungeon, a capital city) is moved beside the player instead.
+        bool moved = ShouldMoveBesidePlayer(bot.CurrentRegionID, player.CurrentRegionID, bot.IsAlive) &&
+            TryMoveBesidePlayer(bot, player);
+        if (!moved)
+            bot.PathTo(player, bot.MaxSpeed);
+        ChatUtil.SendSystemMessage(player, moved
+            ? $"{bot.Name} joins your group and arrives beside you."
+            : $"{bot.Name} joins your group and starts moving to you.");
 
         // Personality bots greet people they remember and name their build; a quick
         // re-invite tries their patience (and may send them straight back out).
         if (PersonalityMeetings.Greet(bot, player, Random.Shared) && countQuickRecall)
             PersonalityAnnoyance.Irritate(player, bot, PersonalityAnnoyance.eIrritation.QuickRecall);
+        return true;
+    }
+
+    public static bool ShouldMoveBesidePlayer(ushort botRegion, ushort playerRegion, bool botAlive) =>
+        botAlive && botRegion != playerRegion;
+
+    /// <summary>Moves a bot beside the player in formation, ending whatever it was doing (also /dialogue gather).</summary>
+    public static bool TryMoveBesidePlayer(GameBot bot, GamePlayer player)
+    {
+        if (player.CurrentZone == null)
+            return false;
+        Vector3 point = TemporaryGroupStableTravel.FormationPoint(player, bot.ObjectID % 6);
+        // The invitation ends whatever the bot was doing over there.
+        bot.CompleteStableMasterRoute();
+        bot.StopAttack();
+        bot.StopFollowing();
+        bot.StopMovingOnPath();
+        bot.StopMoving();
+        bot.StopCurrentSpellcast();
+        (bot.Brain as BotBrain)?.ClearAggroList();
+        if (!bot.MoveTo(player.CurrentRegionID, (int)Math.Round(point.X), (int)Math.Round(point.Y),
+                (int)Math.Round(point.Z), player.Heading))
+            return false;
+        // The join sent the group window an "other region" entry (grey, no
+        // health); a bot only refreshes it when its health changes.
+        bot.Group?.UpdateMember(bot, true, true);
+        bot.MarkAutonomousStateDirty();
         return true;
     }
 }

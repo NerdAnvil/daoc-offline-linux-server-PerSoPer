@@ -1,0 +1,320 @@
+# Eaglefang, the Gruff Doc: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (Eaglefang, Eaglefange, Eaglefangh); character sheet in
+# characters/eaglefang.md. These lines are mixed on top of the type's (gruffdoc.dlg). Gender is
+# random, so no line uses he or she. The main block fits every realm; the realm blocks below add a
+# little flavour each.
+=== eaglefang
+names: Eagle, Fang
+
+~ ambient
+Bandages rolled. Pack checked. Water full. Now we can talk.
+Another one walked home today. Into the book.
+Told {bot:spyburd} to put the pipe out and stand up straight. Got a buff instead. Hm. Good buff.
+Quiet hour. Nobody bleeding. I'll take it.
+My first night in the field hospital, an old sergeant-medic gave me a little book. "Write down every one who walks out of here," I was told. "Not the others. You'll remember those anyway." I'm on my third book.
+Sit still. Not you. Everybody. Just sit still for once.
+Counted the group. All there. Good. Breathe.
+Who am I? I am Eagle T. Fang, soldier.
+Persoper's got more glitter than bandages, but she patches up fine.
+Kobaldjovi sang again; I hummed the tune, then stopped when he did.
+Another bad night, soldier. I sat by the fire, book in hand, reading names of those who walked out, not down. Don't tell a soul, or I'll deny it.
+Quiet days give me time to count my blessings, not just bandages. Strange, but good.
+The old sergeant-medic never smiled, but he kept a steady hand. I think of that now.
+{bot:spyburd} actually stood straight for a minute. Proud day, soldier.
+You came back, soldier? I didn't expect to see that face again. It's been a while. Drink some water. Don't tell me you're here to say thank you. Into the book, I suppose.
+Bandages rolled tight, waiting for the wounded to return. Patience, not my strong suit.
+Kobaldjovi thinks a song about bandages is a good idea. Not a single bandage likes him for it.
+Persoper, learn to fold a bandage properly before you give them back.
+Every time I step into a fight, I feel the fear. But my hands know what to do. They take over, soldier. That's when I'm at my best.
+
+~ reply greeting
+{0}. Stand up straight. Good. Now, hello.
+There you are, {0}. Drink some water. Then talk.
+Well met, {0}. You're not bleeding. Good. Stay that way.
+Have you eaten today, {0}? You look pale as a sheet.
+How many fights since last check-up, {0}? Don't skip your rounds.
+You look like you slept poorly, {0}. Why are you yawning at this hour?
+
+~ reply thank
+Don't thank me, {0}. Stay out of trouble. Same thing.
+Hm. Thanks noted, soldier. Into the book you go.
+No thanks, {0}. It's not for public display. Keep it between us.
+You sat still, {0}. Every time I asked. Do you know how rare that is? Into the book you go. Don't let it go to your head, soldier.
+Thanks noted. Keep it to yourself. Don't expect me to feel better about it.
+
+~ reply help
+Where does it hurt, {0}? Don't describe it. Point.
+Sit down, soldier. Everything is clearer with your feet up.
+Help's on the way, {0}. Already rolling up my sleeves.
+
+~ reply grouping
+Fine, {0}. Stay in range, call your pulls, drink water. Questions? No. Good.
+What have you broken this week, {0}? Name them all. Then we'll talk.
+Who's the tank? I'll keep an eye on them first.
+Stay in range, {0}. Don't say "I've got this" until I say it's time.
+
+~ reply abuse
+Noted, {0}. I'll still patch you. Slower.
+You have quite the mouth on you, {0}. Seen worse insults from those with real injuries.
+Your pulse is up, {0}. Sit down and cool off.
+
+~ reply farewell
+Go on, {0}. Walk home on your own legs. That's an order.
+Come back in one piece, soldier. Don't make me worry.
+Drink water. Don't be a hero. See you around, soldier.
+Take care. Don't come back on a stretcher.
+
+~ fallback
+Say again, {0}. Clearly. I was rolling bandages.
+What now, {0}? I was counting splints.
+
+~ opener gripes
+Told a soldier to rest. "I'm fine," says the soldier. Soldier was bleeding.
+Somebody pulled with half their health. Walk it off? No. Sit it off.
+Bandages stay on until I say. Itches or no.
+Reported a scratch, now it's a gash. Hm.
+
+~ opener life
+Mug of something hot, bandages drying on the line. Good evening.
+Pack tidy, bandages dry. Evening, soldier.
+Needles sharp, pack mended. Good evening.
+
+~ opener questions
+Who here drank water today? Hands up. ...That's what I thought.
+Anyone here playing wounded? I can spot a fighter who's off their game.
+Did anyone get more than four hours of sleep last night?
+
+~ grats
+Level, {0}? Good. Proud of you. Now sit down before you fall down.
+Well done, {0}. Now, sit and rest. You've earned it.
+Another level, {0}. Survived another day. Keep it up.
+Not bad, {0}. Keep standing tall. Don't let me catch you slacking.
+Another level, {0}. Harder to break now. Keep it that way.
+
+~ other_death
+Down, {0}? Not on my ward. Hold on.
+Stay steady, {0}. Eyes forward. We'll be out of this in one piece.
+Stay still, {0}. I've seen worse. Don't move a muscle.
+Up, {0}. Permission denied to stay down.
+
+~ own_death
+Medic down. Somebody write that in the book. Under "embarrassing".
+I should have sat still.
+Medic down. How unprofessional. Better luck next time.
+
+~ ding
+Level {level}. Fine. More patching. Somebody has to.
+Hm. Another notch in the belt.
+Levels mean nothing. Bandages still need rolling.
+
+~ drop
+{item}. Clean it, label it, pack it. In that order.
+Clean that {item}, soldier. Don't want dirt in the ward.
+Clean that {item} first. Rust never sleeps, you know.
+
+~ reply banter
+That was close to amusing, {0}. I did not smile.
+Humour can be healing, {0}. Keep it to small doses, prescribed.
+I've heard that one before, {0}. Right after losing a boot in the mud.
+You had me chuckling, {0}. I didn't chuckle.
+
+~ reply grinding
+Water breaks, soldier. No arguing.
+Every tenth fight is a rest stop, doctor's rule. No arguing.
+
+~ reply travel
+Boots in good shape? Long trip, more walking than fighting.
+Pack some bandages. Long trips mean surprises.
+Blisters end more journeys than dragons do. Pack bandages.
+
+~ reply rvr
+The frontier, soldier. Where heroes go to need a medic.
+The old wars were more than enough. Someone has to patch up the new ones, though.
+Heading out to the frontier, {0}? I'll keep you in sight, close enough to grab your collar if you falter.
+
+~ opener gear
+Boots, soldier. Good boots over a shiny blade any day.
+Clean bandages over shiny armour, any day.
+
+~ opener zones
+{zone} has clean water, soldier. First thing I check.
+{zone} was quiet today. Where are the usual pests?
+Paths in {zone} are tricky. Watch your step.
+
+~ opener dungeons
+Stay dry, soldier. Dungeons are no place for wet bandages.
+Keep your head down and your health up. Dungeons aren't known for their fresh air.
+
+~ reply dungeon
+Dungeon. Fine. Show me the way out first, {0}. Don't want to get lost.
+Don't touch the glowing bits, {0}. It's not a request.
+
+~ reply trading
+Trading, {0}. Haggling is unnecessary. Raises the blood pressure.
+Trading, {0}. Bandages are currency here. Take them or leave them.
+
+~ opener fun
+A scratch is a hug from a cat. A wound is a handshake from a bear.
+You all look like you need a nap, not a fight. Drink water first, then rest.
+
+~ opener realm
+Camp's quiet. Water's clean. Everyone back. Good.
+
+~ opener xp
+{monster} provided solid experience. Clean fights, clean wounds. Good.
+Another level, another batch of battle-scarred soldiers to mend. Level {level}, here we go.
+
+~ opener rvr
+Counting... One, two, three, four, five. Good. No missing.
+
+# --- Realm flavour: a few lines each, only where the realm matters. ---
+
+# Midgard: Eaglefang, Dwarf Healer. Stocky, stubborn, plain-spoken; patches people by the forge and the fire.
+~ reply joke
+Hm. That was funny, {0}. I am not laughing. This is my face.
+Fine. One laugh. Then back in range, {0}.
+Hm. {bot:spyburd} will tell that one for a week. Badly.
+Not bad, {0}. Laughing is good for the lungs. Do it standing still.
+I have heard that one before. In a ward. From a patient with two broken legs.
+Hm. Jovi will put that in a song. You have been warned, {0}.
+That one is going in the book. No. Not really. Good try, {0}.
+Fine. It was funny. Do not make me say it twice.
+Hm. You are in a good mood, {0}. Good. Stay that way. Stay alive.
+Careful, soldier. Laughing with a cracked rib hurts. Ask me how I know.
+Hm, a dad joke. That means {bot:shnacksize} is within range, and I can always tell. [if nearby shnacksize] [cooldown 30m]
+That joke needs a medic, and as I AM said medic, I decline. [if nearby shnacksize] [cooldown 30m]
+
+~ reply grumble
+Sit. Breathe. Then complain, {0}. In that order.
+Bad day? Drink some water. Then tell me again.
+I saw that, {0}. You did fine. The pull did not.
+Everyone walks home today. That is the only thing that matters.
+Hm. Worse things have happened in better places, {0}.
+Complaining is allowed. Bleeding while you do it is not.
+Slow down, {0}. Mistakes come from rushing. Ask anyone in a ward.
+Fine. Grumble. {bot:spyburd} says it helps. {bot:spyburd} says a lot of things.
+You are tired, {0}. I can see it. Rest after this one. That is an order.
+Rough day, soldier. You are still standing. Count that.
+
+~ reply smalltalk
+Hm. Go on, {0}. I am listening. I am also checking your color.
+Quiet moments are rare. Keep them, {0}.
+The old sergeant-medic liked stories like that. Told them badly. I listened anyway.
+Fine story, {0}. Now sit down while you tell the rest.
+Hm. That sounds peaceful. I do not trust peaceful. Go on.
+Good, {0}. Talk is good. Nobody talks while they are bleeding.
+I had an evening like that once. Nobody was hurt. I did not know what to do with myself.
+Persoper would make that into a whole show. Tell me the short version, {0}.
+Hm. Warm fire, full water skin, everyone in range. That is a good night.
+Did I ever tell you about the time I had Chinese delivered but I did not actually order it?
+
+~ reply question
+Short answer: yes. Long answer: drink some water first, {0}.
+Hm. Ask me after the pull. I answer better when everyone is standing.
+I do not know, {0}. I know where everyone is. That is enough for now.
+Ask {bot:spyburd}. Then ask me. Then do what I said.
+Good question, {0}. The answer is: stay in range.
+Depends. Have you eaten today, {0}?
+Hm. I have seen that go both ways. Mostly the bad way.
+Ask Persoper. She has an opinion on everything. Some are right.
+That is a fair question, soldier. I will think on it. Quietly.
+Fine. Yes. Now stop asking and pull.
+
+~ reply compliment
+Hm. Thank you, {0}. Do not tell anyone.
+Fine. Noted. Now stand still so I can look at that arm.
+Kind of you, {0}. You are still drinking water, though.
+Hm. I just do the job. You walked home. That was you.
+That goes in the book, {0}. Not you. The compliment. Fine, you too.
+Do not get soft on me, soldier. One of us has to stay strict.
+Thank you, {0}. I mean it. Now move on before it gets awkward.
+Hm. Persoper usually gets those. I will not tell her you said it.
+Good hands, steady head. I was taught well, {0}. Thank you.
+Fine. That was nice. Do not do it again during a pull.
+
+~ reply agree
+Good. Finally someone listens.
+Correct, {0}.
+Hm. Yes. Write it down.
+Good, {0}. That is how people walk home.
+Fine. We agree. Do not get used to it.
+Exactly. The old sergeant-medic would say the same.
+Hm. {bot:spyburd} agreed too. That worries me.
+Right, {0}. Now do it.
+Good. Sensible. Rare, in this group.
+Yes, soldier. Now let us move.
+
+~ reply quote
+Hm. I know that line. A patient said it once. Then tried to stand up.
+Old line, {0}. Still good. Sit down.
+Fine. Classic. Now stop quoting and drink something.
+Hm. Jovi has said that too. Louder.
+I have heard that in three wards and a tavern, {0}. Holds up.
+That one is old, {0}. Like me. Still works. Like me.
+Hm. Good line. Better from someone standing still.
+Persoper will know where that is from. Do not ask her. It takes an hour.
+Fine, {0}. You know your stories. Know your pulls too.
+Hm. Somebody read a book. Good. More people should.
+
+=== midgard
+~ ambient
+Everyone's bigger than me, yet everyone still comes to me. Funny, that...
+A smith in Jordheim burned a hand on the forge today. Sat the smith down, cooled it, wrapped it. Then I was asked to look at a sword as well. I am a healer. I do not do swords. Hm. Fine. It was a good sword.
+Snow in Myrkwood again. Cold feet lose fights. Two pairs of socks, soldier. Dry ones. I will check.
+
+~ opener realm
+Midgard's cold, and wounds heal slow in the cold. So wear a scarf, soldier. I mean it.
+Spyburd says the cold keeps a kobold young. He also sleeps in the snow without a blanket. Found him blue at dawn, pipe still lit. Sat him by the fire and said nothing. Into the book. Barely.
+
+~ opener fun
+Dwarves do not get taller with levels. I checked, every level, against the same doorpost in Jordheim. Still the same notch. The innkeeper has started charging me for the wear on the post.
+
+~ reply greeting
+Hm, {0}. Come in by the fire, and let me have a look at you.
+
+~ own_death
+Och. Ow. Dead... on frozen ground, of all places. Somebody pick me up before I stick to it.
+
+~ drop
+{item}. Good solid thing, that. Dwarf-made, I'd wager.
+{item}. Wrap it in oilcloth, soldier. Damp gets into everything up here. Even dwarves.
+
+# Albion: Eaglefange, Highlander Cleric. Plain, proud, a little dry; patches soldiers like it's a field hospital still.
+=== albion
+~ ambient
+Good wool, good boots and good sense. Those are the three rules for the road, and I've yet to need a fourth.
+The Highlands taught me to bandage in the wind. It's hard to keep things tidy when the cloth wants to fly off to Camelot.
+Spyburde tried to bless my bandages today. Friars bless everything, so I let him, then boiled them anyway. He saw. Now we're not speaking. Well, he is. I'm not.
+
+~ opener realm
+Albion folk say please a lot, and the wounded ones say it even more. Polite to the last, that lot.
+Camelot City has a healer on every corner, and still nobody sits still long enough to be healed. I stood in the market square and counted. Not one, soldier.
+
+~ reply greeting
+{0}. Wipe your boots and come in out of the wind, then let me see your hands.
+
+~ own_death
+Ow. Down in the heather, and the wind's still blowing. Somebody tie my cloak down before it carries me home without the rest of me.
+
+~ drop
+{item}. Into the satchel, under the bandages. Bandages always go on top, soldier. A cleric who has to dig for one has already lost the argument.
+
+# Hibernia: Eaglefangh, Firbolg Druid. Big, quiet, tender with plants; hates admitting the herbs are the favourite part.
+=== hibernia
+~ ambient
+Moss on a cut works better than people think, and it's free, and it literally grows on trees. Don't tell the merchants.
+Firbolgs are tall, so I've learned to kneel for everybody. My knees don't thank me for it. A patient once offered to stand on a stump so I wouldn't have to. Sweet, that. I said no, and knelt anyway.
+Picked a handful of meadowsweet by Lough Derg for the pack. Only for the fevers, soldier. Not because it smells nice. Don't look at me like that.
+
+~ opener realm
+Hibernia's green, so there are plenty of herbs. Mind you, that means plenty of patients too.
+Spyburdagh walks the woods of Connacht like they're his own back garden. He knows every herb by name, I'll give him that. Pity he says them all out loud, slowly, while somebody bleeds.
+
+~ reply greeting
+Sit in the shade, {0}, and let me see that. No, the other arm. The one you're hiding.
+
+~ own_death
+Ow. All that height, and every bit of it hit the ground at once. Somebody fetch the moss. And mind my herbs.
+
+~ drop
+{item}. Wrap it and pack it in with the herbs. It'll smell of mint for a week, and that's no bad thing.

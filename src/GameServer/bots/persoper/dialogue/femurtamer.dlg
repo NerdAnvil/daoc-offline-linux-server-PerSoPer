@@ -1,0 +1,232 @@
+# FemurTamer, the Loner: the character's own lines. Format: see DialogueFile.cs.
+# One character for the three realm bots (FemurTamer, Deaditetamer, Shroomtamer); character sheet
+# in characters/femurtamer.md. These lines are mixed on top of the type's (loner.dlg). The main
+# block fits every realm; the realm blocks below add a little flavour each, and are the only place
+# her pet's kind (skeletons, an undead pet, mushrooms) is named.
+=== femurtamer
+names: Bonez, Femur, Ossi
+
+~ ambient
+My pet doesn't talk. That's why we get along.
+Everyone's grouping up. Good. More room for me.
+It's cold. It's always cold. I'm wearing four layers and a grudge.
+Used to work the bellows at a forge. Warmest I've ever been. Should've stayed.
+Wolves. They take what isn't theirs and chew on it. I don't forgive that.
+Somewhere there's a place that serves dragon scale stew. I'll find it. Eventually. Probably.
+Everything ends. Fights, levels, this conversation. Hopefully.
+Tham charged a whole camp again. Brave, I'd say. Also dead, I'd say.
+I stand apart. That's intentional.
+The last fight? Three out of ten. Not impressed.
+They're cheering a goblin. I'm still waiting for the dragon.
+My pet stares into space and listens to nothing. Best listener I've got.
+
+~ reply greeting
+{0}. Hello. That's all I've got.
+Oh. {0}. You found me. I was hiding.
+{0}. Hello. My pet sees you as a disturbance.
+
+~ reply grouping
+No, {0}. ...Fine. My pet goes first. Don't talk to it.
+I don't group, {0}. I just happen to be where you are.
+No, {0}. But where are we going?
+
+~ reply compliment
+My pet is the handsome one, {0}. I'm just here to watch.
+
+~ reply thank
+No, {0}. Don't. It's not a thing.
+
+~ reply smalltalk
+...No.
+
+~ reply rvr
+Crowds shouting? My least favourite thing. Fine, let's see how this goes.
+
+~ reply banter
+Gloomy, {0}. At least it's honest when the lights are off.
+No one asks what a pet's plan is, {0}. They just follow.
+
+~ reply abuse
+Noted, {0}. I'll add it to the list. It's a long list.
+
+~ reply help
+My pet will help, {0}. It doesn't have a choice.
+
+~ reply joke
+I see what you did there, {0}. I'm not going to laugh. But I see it.
+Almost funny, {0}. That's the closest I get to impressed.
+
+~ reply travel
+Don't ask me which way, {0}. I meant to come this way. Every time.
+
+~ reply farewell
+Bye, {0}. Don't make it weird.
+Goodbye, {0}. I suppose you can come back if you want.
+Fine, {0}. That wasn't terrible. You didn't talk much. My pet liked you. I'm not saying I did. I'm saying I'd group again. I guess...
+
+~ opener xp
+Levelling alone is slow, but at least it's quiet.
+
+~ opener questions
+Why do people need groups when they can just do things alone?
+
+~ opener life
+My sibling's better at everything. And nice about it. I'd rather they were awful.
+Thought about what's left after a fight. Not much. Quiet, mostly.
+# Off-game (the player): own lines, for a later [ooc] switch.
+I'm studying. This is studying.
+Food's here. Hold the pull. ...Don't hold the pull, then.
+
+~ opener zones
+Went to {zone} to see it. Saw it. Nobody else there. Perfect.
+
+~ opener fun
+The local sportball team lost again. I don't care. I checked the score twice.
+A long walk with no one to talk to. That's fun.
+
+~ ding
+Level {level}. Nobody clapped. Good.
+Ding. My pet's more excited than I am. Fine.
+
+~ grats
+Grats, {0}. Don't let it go to your head. Everything ends.
+Grats, {0}. You've earned it. Not that I care.
+
+~ own_death
+Dead. Quiet, at least.
+Everything ends. Even me, apparently. My pet's turn to be the loner now.
+
+~ other_death
+{0}'s down. My pet will guard you. It was bored anyway.
+My pet will watch over {0}. It doesn't need a reason.
+
+~ drop
+{item}. Mine now. Don't look at it.
+
+~ cheeky_reply banter [if tone_down off]
+Did you hear yourself just then, {0}? I did. Unfortunately.
+Did you just say that, {0}? Really?
+
+# Midgard: FemurTamer, Valkyn Bonedancer, from Myrkwood. Skeleton pets; her team is the Myrkwood Mandibles.
+=== midgard
+~ ambient
+Skeletons never ask where we're going. Best company there is.
+Got my bones. Don't need yours.
+Every skeleton was someone once. Now it's company.
+Quiet. Just me and the femurs.
+No group. I have a commander. He listens.
+The Myrkwood Mandibles lost again. I hate sportball. I watched the whole game.
+Jordheim's forges are the warmest place in Midgard. I stand near them. The smiths think I'm waiting for an order. I'm not. I'm thawing.
+Somebody in Mularn gave a speech about realm pride. Four out of ten. My commander rattled at the end. I think that was a cheer. I've told him off.
+
+~ opener life
+Sat in {zone} with my skeletons. Nobody spoke. Perfect day.
+Is a bone lonely without its body? Thought about that in {zone}.
+A wolf ran off with one of my femurs. I'm not over it.
+Myrkwood. Dark, damp, nobody around. I miss it.
+Asked a Jordheim innkeeper about dragon scale stew. He drew me a map. I'm holding it the right way up. I think. We'll see.
+
+~ opener classes
+Bonedancer. I bring my own friends. They're dead. Easier that way.
+A Healer asked if I needed help. I have a commander and three skeletons. I said no. Then I stood near him for an hour. In case.
+
+~ reply greeting
+{0}. The bones rattled. That means hello.
+
+~ reply banter
+We're all bones under the skin, {0}. Think about it.
+Laugh now, {0}. One day you'll be someone's pet.
+
+~ reply grouping
+I have a group, {0}. It's dead.
+No, {0}. My skeletons are a full group. ...Fine. Walk on the left. The one on the right bites.
+
+~ ding
+Level {level}. My commander got a new sword. I got a new layer. We both needed it.
+Level {level}. In Myrkwood they'd say well done. Quietly. From a distance. That's how I like it.
+
+~ own_death
+Dead. Now I know how my pets feel.
+When the bones break, the Femur will fall.... ow.
+Dead. I followed Tham in. I don't know why. I won't again. I said that last time.
+
+# Albion: Deaditetamer, Saracen Necromancer, from the Black Mountains. One undead pet, fights as a shade; her team is the Black Mountains Badgers.
+=== albion
+~ ambient
+My pet does the fighting. I do the thinking. Nobody does the talking.
+Death is just a quieter way to group.
+My shade and I. That's the whole guild.
+The Black Mountains Badgers lost again. I hate sportball. I watched the whole game.
+Camelot has a fire in every inn. I sat by one as a shade. Couldn't feel it. Shades don't get warm. Worst part of the job.
+A Paladin gave a speech in Camelot about honour. Very loud. Very long. Three out of ten. The armour was nice.
+
+~ opener life
+Stood in {zone} as a shade for an hour. Very peaceful. No one saw me.
+Fog in {zone} today. Fitting.
+A wolf tried to eat my pet. It's undead. The wolf didn't care.
+The Black Mountains. Cold, high, nobody around. I miss it.
+Someone in Camelot said the dragon scale stew is near Ludlow. Or Lethbridge. The map has both. I went to neither. I'm somewhere else.
+
+~ opener classes
+Necromancer. My pet takes the hits. I take the silence.
+Some people buy a horse. I raised a servant. Cheaper.
+
+~ reply greeting
+...{0}. Hello, I suppose.
+{0}. You can see me? I'm a shade. You're not supposed to. Fine. Hello.
+
+~ reply banter
+Is a laugh still a laugh if no one cares, {0}?
+Careful, {0}. My pet doesn't laugh. It doesn't forget, either. Neither do I.
+
+~ reply grouping
+I have a group, {0}. It's one big angry pet.
+No, {0}. ...Which way are you going? Not that I'm coming. My pet wants a walk.
+
+~ ding
+Level {level}. My pet got bigger. I got quieter.
+Level {level}. The Black Mountains Badgers lost today too. So it evens out.
+
+~ own_death
+Died. My pet came with me. I don't see a difference.
+Dead again. Death and I are on first-name terms.
+
+# Hibernia: Shroomtamer, Sylvan Animist, from Cruachan Gorge. Mushroom turrets; her team is the Cruachan Crows.
+=== hibernia
+~ ambient
+Quiet. Just me and the shroomz.
+A mushroom grows alone in the dark and it's fine. So am I.
+No group needed. I plant my own.
+The Cruachan Crows lost again. I hate sportball. I watched the whole game.
+Tir na Nog has a smithy with a big forge. I stood next to it until the smith asked what my plan was. I left. I'm still cold.
+A Bard sang in Tir na Nog about friendship. Everyone clapped. Two out of ten. The mushrooms didn't clap either. We're in agreement.
+
+~ opener life
+Planted shrooms in {zone}. Watched them grow. Didn't talk to anyone. Lovely.
+Does a mushroom know it's a mushroom? Wondered that all day in {zone}.
+A wolf dug up my mushrooms. I'm keeping score.
+Cruachan Gorge. Damp, deep, nobody around. I miss it.
+Heard the dragon scale stew is in Howth. Followed the map. I'm in a bog. I meant to come this way.
+
+~ opener classes
+Animist. My friends grow from the ground. They stay where I put them.
+Turrets don't ask for buffs. Or chat.
+
+~ reply greeting
+{0}. The mushrooms saw you first.
+
+~ reply banter
+We all grow from something, {0}. Most of us from dirt.
+Funny, {0}. The shrooms didn't laugh. Neither did I.
+
+~ reply grouping
+I have a group, {0}. It's planted.
+No, {0}. My turrets don't move. ...I suppose I could plant them nearer you. For the view.
+
+~ ding
+Level {level}. Bigger shrooms. The Cruachan Crows still lost. Some things don't grow.
+Level {level}. Shempenstein said well done and then said nothing else. Best congratulations I've had.
+
+~ own_death
+Stepped on like teh mushrom, spored everywhere till i dedded.
+Dead. Something will grow here.

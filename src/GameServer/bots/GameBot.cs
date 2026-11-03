@@ -95,6 +95,8 @@ namespace DOL.GS
         private Point3D _stableRouteLastPosition;
         private ECSGameTimer _deathRecoveryTimer;
         private long _deathTick;
+        // Last few hits taken, for the cause-of-death log line (autonomous gamebots only).
+        private AutonomousDamageRing _recentDamage;
         private ushort _deathRegionId;
         private Point3D _deathLocation;
         private long _nextReturnRoleplayTick;
@@ -958,6 +960,9 @@ namespace DOL.GS
             _stableReturnPlan = null;
             CompleteStableMasterRoute();
 
+            if (IsAutonomousWorldBot)
+                LogDeathCause(killer);
+
             if (IsAutonomousWorldBot && PersistentRecord != null)
             {
                 PersistentRecord.DeathCount++;
@@ -972,6 +977,93 @@ namespace DOL.GS
             if (IsAutonomousWorldBot)
                 AutonomousBotStatusPersistence.Queue(this);
             StartDeathRecoveryTimer();
+        }
+
+        public override void TakeDamage(GameObject source, eDamageType damageType, int damageAmount, int criticalAmount)
+        {
+            // Recorded before the base call: a killing blow runs ProcessDeath inside it.
+            if (IsAutonomousWorldBot && damageAmount + criticalAmount > 0)
+            {
+                _recentDamage ??= new AutonomousDamageRing();
+                _recentDamage.Record(new AutonomousDamageHit(
+                    source?.Name ?? "unknown", damageAmount + criticalAmount, damageType.ToString(), Health));
+            }
+
+            base.TakeDamage(source, damageType, damageAmount, criticalAmount);
+        }
+
+        private static readonly eInventorySlot[] DeathCauseArmorSlots =
+        [
+            eInventorySlot.HeadArmor, eInventorySlot.HandsArmor, eInventorySlot.FeetArmor,
+            eInventorySlot.TorsoArmor, eInventorySlot.LegsArmor, eInventorySlot.ArmsArmor,
+        ];
+
+        // One AUTONOMOUS_BOT_DEATH_CAUSE line from data already on the bot; no scans.
+        private void LogDeathCause(GameObject killer)
+        {
+            try
+            {
+                string killerKind = "none";
+                string killerOwner = string.Empty;
+                // Bots first: a companion bot has an owner but is not a pet.
+                if (killer is GameBot)
+                    killerKind = "bot";
+                else if (killer is GameNPC npcKiller && npcKiller.Brain is IControlledBrain killerBrain &&
+                    killerBrain.GetLivingOwner() is GameLiving owner && owner != npcKiller)
+                {
+                    killerKind = "pet";
+                    killerOwner = owner.Name;
+                }
+                else if (killer is GamePlayer)
+                    killerKind = "player";
+                else if (killer is GameNPC)
+                    killerKind = "mob";
+                else if (killer != null)
+                    killerKind = "other";
+
+                int armorFilled = 0;
+                if (Inventory != null)
+                    foreach (eInventorySlot slot in DeathCauseArmorSlots)
+                        if (Inventory.GetItem(slot) != null)
+                            armorFilled++;
+
+                AutonomousDeathCause cause = new()
+                {
+                    BotName = Name,
+                    BotId = DatabaseID,
+                    Realm = GlobalConstants.RealmToName(Realm),
+                    ClassName = ClassName,
+                    Level = Level,
+                    RegionId = CurrentRegionID,
+                    Zone = CurrentZone?.Description ?? string.Empty,
+                    X = X,
+                    Y = Y,
+                    Z = Z,
+                    Activity = PersistentRecord?.Activity ?? string.Empty,
+                    Target = (TargetObject as GameLiving)?.Name ?? string.Empty,
+                    Killer = killer?.Name ?? string.Empty,
+                    KillerLevel = killer is GameLiving livingKiller ? livingKiller.Level : 0,
+                    KillerCon = killer is GameLiving ? ConLevels.GetConColor(GetConLevel(killer)).ToString() : string.Empty,
+                    KillerKind = killerKind,
+                    KillerOwner = killerOwner,
+                    GroupSize = Group?.MemberCount is { } members ? (int)members : 0,
+                    PetOut = ControlledBrain?.Body is { IsAlive: true },
+                    ArmorSlotsFilled = armorFilled,
+                    MaxHealth = MaxHealth,
+                    Mana = Mana,
+                    MaxMana = MaxMana,
+                    Hits = _recentDamage?.NewestFirst() ?? [],
+                };
+                log.Warn(AutonomousDeathCauseLog.Format(cause));
+            }
+            catch (Exception e)
+            {
+                log.Error($"AUTONOMOUS_BOT_DEATH_CAUSE failed for bot {Name}: {e.Message}");
+            }
+            finally
+            {
+                _recentDamage?.Clear();
+            }
         }
 
         private void StartDeathRecoveryTimer()
@@ -1208,6 +1300,10 @@ namespace DOL.GS
                 return false;
             // A raid squad on a keep siege holds its post until the event ends (goal 11: no leash during sieges).
             if (CurrentRegionID == Owner.CurrentRegionID && CompanionRaidSiege.Holds(this))
+                return false;
+            // Told to stay in chat (PersonalityOrders, at most 5 minutes): no recall while the owner is in this region.
+            if (!afterRevival && !IsReturningAfterRelease && PersonalityOrders.Holds(ObjectID, Owner.CurrentRegionID, GameLoop.GameLoopTime) &&
+                CurrentRegionID == Owner.CurrentRegionID)
                 return false;
 
             Vector3 destination = TemporaryGroupStableTravel.FormationPoint(Owner, CompanionRaid.IsMember(this) ? Math.Max(0, GroupIndex - 1) : ObjectID % 6);

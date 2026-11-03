@@ -65,12 +65,25 @@ public static class PersonalityReactions
         return line.Replace("{0}", string.IsNullOrWhiteSpace(otherName) ? "friend" : otherName, StringComparison.Ordinal);
     }
 
-    /// <summary>A random line from the pool whose slots can be filled, or null.</summary>
-    public static string PickFilled(IReadOnlyList<string> pool, LineSlots slots, string otherName, Random random)
+    /// <summary>
+    /// A random line from the pool whose slots can be filled, or null. With a botKey it prefers
+    /// lines that bot hasn't said lately and remembers the one it picks (DialoguePicker).
+    /// </summary>
+    public static string PickFilled(IReadOnlyList<string> pool, LineSlots slots, string otherName, Random random, string botKey = null)
     {
         if (pool == null || pool.Count == 0)
             return null;
         random ??= Random.Shared;
+        if (botKey != null)
+        {
+            // Only lines it can fill now: a line waiting on an unknown slot ({monster}) is never said, so it
+            // would stay "fresh" and crowd out the lines it can say, and the bot would go quiet.
+            List<string> fillable = pool.Take(DialoguePicker.MaxPool).Where(template => Fill(template, slots, otherName) != null).ToList();
+            if (DialoguePicker.Shared.Fresh(fillable, botKey, random) is not { } picked)
+                return null;
+            DialoguePicker.Shared.Said(botKey, picked);
+            return Fill(picked, slots, otherName);
+        }
         for (int attempt = 0; attempt < MaxFillTries; attempt++)
         {
             if (Fill(pool[random.Next(pool.Count)], slots, otherName) is { } line)
@@ -79,23 +92,36 @@ public static class PersonalityReactions
         return null;
     }
 
+    /// <summary>A random entry; with a botKey, one that bot hasn't said lately (not yet remembered).</summary>
+    private static string Any(IReadOnlyList<string> pool, Random random, string botKey) =>
+        botKey == null ? pool[random.Next(pool.Count)] : DialoguePicker.Shared.Fresh(pool, botKey, random);
+
+    /// <summary>The key a bot's said lines are remembered under: its own id for a typed bot, the personality's for a unique one.</summary>
+    public static string MemoryKey(GameBot bot, BotPersonality personality) =>
+        personality?.TypeKey == null ? personality?.Key : bot?.InternalID ?? personality.Key;
+
     /// <summary>
     /// A conversation starter: a random topic's opener, or now and then a cheeky line when
     /// tone-down is off. Topic is null for a cheeky line. Null when nothing could be filled.
     /// </summary>
-    public static string Opener(TypeLines lines, LineSlots slots, bool toneDown, Random random, out eChatTopic? topic)
+    public static string Opener(TypeLines lines, LineSlots slots, bool toneDown, Random random, out eChatTopic? topic, string botKey = null)
     {
         topic = null;
         if (lines == null)
             return null;
         random ??= Random.Shared;
         if (!toneDown && lines.Cheeky is { Length: > 0 } cheeky && random.NextDouble() < CheekyChance)
-            return cheeky[random.Next(cheeky.Length)];
+        {
+            string line = Any(cheeky, random, botKey);
+            if (botKey != null)
+                DialoguePicker.Shared.Said(botKey, line);
+            return line;
+        }
         eChatTopic[] topics = lines.Openers.Where(pair => pair.Value is { Length: > 0 }).Select(pair => pair.Key).ToArray();
         for (int attempt = 0; attempt < MaxFillTries && topics.Length > 0; attempt++)
         {
             eChatTopic pick = topics[random.Next(topics.Length)];
-            if (Fill(lines.Openers[pick][random.Next(lines.Openers[pick].Length)], slots) is { } line)
+            if (PickFilled(lines.Openers[pick], slots, null, random, botKey) is { } line)
             {
                 topic = pick;
                 return line;
@@ -104,12 +130,21 @@ public static class PersonalityReactions
         return null;
     }
 
+    /// <summary>A typed bot's opener on one topic (a joke for Fun), or null when it has none (/dialogue joke).</summary>
+    public static string TopicOpener(GameBot bot, eChatTopic topic, Random random)
+    {
+        BotPersonality personality = BotPersonalities.For(bot);
+        return LinesFor(personality)?.Openers.GetValueOrDefault(topic) is { Length: > 0 } pool
+            ? PickFilled(pool, SlotsFor(bot, NextLevel(bot)), null, random, MemoryKey(bot, personality))
+            : null;
+    }
+
     /// <summary>An answer on the topic someone just opened; {0} is the one who opened it. Null: none.</summary>
-    public static string TopicReply(TypeLines lines, eChatTopic topic, string otherName, LineSlots slots, Random random) =>
-        lines?.TopicReplies.GetValueOrDefault(topic) is { } pool ? PickFilled(pool, slots, otherName, random) : null;
+    public static string TopicReply(TypeLines lines, eChatTopic topic, string otherName, LineSlots slots, Random random, string botKey = null) =>
+        lines?.TopicReplies.GetValueOrDefault(topic) is { } pool ? PickFilled(pool, slots, otherName, random, botKey) : null;
 
     /// <summary>What it says about an event; {0} is the one it happened to (Grats, OtherDeath). Null: none.</summary>
-    public static string Reaction(TypeLines lines, ePersonalityEvent kind, string otherName, LineSlots slots, Random random)
+    public static string Reaction(TypeLines lines, ePersonalityEvent kind, string otherName, LineSlots slots, Random random, string botKey = null)
     {
         if (lines == null)
             return null;
@@ -122,7 +157,7 @@ public static class PersonalityReactions
             ePersonalityEvent.Drop => lines.Drop,
             _ => null,
         };
-        return PickFilled(pool, slots, otherName, random);
+        return PickFilled(pool, slots, otherName, random, botKey);
     }
 
     /// <summary>
@@ -152,28 +187,52 @@ public static class PersonalityReactions
     private static readonly Dictionary<ushort, long> NextRegionReaction = new();
     private static readonly Dictionary<eRealm, long> NextFactionDing = new();
 
-    /// <summary>A typed bot's ambient line: from its topic pools mostly, else its short Ambient list.</summary>
+    /// <summary>A typed bot's ambient line: from its topic pools mostly, else its short Ambient list (which may have [if ...] lines).</summary>
     public static string AmbientLine(GameBot bot, BotPersonality personality, Random random, out eChatTopic? topic)
     {
         topic = null;
         random ??= Random.Shared;
         if (LinesFor(personality) is { } lines && random.NextDouble() < TopicShare &&
-            Opener(lines, SlotsFor(bot, NextLevel(bot)), PersoperProperties.TONE_DOWN, random, out topic) is { } opener)
+            Opener(lines, SlotsFor(bot, NextLevel(bot)), PersoperProperties.TONE_DOWN, random, out topic, MemoryKey(bot, personality)) is { } opener)
             return opener;
         topic = null;
-        return personality?.Ambient is { Length: > 0 } ambient ? ambient[random.Next(ambient.Length)] : null;
+        return OwnAmbientLine(bot, personality, random);
     }
+
+    /// <summary>
+    /// A line from the bot's short Ambient list by the dialogue rules, with what the bot sees itself:
+    /// a night line ([if time_of_day night]) wins at night. Null when it has none (/dialogue ambient).
+    /// </summary>
+    public static string OwnAmbientLine(GameBot bot, BotPersonality personality, Random random) =>
+        personality?.Ambient is { Length: > 0 } ambient
+            ? DialoguePicker.Shared.Pick(DialogueBotNames.Fill(ambient, bot.Realm), DialogueLibrary.RuleFor, DialogueFactSource.ForBot(bot), MemoryKey(bot, personality), DateTime.UtcNow, random ?? Random.Shared)
+            : null;
 
     /// <summary>A typed bot's answer to a topic another bot opened, or null (then it answers as usual).</summary>
     public static string TopicReplyFor(GameBot responder, BotPersonality personality, eChatTopic topic, string starterName) =>
-        TopicReply(LinesFor(personality), topic, starterName, SlotsFor(responder, NextLevel(responder)), Random.Shared);
+        TopicReply(LinesFor(personality), topic, starterName, SlotsFor(responder, NextLevel(responder)), Random.Shared, MemoryKey(responder, personality));
 
     public static LineSlots SlotsFor(GameBot bot, int level, string item = null) => new(
         bot?.CurrentZone?.Description,
-        bot?.PersistentRecord?.TargetName,
+        MonsterFor(bot),
         level,
         bot?.ClassName,
         item ?? bot?.TempProperties.GetProperty<string>(LastLootKey));
+
+    /// <summary>
+    /// The bot's record TargetName if it is a real monster in its region, else null. That record
+    /// also holds trainers, merchants, enemy players, other bots and even the bot itself (what it
+    /// had targeted when it died, e.g. a healer on itself).
+    /// </summary>
+    private static string MonsterFor(GameBot bot) =>
+        bot == null ? null : MonsterName(bot.PersistentRecord?.TargetName, bot.Name, name =>
+            WorldMgr.GetNPCsByNameFromRegion(name, bot.CurrentRegionID, eRealm.None)
+                .Any(npc => npc is not GameBot && AutonomousWorldBotController.IsExperienceMonster(npc)));
+
+    /// <summary>name if it can fill {monster}: not blank, not the speaker's own name, and isMonster says yes.</summary>
+    public static string MonsterName(string name, string selfName, Func<string, bool> isMonster) =>
+        string.IsNullOrWhiteSpace(name) || string.Equals(name, selfName, StringComparison.OrdinalIgnoreCase) ||
+        isMonster?.Invoke(name) != true ? null : name;
 
     private static int NextLevel(GameBot bot) => bot != null && bot.Level < bot.MaxLevel ? bot.Level + 1 : 0;
 
@@ -198,7 +257,7 @@ public static class PersonalityReactions
             return;
         BotPersonality personality = PersonalityTypes.InstanceFor(bot);
         if (personality != null && Rolls(personality, ownEvent: true) &&
-            Reaction(LinesFor(personality), ePersonalityEvent.Ding, null, SlotsFor(bot, bot.Level), Random.Shared) is { } ding)
+            Reaction(LinesFor(personality), ePersonalityEvent.Ding, null, SlotsFor(bot, bot.Level), Random.Shared, MemoryKey(bot, personality)) is { } ding)
         {
             // Mostly to the group or nearby; now and then to the whole realm, and a realm-mate cheers.
             if (TakeFactionDingTurn(bot.Realm))
@@ -224,7 +283,7 @@ public static class PersonalityReactions
         if (bot.TempProperties.GetProperty<long>(NextDropLineKey) > now || !Rolls(personality, ownEvent: true))
             return;
         bot.TempProperties.SetProperty(NextDropLineKey, now + DropLineCooldownMs);
-        if (Reaction(LinesFor(personality), ePersonalityEvent.Drop, null, SlotsFor(bot, NextLevel(bot), itemName), Random.Shared) is { } line)
+        if (Reaction(LinesFor(personality), ePersonalityEvent.Drop, null, SlotsFor(bot, NextLevel(bot), itemName), Random.Shared, MemoryKey(bot, personality)) is { } line)
             Later(bot, 1_200 + Random.Shared.Next(1_000), () => AutonomousBotChatCoordinator.SpeakReaction(bot, line));
     }
 
@@ -243,7 +302,7 @@ public static class PersonalityReactions
         if (!TakeRegionTurn(victim.CurrentRegionID))
             return;
         if (victim is GameBot bot && PersonalityTypes.InstanceFor(bot) is { } personality && Rolls(personality, ownEvent: true) &&
-            Reaction(LinesFor(personality), ePersonalityEvent.OwnDeath, null, SlotsFor(bot, NextLevel(bot)), Random.Shared) is { } line)
+            Reaction(LinesFor(personality), ePersonalityEvent.OwnDeath, null, SlotsFor(bot, NextLevel(bot)), Random.Shared, MemoryKey(bot, personality)) is { } line)
             Later(bot, 1_000 + Random.Shared.Next(800), () => AutonomousBotChatCoordinator.SpeakReaction(bot, line, allowDead: true));
         Witnesses(victim, ePersonalityEvent.OtherDeath);
     }
@@ -266,7 +325,7 @@ public static class PersonalityReactions
             if (reacted >= MaxReactors)
                 break;
             if (!Rolls(personality, ownEvent: false) ||
-                Reaction(LinesFor(personality), kind, subject.Name, SlotsFor(bot, NextLevel(bot)), Random.Shared) is not { } line)
+                Reaction(LinesFor(personality), kind, subject.Name, SlotsFor(bot, NextLevel(bot)), Random.Shared, MemoryKey(bot, personality)) is not { } line)
                 continue;
             Later(bot, 2_000 + reacted * 1_800 + Random.Shared.Next(1_200), () => AutonomousBotChatCoordinator.SpeakReaction(bot, line));
             reacted++;
@@ -282,7 +341,7 @@ public static class PersonalityReactions
             return;
         var (bot, personality) = PersonalityChatter.PickWeighted(mates.Select(pair => (Item: pair, Weight: pair.Personality.Chattiness)).ToList(), Random.Shared);
         if (Rolls(personality, ownEvent: false) &&
-            Reaction(LinesFor(personality), ePersonalityEvent.Grats, dinger.Name, SlotsFor(bot, NextLevel(bot)), Random.Shared) is { } line)
+            Reaction(LinesFor(personality), ePersonalityEvent.Grats, dinger.Name, SlotsFor(bot, NextLevel(bot)), Random.Shared, MemoryKey(bot, personality)) is { } line)
             Later(bot, 3_000 + Random.Shared.Next(2_000), () => AutonomousBotChatCoordinator.SpeakFactionReaction(bot, line));
     }
 

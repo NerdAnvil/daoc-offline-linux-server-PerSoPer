@@ -35,6 +35,7 @@ public class UT_DialogueRules
     [TestCase("x [if player_dead 3]", "rules.dlg:3: 'player_dead' takes no value: [if player_dead] or [if not player_dead]")]
     [TestCase("x [cooldown soon]", "rules.dlg:3: bad cooldown 'soon' (use for example 30s, 11m or 2h, at most 24h)")]
     [TestCase("x [twice]", "rules.dlg:3: unknown tag '[twice]'")]
+    [TestCase("x [allow pirate]", "rules.dlg:3: unknown allow 'pirate' (known: gaelic, knightly, norse)")]
     [TestCase("x [once]\nx [once]", "rules.dlg:4: a line with tags must not appear twice in a file; change its text")]
     public void Parse_ReportsBadTags(string lines, string error)
     {
@@ -42,10 +43,34 @@ public class UT_DialogueRules
     }
 
     [Test]
+    public void Parse_AllowTag_IsANoteForTheVoiceTests_InAnySection()
+    {
+        DialogueFile file = DialogueFile.Parse("=== bot\n~ ambient\nHark? [allow knightly]\nPlain.\n~ reply greeting\nHi! [once] [allow norse]\n", "rules.dlg");
+
+        Assert.That(file.Errors, Is.Empty);
+        Assert.That(file.AllowsFor("Hark?"), Is.EquivalentTo(new[] { "knightly" }));
+        Assert.That(file.RuleFor("Hark?"), Is.Null, "an allow tag alone is not a rule");
+        Assert.That(file.AllowsFor("Plain."), Is.Empty);
+        Assert.That(file.AllowsFor("Hi!"), Is.EquivalentTo(new[] { "norse" }));
+        Assert.That(file.RuleFor("Hi!").Once, Is.True);
+    }
+
+    [Test]
+    public void Ambient_NightLine_WinsAtNight_FromTheBotsOwnFacts()
+    {
+        DialogueFile file = DialogueFile.Parse("=== bot\n~ ambient\nPlain.\nDark! [if time_of_day night]\n", "rules.dlg");
+        Assert.That(file.Errors, Is.Empty);
+        DialogueFacts night = DialogueFactSource.ForBot("bot", false, 1, "night", "Jordheim", new HashSet<string>());
+        DialogueFacts day = DialogueFactSource.ForBot("bot", false, 1, "day", "Jordheim", new HashSet<string>());
+        Assert.That(Pick(new DialoguePicker(), file, night, Noon), Is.EqualTo("Dark!"));
+        Assert.That(Enumerable.Range(0, 10).Select(seed => Pick(new DialoguePicker(), file, day, Noon, seed)).Distinct(), Is.EqualTo(new[] { "Plain." }));
+    }
+
+    [Test]
     public void Parse_RulesOnlyInReplySections_AndFallbackNeedsAPlainLine()
     {
         DialogueFile file = DialogueFile.Parse("=== bot\n~ ding\nDing! [once]\n~ fallback\nHuh? [if player_dead]\n", "rules.dlg");
-        Assert.That(file.Errors, Does.Contain("rules.dlg:3: rules only work in reply, cheeky_reply, fallback sections for now"));
+        Assert.That(file.Errors, Does.Contain("rules.dlg:3: rules only work in reply, cheeky_reply, fallback, ambient sections for now"));
         Assert.That(file.Errors, Does.Contain("rules.dlg:4: every fallback line has [if ...]; keep at least one without"));
         Assert.That(file.RuleFor("Ding!"), Is.Null);
     }
@@ -108,6 +133,40 @@ public class UT_DialogueRules
         string[] picks = Enumerable.Range(0, 3).Select(seed => Pick(picker, file, facts, Noon, seed)).ToArray();
         Assert.That(picks, Is.EquivalentTo(new[] { "One.", "Two.", "Three." }), "three picks from three lines repeat nothing");
         Assert.That(Pick(picker, file, facts, Noon), Is.Not.Null, "with every line recent it still answers");
+    }
+
+    [Test]
+    public void Fresh_SharesTheMemoryWithPick_AndFallsBackToTheOldest()
+    {
+        DialogueFile file = Parse("One.\nTwo.\nThree.\n");
+        var picker = new DialoguePicker();
+        var facts = new DialogueFacts { PlayerId = "p" };
+        string[] pool = ["One.", "Two.", "Three."];
+
+        picker.Said("bot", "One.");
+        picker.Said("bot", "Two.");
+        Assert.That(Pick(picker, file, facts, Noon), Is.EqualTo("Three."), "a line said as an opener is skipped as a reply too");
+        Assert.That(picker.Fresh(pool, "bot", new Random(1)), Is.EqualTo("One."), "all said: the one said longest ago");
+        Assert.That(picker.Fresh(pool, "other bot", new Random(1)), Is.Not.Null, "each bot has its own memory");
+        Assert.That(picker.Fresh([], "bot", new Random(1)), Is.Null);
+    }
+
+    [Test]
+    public void Fresh_RepeatsNothingUntilThePoolIsUsedUp()
+    {
+        var picker = new DialoguePicker();
+        string[] pool = Enumerable.Range(1, DialoguePicker.RecentPerBot).Select(i => $"Line {i}.").ToArray();
+        var random = new Random(7);
+
+        var said = new List<string>();
+        for (int i = 0; i < pool.Length; i++)
+        {
+            string line = picker.Fresh(pool, "bot", random);
+            picker.Said("bot", line);
+            said.Add(line);
+        }
+        Assert.That(said, Is.EquivalentTo(pool), $"{pool.Length} picks from {pool.Length} lines repeat nothing");
+        Assert.That(picker.Fresh(pool, "bot", random), Is.EqualTo(said[0]), "then the oldest comes back first");
     }
 
     [Test]

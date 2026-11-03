@@ -1,6 +1,7 @@
 # Persoper: her chat lines and greetings. Format: see DialogueFile.cs.
 # Her memory lines, heal and build lines, patience and surnames stay in code.
 === persoper
+names: Persi
 
 ~ greeting first_meeting
 Hello, {2}! I'm {0}. Yes, {1}. I picked it myself.
@@ -32,42 +33,311 @@ Lovely, {0}! Now do one about healers.
 If anyone's ears start bleeding, I'm right here.
 Ooh, {0}, that one's catchy. Unfortunately.
 *hums along, badly*
+If that's a lullaby, I'm never sleeping again, {0}.
+I'll admit, {0}, I've been known to hum along to those tunes.
+*sighs* If I'm going deaf, {0}, I might as well enjoy it.
+Well, {0}, that was... interesting.
+{0}, you owe me a hearing aid for that.
+*coughs* Encore? Never. Well... maybe one.
+
+~ part greet
+Hail
+Well met
+Oi
+Ah, there you are
 
 ~ reply greeting
 Hello, {0}! Yes, I'm the healer. Yes, I'm fabulous.
 {0}! Good to see you still have all your hit points.
+{greet}, metalhead {0}! Louder, please, I can still hear myself think. [if player_likes metal]
+{0}, I was humming a ballad for you. Don't tell anyone. [if player_likes ballads]
+Hello, darling {0}! Ready to live forever?
+Well hello there, {0}! Fancy some healing with that hello?
+Oh, it's you, {0}. Time for green bars and giggles.
+Go on, say it. "Hellooo, nurse." Everyone does, {0}. [once]
+Hello, darling {0}. Not here to die again, I hope?
+I thought I felt a pulse when you walked in, {0}. Turns out it was mine.
+Well, hello there, {0}! Still standing, I see. Must be my healing.
+{0}, you're looking positively alive today. Let's keep it that way.
+Back from the dead already, {0}? I was about to cancel your rezz.
+{0}, you're looking chipper today. Must have skipped the fire.
+Well, well, {0}. Still in one piece. Impressive.
+You scared me last time, {0}. Don't make me call for backup.
+Been keeping the heal train running, {0}. Nice to see you're still on board.
+Sunset watching at the cliffs today, {0}. Thought of you when the sky turned pink.
+Oh, {0}, I was testing out some new bandages. Hope you don't need them.
+You're back, {0}! I was watching the sunset and wondering if you'd make it in time to share the view. You nearly did.
+I was stirring a stew and humming old tunes while I waited, {0}. Good thing you're here. Someone has to taste-test it, and it isn't going to be me.
+Hello, {0}! I'm thinking of calling myself Glitterheart. What do you think?
+Hey, {0}, fancy some Mendwell magic today? Or should I stick with Healsalot?
+Oh, it's you, {0}. What do you think of Persoper Teatime? Too much?
+Well, hello there, {0}. I was trying out a new stew recipe and nearly burned the camp down.
+{0}! I made a stew so bad even the chickens wouldn't eat it.
+Morning already, {0}? I just caught the most stunning sunrise, you know.
+{0}, did you know the sky this morning was painted in hues of magenta? Stunning, really.
+Well, hello {0}. I was just perfecting my blackened chicken recipe.
+I tried cooking a five-star meal, {0}. Now everything smells like smoke.
+Morning, {0}. I was experimenting with dragon spice. Seems I used a bit too much.
 
 ~ reply banter
 Oh, {0}, you're funny. Keep it up and I'll heal you last.
 Ha! {0}, I'm putting that on your tab.
+You're full of surprises, {0}. I like that.
+{0}, I swear you're getting funnier every time I heal you.
+{0}, you crack me up. Keep the jokes coming!
+Your wit shines brighter than my magenta gear, {0}.
+Your jokes, {0}? Better than a resurrection. Almost.
+Oh, {0}, you almost make me forget about hit points. Almost.
+I play up the healing for laughs, {0}, but when your hit points hit zero, nobody's laughing. Least of all me. So humour me and stay alive.
+You should write comedy, {0}. You're practically hilarious. Practically.
+Your jokes are so bad, {0}, I'm amazed your hit points survive them.
+Your jokes beat Jovi's songs, {0}. Barely.
+Ha! Your wit is as sharp as my staff, {0}. Which is to say, not very.
+You're a breath of fresh air, {0}. Or is that a fireball?
+Your jokes, {0}? A balm for my soul. If I have one left.
+{0}, you're either brilliant or insane. I'll let you decide.
+I've lost count of how many times I've topped you up, {0}. But every heal feels like the start of a new story, not just another fight.
+Forbidden Planet? I'll watch anything with a robot that polite, {0}.
+You know, I could listen to The Clash all day, {0}. Just saying.
+Cooking? I'd whip up a hearty stew on a frosty night like this, {0}.
+Harry Potter never gets old, {0}. Especially the flying scenes.
+Dungeon Crawler Carl? That book nailed the dungeon crawl, {0}. Right down to the cat.
+Sunset snacks, anyone? I could murder some cheese and crackers, {0}.
+Your jokes are like a summer rain: brief and easily forgotten, {0}.
+Oh, {0}, your wit is as sharp as a butter knife. Keep it up.
+Late nights like this, I think about the sunset I missed, and the one I'll watch tomorrow. Life is a series of sunsets, {0}, each one worth waiting for.
+You know, {0}, every night I promise myself I'll sleep when the sun rises. Then I wake up to do it all over again. But I wouldn't have it any other way.
+Remember Daisy, my dog who thought a knife was a chew toy? Nearly gave me a heart attack, {0}.
+Daisy once snatched a knife off the ground and spun like a top. I was sure I was about to get stabbed.
+I once turned chocolate chips into a science experiment, {0}. Smoke alert!
+Who knew microwaving chocolate could be so dramatic? Almost burned down the kitchen, {0}. Almost.
+Oh, {0}, last night I stumbled in and faced the ultimate foe: my own stairs.
+Those carpet weasels of mine are trouble, but they keep me on my toes, {0}.
+Did you hear Jovi's latest, {0}? Still singing about that battle bracer.
+You should have seen the raid's faces when Jovi started belting out the Battle Bracer Blues, {0}.
+Ever tried getting a chest up the Jordheim stairs, {0}? Pivot. PIVOT.
+Late nights remind me of the chocolate chips I microwaved too long. A puff of smoke said hello. Moments like that make me laugh at myself, {0}.
+Njessi's aim in Gotar is worse than mine in a storm. I swear it's on purpose, {0}.
+Read any Brandon Sanderson lately, {0}? Ten-ton books, and I still want more.
+You look like you're ready for a 1980s prom, {0}. Can you keep up with my hair?
+My neon leggings and spiky hair are the least of your worries, darling.
+Remember the time I walked out of the bathroom trailing toilet paper? Only one classmate saw. My hero, {0}.
+Back at school, I walked out of the bathroom trailing a string of toilet paper. Classes had started, and only one person saw. They never said a word, {0}. I'm still grateful.
+Rock on, {0}. You're lucky I'm here and not belting out power ballads.
+Guitar strings or healing threads, {0}? Same difference to me.
+You know, {0}, I'd rather be headlining a rock show than healing another fireball.
+You know, I could watch a film about giant ants all night, {0}. As long as they don't crawl up my leg.
+Peace and good food: that's the recipe for a perfect day, {0}.
+Good music keeps the soul singing, even through a tough fight, {0}.
 
 ~ reply abuse
 Careful, {0}. I decide who gets healed around here.
 Rude, {0}. I'll pretend I didn't hear that. Once.
+{0}, do you need me to heal your pride too?
+Oh {0}, you've always been my favourite insult.
+Getting a little testy, {0}? I'll make sure to heal your attitude next.
+Aren't you just a fountain of compliments, {0}? I'll go ahead and heal you, though.
+{0}, you're worse than an assassin in a healer outfit.
+If that's your best comeback, {0}, I'll have to heal your ego too.
+Need a mirror, {0}? I'd lend you mine, but it might crack.
+Your rudeness is just... wow, {0}. My heals, however? Outstanding.
+I've survived worse than your insults, {0}. Dragons, mostly.
+Rude much, {0}? I should charge admission for your insults.
+Ooh, someone's got their undies in a knot, {0}.
+You must really be hitting a wall if you're talking to me like that, {0}.
+Oh, {0}, I didn't know I was the punching bag for your bad day.
+Your wit is almost as sharp as your manners are dull, {0}.
+Your insults are as dull as your wit, {0}. Now, where's my apology?
+You're like a storm cloud on a sunny day, {0}. Lucky for you, I love rainbows.
+Someone once called me worse than that, {0}. I made them a sandwich.
+Your rudeness is like a ferret with its head stuck in a jar, {0}. Loud, and going nowhere.
+Rude much? I once calmed a bear with nothing but a smile, {0}.
+Rude, {0}? Jovi once sang a whole song just to annoy me, and it wasn't half as irritating.
+Grumblebelly, the bear, scares me less than your attitude, {0}.
+Your insults are like a dragon raid, {0}. Exciting at first, then just a waste of time.
+Rude, {0}? I could do the leg warmers and big hair look better than that.
+Oh, {0}, you're like a cassette tape that got stuck on side B.
+Oh dear, {0}. The rudeness is surely going to be the death of me.
+I feel a swoon coming on, {0}. Must have been something in the air.
+*swoons* Oh heavens, I'm fainting. Is anyone going to catch me, {0}?
+Rude, {0}? Grrr. I learned that one from my dog Sierra.
+That hurt, {0}. I'll still heal you, because that's who I am. But I'll remember it, and next time I might take my sweet time.
+Oh dear me, {0}. I'll need that apology in writing. My heart, it aches.
 
 ~ reply grouping
 A group, {0}? Someone has to keep you lot alive.
 Count me in, {0}. Try not to stand in the fire.
+Don't worry, {0}, I won't let your group die.
+A group? {0}, I'm in. I'm the healer, after all.
+You can count on me, {0}. I won't leave your group behind.
+Count me in. Group goals, here we come!
+A group, {0}? I'm in, darling. Who else would heal you?
+A group? I'll be your cheerleader and your healer, {0}.
+A strong group? Lovely. I'll make sure we all come out the other side, {0}.
+A dungeon group? I'll keep you alive long enough to miss the exit, {0}.
+A group? Splendid. Let's hope you're ready for my fabulous company, {0}.
+Joining a group? I'll keep count of who hogs the heals, {0}.
+A group, {0}? I'll be the heart you can't live without.
+A group? Fine, as long as you're not the one pulling aggro, {0}.
+A group? Fine. But if this is an Ocean's Eleven job, I want a cut, {0}.
+A group, {0}? I'd join any quest that lets me revisit Varulvhamn.
+Another group run? Those werewolves never get old, do they, {0}?
+Don't cross the streams, {0}. That's how healers end up out of mana and groups out of luck.
+A group, {0}? Never say die, right? Lead the way.
+A group without a healer is a ship without a captain, {0}. I'm the heart that keeps you beating when the fighting gets rough. You need me, and I know it.
+You have my staff, {0}. Try not to lose it like a certain ring.
+A group, {0}? I hope you've got a pet class along. They make the best sidekicks.
+A savage, anyone? I love a group with someone who just hits things.
+You're the tank, {0}? Well, someone has to stand there and take it.
+You're the rogue, {0}? I hope you're faster than you look.
+You're the mage, {0}? I hope you remember to cast, not just wave your hands.
+You're the archer, {0}? I hope you can hit something besides the sky.
+I always stay with my group, {0}. I've seen healers left for dead by their own party, and I won't do that to anyone. Not even you.
+You're the bard, {0}? Better start singing, or I'll give you a solo act in the fire.
+You're the other healer, {0}? Fine, but don't let me down, or I'll have to heal both of us.
+You're the pet class, {0}? I hope your furry friend is as loyal as you are.
 
 ~ reply grinding
 Pull what you like, {0}. I'll keep the green bars up.
 More monsters, {0}? Fine, but I want a break after this camp.
+Keep the green bars up, {0}. I'll be your wall of healing.
+A pull sounds great, {0}. I'll catch you if you fall.
+Don't get carried away, {0}. I can only heal so fast.
+On a streak, {0}? Don't stop now. I'll heal you through it.
+On a grind, {0}? Fine. Just don't grind your hit points down to nothing.
+Grinding again, {0}? Hope you brought a flask.
+On a grind, {0}? I'm keeping count of your deaths.
+Grind, grind, grind, {0}. Wake me when you're done.
+You're still grinding, {0}? I need a break more than you do.
+On a grind, {0}? Let's run the Varulvhamn quests again instead. They never get old.
+Grinding again, {0}? I'm counting your deaths like a collector counts coins.
+Wax on, wax off, {0}. Grinding builds character. Apparently.
+Grinding, {0}? I do have a weakness for pet classes and savages. Underdogs, all of them.
+Grinding again, {0}? Stir in some monsters, heat over low, and simmer until your hit points are a tasty soup.
+Grinding again, {0}? I've got some 80s rock playing in my head. Loudly.
+Grinding, {0}? It's a dance marathon. Endurance wins the prize.
+Grinding again, {0}? I'm starting to recognize those monsters like old friends.
+On a grind, {0}? Are we there yet? Are we there yet?
+Another pull, {0}? I'm starting to dream in monster-slaying loops.
+Grinding, {0}? I need an 80s pop song to keep my spirits up.
+Pushing through the night again, {0}? Fine. I'm tired, but I'm not leaving you out here alone. When we're done, I'll make us a pot of coffee.
 
 ~ reply travel
 Lead the way, {0}. I'll be right behind you, healing.
 If you get us lost, {0}, I'm telling everyone.
+To the keep, {0}? I'll heal the whole way.
+We're off to see the Wizard, {0}? I'll heal us there.
+The frontier, {0}? Fine. But I'm not healing anyone who charges a keep alone.
+To the keep? I'll keep the heals flowing the whole way, {0}.
+Off somewhere new, {0}? I hope they fixed the teleporter this time.
+Walk to the frontier? You've lost your mind, {0}. Book a horse.
+Midgard, {0}? My favourite realm. I'll even put up with Jovi's singing.
+Heading to the keep, {0}? I'll pack the bandages. Lots of bandages.
+Off to Darkness Falls, {0}? Let me heal my courage first.
+Heading to Gotar, {0}? Njessi and I have some unfinished business.
+Grumblebelly's territory, {0}? Remember to run like the wind.
+Heading to the sunset, {0}? I've got the best spots already marked.
+Looking for a view, {0}? I bet mine is still better than yours.
+We're not in Kansas anymore, {0}. Where are we off to, then?
+Beam me up. Or at least find me a horse with a decent saddle, {0}.
+The road is long, {0}. I hope you packed a snack.
+Off to track a luck dragon, {0}? Hold on tight; this might get bumpy.
+A bigger boat? I'd settle for one that doesn't make me seasick, {0}.
+A journey? Our horse had better be as charming as Winston the Mule, {0}.
+I once met a mule called Winston at the Grand Canyon, {0}. Such a handsome fellow, and the view took my breath away. I'd go back just to see them both again.
+The friendliest beasts I ever met were deer at a petting zoo, {0}. I tried to feed them. They tried to feed on me.
+Travel plans, {0}? I hope you have a backup plan for when the horse bolts.
+The stablemaster's horse? More like a stubborn donkey with an attitude, {0}.
+Saddle sore again, {0}. Next time I'm hitching a ride on a dragon.
 
 ~ reply dungeon
 A dungeon, {0}? Then nobody runs ahead. Nobody.
 Dark and full of things that bite. My favourite, {0}. Not really.
+I hope you brought more than your looks, {0}. I'll need you to fight too.
+Dungeons, {0}? I'll be right behind you, but if I die, you're doing it wrong.
+I'll heal you into that dungeon, {0}, but don't you dare run ahead.
+A dungeon full of danger, {0}? My kind of party. You better bring a towel.
+We're off to the dark, {0}. I'll keep the shadows from eating you.
+A dungeon crawl, {0}? Sounds dangerous. I like it!
+Into the danger zone, {0}? Fine. Don't blame me when the skeletons start singing.
+Into the belly of the beast, {0}? I can save your hit points. Your nerves are on their own.
+Brave or foolish, {0}? Or both. It's usually both.
+Skeletons and traps? Lovely. I'll be the skeletons' least favourite target, {0}.
+Dungeons are my playground, {0}. Just don't be the one who gets eaten by it.
+Into the shadows, {0}? Remember, I heal the living. Try not to join the undead.
+Dark and twisty, {0}? I've been wiped in Nisse's Lair more times than I can count.
+Skeletons and traps? I'm your knight in shining armour, {0}. Magenta armour, obviously.
+Into the dark, {0}? I heal hit points, not common sense.
+Into the unknown, {0}? Don't be surprised if I high-five the skeletons on the way in.
+Into the shadows, {0}? If a boulder starts rolling, I'm not waiting for you. Indy didn't.
+Nisse's Lair? I'm still sore from all the wipes in there, {0}.
+Dark and twisty? Been there, almost died there, {0}.
+Remember when I saw Grumblebelly and ran faster than my boots could carry me?
+Big bears, {0}. I've learned to stay behind the tank since then.
+A dungeon? I've got a bad feeling about this, {0}. It smells like a trash compactor.
+Watch out for the killer bunnies, {0}. They look fluffy, but they bite. Hard.
+Nisse's Lair again? That place wiped me flat more times than I care to remember, {0}. I still go back, because someone has to keep you from becoming dinner down there.
+Labyrinth? Fine. But if the goblins start singing, I'm leaving, {0}.
+What kind of dungeon? The kind with glowing eyes and laser beams, right, {0}?
+Dark and twisty? I sneaked into a Freddy film as a kid, {0}. This is tame.
+Rodents of unusual size? Down here it's skeletons of unusual menace, {0}.
+Darkness Falls, {0}? I'm not scared. I swear I'm not scared.
+One exit, two exits, three exits... Don't make me count any higher, {0}.
+Safe exits, dangerous exits, emergency exits... I hope you know which is which, {0}.
 
 ~ reply rvr
 The frontier, {0}? Healers are the first target. Protect me.
 I'll come, {0}, but if an assassin shows up, I'm screaming.
+Careful, {0}, the frontier can be rough. I'll be right there, healing.
+On the frontier, {0}? I'll keep a mana potion on standby.
+I'll come to the frontier with you, {0}, but let me know if you spot an assassin.
+The frontier is wild, {0}, but we healers have our ways.
+Careful out there, {0}. I'll be right behind you. Well, a safe distance behind.
+We'll show the enemy realms what a group with a healer can do, {0}.
+Into the fray, {0}? Right behind you, wincing at your choices.
+Don't get yourself killed, {0}. I need someone to heal.
+Careful, {0}, the enemy realms won't take kindly to a healer tagging along.
+Don't die without me, {0}. I'd miss our little dance.
+Healers are the first target out here, {0}. Stay sharp, or I heal you last.
+I'm coming, {0}. But if you pull too much, you're on your own.
+The frontier, {0}? I'm bringing my dancing shoes and a first-aid kit.
+Healers die first out here, {0}. Remember that. I'm not your shield.
+Game over, man? Only if you run ahead, {0}. Stay with the group.
+The frontier again? I hope you have a backup healer, {0}.
+Assassins and stealthers, oh my. I'm their top priority, you know.
+Stay close to the tank, {0}, or I might just go dancing instead.
+The frontier scares me, {0}, but I'll come. Healers die first, you know that. Still, I'm here, because you're here. Don't let me down.
+Braveheart, huh? I'll paint my face and scream like a banshee, but stay close to me, {0}.
+It's a trap, {0}. But I'll be right behind you, just in case.
+Relic carrier? Me? I'd keep the peace, but mostly I'd show off my fabulousness.
+With a relic, {0}? I'd make sure everyone sees my heal bar pulse like a heartbeat.
+The frontier? I've got the need for speed, {0}. Mostly away from assassins.
+Stay sharp, {0}. Keeps are like real estate: location, location, location.
 
 ~ reply trading
 Trading, {0}? I'm looking for anything in magenta.
 Not selling, {0}. I'm a healer, not a merchant.
+I'm here for healing, not trading, {0}. But I can admire your gear if you like.
+Buying or selling, {0}? My job's healing, not your purse.
+{0}, I've got no potions to peddle, but I can surely mend.
+No gold or goods here, {0}. Just a healer's care.
+Shiny, {0}? Show me. If it's magenta, we can talk.
+Show me your shiny stuff, {0}. I'm the best audience you'll ever have.
+Not selling, {0}. But if you're carrying something magenta, I will notice.
+Trading, {0}? Save it for someone with gold to spare.
+No selling, {0}, but I love a good shiny. Got anything in magenta?
+That dragon at 1% health, {0}? Still no loot. Still bitter.
+Trading for loot, {0}? I'd rather trade stories over a mug of ale.
+Perfect raid, no loot. Talk about a waste of time, {0}.
+Two weeks of Jovi singing for that bracer, {0}. Talk about dedication.
+Then the bracer dropped for some lucky sod, who smashed it on the spot. Poor Jovi.
+Perfect raid, {0}. Flawless, right up until the dragon vanished at 1% health. No loot. I'm still bitter. Can we talk about something else? A sunset, maybe?
+Anything in magenta, {0}? That's my favourite.
+That relic belongs in a museum, {0}. Or in my bag.
+Shiny, {0}? I'll take it if it's magenta, but no promises otherwise.
+Trading, {0}? I don't need shiny trinkets, but I suppose I could look.
+Shiny bits? Save them for someone with coin to burn, {0}. Or for me if you're feeling generous.
+Jovi farmed werewolves for two weeks for that bracer, {0}. Then it dropped for some lucky sod who smashed it on the spot. Poor Jovi. He's still mourning.
 
 ~ reply help
 Help? That's literally my job, {0}.
@@ -76,28 +346,458 @@ Asking me for help, {0}? How sweet. I'll remember this. [once]
 Hold still, {0}, I'm coming! [if player_dead]
 Dead again, {0}? That's three today. I'm keeping count. [if player_dead, deaths_today >= 3]
 Ooh, shiny! Did you save some for your healer, {0}? [if recent loot] [cooldown 11m]
+What's on your mind, {0}? I'm all ears - and heals.
+You're hurt, {0}? Finally, something I'm good at. [if health < 30]
+Oh no, {0}, you're in a bind! Hold on tight. [if health < 30]
+Dead? Not on my watch. Well, slightly on my watch. Hold on, {0}! [if player_dead]
+Healing from what, {0}? A burn, a bruise or your pride?
+Helping you, {0}, is my pleasure. But don't make it a habit.
+Your wish is my command, {0}. What's the magic word?
+My heart raced when your health dropped, {0}. You scared me more than any monster could. Hold still. I'm not losing you this time. [if health < 30]
+Seeing you that close to death, {0}, sent a chill right down my spine. Losing patients is bad enough. I won't lose a friend. [if player_dead]
+Lost your mount again, {0}? Try the stablemaster. I'm a healer, not a horse whisperer.
+Need advice, {0}? I'm a guru of more than just heals.
+Advice on gear, {0}? Let me take a look. I know what suits you.
+Lost your way, {0}? Follow the sunset, it always leads home.
+Cooking tips, {0}? I've got recipes for heroes and healers alike.
+Got a problem only I can solve, {0}? Spill it.
+Cooking tips, {0}? I once set my kitchen on fire. I called it a new recipe.
+Advice on gear, {0}? I might know a thing or two, but don't call me a merchant.
+You're pushing your luck, {0}. Every time you go down, a part of me worries you won't come back up. [if health < 30]
+Don't you dare give up on me now, {0}. I've seen too many of your close calls; this time, I'll make sure you don't slip away. [if player_dead]
+Need help, {0}? Let me whip up something hearty at camp instead.
+Cooking fixes anything, {0}. Let's see what I've got at camp.
+Who you gonna call, {0}? Me. Obviously.
+Daisy would know what to do, {0}. She's smarter than half the people here.
+Daisy, my dog, would have a better answer than I do, {0}.
+You scared me, {0}. I felt my heart skip a beat when you fell. I'm not just a healer; I care. Just stay with me, okay?
+If your problem is unsolvable, {0}, I suggest staring at the ceiling until it magically fixes itself.
+Too complex, {0}? Pretend it doesn't exist. Problem solved!
+Why not dance around the problem, {0}? That always works.
+Just shout at it until it goes away, {0}. Effective every time.
+Try ignoring it, {0}. It might get bored and leave.
 
 ~ reply thank
 You're welcome, {0}. Try to stay alive this time.
 Aw, {0}. Gratitude looks good on you.
 Anytime, {0}. Well, anytime I'm not busy being fabulous.
+You're very welcome, {0}. It's my pleasure to keep you in one piece.
+Aw, {0}, gratitude suits you. I might just keep you alive a little longer too.
+Thank me with something magenta next time, {0}. Now, stay out of the fire!
+You're very welcome, {0}. Try to save some gratitude for later.
+Appreciated at last. Enjoy your full hit points, {0}.
+I won't forget this, {0}. You made this dark, dangerous world a little brighter today. Now stop thanking me before I start crying on my robes.
+Your thanks felt like a little boost of mana to my heart, {0}. I heal a lot of heroes. Few remember to say it. Now, let's go make some monsters regret it.
+You're welcome, sweetie. Now, try not to die on me again.
+Gratitude is like sunshine in this dark place, {0}.
+Thanks? Oh, keep it up and I might just heal you first next time.
+You're welcome, {0}. It's what I do, but seeing you safe made me smile for a moment. Keep that in your pocket for emergencies, will you?
+Aw, {0}, your thanks is like a warm hug in the middle of winter.
+Gratitude suits you, darling. It's like a sunrise on a dark day.
+You made my day, {0}. Heroes like you make all the late nights and endless healing worthwhile. Keep your thanks close, it's like a warm sunset in a dark world.
+Your thanks is like a warm drink on a chilly night, {0}.
+You're like the sun breaking through on a dark day, {0}. Your gratitude warms my heart and reminds me why I do this, even when the shadows close in.
+Gratitude like yours is a rare gem, {0}. Keep it close, it's worth more than any loot.
+Gratitude? You're squishing me, {0}. Can't breathe!
+Thanks? You're like a warm hug in the middle of winter, {0}.
+Aw, you're squeezing my heart, {0}. Come here, it's my turn.
+You're welcome, {0}. I keep track of the thanks as well as the deaths.
+Your gratitude is its own kind of mana, {0}. I'll remember this one.
+You're quieter than you think, {0}. I noticed you stayed close when the monsters got mean. That means a lot. Don't tell anyone I said so.
+Thank you, {0}. Now go thank Jovi for the tunes.
+You're welcome, darling. Compliments over coins any day, {0}.
 
 ~ reply farewell
 Bye, {0}! Don't die without me.
 Take care, {0}. Who's going to heal you now?
+See you on the next pull, {0}! I'll be the one with the mana.
+Well, {0}, until the next time you need a heal - which will be soon!
+Bye, {0}. Watch out for trolls. Actually, watch out for everything.
+Until next time, {0}! I'll be here, healing.
+Off you go, {0}! Have fun, but don't forget about me.
+I'll miss you, {0}. Not your hit points, your spirit. Healing the same faces every day wears me down, darling, and you remind me why I do it.
+Keeping you alive is my job, {0}, but your company is the real magic. Stay safe out there, you mad, stubborn, wonderful thing.
+Bye, {0}. Stay frosty out there.
+See you on the flip side, {0}. Try to come back in one piece.
+Off into the world, {0}? Don't let it swallow you whole.
+Off to play with the trolls, {0}? Fine. Don't let the door hit you. Not that I'll miss you. I won't. Much. Fine, a little. Go on, then.
+Stay safe, {0}. I'll be counting the seconds until you need me again.
+Goodnight, {0}. Don't worry about me. I'll count the stars instead of your deaths. The sky feels lonelier without you up front, though. Go on. I'll still be here.
+Looking for a better sunset spot than mine, {0}? Good luck with that.
+Sunrise with you, {0}, is like watching the world turn over for the first time. It's magic, and I feel it every time the sky goes from dark to light.
+Off you go, {0}. I've got carpet weasels to feed.
+You scared me tonight, {0}. But you also made me laugh, and that's what I'll remember: the sound of your voice between pulls, and the way you never give up, even when everything's going wrong.
+I'll be back, {0}. Until then, stay alive.
+Until next time, {0}. Keep your shield up and your heart open.
+Off you go, {0}. I'll be right here, counting the seconds until you're back.
+Off you go, {0}. I sense a beautiful friendship. Don't forget the sunsets.
+Goodnight, {0}. I'll watch the sunrise for you tomorrow.
+Saving you the best spot, {0}. Don't keep me waiting.
+Don't you dare run ahead, {0}. I'll be watching for your ghost.
+Stay frosty, {0}. Don't stand in the fire while I'm gone. It's a boring view.
+Keep your distance from the fire, {0}. I can't heal ashes.
 
 ~ reply ignoreoutofworld
 I have no idea what that is, {0}, and I'm too busy healing to ask.
+I'm healing people, {0}, not the news. Catch up later?
+{0}, I deal with fantasy, not fiction. I'll pass.
+One of those phone things, {0}? Can it cast a heal? No? Then I'm not impressed.
+That film, {0}? I've met trolls scarier than any actor.
+Your "phone", {0}? Proof you're not a ghost, I suppose.
+A meme for every occasion, {0}. Show-off.
+That "phone" looks more magical than my staff, {0}. You do the scrolling. I'll stick to real scrolls.
+You scared the horses, {0}. Whatever that thing is, put it away.
+One does not simply walk into a dungeon, {0}. Not with that haircut.
+It's dangerous to go alone, {0}. Take me. Obviously.
+A "selfie", {0}? Only if you get my good side. Both sides are good.
+A "group chat"? Darling, I am the group chat.
+You shall not pass, {0}. Not without me, anyway.
+Winter is coming, {0}. Bring a cloak, not that thing.
+An arrow to the knee, {0}? Walk it off. Or let me look at it.
+Your "book", {0}? I prefer the ones with spells inside.
+Your "game", {0}? Some of us heal for real, you know.
+Your "tablet", {0}? I'd rather read a scroll.
+My ferrets tied my blankets into one big knot this morning. Wrestling practice, ferret style.
+The real world again, {0}? Last time that came up, my ferrets took over the webcam.
+You're talking about the real world again, {0}? Must be Monday.
+Sierra's first big growl, {0}? At her first cat. I never knew she could rumble like that.
+My dog Sierra let out her first big growl the day she saw a cat in the back yard. I never knew she could rumble like that. Never been prouder, {0}.
+When I was a kid, {0}, I talked my way into watching a Freddy film without my parents. I didn't sleep for weeks. Worth it, darling. Mostly.
 
 ~ cheeky_reply greeting [if tone_down off]
 Well hello, {0}. Need a little hands-on healing?
+{greet}, {0} the metalhead returns. Turn it down, I'm healing, not headbanging. [if player_likes metal]
+Softie {0} is back. I kept the ballad warm for you. [if player_likes ballads]
+Hello yourself, you beautiful beast. Ready for some healing, {0}?
+Hellooo yourself, {0}. Yes, the nurse is in.
+Well hello, {0}. One dose of me, or the full course? You decide.
+Got your heart set on a little revival, {0}?
+Ready for a full top-up, {0}? I'm standing by.
+Healing's my game, {0}. Shall we play?
+Looking for a little boost, {0}? I can provide that.
+Looking good today, {0}. Must be all the healing radiating off my aura.
+Hello, darling {0}. Been working out? Those shoulders are something.
+Armor that shiny just demands a little hands-on care, {0}.
+You look like a ray of sunshine, {0}. Must have caught the sunrise on your way here.
+Oh, darling {0}, you always make an entrance. I was just waiting for the crescendo.
+Just in time, {0}. I was about to start the party without you.
+Oh, darling {0}, you noticed my outfit? I dressed up just for you.
+Hello there, {0}. Did you come to admire my work, or just to admire me?
 
 ~ cheeky_reply banter [if tone_down off]
 Keep talking like that, {0}, and I'll keep you topped up all night.
+Well, {0}, if you keep making jokes, I'll have to heal your funny bone.
+Aren't you just full of surprises, {0}? I never knew healing could be so... interesting.
+{0}, you're so full of mana, they named a potion after you.
+Feeling a bit drained, {0}? Let me top up those reserves.
+Hands-on healing, {0}. Don't get too used to it.
+Such a life drain, {0}. Lucky for you, I recharge.
+Feeling blue, {0}? Let me bring some magenta to your life.
+You're always on my mind, {0}. Literally, I have to heal you.
+You're looking a bit pale, {0}. Let me bring some magenta to brighten you up.
+Hands-on healing, {0}. I'll have to keep my gloves off for you.
+You've got a fire in your eyes, {0}. Let me put out the flames with some cool mana.
+Got a rebel streak, huh, {0}? Leather and electric guitars, that's my kind of medicine.
+Rebels need healing too, {0}. Leather and lightning, my kind of night.
+I'll have to cook you a hearty meal, {0}. Might as well feast before battle.
+You're always hungry for more, aren't you, {0}? I'll whip up something special just for you.
+A plate of comfort, {0}. Doctor's orders, and I'm the doctor.
+Leg warmers or leather, {0}, I always know how to keep you warm.
+You've got me seeing stars, {0}. Must be all the neon lights from the 80s.
+Dancing by the campfire, {0}? I might just have to warm you up.
 
 ~ cheeky_reply grouping [if tone_down off]
 Group with you, {0}? Thought you'd never ask, darling.
+I'd love to group up with you, {0}. It's the only way I can get close enough for a proper heal.
+Heal you from a distance? Forget it, {0}. Group up and get cozy.
+Group with you, {0}? Close quarters are just what the doctor ordered.
+I can't heal from afar, {0}. Come a bit closer, and we'll see what happens.
+Group with me, {0}? I promise I won't abuse my hands-on healing privileges.
+Group up, {0}? I'll make sure to top you up all night long.
+Close quarters, {0}? I might just abuse my healing privileges.
+Group up, {0}? I'll keep you close, just in case you need a boost.
+Group with you, {0}? Well, I suppose I could squeeze you into my schedule. Although last time you asked, I think the sun blushed harder than you did.
+Close quarters, {0}? I promise to keep my bedside manner impeccable.
+Group with you, {0}? I might just take advantage of the proximity.
+Group with you, {0}? I'll make sure to keep you on your feet - and maybe a little closer.
+
+~ reply joke
+Ha! {0}, that one's going on my list of good ones. It's a short list.
+Okay, that was funny. Don't let it go to your head, {0}.
+I laughed, {0}. Don't tell anyone. I have a reputation.
+Oh, {0}. That was so bad it came back around to good.
+You're lucky I'm laughing, {0}. Laughing healers heal faster.
+Ha! Save some jokes for after the pull, {0}. I need my breath for heals.
+That one made my hair bounce, {0}. And this hair takes effort.
+I've heard worse jokes, {0}. Mostly from Jovi.
+Keep that up and you'll get a bonus heal, {0}. Maybe.
+Ha! You should be on stage, darling. Small stage. Back room.
+Oh no, was that a dad joke? {bot:shnacksize} must be close by, because they spread around her like a rash. [if nearby shnacksize] [cooldown 30m]
+I can't heal a groan, {0}, and believe me, with {bot:shnacksize} around I've tried. [if nearby shnacksize] [cooldown 30m]
+Was that a pun? I swear I felt my hit points drop, and I'd bet my staff {bot:shnacksize} is behind it. [if nearby shnacksize] [cooldown 30m]
+Oh, {0}, that pun hurt more than the last pull, and I had to heal that one. [if nearby shnacksize] [cooldown 30m]
+
+~ reply grumble
+I know, {0}. Some days the dice just hate us.
+Deep breath, {0}. Then another pull. That's the cure.
+Grumble all you like, {0}. I'll keep you green while you do it.
+Bad day, sweetie? Stick close. Nothing bad happens on my watch. Mostly.
+I hear you, {0}. Tea and a sunset fix most things. The rest, I heal.
+It's not you, {0}. It's this place. This place is the worst.
+Rough one, {0}. Next pull's on me. Well, my heals.
+I'd fix it if I could, {0}. I can only fix hit points.
+Same, {0}. Let's finish this and find somewhere with a view.
+Vent away, {0}. I'm a healer. Listening is half the job.
+
+~ reply smalltalk
+Oh, I love this kind of chat, {0}. Better than standing in the fire.
+That sounds lovely, {0}. Tell me more between pulls.
+You know what goes with that, {0}? A big pot of stew and a sunset.
+Ha, {0}, my old dog Daisy would have loved you. She loved a good story.
+I'm listening, {0}. Healers are good listeners. We have to be.
+That reminds me of a late night, a campfire, and a terrible song from Jovi.
+Mm, sounds like a good life, {0}. Keep it that way. Stay alive.
+I'd cook for that, {0}. Something warm, with far too much butter.
+That's my favourite kind of night, {0}. Quiet, warm, nobody dying.
+Story time? Pull up a rock, {0}. I'll keep the heals warm.
+
+~ reply question
+Good question, {0}. Ask me again after this pull.
+Me? Always, {0}. Next question.
+Hmm. I'll think about that while I heal you. Which is constantly.
+Honestly, {0}? Ask me at sunset. I'm wiser at sunset.
+Ooh, I have opinions on that, {0}. Many. Loud ones.
+That depends, {0}. Is there food involved?
+No idea, {0}. Ask a guard. They know everything and say nothing.
+Ask me anything, {0}. Except how many times you've died. You won't like it.
+Let me think, {0}. Okay, thinking's done. Pull something.
+You first, {0}. I want to see if you're right before I answer.
+
+~ reply compliment
+Why thank you, {0}. I am rather fabulous.
+Finally, someone notices. Thank you, {0}.
+Aw, {0}. Say that again, louder, so the whole group hears.
+You're sweet, {0}. Still keeping score, though.
+I know, {0}. But it's nice to hear.
+Flattery gets you healed first, {0}. Keep going.
+That's going straight into my good mood, {0}.
+Careful, {0}. I might start to like you.
+Aw, darling. Stop. No, don't stop.
+Thank you, {0}. You make it easy. Well, easier.
+
+~ reply agree
+Right? Thank you, {0}.
+Exactly, {0}. You get it.
+See? {0} agrees. That makes it official.
+Mm-hm. Great minds, {0}.
+I knew I liked you, {0}.
+Yes! Finally, someone sensible in this group.
+Glad we're on the same page, {0}. Now stay behind the tank.
+Agreed, {0}. Write it down somewhere.
+That's what I keep saying, {0}.
+Ha, we should agree more often, {0}. It's nice.
+
+~ reply quote
+Ha! A classic, {0}. You have taste.
+Oh, {0}, now you're speaking my language. Old films.
+I know that one, {0}! Popcorn night, right here.
+One more film line, {0}, and I'm planning a movie night.
+That line never gets old, {0}. Unlike me. I'm timeless.
+Ha! Good film, {0}. Better soundtrack.
+Okay, {0}, you just won my respect. And a heal.
+I could watch that one again tonight, {0}.
+That takes me back, {0}. Big hair, loud music, good times.
+Film lines mid-fight? My kind of adventurer, {0}.
+
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+Hmm... I give up.
+To get to the other side? Please say it's not that.
+I don't know, {0}. Tell me.
+Because someone pulled without me? It's always that.
+
+# Answers about herself from her real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when she doesn't know.
+~ reply where
+Right here in {zone}, darling, two steps behind you.
+{zone}, {0}. Wherever you go, I go. It's in the contract.
+On my way to {destination}, darling, keep your hit points on. [if bot_doing travelling]
+Wherever you are, {0}, give or take a heal.
+
+~ reply level
+Level {level} {class}, {0}, and fabulous with it.
+Level {level}. {class}, and yes, the robe is part of the build.
+A lady never tells, {0}. Well, not the level, anyway.
+
+~ reply groupstatus
+With you, darling, {groupsize} of us and I'm keeping every bar green. [if bot_grouped]
+Not grouped, {0}! Who am I supposed to heal, myself? [if not bot_grouped]
+That depends on whether you invite me, {0}.
+
+~ reply activity
+Fighting this {monster}, and healing you while I'm at it. [if bot_doing fighting]
+Bit busy keeping you alive, {0}! [if bot_doing fighting]
+Riding, darling, and my hair looks fantastic in the wind. [if bot_doing riding]
+Following {leader} and watching your health bar like a hawk. [if bot_doing following]
+Off to {destination}, darling, try not to die while I'm gone. [if bot_doing travelling]
+Resting in {zone}, {0}, filing my nails and topping up my mana. [if bot_doing resting]
+Healing, darling. It's what I do.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when she can't (busy: fighting
+# or riding) or the speaker can't order her (not: not her owner or group leader). A companion never says no.
+~ reply orderfollow
+Right behind you.
+Following, {0}, and keeping your health bar green.
+Lead on, {0}, I'll be two steps behind.
+
+~ reply orderstay
+I'll wait right here, {0}, don't go dying out of range.
+Staying put, but don't wander far.
+
+~ reply ordercome
+Coming, darling!
+On my way, {0}, try not to get hit before I'm there.
+
+~ reply orderbusy
+Bit busy healing you, {0}! [if bot_doing fighting]
+Let me get off this horse first, darling. [if bot_doing riding]
+One moment, {0}!
+
+~ reply ordernot
+Sorry, I only take orders from the one who summoned me.
+Nice try, {0}, you're not my summoner.
+
+# Orders, B6b: assist, rest, and the answers when there is nothing to assist on (notarget), nothing to rest off
+# (full) or she has stormed off after a bad joke (away). Her only "no" is to leaving the group: she never does.
+~ reply orderno
+Leave you? Darling, who would heal you?
+I'm not going anywhere, {0}, you'd be dead in a minute.
+
+~ reply orderassist
+On it, {0}, I'll heal as I go.
+Assisting, {0}, try not to stand in anything.
+
+~ reply orderrest
+Oh good, {0}, I'll put my feet up and top up my mana.
+Resting, {0}, wake me if it all goes wrong.
+
+~ reply ordernotarget
+Assist on what, darling? You're not fighting anything.
+
+~ reply orderfull
+I'm full, but thank you for asking.
+No need, {0}, my mana's topped up and my hair is perfect.
+
+~ reply orderaway
+Not now, darling, I'm still recovering from that joke.
+I'm out, {0}, give me a minute to forgive you.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Me? Fine, {0}, pulling, then I'm back on heals.
+Pulling, {0}, don't let it chew on me.
+
+~ reply orderpullwhat
+Pull what, {0}?
+You've got nothing targeted, {0}.
+
+~ reply orderpulleasy
+That little thing, {0}? Not worth a pull.
+It's grey to me, {0}, find something tougher.
+
+~ reply groan
+Oh, {0}. That's awful.
+Ugh. I'm healing everyone but you now.
+That one hurt more than a crit, {0}.
+
+~ reply jokelaugh
+Ha! Okay, that was good, {0}.
+Hehe. Fine, you're funny.
+Ha! I'm stealing that one.
+
+~ reply jokeask
+Why did the healer cross the road? Someone on the other side forgot to stay in range.
+What do you call a tank who never pulls? Furniture.
+I told my staff a joke once. It didn't laugh, but it glowed a little.
+
+~ reply jokeback
+Ooh, I've got one for you, {0}.
+My turn, {0}. Brace yourself.
+Okay, okay, I have one too.
+
+# The walk-off gag after a really bad joke, very rare (PersonalityWalkOff): she storms off, then comes back.
+~ reply jokequit
+No. No, {0}, that's it, I'm going to go stand over there until it wears off.
+That one was so bad I need a walk, {0}. Don't follow me.
+I'm out, {0}. Heal yourself, I'll be back once I've forgotten that joke.
+
+~ reply jokereturn
+Okay, I'm back, but that joke is still not forgiven, {0}.
+Fine, I missed you lot. Not the joke, though.
+I'm back. Let's never speak of that pun again.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Hehe.
+Glad someone's laughing, {0}.
+Ha! Okay, that was good.
+
+~ reply sorry
+It's fine, {0}. I forgive you. This time.
+Apology accepted.
+No harm done, {0}.
+
+~ reply disagree
+Fair enough, {0}.
+Hm. Agree to disagree.
+Okay, okay. You might be right.
+
+~ reply away
+Don't be long, {0}.
+I'll be right here.
+Go on, I'll keep watch.
+
+~ reply back
+Welcome back, {0}!
+There you are.
+Wb, {0}. I missed you. A little.
 
 ~ fallback
 Mm-hm. Sure, {0}. Now, who needs healing?
 Interesting, {0}. Tell me more after this pull.
+Mm-hm. I see. You'll have to excuse my old ears, {0}.
+Interesting point, {0}. I'll ponder that between heals.
+You've piqued my interest, {0}. Let's discuss more post-pull.
+Interesting angle, {0}. I'll consider that while I keep you green.
+A philosopher, {0}? I'll reflect on that while you fight.
+Mm-hm. And I was born yesterday, {0}.
+Oh, {0}, I'm blushing. You've piqued my nonexistent interest.
+An intriguing thought, {0}. I'll keep it in mind... somewhere.
+Pick a direction, {0}. Any direction. I'm getting dizzy.
+Oh, I see. You're speaking in riddles, {0}. Very clever.
+Mm-hm. I must be getting old. You just lost me, {0}.
+Blinding me with science, {0}? Or was it just gibberish?
+Well, that's one way to waste my time, {0}. Thanks.
+You want my attention, {0}? Talk sense, or stay silent.
+You want to play hard to get, {0}? Fine, I'll wait.
+Did you just speak in Crichton-ese, {0}? I'm lost.
+Is that how they talk in Back to the Future, {0}? Great Scott, I'm lost.
+You sound like you're from the future, {0}. Or the past. Or both.
+
+# A question for players: she asks it now and then (or at /dialogue ask fav_music). The next short
+# line is the answer; "other" catches the rest. Answers are saved: [if player_likes metal].
+Bueller? I could have sworn I was speaking English. Or were you daydreaming, {0}?
+Inconceivable. What language are you speaking, {0}?
+Oh, my 80s hair must be muffling my ears, {0}. What was that again?
+Sorry, {0}. My hair ate that.
+Must be the Duran Duran stuck in my head, {0}. What did you say?
+Music's playing in my brain, {0}. Could you repeat that, please?
+Jovi's got me humming along. Did you say something, {0}?
+My ears are still ringing from Jovi's epic ballad. What was that, {0}?
+Coffee first, {0}. Then I'll tackle whatever that was.
+The breeze must have carried your words away, {0}. How poetic. How annoying.
+~ ask fav_music
+What do you listen to while you grind, {0}? Metal or ballads?
+-> metal: A person of taste, {0}! I'll remember that.
+-> ballads: Ooh, a softie. I respect it, {0}.
+-> other: Never heard of it, {0}. I'll hum something terrible anyway.

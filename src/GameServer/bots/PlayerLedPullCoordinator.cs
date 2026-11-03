@@ -85,6 +85,47 @@ namespace DOL.GS
             return $"{tank.Name} leads the pull. Attackers wait for tank contact; healers and buffers support.";
         }
 
+        /// <summary>
+        /// "&lt;bot&gt;, pull this" in chat (PersonalityOrders): the named bot pulls whatever its role
+        /// (<see cref="BotBrain.OrderNamedPull"/>) and everyone else in the group attacks at once with their own
+        /// abilities, as when the leader engages (healers and buffers support). No wait for tank contact, and a /pull
+        /// still waiting is cancelled. False when the bot can't pull that target (nobody is sent then);
+        /// <paramref name="attackers"/> is how many others were sent in.
+        /// </summary>
+        public static bool NamedPull(GamePlayer player, GameBot puller, GameLiving target) => NamedPull(player, puller, target, out _);
+
+        public static bool NamedPull(GamePlayer player, GameBot puller, GameLiving target, out int attackers)
+        {
+            attackers = 0;
+            Group group = player?.Group;
+            if (group == null || !ValidEnemy(player, target) || !Available(puller, player) ||
+                !puller.IsWithinRadius(target, BotBrain.GROUP_DEFENSE_ASSIST_RADIUS) || puller.Brain is not BotBrain pullerBrain)
+                return false;
+            GroupState state = States.GetOrCreateValue(group);
+            Cancel(state.Pending, false);
+            GameBot[] helpers = group.GetMembersInTheGroup().OfType<GameBot>()
+                .Where(bot => Available(bot, player) && bot.IsWithinRadius(target, BotBrain.GROUP_DEFENSE_ASSIST_RADIUS) &&
+                    bot.Brain is BotBrain).Take(8).ToArray();
+            foreach (GameBot bot in helpers) bot.EnterPlayerLedGroup(player);
+            if (puller.IsTemporaryCompanionRestLocked) puller.WakeTemporaryCompanionRest();
+            if (puller.IsRecoveryResting) puller.WakeRecoveryRest();
+            if (!pullerBrain.OrderNamedPull(target))
+                return false;
+            CompanionEngagementMode.RememberPull(player, target);
+            foreach (GameBot bot in helpers.Where(bot => bot != puller && bot.PlayerGroupLeader == player))
+            {
+                if (bot.IsTemporaryCompanionRestLocked) bot.WakeTemporaryCompanionRest();
+                ((BotBrain)bot.Brain).AssistPlayerAttack(target);
+                attackers++;
+            }
+            player.ControlledBrain?.Attack(target);
+            return true;
+        }
+
+        /// <summary>The player's target, when it is an enemy near enough to pull; null otherwise.</summary>
+        public static GameLiving PullTarget(GamePlayer player) =>
+            player?.TargetObject is GameLiving target && ValidEnemy(player, target) ? target : null;
+
         public static bool IsWaiting(GameBot bot)
         {
             if (bot?.Group == null || !States.TryGetValue(bot.Group, out GroupState state)) return false;

@@ -33,6 +33,25 @@ namespace DOL.UnitTests
             Assert.That(AutonomousPveTargetPolicy.IsAssignedTarget("forest hunter", "unrelated monster", level), Is.False);
         }
 
+        // A monster fighting anyone outside the bot's group is left alone (hill cat report, 2026-10-25).
+        [TestCase(false, true, true, false)]  // not in combat: free to pull
+        [TestCase(true, false, false, false)] // in combat only with the bot or its group
+        [TestCase(true, true, false, true)]   // targeting a player or another bot
+        [TestCase(true, false, true, true)]   // hurt by an outsider who is no longer its target
+        public void MonsterFightingAnOutsiderIsNotPulled(bool inCombat, bool targetIsOutsider, bool outsiderDamage, bool skip)
+        {
+            Assert.That(AutonomousPveTargetPolicy.IsEngagedByOutsider(inCombat, targetIsOutsider, outsiderDamage),
+                Is.EqualTo(skip));
+        }
+
+        [Test]
+        public void OnlySelfAndOwnSideAreInsiders()
+        {
+            Assert.That(AutonomousPveTargetPolicy.IsOutsider(isSelf: true, sameSide: false), Is.False);
+            Assert.That(AutonomousPveTargetPolicy.IsOutsider(isSelf: false, sameSide: true), Is.False);
+            Assert.That(AutonomousPveTargetPolicy.IsOutsider(isSelf: false, sameSide: false), Is.True);
+        }
+
         [Test]
         public void ForestHunterIncidentAcceptsAssignedLevelAndNearbyVariants()
         {

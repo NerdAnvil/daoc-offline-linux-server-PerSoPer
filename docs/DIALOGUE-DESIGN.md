@@ -5,9 +5,10 @@ Status: draft for review (2026-10-23). Nothing here is built yet unless it says 
 ## Goals
 
 - Anyone can change, add or remove bot dialogue with a text editor, without rebuilding the server.
-- Named bots feel natural to talk to: they understand what a player types, answer the right kind
-  of thing, react to what just happened, hold a short back-and-forth, remember answers, and rarely
-  repeat themselves.
+- Named bots feel natural in everyday chat: they pick out the common kinds of thing a player types
+  (greetings, thanks, questions about their likes, grouping, trading), react to what just happened,
+  remember answers, and rarely repeat themselves. Their understanding is limited: anything outside
+  those kinds gets an in-character "didn't catch that" rather than a real answer.
 - The game stays pure C#. No AI model ships with the server, and no one needs one to play.
 - A local AI model may be used **while writing** to draft lines and scenes. Its output is a normal
   dialogue file that must pass the checker before it goes into the game.
@@ -27,18 +28,25 @@ Status: draft for review (2026-10-23). Nothing here is built yet unless it says 
 ```
 dialogue/
   casual.dlg, joker.dlg, ...     the six personality types (one file each)
-  kobaldjovi.dlg, persoper.dlg   one file per named bot
+  kobaldjovi.dlg, persoper.dlg   one file per unique bot
+  spyburd.dlg, eaglefang.dlg ... one file per named character (11), shared by its three realm
+                                 bots: "=== spyburd" for the character, and optional
+                                 "=== midgard", "=== albion", "=== hibernia" for realm flavour
   scenes.dlg                     scenes between two or more bots
   intents.dlg                    words and phrases that sort player text into intents
 characters/
-  kobaldjovi.md, persoper.md     one character sheet per named bot (for writers and drafting)
+  kobaldjovi.md, spyburd.md ...  one character sheet per unique bot or named character
 drafts/                          model or writer drafts; never loaded by the game
 ```
 
 - The game reads `dialogue/` from the release folder. The built-in copies stay in the server as
   a fallback: if a file is missing or has errors, the errors are logged and the built-in copy of
   that file is used, so a broken file never leaves a bot silent.
-- Character sheets describe voice, likes, dislikes, catchphrases, lore limits and relationships.
+- A named character's lines are mixed on top of its type's lines (`hardcore.dlg`, `gruffdoc.dlg`...),
+  so the character grows out of its type. A named bot without a character file still uses its
+  block in its type's file.
+- Character sheets describe voice, likes, dislikes, catchphrases, lore limits and relationships,
+  plus a short backstory rolled from `drafts/backstory-rolls.md` and then edited by hand.
   The game doesn't read them.
 
 ## Format additions
@@ -64,7 +72,9 @@ Ooh, shiny! Save some for me, {0}? [if recent loot] [cooldown 11m]
 Conditions are split by commas and are about the player the bot is talking to. Forms:
 `[if player_dead]`, `[if not in_combat]`, `[if health < 30]`, `[if mood warm]`,
 `[if zone camelot city]`. A cooldown takes seconds, minutes or hours (`30s`, `11m`, `2h`, at most
-24h). For now, rules work in `reply`, `cheeky_reply` and `fallback` sections; `[once]`, cooldowns
+24h). For now, rules work in `reply`, `cheeky_reply`, `fallback` and `ambient` sections (an ambient
+line, and a reply to another bot, sees only what the bot itself sees: combat, group, zone, time,
+who is nearby); `[once]`, cooldowns
 and recent events are kept in memory and start fresh when the server restarts.
 
 **Swap-in parts** (defined once per block, used inside lines):
@@ -77,6 +87,16 @@ Oi
 ~ reply greeting
 {greet}, {0}!
 ```
+Rules: a part is defined with `~ part name` (2 to 24 lower-case letters or `_`) **before** the lines that
+use it, and one alternative goes on each line. Lines use it as `{name}`. The game's own slots
+(`{zone}`, `{monster}`, `{level}`, `{class}`, `{item}`, `{a}`, `{b}`, `{c}`) can't be part names.
+Parts are filled in when the file is read: a line with a part becomes one line per alternative (all
+pairings when it has several), and each keeps the line's `[if]`, `[once]` and cooldown tags. So a
+`[once]` or cooldown line with parts is once per filled-in line, not once per written line. A line
+with parts is more likely to be picked than a plain one, as it counts as several lines. Caps (the checker
+reports them): 8 parts per block, 20 alternatives per part, 3 parts per line, a part may use a part, but not one that uses a part (2 levels),
+24 filled-in lines per written line. A part's lines carry no tags, and
+parts don't work in `~ ask` yet.
 
 **Intents** (`intents.dlg`):
 ```
@@ -100,6 +120,12 @@ The answer is saved per player (`player_likes metal`) and later lines can check 
 
 **Scenes** (`scenes.dlg`): short scripts between two or more bots, picked by the same rules.
 Target: 10 per pair.
+A named character can have its own block (`=== shempenstein-any`): the character with any other
+bot, at most once per `persoper_character_scene_minutes` (default 120, 0 = never), not with the
+same bot again within four times that. Its `~ crowd laugh`, `~ crowd grumble` and optional
+`~ crowd confused` lines let it turn, now and then (`persoper_crowd_scene_percent`, default 1),
+into a crowd: up to 20 bots pile in for about a minute, then most laugh and a few grumble.
+Try them with `/dialogue scene shempenstein-any <scene>` or `... crowd`.
 
 ## How a line is picked
 
@@ -121,8 +147,9 @@ More can be added later; the checker rejects unknown facts.
 Names in step 1: `player_dead`, `in_combat` (yes/no); `health` (percent), `group_size`,
 `deaths_today` (numbers); `mood` (warm, neutral, cool; this is also the relationship level for
 now); `time_of_day` (morning, day, evening, night, by the game clock); `recent` (death, kill,
-loot, level_up, within 5 minutes); `zone` and `nearby` (a name). Saved player answers come with
-step 5.
+loot, level_up, within 5 minutes); `zone` and `nearby` (a name). Step 5 adds `player_likes`
+(`[if player_likes metal]`: the player's saved answer to some question is `metal`; `other` never
+counts).
 
 ## Player names
 
@@ -138,7 +165,8 @@ friendly.
 - **Drafting with a local model**: the model (for example a Hermes model in Ollama, LM Studio or
   llama.cpp, on a local GPU; speed doesn't matter) gets the character sheet, the format rules and
   example lines, and writes to `drafts/`. Files that pass the checker can be copied into
-  `dialogue/`. A person reads them first.
+  `dialogue/`. A person reads them first. For a new named character, a writer first does the
+  character sheet and about 20 to 30 seed lines that set the voice; the model drafts the rest from those.
 
 ## Build order (one branch each)
 
@@ -149,18 +177,21 @@ friendly.
 4. Scenes moved from C# into `scenes.dlg`.
 5. Questions with branching replies, and saved answers per player.
 6. Swap-in parts.
-7. Character sheets and the drafting workflow; fill named bots to about 300 to 500 lines each.
+7. Character sheets and the drafting workflow; Persoper and Kobaldjovi to 503 lines each, then the
+   11 named characters (about 100 lines each to start).
 
 ## Decisions (owner, 2026-10-23)
 
 - Model use is for writing only; nothing ships with the game.
 - Valve/Hades-style rules, optional per line.
 - Nicknames live in the `.dlg` blocks.
-- About 300 to 500 lines per named bot, mostly model-drafted and reviewed.
+- Persoper and Kobaldjovi: 503 lines each. Named characters start at about 100 lines of their own
+  and grow later if the chatter isn't too much (owner, 2026-10-25). Mostly model-drafted and reviewed.
 - A small set of swap-in parts.
 - Intents in an editable file; one question and one reply; answers saved per player.
 - Starter set of about 15 facts; 10 scenes per pair; short player names once friendly.
-- Each named bot has its own `.dlg` file and character sheet.
+- Each unique bot (Persoper, Kobaldjovi) and each named character (one for the three realm bots of
+  a type) has its own `.dlg` file and character sheet. The realm versions differ only in a few lines.
 - Checker and preview are a separate small program.
 
 ## Open

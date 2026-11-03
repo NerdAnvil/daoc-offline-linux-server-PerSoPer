@@ -11,6 +11,164 @@ Quickness is undervalued. Fight me. Mathematically.
 Spent the afternoon on a spreadsheet. Best day this week.
 If your hits cap isn't capped, what are you doing?
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+No idea. Explain efficiently.
+For the xp. Everything's for the xp.
+Is there a numerical answer?
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Best xp per hour for my level, I checked.
+In {zone}. The spawn timers here are acceptable.
+En route to {destination}, the shortest path I could find. [if bot_doing travelling]
+Somewhere suboptimal, {0}. Don't ask.
+
+~ reply level
+Level {level} {class}, {0}. Specced right, unlike most.
+Level {level}. {class}, and the template is perfect.
+Lower than my numbers deserve, {0}.
+
+~ reply groupstatus
+Grouped, {groupsize} of us. The comp could be better. [if bot_grouped]
+Solo, {0}. Nobody met my requirements. [if not bot_grouped]
+Depends on the group comp, {0}.
+
+~ reply activity
+Parsing my damage on this {monster}, {0}. [if bot_doing fighting]
+Fighting, {0}. Watch my numbers. [if bot_doing fighting]
+Riding. Travel time is the worst stat in the game. [if bot_doing riding]
+Following {leader}, at the optimal distance. [if bot_doing following]
+Heading to {destination}. I have a route planned. [if bot_doing travelling]
+Resting in {zone}. Regen is a stat too, {0}. [if bot_doing resting]
+Optimising, {0}. Always optimising.
+
+~ reply groupyes
+I'm in, {0}, invite me and send me the group comp.
+Fine, {0}, invite me, as long as there's a real healer.
+
+~ reply groupno
+Pass, {0}. Your comp doesn't need my class.
+Not without a full healer and a tank, {0}, I've seen how that ends.
+
+~ reply groupbusy
+Mid-rotation on this {monster}, {0}, don't break my parse. [if bot_doing fighting]
+Riding, {0}, and the horse's speed stat is mediocre, ask again later. [if bot_doing riding]
+Busy, {0}. Ask me after this.
+
+~ reply grouphave
+Already grouped with {leader}, {0}, and the comp is finally right.
+Got a group, {0}, and I'm not giving up this slot.
+
+~ reply grouplevel
+I'm {level}, {0}, and the xp curve says that's a terrible idea.
+The level gap kills the xp, {0}, so no.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following, {0}, staying in buff range.
+On you, {0}, path efficiently please.
+
+~ reply orderstay
+Holding position, {0}, as long as it's for a reason.
+Fine, {0}, parked here at max range.
+
+~ reply ordercome
+On my way, {0}, shortest path.
+Coming, {0}, don't pull without me.
+
+~ reply orderno
+Standing here is zero xp an hour, {0}, I'm coming.
+Bad call, {0}, I'm staying with the group.
+
+~ reply orderbusy
+Mid-rotation on this {monster}, {0}, after it dies. [if bot_doing fighting]
+Riding, {0}, the horse doesn't take orders from me either. [if bot_doing riding]
+Busy, {0}, give me a moment.
+
+~ reply ordernot
+You're not my group lead, {0}, so no.
+Wrong group, {0}, I don't take your calls.
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+Leaving, {0}, I'll find a better xp spot.
+Fine, {0}, dropping group, good luck with that comp.
+
+~ reply orderassist
+Assisting, {0}, dps on your target.
+On your target, {0}, maximum damage.
+
+~ reply orderrest
+Resting, {0}, regen is faster out of combat anyway.
+Good call, {0}, downtime now saves time later.
+
+~ reply ordernotarget
+Assist on what, {0}? You don't have a target.
+Nothing to assist, {0}, that's zero dps.
+
+~ reply orderfull
+I'm full, {0}, resting now would only lower my uptime.
+No need, {0}, all bars at max.
+
+~ reply orderaway
+I'm out, {0}, that joke had zero value.
+Not now, {0}, I'm on cooldown after that one.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Pulling, {0}, burn it down.
+On it, {0}, damage up.
+
+~ reply orderpullwhat
+Pull what, {0}? No target.
+No target, {0}, zero value.
+
+~ reply orderpulleasy
+Grey con, {0}. Zero xp, zero value.
+Not worth the time, {0}, it's grey.
+
+~ reply groan
+That's a suboptimal joke.
+Low damage, that one.
+
+~ reply jokelaugh
+Heh. Efficient.
+Ha. Good ratio of setup to payoff.
+
+~ reply jokeask
+Why did the healer respec? Too many points in caring.
+What's the most efficient joke? This one. Done.
+How many min/maxers to change a torch? One, and he'll tell you your torch build is wrong.
+
+~ reply jokeback
+I have a more efficient one.
+Mine scales better. Listen.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+Heh.
+Ha. Efficient.
+
+~ reply sorry
+Fine.
+Apology noted.
+
+~ reply disagree
+The numbers disagree with you.
+Your call. It's suboptimal.
+
+~ reply away
+Brb costs xp, you know.
+Ok. I'm logging the downtime.
+
+~ reply back
+Wb. That cost us some xp an hour.
+Welcome back, {0}. Check your buffs.
+
 ~ reply greeting
 Hello, {0}. What's your template?
 {0}. Nice gear. Suboptimal, but nice.
@@ -314,119 +472,3 @@ Got {item}. Upgrade by 3%. Acceptable.
 {item}. That fills a gap in my template.
 Rare drop. The odds were under 5%.
 Oh, {item}. Running the numbers now.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): a glass cannon who optimised every point; craves trophies. ---
-
-=== redtornader
-~ ambient
-My red tornado is fully optimised. Every spec point. Ask me how.
-Red tornado, red tornado, red tornado. That's the rotation. It's perfect.
-Nobody spins a red tornado like me. I have the numbers.
-Glass cannon? Yes. Glass that wins.
-Need a new trophy for my wall. Something with a big health bar.
-Spiritmaster spec: maxed. Red tornado damage: maxed. Patience: not maxed.
-
-~ opener fun
-Cast my red tornado forty times in {zone}. Forty. Counted. Logged.
-Someone asked why my tornado is red. Because red is 4% more efficient.
-My red tornado has a spreadsheet. The spreadsheet has a fan club.
-
-~ opener trading
-Trophy hunting in {zone}. Need one for my mantel, right next to the tornado.
-Every trophy I own came from a red tornado. Every single one.
-Bought nothing today. Bought a better red tornado, mentally.
-
-~ reply greeting
-{0}! Have you seen my red tornado? You will.
-Hello, {0}. My red tornado says hi. Loudly.
-
-~ reply banter
-Cute, {0}. My red tornado does 30% more than that joke.
-Funny, {0}. Not as funny as my tornado's crit rate.
-
-~ ding
-Level {level}. Red tornado damage: up. As calculated.
-Ding. Re-optimising the red tornado. Again.
-
-~ own_death
-Glass cannon. Emphasis on glass.
-I died mid-tornado. The tornado kept going. Respect.
-
-~ drop
-{item}. Does it boost my red tornado? Then it stays.
-
-=== greenfogger
-~ ambient
-My green fog is fully optimised. Every matter point. Ask me.
-Green fog, then more green fog. That's the template. It's flawless.
-Nobody fogs like me. The numbers agree.
-Glass cannon, yes. A very green one.
-Need a new trophy. Preferably something my fog melted.
-Cabalist spec: maxed. Matter DoT ticks: maxed. Patience: rounding error.
-
-~ opener fun
-Fogged half of {zone} green today. Every tick logged.
-Someone asked why my fog is green. It's 3% more toxic. Probably.
-My green fog has a spreadsheet. The spreadsheet has tabs.
-
-~ opener trading
-Trophy hunting in {zone}. My mantel needs one more, right next to the fog bottle.
-Every trophy I own died in my green fog. Slowly. Efficiently.
-Spent nothing today. Saved it for the next trophy.
-
-~ reply greeting
-{0}! Mind the green fog. It's mine.
-Hello, {0}. You smell that? That's optimal damage.
-
-~ reply banter
-Nice one, {0}. My fog ticks harder.
-Funny, {0}. My DoT is funnier. It keeps going.
-
-~ ding
-Level {level}. Green fog ticks harder. As predicted.
-Ding. Re-optimising the fog. Again.
-
-~ own_death
-Glass cannon. Died in my own spreadsheet.
-Dead. The fog's still ticking. Worth it.
-
-~ drop
-{item}. If it boosts the green fog, it's best in slot.
-
-=== sunrayder
-~ ambient
-My Sun Ray is fully optimised. Every spec point. Ask me.
-Sun Ray, Sun Ray, Sun Ray. That's not spam, it's a rotation.
-Nobody rays the sun like me. I've graphed it.
-Glass cannon? Yes. A shiny one.
-Need a new trophy. Something big that my Sun Ray melted.
-Enchanter spec: maxed. Sun Ray damage: maxed. Patience: minimal.
-
-~ opener fun
-Sun Rayed everything in {zone}. Even the clouds. Statistically justified.
-Someone asked if I cast anything but Sun Ray. Why would I?
-My Sun Ray has a spreadsheet. The spreadsheet has sunglasses.
-
-~ opener trading
-Trophy hunting in {zone}. My shelf needs one more, polished by Sun Ray.
-Every trophy I own got a Sun Ray to the face first.
-Spent nothing today. Saved it for trophies.
-
-~ reply greeting
-{0}! Shield your eyes. Sun Ray incoming.
-Hello, {0}. Want to see my Sun Ray numbers?
-
-~ reply banter
-Cute, {0}. My Sun Ray crits harder than that.
-Funny, {0}. My Sun Ray is brighter.
-
-~ ding
-Level {level}. Sun Ray just got brighter. As calculated.
-Ding. Re-optimising the Sun Ray. Again.
-
-~ own_death
-Glass cannon. Very shiny glass.
-Dead. Sun Ray was on cooldown. It's never on cooldown.
-
-~ drop
-{item}. If it boosts the Sun Ray, it's mine forever.

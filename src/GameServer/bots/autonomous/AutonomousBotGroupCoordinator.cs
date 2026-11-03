@@ -25,7 +25,7 @@ public static partial class AutonomousBotGroupCoordinator
     // declared a pile at the rendezvous center "assembled" even though every
     // intended formation point was still inside that broad radius.
     private const int CohesionRadius = 500;
-    private const int MaximumPveRecruitmentDistance = 30_000;
+    private const int MaximumPveRecruitmentDistance = 90_000;
     // A verified broken route gets one bounded retry. Initial attendance then
     // sheds that no-show; an active locked party ends its task instead of
     // holding every survivor in a permanent regroup.
@@ -1541,6 +1541,7 @@ public static partial class AutonomousBotGroupCoordinator
                     : double.MaxValue);
         }
 
+        int pveRosterFailures = 0;
         foreach (GameBot leader in leaders)
         {
             // Bad geometry must not turn one formation pass into thousands of
@@ -1600,7 +1601,12 @@ public static partial class AutonomousBotGroupCoordinator
             {
                 if (!TryBuildPveRoster(leader, compatiblePool, out compatible, out pveRoles,
                         MinimumPveFormationSize, largestAllowed))
+                {
+                    // One detail line per pass keeps the log readable; the pass summary has the count.
+                    if (pveRosterFailures++ == 0)
+                        LogPveRosterFailure(leader, available, compatiblePool);
                     continue;
+                }
                 rolledSize = compatible.Length + 1;
             }
             else
@@ -1654,6 +1660,31 @@ public static partial class AutonomousBotGroupCoordinator
             if (claimed.Count >= 15)
                 break;
         }
+        if (objectiveKind == eAutonomousObjectiveKind.GroupPve && pveRosterFailures > 0)
+            Log.Info($"AUTONOMOUS_GROUP_PVE_PASS available={available.Length} rosterFailures={pveRosterFailures} " +
+                     $"rendezvousChecks={rendezvousChecks} claimed={claimed.Count}");
+    }
+
+    /// <summary>Diagnostic: why a PvE leader could not fill a roster (which filter dropped bots, and the role counts).</summary>
+    private static void LogPveRosterFailure(GameBot leader, GameBot[] available, GameBot[] compatiblePool)
+    {
+        GameBot[] sameRealmRegion = available.Where(candidate => candidate != leader && candidate.Realm == leader.Realm &&
+                                                                  candidate.CurrentRegionID == leader.CurrentRegionID).ToArray();
+        GameBot[] levelOk = sameRealmRegion.Where(candidate => LevelsCompatible(leader.Level, candidate.Level)).ToArray();
+        int tooFar = levelOk.Count(candidate => candidate.GetDistanceTo(leader) > MaximumPveRecruitmentDistance);
+        int RegionRole(BotPveGroupRole role) => sameRealmRegion.Count(candidate => candidate.CharacterClass != null &&
+            BotPartyRoles.CanFill((eCharacterClass)candidate.CharacterClass.ID, role));
+        eCharacterClass[] classes = compatiblePool.Where(candidate => candidate?.CharacterClass != null)
+            .Select(candidate => (eCharacterClass)candidate.CharacterClass.ID).ToArray();
+        int PoolRole(BotPveGroupRole role) => classes.Count(characterClass => BotPartyRoles.CanFill(characterClass, role));
+        Log.Info($"AUTONOMOUS_GROUP_PVE_ROSTER_FAIL leader=\"{leader.Name}\" class={leader.CharacterClass?.Name} " +
+                 $"level={leader.Level} realm={GlobalConstants.RealmToName(leader.Realm)} region={leader.CurrentRegionID} " +
+                 $"availableAll={available.Length} sameRealmRegion={sameRealmRegion.Length} " +
+                 $"regionTanks={RegionRole(BotPveGroupRole.Tank)} regionHealers={RegionRole(BotPveGroupRole.Healer)} " +
+                 $"droppedByLevel={sameRealmRegion.Length - levelOk.Length} droppedByDistance={tooFar} " +
+                 $"compatiblePool={classes.Length} poolTanks={PoolRole(BotPveGroupRole.Tank)} " +
+                 $"poolHealers={PoolRole(BotPveGroupRole.Healer)} poolBuffers={PoolRole(BotPveGroupRole.Buffer)} " +
+                 $"poolAttackers={PoolRole(BotPveGroupRole.Attacker)} minimumSize={MinimumPveFormationSize}");
     }
 
     private static Session NewSession(Group group, GameBot leader, int lockedSize = 0, eAutonomousObjectiveKind objectiveKind = eAutonomousObjectiveKind.GroupPve, SharedCamp raidStaging = null)

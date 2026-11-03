@@ -93,7 +93,7 @@ public static partial class SceneLines
             "Tip your jester, {0}.",
             "And that's my set. Goodnight!",
             "{0}, same time tomorrow? I'll bring new material.",
-            "Exit, stage left.",
+            "And with that, I trip over the curtain on my way out.",
             "I'd stay, but my jokes need walking.",
         ],
         CheekyClosers =

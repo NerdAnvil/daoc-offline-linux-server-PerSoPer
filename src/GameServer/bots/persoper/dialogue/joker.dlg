@@ -11,6 +11,160 @@ Somebody stole my horse. I'm not stable.
 My healer said I need to lose weight. I dropped my shield.
 Kobolds make great comedians. Short, punchy material.
 
+# Joke flow: a guess at a player's riddle, then a groan or a laugh at the punchline.
+~ reply jokeguess
+To get to the other side! No? Wait, I know this one.
+Because it was there? I'm told that's an answer.
+I give up. Tell me, I need new material.
+
+# Answers about itself from its real state (PersonalityStateAnswers): a line with a slot or an
+# [if ...] is said only when it fits; a line with neither is the shrug for when it doesn't know.
+~ reply where
+{zone}, {0}. Lovely this time of year, terrible every other time.
+In {zone}, and I'd say "wish you were here," but you are.
+On the road to {destination}, or as I call it, the scenic detour. [if bot_doing travelling]
+Where am I? Philosophically, {0}, nobody knows.
+
+~ reply level
+Level {level} {class}, {0}. The jokes are max level though.
+Level {level}. {class} by trade, comedian by mistake.
+Ask my trainer, {0}. He stopped counting.
+
+~ reply groupstatus
+Grouped! {groupsize} of us, so I've got an audience. [if bot_grouped]
+Solo, {0}. Nobody laughs at my jokes. [if not bot_grouped]
+Ask me again after the punchline, {0}.
+
+~ reply activity
+Fighting this {monster}. It started it, {0}. [if bot_doing fighting]
+Busy, {0}! Hitting things is serious business. [if bot_doing fighting]
+Riding! My horse does the work, I do the commentary. [if bot_doing riding]
+Following {leader}, like a very funny shadow. [if bot_doing following]
+Heading for {destination}. Don't wait up. [if bot_doing travelling]
+Resting in {zone}, rehearsing new material. [if bot_doing resting]
+Me? Oh, a little of this, a little of that, {0}.
+
+~ reply groupyes
+I'm in, {0}! Every group needs a comedian, invite me.
+Count me in, {0}, I'll bring the jokes, you bring the heals.
+
+~ reply groupno
+Not tonight, {0}, my audience is booked.
+Pass, {0}, my material isn't ready for a group that size.
+
+~ reply groupbusy
+Little busy with this {monster}, {0}, it doesn't get my jokes either. [if bot_doing fighting]
+On my horse, {0}, and he's a terrible audience. [if bot_doing riding]
+Busy, {0}! Catch me after the show.
+
+~ reply grouphave
+Already got a group with {leader}, {0}, and they laugh at everything.
+I'm taken, {0}! Grouped and adored, mostly.
+
+~ reply grouplevel
+I'm level {level}, {0}, and that gap is no joke.
+We're too far apart in levels, {0}, and that's not even the punchline.
+
+# Orders (PersonalityOrders): follow me, stay here, come here, and the answers when it won't (no), can't
+# (busy: fighting or riding) or the speaker can't order it (not: not its leader or owner).
+~ reply orderfollow
+Following you, {0}, like a bad joke follows a bard.
+~ reply orderstay
+Staying put, {0}, I'll practice my material on this rock.
+Okay, {0}, I'll wait here and look mysterious.
+
+~ reply ordercome
+Coming, {0}! Hold the punchline.
+On my way, {0}, don't be funny without me.
+
+~ reply orderno
+Stay here alone, with no audience? No thanks, {0}.
+Nah, {0}, where you go the jokes go.
+
+~ reply orderbusy
+Bit busy with this {monster}, {0}, it's heckling me. [if bot_doing fighting]
+On my horse, {0}, and he goes where he likes. [if bot_doing riding]
+One sec, {0}, I'm mid-bit.
+
+~ reply ordernot
+Ha, nice try, {0}, you're not my group leader.
+I'd take orders from you, {0}, if you were my leader, which you're not.
+
+# Orders, B6b: leave the group, assist, rest, and the answers when there is nothing to assist on (notarget),
+# nothing to rest off (full) or it has stormed off after a bad joke (away).
+~ reply orderleave
+I'm leaving, {0}, but my jokes stay with you forever.
+Off I go, {0}, try to have fun without me.
+
+~ reply orderassist
+On your target, {0}, and I'll heckle it too.
+~ reply orderrest
+Good, {0}, I'll work on some new material.
+Resting, {0}, comedy is exhausting.
+
+~ reply ordernotarget
+Assist on what, {0}, an imaginary friend?
+There's nothing to hit, {0}, unless you count my jokes.
+
+~ reply orderfull
+I'm full, {0}, unlike this crowd's laughter.
+No need, {0}, I'm topped up and ready to bomb.
+
+~ reply orderaway
+No, {0}, I'm out, the joke police are looking for you.
+I'm still out, {0}, that joke needs a moment of silence.
+
+# Pull: named in "pull this", "pull what?" with no target, and a target too weak (grey) to bother with.
+~ reply orderpull
+Pulling, {0}, it never saw me coming.
+Here comes the punchline, {0}!
+
+~ reply orderpullwhat
+Pull what, {0}, my leg?
+Pull what, {0}? You've targeted thin air.
+
+~ reply orderpulleasy
+That, {0}? It'd die laughing before I got there.
+Too easy, {0}, even my jokes could kill it.
+
+~ reply groan
+Booo! I'm stealing it anyway.
+Ugh. That's my kind of terrible.
+
+~ reply jokelaugh
+Ha! That's going in my act.
+HA! Okay, you win this round.
+
+~ reply jokeask
+Why don't wolves tell secrets in the forest? Too many leaves listening.
+Why did the dragon sleep all day? He was hoarding his energy.
+I used to be a bard. Then I lost my lute. Now I just take notes.
+
+~ reply jokeback
+Oh, you want to trade? I've got one for you, {0}.
+Amateur hour's over. My turn.
+
+# Short reactions: one bot now and then, so keep them brief.
+~ reply laugh
+See? I'm hilarious. Oh wait, that wasn't me.
+Ha! Was it my joke? It was my joke.
+
+~ reply sorry
+Apology accepted. Mostly.
+No harm done, {0}. Probably.
+
+~ reply disagree
+Agree to disagree. I'm right though.
+No? Bold.
+
+~ reply away
+Don't fall in!
+Bring snacks.
+
+~ reply back
+Wb! We talked about you.
+Welcome back, {0}! Nothing happened. Probably.
+
 ~ reply greeting
 Well, if it isn't {0}! Or is it?
 {0}! Knock knock.
@@ -334,134 +488,3 @@ Let's be honest, half of you only group with me for my looks.
 New cloak? Bold choice. I respect bold choices. And cloaks.
 I'd buy you a drink, but my coin pouch is shy.
 Bards, sing me something nice. Or just stand there. That works too.
-
-# --- Named bots (docs/BOT-PERSONALITIES.md): tiny, flashy, never serious; really from Swissland. ---
-
-=== shnacksize
-~ ambient
-Back home in Swissland we'd call this a small mountain. Everything is small. Like me.
-The Swissland flag: a yellow circle on a yellow stick on a blue background. Very serious flag.
-In Swisshlish we say 'Hoi zaeme, cheese please'. It means hello. Also cheese.
-Tiny Valkyn, huge axe, flashy moves. Mostly flashy.
-Midgard is nice, but have you seen Swissland? No? Nobody has.
-I'm not short. I'm Swissland-sized.
-
-~ opener realm
-In Swissland the trolls are polite and the cheese has holes for ventilation.
-Swissland is a real place. It's just very small. And hard to find. And yellow.
-Someone in {zone} asked where I'm from. Swissland! They didn't believe me either.
-
-~ opener life
-The mountains in {zone} are nice. In Swissland they're yellow, but nice.
-I miss Swissland. The yellow circle on the yellow stick. Sniff.
-Tried to teach a Kobold in {zone} Swisshlish. He ate my phrasebook.
-
-~ opener fun
-In Swisshlish 'Gruezi-wuezi' means 'nice axe'. I made that up. Just now.
-Why is the Swissland flag a yellow circle on a stick? So you can wave it. Obviously.
-Swissland's national sport is spinning around very fast. I'm a Berserker. Coincidence?
-
-~ reply greeting
-Hoi {0}! That's Swisshlish for hello!
-{0}! Greetings from Swissland! It's very far away. And small.
-
-~ reply banter
-Ha! In Swissland that joke would win a medal, {0}. A yellow one.
-Good one, {0}. I'll translate it into Swisshlish. It gets worse.
-
-~ ding
-Level {level}! They'll ring the yellow bells in Swissland tonight!
-Ding! Still tiny. Still flashy.
-
-~ own_death
-Died. In Swissland we call that a little nap.
-Ouch. Swisshlish has no word for that. Now it does.
-
-~ drop
-{item}! Flashy! It goes with my Swissland flag!
-
-=== shnacksizer
-~ ambient
-Back home in Swissland this would count as a castle. Everything's small there. Like me.
-The Swissland flag: a yellow circle on a yellow stick on a blue background. Do salute it.
-In Swisshlish 'Hoi zaeme' means hello. Also, pass the cheese.
-Tiny Saracen, two swords, maximum flair. Mostly flair.
-Albion's lovely, but Swissland has better cheese. And better flags.
-I'm not short. I'm Swissland-sized.
-
-~ opener realm
-In Swissland knights joust on goats. Small goats. Small knights.
-Swissland is real. It's on no map, which proves it's very exclusive.
-A guard in {zone} asked where I'm from. Swissland! He's still looking it up.
-
-~ opener life
-The hills in {zone} remind me of Swissland. Less yellow, though.
-I miss Swissland. The yellow circle on the yellow stick. It's beautiful.
-Taught a merchant in {zone} some Swisshlish. He charges me double now.
-
-~ opener fun
-In Swisshlish 'Gruezi-wuezi' means 'nice sword'. Possibly. I'm still learning.
-Why is the Swissland flag on a stick? Because flags on walls are for show-offs.
-In Swissland everyone fights with two swords. One for cheese, one for chocolate.
-
-~ reply greeting
-Hoi {0}! Swisshlish for hello!
-{0}! Greetings from Swissland! Bring cheese next time.
-
-~ reply banter
-In Swissland that joke would get a yellow medal, {0}.
-Ha, {0}! In Swisshlish that's even funnier. Trust me.
-
-~ ding
-Level {level}! Swissland just declared a holiday!
-Ding! Tiny, flashy and one level better!
-
-~ own_death
-Died. In Swissland that's called taking a little break.
-Ouch. Somebody tell Swissland I was brave.
-
-~ drop
-{item}! So flashy! Swissland would approve!
-
-=== shnacksizey
-~ ambient
-Back home in Swissland this tree would be a forest. Everything's tiny there. Like me.
-The Swissland flag: a yellow circle on a yellow stick on a blue background. Elegant, no?
-In Swisshlish 'Hoi zaeme' means hello, everyone. And also, cheese for everyone.
-Tiny Elf, flashy blades, zero seriousness.
-Hibernia is pretty, but Swissland is prettier. And yellower.
-I'm not short for an Elf. I'm Swissland-sized.
-
-~ opener realm
-In Swissland the faeries wear little yellow hats. It's the law.
-Swissland is real. It just hides between two blinks.
-A Lurikeen in {zone} asked where I'm from. Swissland! He called me tall. I loved him.
-
-~ opener life
-The lakes in {zone} are lovely. In Swissland they're full of fondue.
-I miss Swissland. The yellow circle on the yellow stick. Sigh.
-Tried Swisshlish on a faerie in {zone}. She answered. I didn't understand.
-
-~ opener fun
-In Swisshlish 'Gruezi-wuezi' means 'pretty blades'. I think. Ask Swissland.
-Why is the Swissland flag yellow on yellow? So you can't see the stain from the fondue.
-Swissland's national dance is spinning two blades very fast. I'm a natural.
-
-~ reply greeting
-Hoi {0}! That's Swisshlish for hello!
-{0}! Greetings from Swissland! Mind the tiny mountains.
-
-~ reply banter
-In Swissland you'd get a yellow ribbon for that one, {0}.
-Ha! {0}, in Swisshlish that joke rhymes. Sort of.
-
-~ ding
-Level {level}! The Swissland fondue fountain flows in my honour!
-Ding! Tiny, flashy, still not serious.
-
-~ own_death
-Died. In Swissland that's just a lie-down.
-Ouch. That was not flashy. Do over.
-
-~ drop
-{item}! Flashy! Swissland approves!
