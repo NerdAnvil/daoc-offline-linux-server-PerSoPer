@@ -125,6 +125,15 @@ don't need to, I'm topped up
 nope, still salty about that joke {0} lol
 I said I'm out {0}, give me a minute
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+ok pulling {0}
+sure, here it comes
+
+~ reply orderpullwhat
+pull what lol
+uh, target something first {0}
+
 ~ reply groan
 ugh lol
 oh no

@@ -300,6 +300,15 @@ Powwwarh Ovarh Wherlming.
 Not now, {0}, I'm writing a sad song about that joke.
 I'm out, {0}, this is my dramatic exit and you're ruining it.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, with an opening number!
+Here it comes, {0}, give it a big hand!
+
+~ reply orderpullwhat
+Pull what, {0}? Nobody's on stage.
+Pull what, {0}? Pick a crowd first.
+
 ~ reply groan
 Ugh! That's a one-star review, {0}.
 Booo! Off the stage!

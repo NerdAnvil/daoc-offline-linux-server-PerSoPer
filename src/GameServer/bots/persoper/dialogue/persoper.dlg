@@ -692,6 +692,15 @@ No need, {0}, my mana's topped up and my hair is perfect.
 Not now, darling, I'm still recovering from that joke.
 I'm out, {0}, give me a minute to forgive you.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Me? Fine, {0}, pulling, then I'm back on heals.
+Pulling, {0}, don't let it chew on me.
+
+~ reply orderpullwhat
+Pull what, {0}?
+You've got nothing targeted, {0}.
+
 ~ reply groan
 Oh, {0}. That's awful.
 Ugh. I'm healing everyone but you now.

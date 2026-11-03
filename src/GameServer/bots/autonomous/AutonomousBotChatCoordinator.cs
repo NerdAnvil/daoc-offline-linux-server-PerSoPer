@@ -883,7 +883,7 @@ public static class AutonomousBotChatCoordinator
     }
 
     /// <summary>
-    /// A player's order ("follow me", "stay here", "come here", "leave the group", "assist me", "rest up";
+    /// A player's order ("follow me", "stay here", "come here", "leave the group", "assist me", "rest up", "pull this";
     /// PersonalityOrders): the named bots take it, else the open ones (the player's group; "leave" only when named).
     /// Each decides from its kind and state; the ones that say yes obey at once, and a few personality bots answer (none within the cooldown). False when the line isn't an order; true otherwise,
     /// also when nobody takes it (an open order nobody in the group hears gets silence, not small talk).
@@ -911,12 +911,25 @@ public static class AutonomousBotChatCoordinator
         }
         GameBot[] targets = (isNamed ? named : open).Where(bot => bot != null).Distinct()
             .OrderBy(_ => Random.Shared.Next()).Take(PersonalityOrders.MaxTargets).ToArray();
+        // "eagle, pull this": one puller, the first bot named.
+        if (isNamed && order == eBotOrder.Pull)
+            targets = named.Where(bot => bot != null).Take(1).ToArray();
         (GameBot Bot, eOrderAnswer Answer)[] decided = targets.Select(bot =>
         {
             BotPersonality personality = BotPersonalities.For(bot);
             bool sulking = personality?.Patience != null && PersonalityAnnoyance.SulkLeft(personality, player) > TimeSpan.Zero;
             return (bot, PersonalityOrders.Decide(order, PersonalityOrders.StateOf(bot, player, sulking, order), personality?.TypeKey, Random.Shared));
         }).ToArray();
+        // "pull this" to nobody in particular is the plain /pull, once for the group, with no chat answer; a target the
+        // bots won't fight (grey) still goes to /pull, which says so, as typing /pull would.
+        if (!isNamed && order == eBotOrder.Pull && decided.Any(pair => pair.Answer is eOrderAnswer.Yes or eOrderAnswer.NoTarget) &&
+            PlayerLedPullCoordinator.PullTarget(player) is { } pullTarget)
+        {
+            string result = PlayerLedPullCoordinator.Begin(player, pullTarget);
+            player.Out.SendMessage(result, eChatType.CT_System, eChatLoc.CL_SystemWindow);
+            Log.Info($"PERSONALITY_ORDER open pull player=\"{player.Name}\" result=\"{result}\"");
+            return true;
+        }
         foreach ((GameBot bot, eOrderAnswer answer) in decided)
         {
             if (answer == eOrderAnswer.Yes)

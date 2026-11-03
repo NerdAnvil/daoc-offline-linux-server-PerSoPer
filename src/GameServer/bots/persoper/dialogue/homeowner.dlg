@@ -119,6 +119,15 @@ No need, {0}, I'm feeling right as rain.
 Not just now, {0}, that joke still stings a bit.
 I'm still out, {0}, gimme a sec, okay?
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Oh, you betcha, {0}, pulling!
+Here it comes, {0}, get ready now!
+
+~ reply orderpullwhat
+Pull what, {0}? I don't see anything.
+Which one, {0}? You've got nothing picked.
+
 ~ reply groan
 Oh, for Pete's sake.
 Oh, that's a real groaner, that is.

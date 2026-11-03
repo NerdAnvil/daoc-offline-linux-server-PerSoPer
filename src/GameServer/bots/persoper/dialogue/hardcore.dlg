@@ -115,6 +115,15 @@ I'm full, {0}, resting is wasted time.
 I'm out, {0}, that joke cost us a pull.
 Not now, {0}, I need a minute after that.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, be ready.
+On it, {0}, hit it when it comes.
+
+~ reply orderpullwhat
+Pull what, {0}? Target something.
+Nothing targeted, {0}.
+
 ~ reply groan
 ugh
 that cost me a pull

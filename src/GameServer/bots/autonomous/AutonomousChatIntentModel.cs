@@ -86,6 +86,10 @@ public enum eAutonomousChatIntent
     OrderFull,
     OrderAway,
     OrderNot,
+    // "<bot>, pull this" (PersonalityOrders): its phrases, read as Command, and the yes; then "pull what?" with no target.
+    // At the end so the older intents keep their numbers.
+    OrderPull,
+    OrderPullWhat,
 }
 
 /// <summary>An order a player gives bots in chat (intent Part B6, B6b); None when the line isn't one.</summary>
@@ -98,6 +102,7 @@ public enum eBotOrder
     Leave,
     Assist,
     Rest,
+    Pull,
 }
 
 /// <summary>
@@ -327,15 +332,16 @@ public static partial class AutonomousChatIntentModel
         ["stay"] = eBotOrder.Stay, ["wait"] = eBotOrder.Stay, ["stop"] = eBotOrder.Stay, ["halt"] = eBotOrder.Stay,
         ["follow"] = eBotOrder.Follow, ["come"] = eBotOrder.Come,
         ["assist"] = eBotOrder.Assist, ["rest"] = eBotOrder.Rest, ["sit"] = eBotOrder.Rest, ["med"] = eBotOrder.Rest,
+        ["pull"] = eBotOrder.Pull,
     };
 
-    /// <summary>The intents.dlg sections that hold order phrases (orderfollow ... orderrest), each read as Command.</summary>
+    /// <summary>The intents.dlg sections that hold order phrases (orderfollow ... orderrest, orderpull), each read as Command.</summary>
     public static bool IsOrderPhrase(eAutonomousChatIntent intent) =>
-        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderRest;
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderRest or eAutonomousChatIntent.OrderPull;
 
     /// <summary>
-    /// The order in a chat line ("follow me", "shemp, stay here", "come here", "leave the group", "assist me", "rest up",
-    /// or one of stay, wait, stop, follow, come, assist, rest, sit, med on its own); None for anything else. <paramref name="names"/> are the words that name the bots (full names,
+    /// The order in a chat line ("follow me", "shemp, stay here", "come here", "leave the group", "assist me", "rest up", "eagle, pull this",
+    /// or one of stay, wait, stop, follow, come, assist, rest, sit, med, pull on its own); None for anything else. <paramref name="names"/> are the words that name the bots (full names,
     /// personality names, nicknames): taken off first, so "shemp stay" is a lone "stay". A rude line is never an order.
     /// </summary>
     public static eBotOrder ReadOrder(string text, IEnumerable<string> names = null)
@@ -356,6 +362,7 @@ public static partial class AutonomousChatIntentModel
             eAutonomousChatIntent.OrderLeave => eBotOrder.Leave,
             eAutonomousChatIntent.OrderAssist => eBotOrder.Assist,
             eAutonomousChatIntent.OrderRest => eBotOrder.Rest,
+            eAutonomousChatIntent.OrderPull => eBotOrder.Pull,
             _ => eBotOrder.None,
         };
     }
@@ -382,7 +389,7 @@ public static partial class AutonomousChatIntentModel
         bool Stranger(string word) => word != null && !named.Contains(word) && !OrderFiller.Contains(word) &&
             !LoneOrders.ContainsKey(word) && !IntentPhrases.Shared.IsWordOf(word, eAutonomousChatIntent.OrderFollow,
                 eAutonomousChatIntent.OrderStay, eAutonomousChatIntent.OrderCome, eAutonomousChatIntent.OrderLeave,
-                eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest);
+                eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest, eAutonomousChatIntent.OrderPull);
         string first = Tokens(text).FirstOrDefault();
         if (Stranger(first))
             return first;
@@ -391,9 +398,9 @@ public static partial class AutonomousChatIntentModel
         return last.Length == 1 && Stranger(last[0]) ? last[0] : null;
     }
 
-    /// <summary>The order sections and answers (OrderFollow ... OrderNot): sections in .dlg files, never small talk.</summary>
+    /// <summary>The order sections and answers (OrderFollow ... OrderNot, OrderPull, OrderPullWhat): sections in .dlg files, never small talk.</summary>
     public static bool IsOrderKind(eAutonomousChatIntent intent) =>
-        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderNot;
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderPullWhat;
 
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>

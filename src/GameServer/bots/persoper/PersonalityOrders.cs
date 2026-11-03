@@ -54,6 +54,10 @@ public sealed record OrderState(bool Allowed, bool Companion, bool Fighting, boo
 /// "Rest" starts the bot's own recovery rest when it has something to rest off ("full" otherwise); its own AI still
 /// ends it as before. A bot that has stormed off after a bad joke (PersonalityWalkOff) refuses every order in
 /// character and does nothing.</para>
+/// <para>Pull. "&lt;bot&gt;, pull this" goes to the first bot named in it: it pulls the speaker's target whatever its role
+/// (a healer or buffer pulls once, then goes back to its job) and the rest of the group attack at once
+/// (PlayerLedPullCoordinator.NamedPull). With no name it is the plain /pull (PlayerLedPullCoordinator.Begin, said
+/// by nobody). With no target to pull the bot asks "pull what?" (~ reply orderpullwhat).</para>
 /// </summary>
 public static class PersonalityOrders
 {
@@ -113,7 +117,7 @@ public static class PersonalityOrders
             return eOrderAnswer.Busy;
         if (order == eBotOrder.Leave)
             return state.Companion ? eOrderAnswer.No : eOrderAnswer.Yes;
-        if (order == eBotOrder.Assist && !state.HasTarget)
+        if (order is eBotOrder.Assist or eBotOrder.Pull && !state.HasTarget)
             return eOrderAnswer.NoTarget;
         if (order == eBotOrder.Rest && !state.NeedsRest)
             return eOrderAnswer.Full;
@@ -137,11 +141,12 @@ public static class PersonalityOrders
             eBotOrder.Leave => eAutonomousChatIntent.OrderLeave,
             eBotOrder.Assist => eAutonomousChatIntent.OrderAssist,
             eBotOrder.Rest => eAutonomousChatIntent.OrderRest,
+            eBotOrder.Pull => eAutonomousChatIntent.OrderPull,
             _ => eAutonomousChatIntent.Unknown,
         },
         eOrderAnswer.No => eAutonomousChatIntent.OrderNo,
         eOrderAnswer.Busy => eAutonomousChatIntent.OrderBusy,
-        eOrderAnswer.NoTarget => eAutonomousChatIntent.OrderNoTarget,
+        eOrderAnswer.NoTarget => order == eBotOrder.Pull ? eAutonomousChatIntent.OrderPullWhat : eAutonomousChatIntent.OrderNoTarget,
         eOrderAnswer.Full => eAutonomousChatIntent.OrderFull,
         eOrderAnswer.Away => eAutonomousChatIntent.OrderAway,
         eOrderAnswer.NotYours => eAutonomousChatIntent.OrderNot,
@@ -174,6 +179,8 @@ public static class PersonalityOrders
         if (personality == null || kind == eAutonomousChatIntent.Unknown)
             return null;
         string said = PersonalityStateAnswers.Pick(personality, kind, slots, facts, speakerName, random, ruleOf);
+        if (said == null && kind == eAutonomousChatIntent.OrderPullWhat)
+            said = PersonalityStateAnswers.Pick(personality, eAutonomousChatIntent.OrderNoTarget, slots, facts, speakerName, random, ruleOf);
         if (said != null || answer is not (eOrderAnswer.Busy or eOrderAnswer.NoTarget or eOrderAnswer.Full or eOrderAnswer.Away))
             return said;
         return PersonalityStateAnswers.Pick(personality, eAutonomousChatIntent.OrderNo, slots, facts, speakerName, random, ruleOf);
@@ -268,7 +275,8 @@ public static class PersonalityOrders
     public static OrderState StateOf(GameBot bot, GamePlayer player, bool sulking, eBotOrder order = eBotOrder.None)
     {
         bool fighting = bot.InCombat || order == eBotOrder.Rest && BotRestRecovery.BlocksRest(bot);
-        bool hasTarget = order == eBotOrder.Assist && AssistTarget(bot, player) != null;
+        bool hasTarget = order == eBotOrder.Assist && AssistTarget(bot, player) != null ||
+            order == eBotOrder.Pull && PullTarget(bot, player) != null;
         bool needsRest = order != eBotOrder.Rest || BotRestRecovery.NeedsOrContinuesRest(bot);
         return new(MayOrder(bot, player), bot.IsTemporaryGroupHelper, fighting, bot.IsOnHorse || bot.IsOnStableMasterRoute,
             sulking, PersonalityWalkOff.IsAway(bot, GameLoop.GameLoopTime), hasTarget, needsRest);
@@ -283,9 +291,20 @@ public static class PersonalityOrders
     }
 
     /// <summary>
+    /// The player's target, when it is an enemy the bot is near enough to pull and would fight (not grey to it, for
+    /// one); null when nothing, so the bot asks "pull what?" instead of saying yes to a pull it can't make.
+    /// </summary>
+    public static GameLiving PullTarget(GameBot bot, GamePlayer player)
+    {
+        GameLiving target = PlayerLedPullCoordinator.PullTarget(player);
+        return target != null && bot.IsWithinRadius(target, BotBrain.GROUP_DEFENSE_ASSIST_RADIUS) &&
+            bot.Brain is BotBrain brain && brain.CanAggroTarget(target) ? target : null;
+    }
+
+    /// <summary>
     /// Carries out an order a bot said yes to: stay holds it where it stands; follow and come end a hold and send it back
     /// into formation now; leave takes a world bot out of the group after <see cref="LeaveDelayMs"/>; assist joins the
-    /// player's fight; rest starts its recovery rest.
+    /// player's fight; rest starts its recovery rest; pull (named) has it pull the player's target and the group attack.
     /// </summary>
     public static void Apply(GameBot bot, GamePlayer player, eBotOrder order)
     {
@@ -310,6 +329,14 @@ public static class PersonalityOrders
                 return;
             case eBotOrder.Rest:
                 bot.BeginRecoveryRest();
+                return;
+            case eBotOrder.Pull:
+                Release(bot.ObjectID);
+                GameLiving pullTarget = PullTarget(bot, player);
+                int attackers = 0;
+                bool pulled = pullTarget != null && PlayerLedPullCoordinator.NamedPull(player, bot, pullTarget, out attackers);
+                Log.Info($"PERSONALITY_ORDER pull bot=\"{bot.Name}\" player=\"{player.Name}\" target=\"{pullTarget?.Name}\" " +
+                    $"pulled={pulled} attackers={attackers}");
                 return;
         }
         if (order == eBotOrder.Stay)

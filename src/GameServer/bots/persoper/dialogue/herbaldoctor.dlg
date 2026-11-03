@@ -120,6 +120,15 @@ Don't need it, I'm topped up.
 Nah, I'm still out after that one, {0}.
 Gimme a minute, bub, that joke stung.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pullin' it, {0}!
+Here it comes, bub.
+
+~ reply orderpullwhat
+Pull what, {0}?
+Ain't nothin' targeted, bub.
+
 ~ reply groan
 Oof, bub. That one needs a buff.
 Ugh. Even my buffs can't save that one, bub.

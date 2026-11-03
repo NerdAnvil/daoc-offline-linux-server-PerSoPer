@@ -121,6 +121,15 @@ Don't need it, {0}, I'm topped up.
 Not after that joke, {0}, I need a minute.
 I said I'm out, {0}, go bother someone else for a bit.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, and don't make me regret it.
+Fine, {0}, I'll pull, you heal yourselves first.
+
+~ reply orderpullwhat
+Pull what, {0}?
+There's nothing targeted, {0}.
+
 ~ reply groan
 Hm. Terrible.
 That hurt more than a broken arm.

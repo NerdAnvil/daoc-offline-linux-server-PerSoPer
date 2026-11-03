@@ -115,6 +115,15 @@ No need, {0}, I'm full.
 Leave me be, {0}, I'm out.
 Not now, {0}, I walked off for a reason.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Fine, {0}, pulling.
+Pulling.
+
+~ reply orderpullwhat
+Pull what, {0}?
+On what, {0}?
+
 ~ reply groan
 Hm.
 ...no.

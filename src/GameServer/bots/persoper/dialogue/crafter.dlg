@@ -116,6 +116,15 @@ I'm full up, {0}, unlike my bags.
 Not now, {0}, I'm still pricing that joke, and it's worth nothing.
 I'm out, {0}, back when I've cooled off.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, mind the hide.
+Here it comes, {0}, don't ruin the drops.
+
+~ reply orderpullwhat
+Pull what, {0}?
+Point at something worth skinning, {0}.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

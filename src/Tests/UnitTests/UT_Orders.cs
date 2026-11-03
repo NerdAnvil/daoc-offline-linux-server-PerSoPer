@@ -26,10 +26,11 @@ public class UT_Orders
         eAutonomousChatIntent.OrderLeave, eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest,
         eAutonomousChatIntent.OrderNo, eAutonomousChatIntent.OrderBusy, eAutonomousChatIntent.OrderNoTarget,
         eAutonomousChatIntent.OrderFull, eAutonomousChatIntent.OrderAway, eAutonomousChatIntent.OrderNot,
+        eAutonomousChatIntent.OrderPull, eAutonomousChatIntent.OrderPullWhat,
     ];
 
     private static readonly eBotOrder[] AllOrders =
-        [eBotOrder.Follow, eBotOrder.Stay, eBotOrder.Come, eBotOrder.Leave, eBotOrder.Assist, eBotOrder.Rest];
+        [eBotOrder.Follow, eBotOrder.Stay, eBotOrder.Come, eBotOrder.Leave, eBotOrder.Assist, eBotOrder.Rest, eBotOrder.Pull];
 
     // A world bot in the speaker's group, led by the speaker, free.
     private static readonly OrderState Free = new(true, false, false, false, false);
@@ -68,6 +69,9 @@ public class UT_Orders
     [TestCase("med up guys", eBotOrder.Rest)]
     [TestCase("rest", eBotOrder.Rest)]
     [TestCase("sit", eBotOrder.Rest)]
+    [TestCase("pull this", eBotOrder.Pull)]
+    [TestCase("pull that one please", eBotOrder.Pull)]
+    [TestCase("pull", eBotOrder.Pull)]
     public void Orders_AreRead(string line, eBotOrder expected)
     {
         Assert.That(AutonomousChatIntentModel.ReadOrder(line), Is.EqualTo(expected), line);
@@ -82,6 +86,8 @@ public class UT_Orders
     [TestCase("shemp, leave the group", eBotOrder.Leave)]
     [TestCase("persoper assist", eBotOrder.Assist)]
     [TestCase("shemp rest", eBotOrder.Rest)]
+    [TestCase("shemp, pull this", eBotOrder.Pull)]
+    [TestCase("persoper pull", eBotOrder.Pull)]
     public void TheBotsName_IsTakenOffFirst(string line, eBotOrder expected)
     {
         Assert.That(AutonomousChatIntentModel.ReadOrder(line, ["Shempenstein", "Shemp", "Persoper"]), Is.EqualTo(expected), line);
@@ -111,6 +117,8 @@ public class UT_Orders
     [TestCase("shemp, leave the group")]
     [TestCase("assist me")]
     [TestCase("ok guys, med up")]
+    [TestCase("pull this")]
+    [TestCase("shemp, pull this")]
     public void OpenOrdersAndKnownNames_HaveNoStranger(string line)
     {
         Assert.That(AutonomousChatIntentModel.OrderStranger(line, ["Shempenstein", "Shemp"]), Is.Null, line);
@@ -148,6 +156,8 @@ public class UT_Orders
     [TestCase("can someone help me")]
     [TestCase("stay here, you idiot")]
     [TestCase("shemp, where are you?")]
+    [TestCase("nice pull")]
+    [TestCase("that was a bad pull")]
     public void OtherLines_AreNotOrders(string line)
     {
         Assert.That(AutonomousChatIntentModel.ReadOrder(line, ["Shemp"]), Is.EqualTo(eBotOrder.None), line);
@@ -167,6 +177,7 @@ public class UT_Orders
             kinds.Add(PersonalityOrders.KindFor(order, eOrderAnswer.Yes));
         kinds.AddRange(new[] { eOrderAnswer.No, eOrderAnswer.Busy, eOrderAnswer.NoTarget, eOrderAnswer.Full, eOrderAnswer.Away, eOrderAnswer.NotYours }
             .Select(answer => PersonalityOrders.KindFor(eBotOrder.Stay, answer)));
+        kinds.Add(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.NoTarget));
         Assert.That(kinds, Is.EquivalentTo(OrderKinds));
         Assert.That(PersonalityOrders.KindFor(eBotOrder.Follow, eOrderAnswer.Quiet), Is.EqualTo(eAutonomousChatIntent.Unknown));
     }
@@ -397,6 +408,21 @@ public class UT_Orders
             Assert.That(PersonalityOrders.Decide(eBotOrder.Rest, Free, "leeroy", new Random(seed)), Is.EqualTo(eOrderAnswer.Yes), "only stay is refused by type");
     }
 
+    [Test]
+    public void Decide_Pull_NeedsATarget_AndASupportBotPullsToo()
+    {
+        var random = new Random(9);
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free, "casual", random), Is.EqualTo(eOrderAnswer.NoTarget));
+        Assert.That(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.NoTarget), Is.EqualTo(eAutonomousChatIntent.OrderPullWhat), "pull what?");
+        Assert.That(PersonalityOrders.KindFor(eBotOrder.Assist, eOrderAnswer.NoTarget), Is.EqualTo(eAutonomousChatIntent.OrderNoTarget), "assist keeps on what?");
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true }, "casual", random), Is.EqualTo(eOrderAnswer.Yes));
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Companion = true }, null, random), Is.EqualTo(eOrderAnswer.Yes));
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Fighting = true }, "casual", random), Is.EqualTo(eOrderAnswer.Busy));
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Sulking = true }, "casual", random), Is.EqualTo(eOrderAnswer.No));
+        Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Allowed = false }, "casual", random), Is.EqualTo(eOrderAnswer.NotYours));
+        Assert.That(PersonalityOrders.NamedOnly(eBotOrder.Pull), Is.False, "pull this with no name is the plain /pull");
+    }
+
     private static IEnumerable<BotPersonality> WorldVoices() =>
         PersonalityTypes.Templates.Values
             .Concat(PersonalityTypeVoices.NamedOnly.Values)
@@ -441,6 +467,7 @@ public class UT_Orders
             (eBotOrder.Stay, eOrderAnswer.Busy), (eBotOrder.Stay, eOrderAnswer.NotYours),
             (eBotOrder.Assist, eOrderAnswer.Yes), (eBotOrder.Rest, eOrderAnswer.Yes), (eBotOrder.Assist, eOrderAnswer.NoTarget),
             (eBotOrder.Rest, eOrderAnswer.Full), (eBotOrder.Follow, eOrderAnswer.Away), (eBotOrder.Leave, eOrderAnswer.No),
+            (eBotOrder.Pull, eOrderAnswer.Yes), (eBotOrder.Pull, eOrderAnswer.NoTarget),
         };
         foreach (BotPersonality voice in WorldVoices().Append(Persoper()).Append(KobaldjoviIdentity.Personality))
         foreach ((eBotOrder order, eOrderAnswer answer) in answers)

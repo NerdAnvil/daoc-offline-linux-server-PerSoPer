@@ -114,6 +114,15 @@ No need, {0}, I'm topped up and ready to bomb.
 No, {0}, I'm out, the joke police are looking for you.
 I'm still out, {0}, that joke needs a moment of silence.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, it never saw me coming.
+Here comes the punchline, {0}!
+
+~ reply orderpullwhat
+Pull what, {0}, my leg?
+Pull what, {0}? You've targeted thin air.
+
 ~ reply groan
 Booo! I'm stealing it anyway.
 Ugh. That's my kind of terrible.

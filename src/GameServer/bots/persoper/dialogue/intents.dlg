@@ -7,7 +7,7 @@
 # farewell, ignoreoutofworld, thank, groupcall, and the small talk ones: joke, grumble, smalltalk,
 # question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
 # howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words, and the
-# orders orderfollow, orderstay, ordercome, orderleave, orderassist and orderrest (read as command).
+# orders orderfollow, orderstay, ordercome, orderleave, orderassist, orderrest and orderpull (read as command).
 # The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
 # real zone, level, class, group and task: "~ reply where" and so on, see PersonalityStateAnswers.cs.
 # Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
@@ -206,6 +206,12 @@ kill my target, assist on me
 ~ intent orderrest
 rest up, go rest, go sit, sit down, sit there, sit here, med up, catch your breath, get your mana back
 regen up, rest here
+
+# Pull: a bot named in it pulls the speaker's target whatever its role, and the rest attack at once;
+# with no name it is the plain /pull.
+~ intent orderpull
+pull this, pull that, pull it, pull him, pull her, pull them, pull this one, pull that one, pull the mob
+pull for us, pull please
 
 ~ intent combatcall
 heal me, heals please, need heals, need a heal, adds, incoming, run, train

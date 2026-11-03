@@ -118,6 +118,15 @@ Rest? I'm topped up, {0}, go go go!
 Nope, still out, {0}, that joke was worse than a wipe!
 I'm OUT, {0}, ask me later!
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+PULLING! Finally, {0}!
+Mine! Watch this, {0}!
+
+~ reply orderpullwhat
+Pull WHAT, {0}? Pick something!
+Target something, {0}, I'm ready!
+
 ~ reply groan
 NOOO!
 Ugh! Worse than a wipe!

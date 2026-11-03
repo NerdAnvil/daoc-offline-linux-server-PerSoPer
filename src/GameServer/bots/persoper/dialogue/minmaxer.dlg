@@ -118,6 +118,15 @@ No need, {0}, all bars at max.
 I'm out, {0}, that joke had zero value.
 Not now, {0}, I'm on cooldown after that one.
 
+# Pull: named in "pull this", and "pull what?" with no target.
+~ reply orderpull
+Pulling, {0}, burn it down.
+On it, {0}, damage up.
+
+~ reply orderpullwhat
+Pull what, {0}? No target.
+No target, {0}, zero value.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.

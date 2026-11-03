@@ -56,6 +56,7 @@ namespace DOL.AI.Brain
         {
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             ClearAggroList();
             FSM.SetCurrentState(eFSMStateType.FOLLOW);
         }
@@ -587,6 +588,11 @@ namespace DOL.AI.Brain
         private GamePlayer _subscribedAssistedPlayer;
         private GameLiving _orderedPullTarget;
         private bool _returnToFormationAfterPull;
+        // A support bot named in "<bot>, pull this" attacks until the mob is in a fight (or this time passes), then
+        // goes back to its support job.
+        private GameLiving _supportPullTarget;
+        private long _supportPullUntil;
+        public const int SupportPullMs = 15_000;
         private GamePlayer _activityTrackedLeader;
         private int _leaderLastX;
         private int _leaderLastY;
@@ -703,6 +709,44 @@ namespace DOL.AI.Brain
             return true;
         }
 
+        /// <summary>
+        /// "&lt;bot&gt;, pull this": the named bot pulls whatever its role. A tank or attacker pulls as for /pull
+        /// (<see cref="OrderPull"/>); a healer or buffer attacks until the mob is in a fight, at most
+        /// <see cref="SupportPullMs"/>, then goes back to its support job.
+        /// </summary>
+        public virtual bool OrderNamedPull(GameLiving target)
+        {
+            if (!BotPartyRoles.IsSupport(BotBody))
+                return OrderPull(target);
+            if (target == null || !target.IsAlive || !CanAggroTarget(target))
+                return false;
+            _supportPullTarget = target;
+            _supportPullUntil = GameLoop.GameLoopTime + SupportPullMs;
+            _orderedPullTarget = target;
+            _returnToFormationAfterPull = BotBody?.IsPlayerLedGroup == true;
+            AddToAggroList(target, Math.Max(100, target.EffectiveLevel * 10));
+            FSM.SetCurrentState(eFSMStateType.AGGRO);
+            AttackMostWanted();
+            return true;
+        }
+
+        /// <summary>True while a support bot named in a pull still has to make contact; false (and forgotten) after.</summary>
+        internal bool SupportPulling
+        {
+            get
+            {
+                GameLiving target = _supportPullTarget;
+                if (target == null)
+                    return false;
+                if (target.IsAlive && target.ObjectState == GameObject.eObjectState.Active && !target.InCombat &&
+                    GameLoop.GameLoopTime < _supportPullUntil && BotPartyRoles.IsSupport(BotBody))
+                    return true;
+                log.Info($"NAMED_PULL support done bot=\"{Body?.Name}\" target=\"{target.Name}\" contact={target.InCombat}");
+                _supportPullTarget = null;
+                return false;
+            }
+        }
+
         public void AssistPlayerAttack(GameLiving target)
         {
             CompanionEngagementMode.RememberPull(AssistedPlayer, target);
@@ -728,6 +772,7 @@ namespace DOL.AI.Brain
         {
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             ClearAggroList();
             Body.StopAttack();
             Body.StopFollowing();
@@ -743,6 +788,7 @@ namespace DOL.AI.Brain
             if (_orderedPullTarget != target) return;
             _orderedPullTarget = null;
             _returnToFormationAfterPull = false;
+            _supportPullTarget = null;
             RemoveFromAggroList(target);
             if (!HasAggro)
             {
@@ -794,7 +840,7 @@ namespace DOL.AI.Brain
             BotBody.CharacterClass?.ID == (int)eCharacterClass.Minstrel;
 
         private bool HoldsExclusiveSupportRole() =>
-            BotPartyRoles.IsSupport(BotBody) &&
+            BotPartyRoles.IsSupport(BotBody) && !SupportPulling &&
             ((eCharacterClass?)BotBody?.CharacterClass?.ID != eCharacterClass.Minstrel ||
              RecentDirectAttacker() is not GameLiving attacker ||
              !Body.IsWithinRadius(attacker, Body.MeleeAttackRange + 35));

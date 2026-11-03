@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue walkoff Shnacksize", "/dialogue groupcall always", "/dialogue orders always", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue walkoff Shnacksize", "/dialogue groupcall always", "/dialogue orders always", "/dialogue target nearest", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
     /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
@@ -25,6 +25,7 @@ namespace DOL.GS.Commands
         "/dialogue walkoff <bot>   (test: a bot in your group storms off now as after a bad joke; the guards stay on)",
         "/dialogue groupcall always|normal   (test: every personality bot that hears \"who wants to group?\" answers, up to 3)",
         "/dialogue orders always|normal   (test: no bot refuses \"stay\" by its type, and a named order is always answered)",
+        "/dialogue target nearest|<mob>|clear   (test: targets the nearest mob you could attack, or the nearest one with that name, or nothing)",
         "/dialogue hold <bot> <seconds>   (test: a bot in your group pauses its own plans, up to 120 s, so it stays after /disband)",
         "/dialogue forget  (forgets lines said: cooldowns, [once] and recent lines start fresh)")]
     public sealed class DialogueCommandHandler : AbstractCommandHandler, ICommandHandler
@@ -117,6 +118,11 @@ namespace DOL.GS.Commands
                     : "Orders: back to the normal refusals and answers.");
                 return;
             }
+            if (verb == "target" && args.Length >= 3)
+            {
+                ChatUtil.SendSystemMessage(client, SetTarget(client.Player, string.Join(" ", args.Skip(2))));
+                return;
+            }
             if (verb == "hold" && args.Length == 4 && int.TryParse(args[3], out int seconds) && seconds > 0)
             {
                 GameBot held = GroupBot(client.Player, args[2]);
@@ -150,6 +156,39 @@ namespace DOL.GS.Commands
                 ChatUtil.SendSystemMessage(client, problem);
             if (report.Errors.Count > MaxProblemsShown)
                 ChatUtil.SendSystemMessage(client, $"...and {report.Errors.Count - MaxProblemsShown} more in logs/server.log.");
+        }
+
+        /// <summary>The most mobs looked at for "/dialogue target".</summary>
+        private const int MaxTargetCandidates = 200;
+
+        /// <summary>
+        /// "/dialogue target nearest|&lt;mob&gt;|clear" (tools/check-pull-ingame.sh, as the headless client can't target):
+        /// sets the GM's target on the server to the nearest living mob it may attack (not a bot or a pet), one with that
+        /// name if given, within the pull range (BotBrain.GROUP_DEFENSE_ASSIST_RADIUS), and not grey to every bot in the
+        /// GM's group (bots never pull grey mobs); "clear" targets nothing.
+        /// </summary>
+        private static string SetTarget(GamePlayer player, string what)
+        {
+            if (what.Equals("clear", System.StringComparison.OrdinalIgnoreCase))
+            {
+                player.TargetObject = null;
+                return "Target: nothing.";
+            }
+            bool any = what.Equals("nearest", System.StringComparison.OrdinalIgnoreCase);
+            GameBot[] bots = GroupBots(player);
+            GameNPC mob = player.GetNPCsInRadius(DOL.AI.Brain.BotBrain.GROUP_DEFENSE_ASSIST_RADIUS)
+                .Take(MaxTargetCandidates)
+                .Where(npc => npc is not GameBot && npc.IsAlive && npc.Brain is not DOL.AI.Brain.IControlledBrain &&
+                    (any || npc.Name.Equals(what, System.StringComparison.OrdinalIgnoreCase)) &&
+                    GameServer.ServerRules.IsAllowedToAttack(player, npc, true) &&
+                    (bots.Length == 0 || bots.Any(bot => !bot.IsObjectGreyCon(npc))))
+                .OrderBy(npc => npc.InCombat).ThenBy(npc => player.GetDistanceTo(npc))
+                .FirstOrDefault();
+            if (mob == null)
+                return any ? "Target: no mob you could attack within range (none grey to all your bots)." :
+                    $"Target: no {what} you could attack within range (none grey to all your bots).";
+            player.TargetObject = mob;
+            return $"Target: {mob.Name}, level {mob.Level}, {player.GetDistanceTo(mob):0} away.";
         }
 
         /// <summary>The bots in the player's group (a group holds 8 at most).</summary>
