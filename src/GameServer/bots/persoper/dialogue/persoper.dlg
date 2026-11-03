@@ -626,7 +626,7 @@ Wherever you are, {0}, give or take a heal.
 
 ~ reply level
 Level {level} {class}, {0}, and fabulous with it.
-Level {level}, darling. {class}, and yes, the robe is part of the build.
+Level {level}. {class}, and yes, the robe is part of the build.
 A lady never tells, {0}. Well, not the level, anyway.
 
 ~ reply groupstatus
@@ -635,7 +635,7 @@ Not grouped, {0}! Who am I supposed to heal, myself? [if not bot_grouped]
 That depends on whether you invite me, {0}.
 
 ~ reply activity
-Fighting this {monster}, darling, and healing you while I'm at it. [if bot_doing fighting]
+Fighting this {monster}, and healing you while I'm at it. [if bot_doing fighting]
 Bit busy keeping you alive, {0}! [if bot_doing fighting]
 Riding, darling, and my hair looks fantastic in the wind. [if bot_doing riding]
 Following {leader} and watching your health bar like a hawk. [if bot_doing following]
