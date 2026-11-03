@@ -93,9 +93,9 @@ run_log() { if (( $(wc -l <"$LOG") + 1 < $1 )); then
 notes() { run_log "$1" | grep -F "PERSONALITY_ORDER" | grep -F "player=\"$CHARACTER\""; }
 # True when a note says bot $2 got order $3 with answer $4 (named True/False $5).
 noted() { grep -F "bot=\"$2" <<<"$1" | grep -qF "order=$3 answer=$4 named=$5"; }
-# The check for one answer line: who, the line the player said, the section.
+# The check for one answer line: who, the line the player said, the section, and within how many seconds (default 10).
 answered() { local who="$1" line="$2" sect="$3" said one hit=""
-  said=$(said_by "$who" <(within "$f" "$line"))
+  said=$(said_by "$who" <(within "$f" "$line" "${4:-10}"))
   [[ -n $said ]] && echo "$said" | sed "s/^/      $who: /"
   while IFS= read -r one; do [[ -n $one ]] && rows "$who" "$sect" | one_of "$one" && hit="$one"; done <<<"$said"
   [[ -n $hit ]]; }
@@ -149,7 +149,8 @@ echo "  \"$PULL_EAGLE\" (a mob targeted):"
 noted "$log" Eaglefang Pull Yes True && pass "Eaglefang said yes" || fail "no Pull/Yes note for Eaglefang ($(grep -F 'bot="Eaglefang' <<<"$log" | grep -F 'order=Pull' | grep -o 'answer=[A-Za-z]*' | paste -sd, -))"
 grep -qE 'PERSONALITY_ORDER pull bot="Eaglefang.* pulled=True attackers=[1-9]' <<<"$log" &&
   pass "the healer pulled and the others were sent in at once" || fail "no \"pull bot=Eaglefang ... pulled=True attackers>0\" note"
-answered Eaglefang "$PULL_EAGLE" "~ reply orderpull" && pass "he said an orderpull line" || fail "no orderpull line from Eaglefang within 10 s. See $f"
+answered Eaglefang "$PULL_EAGLE" "~ reply orderpull" 3 && pass "he said an orderpull line before the fight" ||
+  fail "no orderpull line from Eaglefang within 3 s (said only after the fight?). See $f"
 grep -q 'contact=True' <<<"$support" && pass "the healer made contact, then went back to healing" ||
   fail "no \"NAMED_PULL support done ... contact=True\" note for Eaglefang (did his swing or spell land?)"
 
@@ -158,7 +159,8 @@ echo "  \"$PULL_SHEMP\" (a new mob targeted):"
 noted "$log" Shempenstein Pull Yes True && pass "Shempenstein said yes" ||
   fail "no Pull/Yes note for Shempenstein ($(grep -F 'bot="Shempenstein' <<<"$log" | grep -F 'order=Pull' | grep -o 'answer=[A-Za-z]*' | paste -sd, -); Busy means the last fight wasn't over)"
 grep -qE 'PERSONALITY_ORDER pull bot="Shempenstein.* pulled=True' <<<"$log" && pass "the tank pulled" || fail "no \"pull bot=Shempenstein ... pulled=True\" note"
-answered Shempenstein "$PULL_SHEMP" "~ reply orderpull" && pass "he said an orderpull line" || fail "no orderpull line from Shempenstein within 10 s. See $f"
+answered Shempenstein "$PULL_SHEMP" "~ reply orderpull" 3 && pass "he said an orderpull line before the fight" ||
+  fail "no orderpull line from Shempenstein within 3 s (said only after the fight?). See $f"
 
 # 5. No name: the plain /pull.
 echo "  \"$PULL_OPEN\" (to nobody, a new mob targeted):"

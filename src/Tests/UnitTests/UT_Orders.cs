@@ -422,6 +422,7 @@ public class UT_Orders
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Sulking = true }, "casual", random), Is.EqualTo(eOrderAnswer.No));
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { HasTarget = true, Allowed = false }, "casual", random), Is.EqualTo(eOrderAnswer.NotYours));
         Assert.That(PersonalityOrders.NamedOnly(eBotOrder.Pull), Is.False, "pull this with no name is the plain /pull");
+        Assert.That(PersonalityOrders.PullLineMs, Is.LessThan(PersonalityOrders.PullDelayMs), "the yes is said before the fight starts");
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { TargetGrey = true }, "casual", random), Is.EqualTo(eOrderAnswer.TooEasy), "grey: too easy");
         Assert.That(PersonalityOrders.KindFor(eBotOrder.Pull, eOrderAnswer.TooEasy), Is.EqualTo(eAutonomousChatIntent.OrderPullEasy));
         Assert.That(PersonalityOrders.Decide(eBotOrder.Pull, Free with { TargetGrey = true, Fighting = true }, "casual", random), Is.EqualTo(eOrderAnswer.Busy));

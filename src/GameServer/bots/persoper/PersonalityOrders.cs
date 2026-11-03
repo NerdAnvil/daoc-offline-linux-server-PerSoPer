@@ -78,6 +78,15 @@ public static class PersonalityOrders
     /// <summary>Within this time of the same player's last answered order, bots still obey but say nothing.</summary>
     public const long CooldownMs = 8_000;
 
+    /// <summary>
+    /// A bot told to pull goes this long after the order, so its yes is said before the fight starts (a named reply waits
+    /// out a fight, so it came only after the mob died); its line comes at <see cref="PullLineMs"/>.
+    /// </summary>
+    public const int PullDelayMs = 1_500;
+
+    /// <summary>When a bot's yes to a pull is said, at most this long after the order (before <see cref="PullDelayMs"/>).</summary>
+    public const int PullLineMs = 900;
+
     /// <summary>A world bot told to leave the group goes this long after the order, so its answer is still said in the group.</summary>
     public const int LeaveDelayMs = 3_500;
 
@@ -314,7 +323,8 @@ public static class PersonalityOrders
     /// <summary>
     /// Carries out an order a bot said yes to: stay holds it where it stands; follow and come end a hold and send it back
     /// into formation now; leave takes a world bot out of the group after <see cref="LeaveDelayMs"/>; assist joins the
-    /// player's fight; rest starts its recovery rest; pull (named) has it pull the player's target and the group attack.
+    /// player's fight; rest starts its recovery rest; pull (named) has it pull the player's target and the group attack,
+    /// <see cref="PullDelayMs"/> later.
     /// </summary>
     public static void Apply(GameBot bot, GamePlayer player, eBotOrder order)
     {
@@ -342,11 +352,11 @@ public static class PersonalityOrders
                 return;
             case eBotOrder.Pull:
                 Release(bot.ObjectID);
-                GameLiving pullTarget = PullTarget(bot, player);
-                int attackers = 0;
-                bool pulled = pullTarget != null && PlayerLedPullCoordinator.NamedPull(player, bot, pullTarget, out attackers);
-                Log.Info($"PERSONALITY_ORDER pull bot=\"{bot.Name}\" player=\"{player.Name}\" target=\"{pullTarget?.Name}\" " +
-                    $"pulled={pulled} attackers={attackers}");
+                _ = new ECSGameTimer(bot, _ =>
+                {
+                    Pull(bot, player);
+                    return 0;
+                }, PullDelayMs);
                 return;
         }
         if (order == eBotOrder.Stay)
@@ -362,6 +372,16 @@ public static class PersonalityOrders
             brain.FSM.SetCurrentState(eFSMStateType.FOLLOW);
             brain.NextThinkTick = GameLoop.GameLoopTime;
         }
+    }
+
+    // The pull itself, PullDelayMs after the yes: the target is read again then (it may have died or moved off).
+    private static void Pull(GameBot bot, GamePlayer player)
+    {
+        GameLiving pullTarget = PullTarget(bot, player);
+        int attackers = 0;
+        bool pulled = pullTarget != null && PlayerLedPullCoordinator.NamedPull(player, bot, pullTarget, out attackers);
+        Log.Info($"PERSONALITY_ORDER pull bot=\"{bot.Name}\" player=\"{player.Name}\" target=\"{pullTarget?.Name}\" " +
+            $"pulled={pulled} attackers={attackers}");
     }
 
     // Only a world bot still in the player's group and out of a fight leaves; the same way as being kicked.

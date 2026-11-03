@@ -948,7 +948,12 @@ public static class AutonomousBotChatCoordinator
                 DialogueFactSource.For(bot, player), player.Name, Random.Shared);
             if (line == null)
                 continue;
-            Schedule(bot, 900 + index++ * 1_600 + Random.Shared.Next(900), () => say(bot, line), named: isNamed);
+            // A yes to a pull is said before the bot goes (PersonalityOrders.PullDelayMs).
+            int delay = order == eBotOrder.Pull && answer == eOrderAnswer.Yes
+                ? 300 + Random.Shared.Next(PersonalityOrders.PullLineMs - 300)
+                : 900 + index * 1_600 + Random.Shared.Next(900);
+            index++;
+            Schedule(bot, delay, () => say(bot, line), named: isNamed);
         }
         return true;
     }
