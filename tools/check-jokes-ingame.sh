@@ -69,7 +69,7 @@ within() { awk -v pat="$2" -v me="$CHARACTER" -v span="${3:-10}" '
 
 # The test: the line, who must answer (Persoper, Shempenstein, or "first" for the bot that answered the
 # last unnamed riddle), and what with (sections, or the exact line).
-LINES=(
+JOKE_LINES=(
   "shemp, why did the troll cross the road?|Shempenstein|~ reply jokeguess"
   "to get to the alb!|Shempenstein|~ reply groan;~ reply jokelaugh"
   "persoper, why did the astronaut leave Pluto? It had no atmosphere|Persoper|~ reply groan;~ reply jokelaugh"
@@ -82,8 +82,8 @@ LINES=(
 )
 
 f="$RECORDS/jokes-check.txt"
-late=(); for row in "${LINES[@]}"; do late+=("--send-late=/g ${row%%|*}"); done
-echo "== Joke flow in group chat: ${#LINES[@]} lines (about 2.5 minutes)"
+late=(); for row in "${JOKE_LINES[@]}"; do late+=("--send-late=/g ${row%%|*}"); done
+echo "== Joke flow in group chat: ${#JOKE_LINES[@]} lines (about 2.5 minutes)"
 "$DOTNET" "$CLIENT" --account="$ACCOUNT" --character="$CHARACTER" \
   --send="/invite Shempenstein" --send="/dialogue gather" --send="/persoper" --listen=5 \
   --wait-for=Shempenstein --follow=Shempenstein --send-late-gap=11 "${late[@]}" \
@@ -92,7 +92,7 @@ grep -q "Shempenstein" "$f" || fail "Shempenstein never showed up in the recordi
 
 fallbacks=$(section persoper "~ fallback"; section casual "~ fallback"; section shempenstein "~ fallback")
 first=""
-for row in "${LINES[@]}"; do
+for row in "${JOKE_LINES[@]}"; do
   IFS='|' read -r line who want <<<"$row"
   after=$(within "$f" "$line")
   echo "  \"$line\":"
