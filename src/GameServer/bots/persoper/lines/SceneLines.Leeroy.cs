@@ -33,7 +33,7 @@ public static partial class SceneLines
             [T.Classes] =
             [
                 "{0}, can it CHARGE? Then it's the best!",
-                "Every class is great if you run in first, {0}!",
+                "{0}, the best class is whichever one gets there first. ME!",
                 "{0}, my class has one button! It's called GO!",
             ],
             [T.Dungeons] =

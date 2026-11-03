@@ -317,4 +317,21 @@ public class UT_PersonalityScenes
         var plan = PersonalityScenes.PlanCrowd("Hi, pal.", 50, Laughs, Grumbles, "Shemp", new Random(1));
         Assert.That(plan.Max(step => step.Speaker), Is.LessThan(PersonalityScenes.MaxCrowd));
     }
+
+    [Test]
+    public void PlanTopicScene_WithAMemoryKey_ABotDoesNotCloseTwoScenesWithTheSameLine()
+    {
+        // "Exit, stage left." closed two scenes in a row (2026-10-26): each scene only knew its own lines.
+        var random = new Random(3);
+        string key = "test-joker-" + Guid.NewGuid();
+        var voices = new List<SceneVoice> { new("Alda", "joker", Full, key), new("Bryn", "loner", Full) };
+        HashSet<string> closers = SceneLines.All["joker"].Closers.Select(line => line.Replace("{0}", "Bryn")).ToHashSet();
+        var said = new List<string>();
+        for (int scene = 0; scene < 5; scene++)
+            said.AddRange(PersonalityScenes.PlanTopicScene(eSceneSize.Medium, eChatTopic.Xp, voices, toneDown: true, random)
+                .Where(line => line.Speaker == 0).Select(line => line.Text));
+        List<string> saidClosers = said.Where(closers.Contains).ToList();
+        Assert.That(saidClosers, Has.Count.GreaterThanOrEqualTo(3), "the joker closed most of the scenes");
+        Assert.That(saidClosers, Is.Unique, "no closer twice while it has others left");
+    }
 }

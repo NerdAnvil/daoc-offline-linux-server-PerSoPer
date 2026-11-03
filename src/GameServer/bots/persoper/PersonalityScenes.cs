@@ -13,7 +13,8 @@ public enum eSceneChannel
 }
 
 /// <summary>Who takes part in a topic scene: name, type key and what its lines can be filled with.</summary>
-public sealed record SceneVoice(string Name, string TypeKey, LineSlots Slots);
+/// <summary>One speaker of a scene; with a MemoryKey it skips lines it said lately, in earlier scenes too (DialoguePicker).</summary>
+public sealed record SceneVoice(string Name, string TypeKey, LineSlots Slots, string MemoryKey = null);
 
 /// <summary>
 /// Back-and-forth scenes between personality-type bots (Step B2). Topic scenes carry on a
@@ -172,10 +173,10 @@ public static class PersonalityScenes
             string line = step switch
             {
                 eStep.Reply => PickFresh(PersonalityLines.All.GetValueOrDefault(voice.TypeKey ?? string.Empty)?.TopicReplies.GetValueOrDefault(topic),
-                    voice.Slots, other, used, random),
+                    voice.Slots, other, used, random, voice.MemoryKey),
                 eStep.Comeback => PickFresh(SceneLines.All.GetValueOrDefault(voice.TypeKey ?? string.Empty)?.Comebacks.GetValueOrDefault(topic),
-                    voice.Slots, other, used, random),
-                _ => PickFresh(CloserPool(voice.TypeKey, toneDown, random), voice.Slots, other, used, random),
+                    voice.Slots, other, used, random, voice.MemoryKey),
+                _ => PickFresh(CloserPool(voice.TypeKey, toneDown, random), voice.Slots, other, used, random, voice.MemoryKey),
             };
             // Nothing fresh to say: the conversation has run its course.
             if (line == null)
@@ -209,11 +210,26 @@ public static class PersonalityScenes
         return !toneDown && lines.CheekyClosers is { Length: > 0 } cheeky && random.NextDouble() < CheekyCloserChance ? cheeky : lines.Closers;
     }
 
-    /// <summary>A filled line from the pool that hasn't been said in this scene yet, or null.</summary>
-    private static string PickFresh(IReadOnlyList<string> pool, LineSlots slots, string otherName, HashSet<string> used, Random random)
+    /// <summary>
+    /// A filled line from the pool that hasn't been said in this scene yet, or null. With a botKey, of those, one the bot
+    /// hasn't said lately (so "Exit, stage left." doesn't close two scenes in a row), and it is remembered.
+    /// </summary>
+    private static string PickFresh(IReadOnlyList<string> pool, LineSlots slots, string otherName, HashSet<string> used, Random random,
+        string botKey = null)
     {
         if (pool == null || pool.Count == 0)
             return null;
+        if (botKey != null)
+        {
+            List<string> open = pool.Take(DialoguePicker.MaxPool)
+                .Where(template => PersonalityReactions.Fill(template, slots, otherName) is { } filled && !used.Contains(filled)).ToList();
+            if (DialoguePicker.Shared.Fresh(open, botKey, random) is not { } picked)
+                return null;
+            DialoguePicker.Shared.Said(botKey, picked);
+            string line = PersonalityReactions.Fill(picked, slots, otherName);
+            used.Add(line);
+            return line;
+        }
         for (int attempt = 0; attempt < PersonalityReactions.MaxFillTries; attempt++)
         {
             if (PersonalityReactions.Fill(pool[random.Next(pool.Count)], slots, otherName) is { } line && used.Add(line))
@@ -543,7 +559,8 @@ public static class PersonalityScenes
     }
 
     private static SceneVoice Voice(GameBot bot, string typeKey) =>
-        new(bot.Name, typeKey, PersonalityReactions.SlotsFor(bot, bot.Level < bot.MaxLevel ? bot.Level + 1 : 0));
+        new(bot.Name, typeKey, PersonalityReactions.SlotsFor(bot, bot.Level < bot.MaxLevel ? bot.Level + 1 : 0),
+            PersonalityReactions.MemoryKey(bot, BotPersonalities.For(bot)));
 
     private static bool InSameAudience(GameBot bot, GameBot other, eSceneChannel channel) => channel switch
     {
