@@ -58,7 +58,7 @@ Status: **approved 2026-10-19.** All steps (1 to 9 and 3b) done, the last on 202
     `server.log`), and the named bot is created as normal;
   - by a real player character made before this update (the only way it can happen): the
     player's character is never touched; the named bot is
-    skipped, logged, and saved as `off`. The owner can rename the character and use
+    skipped, logged, and saved as `off`. An admin can rename the character and use
     `bots named on`.
 - **Population limit:** with `population max` set, bots log in by roster number, so the 33
   (newest numbers) might never log in. Named bots that are `on` log in first.
@@ -76,7 +76,7 @@ they go to a later stage, one at a time. Combat stays with the existing gamebot 
 Each step is small, on its own branch, with build and tests passing before the in-game check.
 
 1. **Lineup and reserved names.** The 33-entry list, a unit test that every race/class pair is
-   valid (if one isn't, the owner picks the replacement and BOT-PERSONALITIES.md is updated),
+   valid (if one isn't, a replacement is picked and BOT-PERSONALITIES.md is updated),
    and the names reserved for players (creating and renaming) and generated bots.
    *Done when I can see:* the character-creation screen refuse a new character named
    Shempenstein, and a rename to Shnacksize refused.
@@ -111,7 +111,7 @@ Each step is small, on its own branch, with build and tests passing before the i
 9. **Gruff Doc voice.** *Done when I can see:* Eaglefang grumble about a death like a field
    medic, then go soft.
 
-## Decisions (owner, 2026-10-19)
+## Decisions (2026-10-19)
 
 - One character file per type (11), not one per bot.
 - Named bots that are `on` log in first when a population limit is set.

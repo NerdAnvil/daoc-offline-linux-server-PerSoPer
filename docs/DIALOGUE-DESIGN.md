@@ -1,6 +1,7 @@
 # Bot dialogue: design
 
-Status: draft for review (2026-10-23). Nothing here is built yet unless it says so.
+Status: built (dialogue pass 1, November 2026); only "Open" at the end is not. This is the design
+record; how to edit the lines is in [EDITING-DIALOGUE.md](EDITING-DIALOGUE.md).
 
 ## Goals
 
@@ -27,7 +28,9 @@ Status: draft for review (2026-10-23). Nothing here is built yet unless it says 
 
 ```
 dialogue/
-  casual.dlg, joker.dlg, ...     the six personality types (one file each)
+  casual.dlg, joker.dlg, ...     the 11 personality types (one file each): the six world-bot types
+                                 and the five named-character types (crafter, roleplayer, homeowner,
+                                 herbaldoctor, gruffdoc)
   kobaldjovi.dlg, persoper.dlg   one file per unique bot
   spyburd.dlg, eaglefang.dlg ... one file per named character (11), shared by its three realm
                                  bots: "=== spyburd" for the character, and optional
@@ -168,25 +171,30 @@ friendly.
   `dialogue/`. A person reads them first. For a new named character, a writer first does the
   character sheet and about 20 to 30 seed lines that set the voice; the model drafts the rest from those.
 
-## Build order (one branch each)
+## Build order (one branch each; all done)
 
 1. Rules in the reader (`[if]`, `[once]`, cooldowns, most specific wins, no repeats) and the
-   starter facts.
-2. Nicknames and `intents.dlg`.
-3. Load `dialogue/` from the release folder, plus the checker, preview and reload.
-4. Scenes moved from C# into `scenes.dlg`.
-5. Questions with branching replies, and saved answers per player.
-6. Swap-in parts.
+   starter facts. Done: `0fd05e2`.
+2. Nicknames and `intents.dlg`. Done: `eff0eae`.
+3. Load `dialogue/` from the release folder, plus the checker, preview and reload. Done: `43ecc15`.
+4. Scenes moved from C# into `scenes.dlg`. Done: `a74df31`.
+5. Questions with branching replies, and saved answers per player. Done: `95cf008`.
+6. Swap-in parts. Done: `439205d`.
 7. Character sheets and the drafting workflow; Persoper and Kobaldjovi to 503 lines each, then the
-   11 named characters (about 100 lines each to start).
+   11 named characters (about 100 lines each to start). Done: `86a5cad` to `d67dcb6`. In November
+   2026 Persoper and Kobaldjovi have about 660 lines each and the named characters 96 to 201 of
+   their own, on top of their type's lines.
 
-## Decisions (owner, 2026-10-23)
+After step 7, chat intents added sections for jokes, short reactions, answers about the bot's own
+state, group calls and orders; they are listed in [EDITING-DIALOGUE.md](EDITING-DIALOGUE.md).
+
+## Decisions (2026-10-23)
 
 - Model use is for writing only; nothing ships with the game.
 - Valve/Hades-style rules, optional per line.
 - Nicknames live in the `.dlg` blocks.
 - Persoper and Kobaldjovi: 503 lines each. Named characters start at about 100 lines of their own
-  and grow later if the chatter isn't too much (owner, 2026-10-25). Mostly model-drafted and reviewed.
+  and grow later if the chatter isn't too much. Mostly model-drafted and reviewed.
 - A small set of swap-in parts.
 - Intents in an editable file; one question and one reply; answers saved per player.
 - Starter set of about 15 facts; 10 scenes per pair; short player names once friendly.

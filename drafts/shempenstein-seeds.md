@@ -1,7 +1,7 @@
 # Shempenstein: seed lines (draft for review; they go into shempenstein.dlg once agreed)
 
 Main block only: no realm, town, race or class. Off-game lines are marked and kept as their own
-lines. The two "buff out" lines are the owner's.
+lines. The two "buff out" lines were written by hand.
 
 ~ ambient
 No rush. The mobs will still be here after lunch.

@@ -154,7 +154,7 @@ For writers and for drafting with a local model. The game doesn't read this file
   Catchword: "french fries".
 - These are his own modern life, so they may mention home things (a truck, a game night); they are the rare
   times he steps out of the world.
-- (more to come from the owner)
+- (more to come)
 - Seasoning, not the meal: at most one line in five draws on these memories, loves and stories,
   each at most once per batch.
 

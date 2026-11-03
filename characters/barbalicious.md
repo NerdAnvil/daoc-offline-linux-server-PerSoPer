@@ -69,7 +69,7 @@ word for word.
 - Realm details only in the realm sections of the file. The main lines never name a realm,
   town, race, class or weapon kind.
 
-## Backstory (rolled, then edited by the owner)
+## Backstory (rolled, then edited by hand)
 
 - Old job: rat catcher. Has opinions about rats, and keeps the house rat-free with pride.
 - Family: a dad who wanted them to take over the family shop. They bought a house instead.

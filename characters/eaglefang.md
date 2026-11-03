@@ -64,7 +64,7 @@ lines in `gruffdoc.dlg`.
 - **Kobaldjovi** (the singing Skald): sings in the ward. Eaglefang tells him to keep it down, then
   hums along when he leaves.
 - These are other bots or names in their stories; Eaglefang only talks about them.
-- (more to come from the owner)
+- (more to come)
 
 ## What they love to talk about
 

@@ -9,43 +9,22 @@ some life to the in-game experience.
 way) and react to in-game events. She's summoned with `/persoper`, fights with the existing bot
 AI, and remembers who she is between summons.
 
-## Alpha 1: what works today
+## What it does
 
-Alpha 1 (October 2026, on the Offline DAoC 0.37c server) is everything below, checked in game:
-
-- **33 named personality bots**, on by default: one of each of 11 types in each realm, every
-  one with its own name, class, voice, memory and patience (see
-  [The 33 named bots](#the-33-named-bots)).
-- **Persoper**, a summoned healer companion (`/persoper`): greets you, reacts to fights, deaths
-  and loot, takes heal requests, keeps her own surname and memory between summons, fights
-  back when you die, and resurrects fallen group members.
-- **Kobaldjovi**, a Kobold Skald who lives in the world as a normal gamebot and mostly sings.
+- **33 named personality bots**, one of each of 11 types in every realm, each with its own name,
+  class, voice, memory and patience ([the list](docs/THE-NAMED-BOTS.md)).
+- **Persoper**, a summoned healer companion (`/persoper`) who reacts, takes heal requests and
+  remembers who she is; and **Kobaldjovi**, a Kobold Skald who mostly sings.
 - **Personality types** for generated world bots (hardcore, casual, min/maxer, joker, loner,
-  Leeroy): their own chat voice, memory, patience, emotes and small habits.
-- **Patience:** personality bots grumble, warn, and can rage-quit and sulk if you annoy them.
-- **Group commands** that work with bots: `/pull`, `/grind`, `/aggressive`, `/defensive`.
-- **Dialogue in text files:** the bots' lines live in `.dlg` files (one per type) that are
-  built into the server, so the writing can be changed without touching the code.
+  Leeroy), with their own voice, habits and patience: annoy them and they sulk.
+- **Talk to them:** orders ("follow me", "stay here", "Eagle, pull this"), group calls,
+  questions, jokes and guild chat, answered in each bot's own voice.
+- **Scenes:** bots chat and bicker with each other in group, nearby and realm chat.
+- **Dialogue in text files** you can edit and reload in game: [how](docs/EDITING-DIALOGUE.md).
 - Everything is plain C# rules and phrase lists inside the server: no AI model, no internet.
 
-**Not in Alpha 1:** free conversation, relationships between bots, the bigger behaviours in
-the named bots' characters (the Crafter's selling runs, the Homeowner's house, the Herbal
-Doctor's buff-and-smoke breaks) and an AI model are goals, not built yet (see below).
-
-### Commands at a glance
-
-| Where | Command | What |
-|---|---|---|
-| Terminal | `./daoc-server.sh start` / `stop` / `status` | Start (opens the admin screen), stop (saves first), check |
-| Terminal | `./daoc-admin` | Reopen the admin screen |
-| Terminal | `./daoc-admin options` | List every PerSoPer setting with its value (also the **Options** tab) |
-| Terminal | `./daoc-admin bots create --realm mid --count 10 --personality-type mixed` | Add world bots with personality types |
-| Terminal | `./daoc-admin bots create --personality kobaldjovi --level 50` | Add Kobaldjovi |
-| Terminal | `./daoc-admin bots named list` | List the 33 named bots, their state and level |
-| Terminal | `./daoc-admin bots named off joker` / `on Shnacksize` | Turn a named bot (or a whole type) off or on |
-| In game | `/persoper` | Summon Persoper |
-| In game | "heal me", "big heal", "heal Bob" (group chat, tell or `/say`) | Ask a healer for a heal |
-| In game | `/pull`, `/grind`, `/aggressive`, `/defensive` | Order your bots |
+**Status:** Alpha 1 plus dialogue pass 1; see the [changelog](CHANGELOG.md) for what each added
+and what isn't checked in game yet. How to use it all: [docs/PLAYING.md](docs/PLAYING.md).
 
 **Where it's going** (goals, not built yet):
 - natural conversation, deeper memory of the players they meet, and relationships between bots;
@@ -57,292 +36,32 @@ Doctor's buff-and-smoke breaks) and an AI model are goals, not built yet (see be
 PerSoPer is built on the work of other projects: the server, world and bots come from them
 (see [Credits](#credits)). This repo adds the personalities and the Linux packaging around them.
 
-## Persoper's settings
-
-Run these from your server folder (the one with `daoc-admin`). Changes apply at once and are
-saved; they take effect the next time she's summoned.
-
-**Tone** (`persoper_tone_down`): off by default, when she mixes clean and cheeky lines.
-
-```bash
-./daoc-admin options set persoper_tone_down on     # clean surnames and greetings only
-./daoc-admin options set persoper_tone_down off    # back to normal (cheeky allowed)
-```
-
-**Surname changes** (`persoper_surname_change_percent`): the chance, 0 to 100, that she picks a
-new surname when summoned. The default is 5.
-
-```bash
-./daoc-admin options set persoper_surname_change_percent 5     # default: rarely
-./daoc-admin options set persoper_surname_change_percent 0     # never change her surname
-./daoc-admin options set persoper_surname_change_percent 100   # new surname every summon
-```
-
-**Patience** (`persoper_annoyance`, `persoper_rage_quit`, `persoper_sulk_minutes`): repeat
-irritations within a few minutes (quick re-summons or re-invites, rudeness, emote spam, and for
-Persoper dying while she heals you) make a personality bot grumble, then warn you. Persoper
-rage-quits on the fifth and despawns; Kobaldjovi is chill, lasts until the seventh, then storms
-out of your group to write a breakup song. Either refuses you for a while afterwards; when
-Kobaldjovi's sulk ends he sends you a make-up tell and walks back to rejoin your group.
-
-```bash
-./daoc-admin options set persoper_annoyance off      # they ignore irritations entirely
-./daoc-admin options set persoper_rage_quit off      # they warn, but never leave
-./daoc-admin options set persoper_sulk_minutes 10    # default; 0 to 100 minutes, 0 = no sulk
-```
-
-**Leeroy and emotes** (`persoper_leeroy_battle_cry_percent`, `persoper_full_leeroy`,
-`persoper_full_leeroy_percent`, `persoper_emotes`): a Leeroy-type bot yells a battle cry in
-about 1 fight in 3. "Full Leeroy" (he charges a nearby mob while your group waits) is **off by
-default** in Alpha 1; when on, he rolls the chance once a minute while the group is idle.
-Emotes: bots answer emotes aimed at them and react to deaths near them.
-
-```bash
-./daoc-admin options set persoper_leeroy_battle_cry_percent 33   # default; 0 = never
-./daoc-admin options set persoper_full_leeroy on                 # default off
-./daoc-admin options set persoper_full_leeroy_percent 10         # default; chance per idle minute
-./daoc-admin options set persoper_emotes off                     # default on
-```
-
-See the current values with `./daoc-admin options`, or in the admin screen's **Options** tab
-(scroll down for the `persoper_` rows; the Default column shows this version's defaults). The
-same commands can be typed into the server console without `./daoc-admin`.
-
-## Asking for heals
-
-Ask Persoper (or a healer companion in your group) for a heal in group chat, a tell, a whisper,
-or `/say` with her name: "small heal", "medium heal", "big heal", "heal Bob", "heal the tank".
-Without a size she picks one from the target's health. Panic ("HELP!", "ACK!", "ON ME!", "heal
-me now") gets her fastest big heal straight away. Pestering her for heals at full health tries
-her patience.
-
-## Personality types
-
-Give generated bots a personality type: **hardcore**, **casual**, **minmaxer**, **joker**,
-**loner** or **leeroy** (or **mixed** for a random one each). They chat in faction and nearby in
-their own voice, remember you, have their own patience, and answer each other.
-
-```bash
-./daoc-admin bots create --realm mid --count 10 --personality-type mixed
-./daoc-admin options set persoper_chatter_percent 100   # default; 0 = silent, 50 = calm
-```
-
-## Kobaldjovi, the Singer
-
-The second personality: a Midgard Kobold Skald who lives in the world as a normal gamebot (not
-a summon). When it's his turn to chat, he usually sings. Add him at level 1 or 50, and remove
-him like any other bot:
-
-```bash
-./daoc-admin bots create --personality kobaldjovi --level 1
-./daoc-admin bots delete Kobaldjovi
-```
-
-## The 33 named bots
-
-Eleven personality types, one named bot of each in every realm (11 x 3 = 33). A fresh server
-creates all 33 at level 1 on first start, and a server that has already been played gets them
-the first time it starts with this version. They level, loot and earn armour like any gamebot.
-Their names are reserved, so a player can't pick one. Each realm's version shares its type's
-character but has its own name, class, memory and patience.
-
-| Type | Midgard | Albion | Hibernia |
-|---|---|---|---|
-| Hardcore | xXxNataSehSxXx | xAxNataSehSxAx | xHxNataSehSxHx |
-| Casual | Shempenstein | Shempenshire | Shempenmore |
-| Leeroy | TheriousTham | TheriousThamm | TheriousThamh |
-| Loner | FemurTamer | Deaditetamer | Shroomtamer |
-| Min/maxer | Redtornader | Greenfogger | Sunrayder |
-| Joker | Shnacksize | Shnacksizer | Shnacksizey |
-| Crafter | Muckaduck | Muckaducke | Muckaduckeen |
-| Roleplayer | Hunterson | FitzHunter | MacHunter |
-| Homeowner | Barbalicious | Barbaliciouse | Barbalicioush |
-| Herbal Doctor | Spyburd | Spyburde | Spyburdagh |
-| Gruff Doc | Eaglefang | Eaglefange | Eaglefangh |
-
-Classes, races and characters are in [docs/BOT-PERSONALITIES.md](docs/BOT-PERSONALITIES.md).
-In short: the Joker talks about his homeland Swissland, the Roleplayer speaks his realm's
-old-fashioned tongue (and gets it a little wrong), the Homeowner brags about the house, the
-Herbal Doctor buffs and chills, and the Gruff Doc is a former field-hospital medic.
-
-Turn them off or on from the terminal or the server console. A bot that is off keeps its
-progress, and one that is off (or deleted) is not recreated on restart:
-
-```bash
-./daoc-admin bots named list              # the 33, their state and level
-./daoc-admin bots named off joker         # a whole type (all three realms)
-./daoc-admin bots named on Shnacksize     # one bot, by name
-./daoc-admin bots create --personality Shnacksize   # after a delete: starts again at level 1
-```
-
----
-
-# Installing and running PerSoPer
-
-PerSoPer runs as a Linux-first, server-only DAoC server with autonomous and companion bots
-(Offline DAoC 0.37c server code, see [Credits](#credits)). It builds into one portable folder
-that needs no .NET install. Tested on Steam Deck and Linux Mint; it should work on any modern
-distro.
-
-The game client is not included; install it separately. The OpenDAoC client is described in
-the [OpenDAoC documentation](https://www.opendaoc.com/); Offline DAoC's Godot client also works
-(see [step 5](#5-connect-with-the-game-client)).
-
-Questions and problems with PerSoPer belong on
-[this repo's issues page](https://github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer/issues),
-not on the projects it builds on.
-
 ## Quick start
 
-### What you need
-
-**To run the server:** x86-64 Linux with glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+,
-Fedora 35+, SteamOS, Arch) and libicu (almost every distro has it). Nothing else; .NET is bundled.
-
-**To build it, either:**
-- **distrobox** (step 2a, recommended). It's preinstalled on SteamOS and packaged by most distros
-  (https://distrobox.it). The build tools go into a container, not onto your system. **Or:**
-- the **.NET 10 SDK, cmake, g++ and curl** installed yourself (step 2b).
-
-Also: about **6 GB** of free disk space, and internet for the first build (for the build container and tools; the world database and navmeshes are already in the source).
-
-Everything else is in the source, including the world and the navmeshes (`world/navmesh/`, four
-~90 MB parts).
-
-### 1. Get the source
+You need x86-64 Linux, and to build it either distrobox or the .NET 10 SDK, cmake and g++. The
+game client is not included. Full steps, requirements and possible conflicts:
+[docs/INSTALL.md](docs/INSTALL.md).
 
 ```bash
 git clone https://github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer.git
 cd daoc-offline-linux-server-PerSoPer
-```
-
-Or download it as a ZIP from GitHub (**Code → Download ZIP**) and unpack it.
-
-### 2a. Build (with distrobox, recommended)
-
-From the source folder:
-
-```bash
-tools/setup-build-box.sh --build
-```
-
-This one command:
-1. Creates a build container (`daoc-server-box`, Ubuntu 22.04).
-2. Installs the .NET 10 SDK, cmake and g++ inside it. Nothing is installed on your system.
-3. Builds the server, the world and the navmeshes into `dist/daoc-server`.
-
-The first run takes several minutes. Re-running it is safe.
-
-### 2b. Build (without distrobox)
-
-Install the **.NET 10 SDK**, **cmake**, **g++** and **curl** with your package manager, then run
-`tools/build-release.sh`.
-
-### 3. The result
-
-```
-dist/daoc-server/                              <- the server, ready to start (world and navmeshes installed)
-dist/daoc-server-<version>-linux-x64.tar.gz    <- the server without navmeshes, as one file
-dist/daoc-navmeshes-classic-si-3.tar.xz        <- the navmeshes, as one file
-```
-
-To run it on another Linux machine, copy `dist/daoc-server` (or the two archives, then run
-`./navmesh-install.sh` with the navmesh archive next to the folder). It needs no distrobox and no
-.NET there.
-
-### 4. Start the server
-
-```bash
+tools/setup-build-box.sh --build     # builds into dist/daoc-server (several minutes)
 cd dist/daoc-server
-./daoc-server.sh start
+./daoc-server.sh start               # starts the server and opens the admin screen
 ```
 
-The server starts in the background and an admin screen opens in the same terminal:
-
-| Tab | What you can do |
-|---|---|
-| **Server** | Status, live log, **Stop server** |
-| **Bots** | See every bot and what it is doing; **create** real bots (realm, level 1 or 50, class, count); **delete** |
-| **Population** | Turn bots on/off; set the most bots in the world at once |
-| **Accounts** | Create accounts; make an account **player / GM / admin** |
-| **Options** | Server and PerSoPer settings, with their defaults; bot goal percentages |
-| **RvR** | Battlegrounds, keeps, relics and raids |
-
-- **Ctrl+Q** closes the screen and asks whether to stop the server or leave it running.
-- `./daoc-admin` reopens the screen later.
-- `./daoc-server.sh stop` stops the server from any terminal. It saves first.
-
-Rebuilding replaces `dist/daoc-server`, including its world and saves. To keep a world you play
-on, run your server from a copy outside `dist/`, and upgrade it as described in
-[docs/RUN.md](docs/RUN.md).
-
-### 5. Connect with the game client
-
-Point the DAoC client at this machine on port **10300**. For example, with the Offline DAoC
-client under Wine on the same machine:
-
-```bash
-wine connect.exe game.dll 127.0.0.1 <account> <password>
-```
-
-Offline DAoC's new **Godot client** (from its release downloads) also runs natively on Linux
-with the Linux build of Godot 4.7.2 .NET. Start the server first, then:
-
-```bash
-DOTNET_ROOT=~/.dotnet <godot-4.7.2-mono-linux> --path <client>/godot -- --server=127.0.0.1 --account=<name> --password=<pw>
-```
-
-It needs a .NET SDK at `DOTNET_ROOT`. This repo doesn't include or change the client.
-
-Accounts are created on first login. To make yours an admin, go to the **Accounts** tab, or run
-`./daoc-admin accounts set-role <account> admin`. Admin or GM accounts can use GM commands,
-for example `/player level 50` (with no target) to set your own level for testing.
-
-**Players on other machines:**
-1. Edit `config/serverconfig.xml` and set `<RegionIP>` to this machine's LAN address (for
-   example `192.168.1.20`), or to your public address when port-forwarding.
-2. Restart the server.
-3. Players connect to that address. Forward TCP 10300 and UDP 10400 on your router to let in
-   players from outside your home network.
-
-## Before you install: possible conflicts
-
-- **One DAoC server at a time.** This server uses TCP 10300 and UDP 10400, the same ports as
-  Offline DAoC (Windows or Wine) and the parent Linux server. Stop any other one first; check with
-  `ss -ltnp | grep 10300`.
-- **Build container name.** The build container is called `daoc-server-box`, the same as in the
-  parent project. If you already have one, `tools/setup-build-box.sh` reuses it. To keep them
-  apart, set another name: `BOX_NAME=persoper-box BOX_HOME=~/boxes/persoper-box-home tools/setup-build-box.sh --build`.
-- **Rebuilding replaces `dist/daoc-server`,** including its world and saves. Play on a copy
-  outside `dist/`.
-- **Upgrading a server you already play on** (from this fork or the parent project): replace
-  `bin/`, `defaults/` and the scripts; `config/`, `data/` and `navmesh/` are kept
-  ([docs/RUN.md](docs/RUN.md)). Saved settings keep their old values, so new defaults don't
-  apply. For example, `persoper_full_leeroy` stays on if it was on before Alpha 1; switch it
-  off in the **Options** tab. PerSoPer adds its own tables (`persoper_*`) and doesn't change
-  the existing ones.
-- **`/travel` doesn't work on Linux** (it drives the Windows client's keyboard). Use `/tele`
-  and the stablemasters instead.
-
-## What's in the game
-
-- **World:** Classic + Shrouded Isles (the Offline DAoC 0.37 world), with Darkness Falls, the
-  Realm Exchange and stablemaster routes.
-- **Autonomous bots:** persistent characters that level, hunt, travel, group, raid and fight in
-  RvR on their own. Manage them in the admin screen's Bots and Population tabs.
-- **Companion bots:** summon helpers into your group:
-
-  | Command | What |
-  |---|---|
-  | `/spawn [class]` | Companion class menu, or a companion of that class |
-  | `/classes` | Your realm's classes and their party roles |
-  | `/aggressive`, `/defensive` | Companions assist you, or wait for enemies to approach |
-  | `/pull`, `/grind` | Order an engage; stationary automatic pulls |
-  | `/raid 40`, `/raid 80` | A level-50 companion raid |
-  | `/tele <bot>`, `/mobs`, `/stables` | Teleport to a bot or camp; monsters by level; stable routes |
+Then point the game client at this machine on port **10300**
+([connecting](docs/INSTALL.md#5-connect-with-the-game-client)). Questions and problems with
+PerSoPer belong on [this repo's issues page](https://github.com/NerdAnvil/daoc-offline-linux-server-PerSoPer/issues),
+not on the projects it builds on.
 
 ## More
 
+- [CHANGELOG.md](CHANGELOG.md): what each update added
+- [docs/PLAYING.md](docs/PLAYING.md): commands, things you can say to the bots, Persoper's settings
+- [docs/THE-NAMED-BOTS.md](docs/THE-NAMED-BOTS.md): the 33 named bots, and turning them on or off
+- [docs/EDITING-DIALOGUE.md](docs/EDITING-DIALOGUE.md): changing what the bots say
+- [docs/INSTALL.md](docs/INSTALL.md): installing, building, connecting, and what's in the game
 - [deploy/README-release.md](deploy/README-release.md): the guide shipped inside the server folder
   (all admin commands, upgrading)
 - [docs/RUN.md](docs/RUN.md): running and administering a server

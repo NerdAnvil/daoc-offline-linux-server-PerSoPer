@@ -1,5 +1,5 @@
 # Pass 3 for NataSehS (qwen2.5:14b): 27 rows, one line each: 15 normal rows to pass 100 own lines
-# (88 now), and 12 cheekier rows (owner, 2026-10-26: bolder is fine; lines past PG-13 are kept out of
+# (88 now), and 12 cheekier rows (bolder is fine; lines past PG-13 are kept out of
 # the game's files). Pass 1 kept 26 of 40, pass 2 kept 25 of 40.
 # Openers talk to nobody in particular, so they never use {0}. other_death lines must use {0} (the
 # one who fell). No realm, race, class, town or dungeon names: use {class} where allowed. She never

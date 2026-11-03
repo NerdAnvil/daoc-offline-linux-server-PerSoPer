@@ -62,7 +62,7 @@ in `herbaldoctor.dlg`.
 - **Eaglefang** (the Gruff Doc, a strict old field medic): his opposite. Eaglefang tells him to put
   the pipe out and stand up straight; Spyburd offers a buff and a smoke. They respect each other.
 - These are other bots or names in his stories; he only talks about them.
-- (more to come from the owner)
+- (more to come)
 
 ## What he loves to talk about
 

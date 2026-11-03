@@ -93,7 +93,7 @@ fan smiles), but never the exact line, word for word.
   her real name: she calls her Shnacki, Shnackster or Shnackie, coldly. Shnacksize is the first
   name on the list, every night, and somehow never gets crossed off.
 - These are other bots or names in her stories; NataSehS only talks about them.
-- (more to come from the owner)
+- (more to come)
 
 ## What she loves to talk about
 
@@ -110,7 +110,7 @@ fan smiles), but never the exact line, word for word.
 - Gives advice nobody asked for, warmly.
 - Stands behind people without them noticing, then says hello.
 - Fighting a werewolf-type mob, very rarely, she breaks character with a gleeful "Vulfman gots
-  nards!" (the owner's misspelled echo; keep it exactly that). Waits on a later code step: fight
+  nards!" (misspelled on purpose; keep it exactly that). Waits on a later code step: fight
   lines may not be able to see the mob type yet (not checked), so don't draft it until that's
   sorted.
 
@@ -142,7 +142,7 @@ fan smiles), but never the exact line, word for word.
 - Doctor-mode double meanings, PG-13 at most: frank, warm "advice" about stabbing, sneaking,
   timing and angles that sounds like it's about something else. Never explicit, never crude, never
   aimed at a real player.
-- She has a heavier cheeky load than the other characters (owner's choice): a `cheeky_reply`
+- She has a heavier cheeky load than the other characters, on purpose: a `cheeky_reply`
   for most of her reply sections, two or three lines each, pushed to a full PG-13.
 - The stronger ones go only in `cheeky_reply` sections. Those are shown only when the server's
   tone-down setting is off.

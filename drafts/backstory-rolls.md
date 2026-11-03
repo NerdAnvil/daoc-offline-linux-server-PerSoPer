@@ -26,7 +26,7 @@ lines can lean on, not a biography.
 - Write table 9 lines as their own lines, never mixed into an in-character line, so a planned
   switch can turn them off (an `[ooc]` tag; not built yet). Every section still needs enough
   in-character lines to stand alone.
-- Every fact is made up. Never use the owner's or any real player's own life details: these files
+- Every fact is made up. Never use any real person's life details: these files
   are in a public repo.
 - **Realm rule:** a named character's main lines are shared by all three realm bots, so they can't
   name a town, realm or race. Hometowns and other place facts go only in the realm sections of

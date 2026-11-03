@@ -88,7 +88,7 @@ How it works:
 
 ### Bot chat lines
 
-The bots' chat lines are text files in `dialogue/` (format: `docs/DIALOGUE-DESIGN.md`). To change them
+The bots' chat lines are text files in `dialogue/` (how to write them: [EDITING-DIALOGUE.md](EDITING-DIALOGUE.md)). To change them
 while the server runs:
 
 1. Edit a file in `dialogue/`.

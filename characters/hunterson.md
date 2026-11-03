@@ -67,7 +67,7 @@ word for word.
 - Realm details only in the realm sections of the file. The main lines never name a realm,
   town, race, class or an old-tongue word.
 
-## Backstory (rolled, then edited by the owner)
+## Backstory (rolled, then edited by hand)
 
 - Old job: scribe copying boring contracts. He can write a very neat line, and can make any
   sentence sound official.
