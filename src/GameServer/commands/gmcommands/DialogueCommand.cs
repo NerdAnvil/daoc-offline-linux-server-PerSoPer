@@ -8,7 +8,7 @@ namespace DOL.GS.Commands
     /// "/dialogue scene joker-loner knock-knock" plays one scene of scenes.dlg now (PairScenes),
     /// "/dialogue ask fav_music" has Persoper put that question to the GM now (PersoperAsks),
     /// "/dialogue answers" lists the GM's own saved answers (PlayerAnswers).
-    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue walkoff always", "/dialogue walkoff Shnacksize", "/dialogue groupcall always", "/dialogue orders always", "/dialogue target nearest", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
+    /// "/dialogue gather", "/dialogue joke Shnacksize", "/dialogue ambient Shnacksize", "/dialogue guildchat", "/dialogue walkoff always", "/dialogue walkoff Shnacksize", "/dialogue groupcall always", "/dialogue orders always", "/dialogue target nearest", "/dialogue hold Shnacksize 60" and "/dialogue forget" set up in-game checks of
     /// bot-to-bot and ambient lines (tools/check-groans-ingame.sh, tools/check-night-lines-ingame.sh);
     /// "/dialogue state Shnacksize" shows what a bot's answers about itself are filled with (tools/check-state-ingame.sh).
     /// daoc-admin has the same as "dialogue" and "dialogue reload".
@@ -20,6 +20,7 @@ namespace DOL.GS.Commands
         "/dialogue gather   (moves the bots in your group beside you)",
         "/dialogue joke <bot>   (a bot in your group tells a joke there now; its groupmates answer)",
         "/dialogue ambient <bot>   (a bot in your group says one of its own ambient lines there now)",
+        "/dialogue guildchat   (a bot in your guild starts guild chat now and another answers)",
         "/dialogue state <bot>   (what a bot in your group would say about itself: zone, level, class, what it's doing)",
         "/dialogue walkoff always|normal|reset   (test: every groan at your bad joke gets the walk-off gag, or only rarely; reset forgets your 24 h cooldown)",
         "/dialogue walkoff <bot>   (test: a bot in your group storms off now as after a bad joke; the guards stay on)",
@@ -76,6 +77,14 @@ namespace DOL.GS.Commands
             if (verb == "state" && args.Length == 3)
             {
                 ChatUtil.SendSystemMessage(client, BotState(client.Player, args[2]));
+                return;
+            }
+            if (verb == "guildchat" && args.Length == 2)
+            {
+                GameBot starter = AutonomousBotGuilds.StartGuildChat(client.Player.Guild, 1);
+                ChatUtil.SendSystemMessage(client, starter != null
+                    ? $"Guild chat: {starter.Name} starts it."
+                    : "Guild chat: no gamebot of your guild is online and free.");
                 return;
             }
             if (verb == "ambient" && args.Length == 3)

@@ -319,14 +319,42 @@ namespace DOL.GS
                 if (guild == null || guild.GetListOfOnlineMembers().Count == 0) continue;
                 if (LastGuildChat.TryGetValue(guildId, out long last) && now - last < 240_000) continue;
                 if (Random.Shared.NextDouble() > 0.35) continue;
-                GameBot[] talkers = OnlineMembers(guild).Where(CanTalk).ToArray();
-                if (talkers.Length == 0) continue;
-                LastGuildChat[guildId] = now;
-                GameBot starter = talkers[Random.Shared.Next(talkers.Length)];
-                SpeakInGuild(starter, guild, Pick(GuildOpeners));
-                ScheduleReplies(guild, starter, null, Random.Shared.Next(0, 3));
+                if (StartGuildChat(guild, Random.Shared.Next(0, 3)) != null)
+                    LastGuildChat[guildId] = now;
             }
         }
+
+        /// <summary>
+        /// A free member opens a line in guild chat and up to <paramref name="replies"/> others answer. A chatty
+        /// personality starts more often and opens in its own voice (Kobaldjovi mostly sings). Returns the starter, or
+        /// null when no member is free. Also "/dialogue guildchat" (tools/check-guildvoices-ingame.sh).
+        /// </summary>
+        public static GameBot StartGuildChat(Guild guild, int replies)
+        {
+            GameBot[] talkers = guild == null ? [] : OnlineMembers(guild).Where(CanTalk).ToArray();
+            if (talkers.Length == 0) return null;
+            GameBot starter = PersonalityChatter.PickWeighted(
+                talkers.Select(bot => (bot, SpeakerWeight(BotPersonalities.For(bot)?.Chattiness))).ToList(), Random.Shared);
+            eChatTopic? topic = null;
+            string own = KobaldjoviIdentity.Is(starter) ? KobaldjoviIdentity.AmbientLine(Random.Shared, out _)
+                : BotPersonalities.For(starter) is { } personality ? PersonalityReactions.AmbientLine(starter, personality, Random.Shared, out topic)
+                : null;
+            LogLine(starter, guild, "opener", own);
+            SpeakInGuild(starter, guild, OwnOrStock(own, () => Pick(GuildOpeners)));
+            ScheduleReplies(guild, starter, null, null, replies, topic);
+            return starter;
+        }
+
+        // One note per member line, so a check can tell an own-voice line from a stock one.
+        private static void LogLine(GameBot bot, Guild guild, string kind, string own) =>
+            Log.Info($"BOT_GUILD_CHAT bot=\"{bot.Name}\" guild=\"{guild.Name}\" kind={kind} " +
+                $"personality={BotPersonalities.For(bot) != null} own={!string.IsNullOrWhiteSpace(own)}");
+
+        /// <summary>How often a member starts guild chat: its personality's Chattiness (12 to 80), a plain bot in between.</summary>
+        public static int SpeakerWeight(int? chattiness) => chattiness ?? 40;
+
+        /// <summary>A member's own line when it has one, else a stock line.</summary>
+        public static string OwnOrStock(string own, Func<string> stock) => string.IsNullOrWhiteSpace(own) ? stock() : own.Trim();
 
         /// <summary>
         /// A player spoke in guild chat: gamebot members may answer. A member named (by name or nickname) answers first,
@@ -370,7 +398,7 @@ namespace DOL.GS
             }
             // A "lol" or "brb" gets Persoper's short reaction at most, not the members' generic answers.
             if (shortReaction) return;
-            ScheduleReplies(guild, null, message, AutonomousBotChatCoordinator.RollResponseCount(Math.Min(2, talkers.Length)));
+            ScheduleReplies(guild, null, player, message, AutonomousBotChatCoordinator.RollResponseCount(Math.Min(2, talkers.Length)));
         }
 
         /// <summary>Now and then one other free member's line after the named bot's (own voice, or a stock line); else null.</summary>
@@ -407,15 +435,23 @@ namespace DOL.GS
             }, delay);
         }
 
-        private static void ScheduleReplies(Guild guild, GameBot starter, string incoming, int count)
+        // Members answer a player's line (incoming) or a member's opener (starter, with its topic, if any). A personality
+        // answers in its own voice, a plain bot (or a personality with no line for it) with a stock line.
+        private static void ScheduleReplies(Guild guild, GameBot starter, GamePlayer player, string incoming, int count, eChatTopic? topic = null)
         {
             GameBot[] talkers = OnlineMembers(guild).Where(bot => bot != starter && CanTalk(bot))
                 .OrderBy(_ => Random.Shared.Next()).Take(count).ToArray();
             var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (int index = 0; index < talkers.Length; index++)
             {
-                string reply = incoming != null ? AutonomousBotChatCoordinator.GenerateFactionReply(incoming) : Pick(GuildReplies);
+                GameBot bot = talkers[index];
+                string own = incoming != null ? AutonomousBotChatCoordinator.ChipInLine(bot, player, incoming)
+                    : topic is { } opened && BotPersonalities.For(bot) is { } personality
+                        ? PersonalityReactions.TopicReplyFor(bot, personality, opened, starter?.Name)
+                        : null;
+                string reply = OwnOrStock(own, () => incoming != null ? AutonomousBotChatCoordinator.GenerateFactionReply(incoming) : Pick(GuildReplies));
                 if (!used.Add(reply)) continue;
+                LogLine(bot, guild, incoming != null ? "answer" : "reply", own);
                 ScheduleReply(talkers[index], guild, reply, 1_800 + index * 2_000 + Random.Shared.Next(1_200));
             }
         }
