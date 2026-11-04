@@ -128,6 +128,58 @@ Nothing targeted, {0}.
 That's grey, {0}. Waste of time.
 Not worth it, {0}. Find something that cons.
 
+~ reply grindred
+Red, {0}, stay sharp.
+Red con, {0}, focus up, pulling.
+Red, {0}, no mistakes.
+Red con, {0}, everyone on their keys.
+That's red, {0}, tank holds, rest burn.
+Red one, pulling, nobody chases.
+Red, {0}, stay tight and stay focused.
+Red con, {0}, I want this down fast.
+That's red, {0}, play it clean.
+Red, {0}, pulling, watch your aggro.
+Red one, {0}, eyes on the target.
+
+~ reply grindpurple
+Purple, {0}, nobody slacks on this one.
+That's purple, {0}, full attention, pulling now.
+Purple, {0}, everything on cooldown, now.
+That's purple, {0}, nobody pulls aggro off the tank.
+Purple con, {0}, this is where we find out who's good.
+Purple one, {0}, pulling, play it perfect.
+That's purple, {0}, one mistake and we're done.
+Purple, {0}, I don't want to see anyone low.
+Purple con, {0}, slow and controlled.
+That's purple, {0}, watch the adds and stay on target.
+Purple, {0}, pulling, this one counts.
+
+~ reply grinddeep
+Way over our level, {0}, now this is a real fight!
+Deep purple, {0}, finally something worth it, pulling!
+Deep purple, {0}, this is what we train for!
+Way over us, {0}, a real test, finally!
+That's deep purple, {0}, everything we've got, right now!
+Way over our level, {0}, no hesitation, pulling!
+Deep purple, {0}, if we wipe, we wipe trying!
+That thing's way over us, {0}, good, let's prove something!
+Deep purple, {0}, my heart's pounding, let's go!
+Way over us, {0}, this is the pull I've been waiting for!
+Deep purple, {0}, all in, pulling now!
+
+~ reply grindgrey
+All grey now, {0}, this camp is done.
+Nothing here gives xp anymore, {0}, we move.
+Grey camp, {0}, we're wasting time.
+Everything's grey, {0}, find a new spot.
+All grey now, {0}, zero challenge, we move.
+Nothing here cons, {0}, this is beneath us.
+Grey all round, {0}, pack up.
+It's all grey, {0}, we've outleveled this.
+Nothing worth fighting here, {0}, next camp.
+Grey mobs, {0}, no xp, no point.
+This camp is done, {0}, everything's grey.
+
 ~ reply groan
 ugh
 that cost me a pull

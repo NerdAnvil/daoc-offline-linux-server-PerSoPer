@@ -172,6 +172,9 @@ A player's line counts as an intent when one of its phrases appears in it; the l
 wins. Add a phrase here when a bot misreads something players often say. Lines no phrase
 matches go to the built-in reader.
 
+The `ordergrind` and `ordergrindstop` sections hold the chat triggers for `/grind` ("let's grind",
+"stop grinding"). Only the group leader's lines count. To add a trigger, add a phrase to one of them.
+
 ## Upgrading
 
 An upgrade keeps your `dialogue/` folder. A file you never edited still holds the old release's

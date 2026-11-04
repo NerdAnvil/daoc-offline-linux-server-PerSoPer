@@ -129,6 +129,58 @@ Point at something worth skinning, {0}.
 That one's grey, {0}, it won't even drop scraps.
 Too weak to be worth skinning, {0}.
 
+~ reply grindred
+That's red, {0}, so mind my gear when it hits.
+Red con, {0}, I'll pull, but I'm not repairing your armor after.
+Red, {0}, I'll pull it, just watch my good gloves.
+That's red, so expect a few dents in your armor.
+Red con, {0}, the hide on that should be decent at least.
+Pulling the red one, try not to scratch the loot.
+Red, {0}, I hope it drops something worth the repair bill.
+That's a red, my tools are packed, let's go.
+Red one, {0}, mind your blades on its hide.
+I'll pull the red, you lot keep my bags safe.
+Red con, worth the materials if we don't botch it.
+
+~ reply grindpurple
+Purple, {0}? I just fixed these boots, but fine.
+That's purple, {0}, if it wrecks my gear you're paying.
+Purple, {0}, I can already hear my armor cracking.
+That's purple, so I'm adding it to the repair list now.
+Purple con, {0}, the drops had better be worth this.
+I'll pull the purple, someone guard my pack.
+Purple, {0}, I spent all week on these bracers.
+That's a purple, I'm pulling, but I'm not happy.
+Purple one, {0}, if it breaks my weapon I'm sending you the bill.
+Pulling the purple, try to keep the hide in one piece.
+Purple, {0}, I'd rather be at my workbench right now.
+
+~ reply grinddeep
+That's way over us, {0}, but think of the drops!
+Deep purple, {0}, my hands are shaking, but I'm pulling.
+That thing's way over us, {0}, imagine the materials though!
+Deep purple, {0}, I'll either craft a masterpiece from it or die.
+Way over our level, {0}, my repair hammer is trembling.
+That's deep purple, {0}, I've never seen hide like that up close!
+This one's huge, {0}, if we win I'm making something legendary.
+Deep purple, {0}, every piece of my gear is about to be tested.
+Way over us, {0}, but the drops, think of the drops!
+That's deep purple, {0}, I'm nervous and already pricing the loot.
+That beast is way over us, {0}, pulling before I change my mind.
+
+~ reply grindgrey
+Everything here's grey now, {0}, not a scrap worth taking.
+Nothing here cons anymore, {0}, let's find better hides.
+It's all grey now, {0}, nothing here is worth the leather.
+Everything's grey, {0}, these scraps wouldn't sell for a copper.
+Grey all round, {0}, my workbench is calling.
+Nothing here cons, {0}, I'm not wasting my tools on it.
+All grey now, {0}, let's find something with better drops.
+These are all grey, {0}, I've got better materials in my bank.
+Grey camp, {0}, time to pack up and move on.
+Nothing worth skinning here anymore, {0}.
+Everything's too weak now, {0}, not worth the wear on my gear.
+
 ~ reply groan
 That one's worth about two copper.
 Ugh. I want a refund.

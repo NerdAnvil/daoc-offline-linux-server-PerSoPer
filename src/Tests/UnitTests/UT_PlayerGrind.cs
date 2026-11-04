@@ -207,11 +207,51 @@ namespace DOL.UnitTests
         public void CompanionPullsAllowPurpleButNeverGreyOrInvalidLevels(int level, int mob, int con, int helpers, bool expected) =>
             Assert.That(PlayerCompanionGrind.IsSuitableLevel(level, mob, con, helpers), Is.EqualTo(expected));
 
-        [Test] public void MixedPersistentPartyIsRejectedWithoutTouchingItsBrain()
+        // con, levels over the player -> the bots' line: red hesitant, purple more so, over 5 levels nervous, grey ends grind.
+        [TestCase(0, 0, PlayerCompanionGrind.eGrindCon.Plain)] [TestCase(1, 1, PlayerCompanionGrind.eGrindCon.Plain)]
+        [TestCase(-2, -3, PlayerCompanionGrind.eGrindCon.Plain)] [TestCase(-3, -6, PlayerCompanionGrind.eGrindCon.Grey)]
+        [TestCase(2, 1, PlayerCompanionGrind.eGrindCon.Red)] [TestCase(2, 2, PlayerCompanionGrind.eGrindCon.Red)]
+        [TestCase(3, 1, PlayerCompanionGrind.eGrindCon.Purple)] [TestCase(3, 5, PlayerCompanionGrind.eGrindCon.Purple)]
+        [TestCase(3, 6, PlayerCompanionGrind.eGrindCon.Deep)] [TestCase(3, 12, PlayerCompanionGrind.eGrindCon.Deep)]
+        public void ConBandsPickTheBotsLine(int con, int levelsOver, PlayerCompanionGrind.eGrindCon expected) =>
+            Assert.That(PlayerCompanionGrind.ConOf(con, levelsOver), Is.EqualTo(expected));
+
+        [Test] public void GreyStopsGrindOnlyWhenEveryMobNearbyIsGrey()
+        {
+            Assert.That(PlayerCompanionGrind.OnlyGrey(new[] { -3, -4 }), Is.True);
+            Assert.That(PlayerCompanionGrind.OnlyGrey(new[] { -3, -2 }), Is.False);
+            Assert.That(PlayerCompanionGrind.OnlyGrey(Array.Empty<int>()), Is.False);
+            Assert.That(PlayerCompanionGrind.LineFor(PlayerCompanionGrind.eGrindCon.Plain), Is.Null);
+            foreach (var con in new[] { PlayerCompanionGrind.eGrindCon.Red, PlayerCompanionGrind.eGrindCon.Purple,
+                         PlayerCompanionGrind.eGrindCon.Deep, PlayerCompanionGrind.eGrindCon.Grey })
+            {
+                Assert.That(PlayerCompanionGrind.LineFor(con) is { } kind && AutonomousChatIntentModel.IsOrderKind(kind) &&
+                    !AutonomousChatIntentModel.IsSmallTalk(kind), Is.True, con.ToString());
+            }
+        }
+
+        [Test] public void PartyWithWorldOrNamedBotsIsAccepted()
         {
             var (player, _, _) = Party(); var persistent = Helper(player, new ClassWizard(), true); Add(player.Group, persistent);
+            Assert.That(PlayerCompanionGrind.TryStart(player, out _), Is.True);
+        }
+
+        [Test] public void PartyOfOnlyWorldBotsIsAcceptedAndTheyRest()
+        {
+            Human player = Player(); var group = new Group(player); Add(group, player);
+            Companion tank = Helper(player, new ClassPaladin(), true), healer = Helper(player, new ClassCleric(), true);
+            Add(group, tank); Add(group, healer); tank.Health = 60; healer.Mana = 40;
+            Assert.That(PlayerCompanionGrind.TryStart(player, out _), Is.True); Tick(player);
+            Assert.That(tank.IsRecoveryResting, Is.True); Assert.That(healer.IsRecoveryResting, Is.True);
+            PlayerCompanionGrind.Stop(player, "test", false);
+            Assert.That(tank.IsRecoveryResting, Is.False); Assert.That(healer.IsRecoveryResting, Is.False);
+        }
+
+        [Test] public void PlayerWhoIsNotTheLeaderIsRejected()
+        {
+            Human leader = Player(), player = Player(); var group = new Group(leader); Add(group, player);
+            Add(group, Helper(player, new ClassPaladin(), true));
             Assert.That(PlayerCompanionGrind.TryStart(player, out _), Is.False);
-            Assert.That(((Brain)persistent.Brain).Cancellations, Is.Zero);
         }
 
         [Test] public void OtherHumansAndOtherOwnersCompanionsAreRejected()
@@ -223,13 +263,27 @@ namespace DOL.UnitTests
             Assert.That(PlayerCompanionGrind.TryStart(player, out _), Is.False);
         }
 
-        [Test] public void AddingPersistentBotToActiveModeStopsItWithoutMutatingThatBot()
+        [Test] public void ChatTriggerStartsAndStopsGrindForTheLeaderOnly()
+        {
+            var (player, _, _) = Party();
+            Assert.That(PlayerCompanionGrind.FromChat(player, true), Does.StartWith("Grind mode active"));
+            Assert.That(PlayerCompanionGrind.IsActive(player), Is.True);
+            Assert.That(PlayerCompanionGrind.FromChat(player, false), Is.Null);
+            Assert.That(PlayerCompanionGrind.IsActive(player), Is.False);
+            Assert.That(PlayerCompanionGrind.FromChat(player, false), Is.EqualTo("Grind mode is not active."));
+
+            Human leader = Player(), follower = Player(); var group = new Group(leader); Add(group, leader); Add(group, follower);
+            Assert.That(PlayerCompanionGrind.FromChat(follower, true), Does.Contain("Only the group leader"));
+            Assert.That(PlayerCompanionGrind.IsActive(follower), Is.False);
+        }
+
+        [Test] public void AddingAnotherPlayerToActiveModeStopsIt()
         {
             var (player, _, _) = Party(); Assert.That(PlayerCompanionGrind.TryStart(player, out _), Is.True);
-            var persistent = Helper(player, new ClassWizard(), true); Add(player.Group, persistent); Tick(player);
+            Add(player.Group, Helper(player, new ClassWizard(), true)); Tick(player);
+            Assert.That(PlayerCompanionGrind.IsActive(player), Is.True);
+            Add(player.Group, Player()); Tick(player);
             Assert.That(PlayerCompanionGrind.IsActive(player), Is.False);
-            Assert.That(((Brain)persistent.Brain).Cancellations, Is.Zero);
-            Assert.That(persistent.IsSitting, Is.False);
         }
 
         [Test] public void RestUsesRealDeficitsAndDoesNotRefillOrMoveActors()

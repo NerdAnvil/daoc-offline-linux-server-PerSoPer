@@ -131,6 +131,58 @@ Name the foe, {0}, and I shall bring it.
 That creature is beneath my blade, {0}.
 No honour in such a feeble foe, {0}.
 
+~ reply grindred
+A crimson foe, {0}, steel yourselves!
+This beast burns red, {0}, yet I shall draw it forth.
+The beast burns red, {0}, be ready for battle.
+A red foe, {0}, let us test our mettle.
+It glows crimson, {0}, I go to meet it.
+A worthy red adversary, {0}, to arms!
+This one is red, {0}, mind its fury.
+A red beast, {0}, it shall know our steel.
+I shall bring forth the red one, {0}, stand fast.
+It is red, {0}, a fine trial for our company.
+A red challenger, {0}, I answer its call.
+
+~ reply grindpurple
+A purple terror, {0}, may the gods be with us.
+It is mighty, {0}, but I will not shrink from it.
+A purple fiend, {0}, may our courage hold.
+It glows violet, {0}, a dread foe indeed.
+This purple beast is fearsome, {0}, yet duty calls.
+A purple adversary, {0}, steel your hearts.
+Purple as a bruise, {0}, I shall draw it nonetheless.
+A mighty purple foe, {0}, let none falter.
+I tremble before this purple terror, {0}, but I go.
+It is purple, {0}, our ancestors watch us now.
+A violet menace, {0}, for glory, I pull it.
+
+~ reply grinddeep
+A beast of legend, {0}! My heart quails, yet I go!
+Far beyond us, {0}, songs will be sung of this, one way or another.
+A creature of legend, {0}! My blade sings with fear and joy!
+Far beyond us, {0}, but bards will sing of this day!
+It towers over us, {0}! Gods, grant me courage!
+A foe from the old tales, {0}! I go, heart pounding!
+Far beyond our strength, {0}, and yet I cannot resist!
+A titan, {0}! Should I fall, remember my name!
+This beast dwarfs us, {0}, what glory awaits!
+Far mightier than we, {0}, onward, into legend!
+A dread colossus, {0}! My knees shake, my spirit soars!
+
+~ reply grindgrey
+Naught here but grey weaklings, {0}, there is no honour left in this place.
+These creatures are beneath us now, {0}, let us seek worthier foes.
+These grey creatures offer no glory, {0}.
+All here are grey, {0}, our quest lies elsewhere.
+There is no honour in slaying such weaklings, {0}.
+Grey all about us, {0}, let us seek greater trials.
+These foes are unworthy, {0}, we must journey on.
+Naught but grey here, {0}, our blades grow dull.
+This land is spent, {0}, all grey and feeble.
+We have outgrown this place, {0}, onward.
+Grey and harmless, {0}, our tale continues elsewhere.
+
 ~ reply groan
 Oh, a terrible jest!
 My hero groans in character. And out.

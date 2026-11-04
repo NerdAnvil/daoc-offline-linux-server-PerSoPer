@@ -313,6 +313,58 @@ Pull what, {0}? Pick a crowd first.
 That one, {0}? Too small for my audience.
 Too easy, {0}, I'd rather play to a bigger crowd.
 
+~ reply grindred
+A red one, {0}, a tough crowd tonight!
+Red, {0}, let's hope this audience is kind.
+Red, {0}, a crowd with some fire in it!
+That's red, {0}, time for my dramatic entrance.
+A red one, {0}, let's give it a show.
+Red con, {0}, I'll sing it over to you.
+Red, {0}, a spicy audience tonight.
+That's red, {0}, cue the drums!
+A red one, {0}, I'll warm up the stage.
+Red, {0}, pulling with a flourish.
+That's red, {0}, let's hope it likes my tune.
+
+~ reply grindpurple
+Purple, {0}? Stage fright, but the show goes on!
+That's purple, {0}, I'll warm it up, you bring the encore.
+Purple, {0}? My voice is shaking, but I'll sing anyway!
+That's purple, {0}, the toughest critic in the house.
+Purple con, {0}, I'll pull, you bring the applause.
+A purple one, {0}, this could be my last performance.
+Purple, {0}, hold the curtain, I'm going in.
+That's purple, {0}, my lute is trembling.
+Purple, {0}, if I go down, play me off with a ballad.
+That's a purple, {0}, nervous, but the show must go on!
+Purple con, {0}, I'll give it my best verse.
+
+~ reply grinddeep
+Deep purple, {0}! The biggest show of my life, pulling!
+That's way over us, {0}, my knees are knocking in rhythm, here it comes!
+Deep purple, {0}! The grandest stage of my career!
+Way over us, {0}! My heart's beating in four-four time!
+That's deep purple, {0}, this calls for my best song!
+Way over our level, {0}! The crowd goes wild, and so do I!
+Deep purple, {0}! Either an encore or a requiem!
+That thing's way over us, {0}, I'm terrified and thrilled!
+Deep purple, {0}, they'll write songs about this one!
+Way over us, {0}! Grand finale, here it comes!
+Deep purple, {0}, my knees are dancing, pulling!
+
+~ reply grindgrey
+This whole crowd is grey, {0}, too small for my audience now.
+Nobody here worth an encore, {0}, let's take the show on the road.
+All grey, {0}, this crowd's too small for my show.
+Everything's grey, {0}, nobody here worth a song.
+Grey all round, {0}, time to take the tour elsewhere.
+It's all grey, {0}, I'd bore them to death.
+Nothing here cons, {0}, the venue's too small.
+Grey crowd, {0}, let's find a bigger stage.
+All too easy now, {0}, my audience has moved on.
+These are grey, {0}, not even worth a verse.
+This town's played out, {0}, everything's grey.
+
 ~ reply groan
 Ugh! That's a one-star review, {0}.
 Booo! Off the stage!

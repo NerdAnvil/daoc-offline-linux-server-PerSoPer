@@ -7,12 +7,14 @@ using System.Threading;
 using DOL.AI.Brain;
 using DOL.Events;
 using DOL.GS.PacketHandler;
+using DOL.Logging;
 
 namespace DOL.GS.Commands
 {
     /// <summary>
-    /// Opt-in, stationary human-party pull scheduler. It never owns a bot goal,
-    /// changes a combat brain, or runs for a persistent playerbot group.
+    /// Opt-in, stationary pull scheduler for one player leading a party of bots
+    /// (their /spawn companions, named bots, world bots, Persoper; no other
+    /// players). It never owns a bot goal or changes a combat brain.
     /// </summary>
     public static class PlayerCompanionGrind
     {
@@ -25,6 +27,7 @@ namespace DOL.GS.Commands
         // resynchronization packet; it creates no movement or combat action.
         private const int ClientSessionRefreshInterval = 4 * 60_000;
         private static readonly ConcurrentDictionary<GamePlayer, Session> Sessions = new();
+        private static readonly Logger Log = LoggerManager.Create(typeof(PlayerCompanionGrind));
         private static System.Threading.Timer _timer;
 
         private sealed class Session
@@ -40,6 +43,7 @@ namespace DOL.GS.Commands
             public long NextSearch;
             public long NextStatus;
             public long NextClientSessionRefresh;
+            public long NextConLine;
             public string Detail = "Waiting for the party";
             public readonly HashSet<GameLiving> SeatedByMode = new();
             public readonly Dictionary<GameNPC, long> FailedTargets = new();
@@ -65,14 +69,15 @@ namespace DOL.GS.Commands
 
         public static bool IsActive(GamePlayer player) => player != null && Sessions.ContainsKey(player);
 
-        public static bool IsOwnedCompanion(GamePlayer player, Group group, GameLiving member) =>
-            player != null && group != null && member is GameBot bot && bot.IsTemporaryGroupHelper && !bot.IsAutonomousWorldBot &&
-            bot.Owner == player && bot.Group == group && bot.Realm == player.Realm;
+        // Any bot in the player's group and realm; a temporary companion only when it is this player's own.
+        public static bool IsPartyBot(GamePlayer player, Group group, GameLiving member) =>
+            player != null && group != null && member is GameBot bot && bot.Group == group && bot.Realm == player.Realm &&
+            (!bot.IsTemporaryGroupHelper || bot.Owner == player);
 
         public static bool IsExclusiveParty(GamePlayer player, Group group, IReadOnlyList<GameLiving> members) =>
-            player != null && group != null && player.Group == group && members.Count is >= 2 and <= 8 &&
+            player != null && group != null && player.Group == group && group.LivingLeader == player && members.Count is >= 2 and <= 8 &&
             members.Count(member => member == player) == 1 &&
-            members.All(member => member == player || IsOwnedCompanion(player, group, member));
+            members.All(member => member == player || IsPartyBot(player, group, member));
 
         public static bool NeedsRecovery(GameLiving member) => member.MaxHealth > 0 && member.Health < member.MaxHealth ||
             member.MaxMana > 0 && member.Mana < member.MaxMana ||
@@ -111,6 +116,41 @@ namespace DOL.GS.Commands
         public static bool IsSuitableLevel(int playerLevel, int monsterLevel, int conLevel, int companionCount) =>
             monsterLevel > 0 && conLevel > -3;
 
+        // How a mob cons to the player, for the bots' lines: red and purple get a hesitant line before the pull, more
+        // than DeepPurpleLevels over the player a nervous or excited one (still pulled); grey ends grind when it is all
+        // that is left near camp.
+        public enum eGrindCon { Plain, Red, Purple, Deep, Grey }
+        public const int DeepPurpleLevels = 5;
+        public const int ConLineCooldown = 60_000;
+        public const int GreyCheckLimit = 64;
+
+        public static eGrindCon ConOf(int conLevel, int levelsOver) =>
+            conLevel <= -3 ? eGrindCon.Grey :
+            levelsOver > DeepPurpleLevels ? eGrindCon.Deep :
+            conLevel >= 3 ? eGrindCon.Purple :
+            conLevel == 2 ? eGrindCon.Red : eGrindCon.Plain;
+
+        // Mobs near camp, and every one grey: nothing left worth pulling. No mobs at all is a wait for respawns.
+        public static bool OnlyGrey(IEnumerable<int> conLevels)
+        {
+            bool any = false;
+            foreach (int con in conLevels.Take(GreyCheckLimit))
+            {
+                if (con > -3) return false;
+                any = true;
+            }
+            return any;
+        }
+
+        public static eAutonomousChatIntent? LineFor(eGrindCon con) => con switch
+        {
+            eGrindCon.Red => eAutonomousChatIntent.GrindRed,
+            eGrindCon.Purple => eAutonomousChatIntent.GrindPurple,
+            eGrindCon.Deep => eAutonomousChatIntent.GrindDeep,
+            eGrindCon.Grey => eAutonomousChatIntent.GrindGrey,
+            _ => null,
+        };
+
         public static bool TryStart(GamePlayer player, out string message)
         {
             if (player?.Client?.ClientState != GameClient.eClientState.Playing || !player.IsAlive)
@@ -123,7 +163,7 @@ namespace DOL.GS.Commands
             { message = "Finish your ride before using /grind."; return false; }
             GameLiving[] members = player.Group?.GetMembersInTheGroup().ToArray() ?? Array.Empty<GameLiving>();
             if (!IsExclusiveParty(player, player.Group, members))
-            { message = "/grind requires a party containing only you and your own temporary /spawn companions."; return false; }
+            { message = "/grind needs a party you lead with only bots in it: no other players, and no one else's /spawn companions."; return false; }
             if (SelectPuller(members.OfType<GameBot>()) == null)
             { message = "You need a living tank or damage-dealing companion. Healers and buffers will not pull."; return false; }
             var session = new Session { Player = player, Group = player.Group, Region = player.CurrentRegionID,
@@ -136,6 +176,7 @@ namespace DOL.GS.Commands
             player.CurrentSpeed = 0;
             player.Out.SendPlayerJump(false);
             ShowStatus(session, true);
+            Log.Info($"GRIND start player=\"{player.Name}\" members={members.Length}");
             message = "Grind mode active: stay here; tank pulls first, or attackers pull if no tank. " +
                 "The next pull waits for everyone to return and fully recover HP/power/endurance. /grind stop cancels; moving also stops it.";
             return true;
@@ -144,6 +185,7 @@ namespace DOL.GS.Commands
         public static void Stop(GamePlayer player, string reason, bool notify = true)
         {
             if (player == null || !Sessions.TryRemove(player, out Session session)) return;
+            Log.Info($"GRIND stop player=\"{player.Name}\" reason=\"{reason}\"");
             CancelUnengagedPull(session);
             StandModeSeats(session);
             if (notify && player.Client?.ClientState == GameClient.eClientState.Playing)
@@ -151,6 +193,25 @@ namespace DOL.GS.Commands
                 player.Out.SendMessage($"GRIND MODE OFF — {reason}", eChatType.CT_ScreenCenter, eChatLoc.CL_SystemWindow);
                 player.Out.SendMessage($"/grind stopped: {reason}", eChatType.CT_System, eChatLoc.CL_SystemWindow);
             }
+        }
+
+        /// <summary>
+        /// "let's grind" / "stop grinding" in chat (the ordergrind sections of intents.dlg): the same start and stop as
+        /// /grind, for the group leader only. The answer for the player's system window, or null when Stop already said it.
+        /// </summary>
+        public static string FromChat(GamePlayer player, bool start)
+        {
+            if (player?.Group == null || player.Group.LivingLeader != player)
+                return "Only the group leader can start or stop grind mode.";
+            if (start)
+            {
+                TryStart(player, out string message);
+                return message;
+            }
+            if (!IsActive(player))
+                return "Grind mode is not active.";
+            Stop(player, "stopped from chat");
+            return null;
         }
 
         private static bool Fighting(GameLiving living) => living.InCombat ||
@@ -181,7 +242,7 @@ namespace DOL.GS.Commands
                 { Stop(player, "you moved, traveled or enabled another controller"); return; }
                 GameLiving[] members = player.Group?.GetMembersInTheGroup().ToArray() ?? Array.Empty<GameLiving>();
                 if (player.Group != session.Group || !IsExclusiveParty(player, session.Group, members))
-                { Stop(player, "party changed; only your temporary companions are allowed"); return; }
+                { Stop(player, "party changed; only bots in a party you lead are allowed"); return; }
                 long now = GameLoop.GameLoopTime;
                 if (now >= session.NextClientSessionRefresh)
                 {
@@ -222,13 +283,14 @@ namespace DOL.GS.Commands
                 {
                     if (AtCamp(session, member) && !member.IsCasting && !member.IsMoving &&
                         !member.IsCrowdControlled && NeedsRecovery(member) &&
-                        (member is not GameBot helper || !helper.IsTemporaryCompanionRestLocked) &&
+                        (member is not GameBot helper || !helper.IsRecoveryResting) &&
                         (member is not GameBot restingBot || !BotRestRecovery.BlocksRest(restingBot)) &&
                         (member is GameBot || !member.IsSitting))
                     {
-                        session.SeatedByMode.Add(member);
+                        if (session.SeatedByMode.Add(member) && member is GameBot)
+                            Log.Info($"GRIND rest player=\"{player.Name}\" bot=\"{member.Name}\"");
                         if (member == player) player.Sit(true);
-                        else ((GameBot)member).BeginTemporaryCompanionRest();
+                        else ((GameBot)member).BeginRecoveryRest();
                     }
                 }
                 if (members.Any(member => !AtCamp(session, member)))
@@ -243,12 +305,26 @@ namespace DOL.GS.Commands
                 session.NextSearch = now + 5000;
                 GameNPC target = FindTarget(session, puller, members.Length - 1, now);
                 if (target == null)
-                { session.Detail = "Ready — no suitable reachable nearby monsters"; return; }
+                {
+                    if (OnlyGrey(player.GetNPCsInRadius(PullRadius).Where(npc => PlayerMobNavigator.IsExperienceMonster(npc) &&
+                            npc.IsAlive && npc.ObjectState == GameObject.eObjectState.Active).Select(npc => player.GetConLevel(npc))))
+                    {
+                        SayConLine(members, puller, player, eAutonomousChatIntent.GrindGrey);
+                        Stop(player, "everything left nearby is grey to you");
+                        return;
+                    }
+                    session.Detail = "Ready — no suitable reachable nearby monsters"; return;
+                }
+                eGrindCon con = ConOf(player.GetConLevel(target), target.Level - player.Level);
+                Log.Info($"GRIND pull player=\"{player.Name}\" puller=\"{puller.Name}\" target=\"{target.Name}\" level={target.Level} con={con}");
+                if (LineFor(con) is { } conLine && now >= session.NextConLine &&
+                    SayConLine(members, puller, player, conLine))
+                    session.NextConLine = now + ConLineCooldown;
                 StandModeSeats(session);
-                foreach (GameBot helper in members.OfType<GameBot>()) helper.WakeTemporaryCompanionRest();
+                foreach (GameBot helper in members.OfType<GameBot>().Where(bot => bot.IsRecoveryResting)) helper.WakeRecoveryRest();
                 session.Target = target; session.ContactDeadline = now + ContactTimeout; session.ReadySince = 0;
                 // This is precisely the existing /pull command's shared combat
-                // dispatch, protected by the strict temporary-only party gate.
+                // dispatch, protected by the bots-only party gate.
                 session.Detail = PlayerLedPullCoordinator.Begin(player, target);
             }
             catch (Exception exception)
@@ -261,6 +337,12 @@ namespace DOL.GS.Commands
                 Volatile.Write(ref session.Queued, 0);
             }
         }
+
+        // The puller says it if it has a line for it, else another bot in the party that has one.
+        private static bool SayConLine(GameLiving[] members, GameBot puller, GamePlayer player, eAutonomousChatIntent kind) =>
+            new[] { puller }.Concat(members.OfType<GameBot>().Where(bot => bot != puller).OrderBy(_ => Random.Shared.Next()))
+                .Where(bot => bot is { IsAlive: true }).Take(8)
+                .Any(bot => AutonomousBotChatCoordinator.SayGrindLine(bot, player, kind));
 
         private static GameNPC FindTarget(Session session, GameBot puller, int count, long now)
         {
@@ -300,9 +382,9 @@ namespace DOL.GS.Commands
                 {
                     if (member.IsSitting) session.Player.Sit(false);
                 }
-                else if (member is GameBot helper && helper.IsTemporaryCompanionRestLocked &&
-                         IsOwnedCompanion(session.Player, session.Group, member))
-                    helper.WakeTemporaryCompanionRest();
+                else if (member is GameBot helper && helper.IsRecoveryResting &&
+                         IsPartyBot(session.Player, session.Group, member))
+                    helper.WakeRecoveryRest();
             }
             session.SeatedByMode.Clear();
         }
@@ -313,7 +395,7 @@ namespace DOL.GS.Commands
             // Finish any actual battle normally. Only an unengaged /grind order
             // is revoked; do not clear defensive aggro or other players' orders.
             foreach (GameLiving member in session.Group.GetMembersInTheGroup())
-                if (IsOwnedCompanion(session.Player, session.Group, member) && !Fighting(member) && member is GameBot { Brain: BotBrain brain })
+                if (IsPartyBot(session.Player, session.Group, member) && !Fighting(member) && member is GameBot { Brain: BotBrain brain })
                     brain.CancelOrderedPull(session.Target);
             if (IsExclusiveParty(session.Player, session.Group, session.Group.GetMembersInTheGroup().ToArray()))
                 PlayerLedPullCoordinator.OnGroupThreat(session.Player);
@@ -327,7 +409,7 @@ namespace DOL.GS.Commands
         }
     }
 
-    [CmdAttribute("&grind", ePrivLevel.Player, "Stationary automatic pulls with your temporary companions", "/grind", "/grind stop")]
+    [CmdAttribute("&grind", ePrivLevel.Player, "Stationary automatic pulls with the bots in your party", "/grind", "/grind stop")]
     public sealed class PlayerGrindCommandHandler : AbstractCommandHandler, ICommandHandler
     {
         public void OnCommand(GameClient client, string[] args)

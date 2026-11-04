@@ -128,6 +128,58 @@ On what, {0}?
 Not worth it, {0}.
 Too weak.
 
+~ reply grindred
+Red, {0}, I'll pull it.
+That's red, pulling, stay out of my way.
+Red, {0}, keep up.
+Red one, I'll handle the pull.
+That's red, {0}, don't get in the way.
+Red con, pulling, stay back.
+Red, {0}, I've done worse alone.
+That's red, I'll bring it, you finish it.
+Red, {0}, nothing I can't manage.
+Red con, {0}, don't make me regret grouping.
+That one's red, pulling, quietly.
+
+~ reply grindpurple
+Purple, {0}, I don't like it, but fine.
+That's purple, I'd skip it alone, pulling anyway.
+Purple, {0}, I'd never take this alone.
+That's purple, so for once I'm glad you're here.
+Purple con, {0}, stick close, I mean it.
+Purple, {0}, if it goes bad, I'm running.
+That's purple, I'll pull, you'd better be ready.
+Purple, {0}, I don't like the odds.
+Purple one, pulling, keep your eyes open.
+That's purple, {0}, I'd rather not, but fine.
+Purple con, {0}, here it comes, don't freeze.
+
+~ reply grinddeep
+Way over us, {0}, if this goes wrong I'm not sticking around.
+That's deep purple, {0}, I've got a bad feeling, pulling.
+Way over us, {0}, I've got a bad feeling about this.
+Deep purple, {0}, I can't believe I'm doing this.
+That's way over us, {0}, alone I'd be dead already.
+Deep purple, {0}, my heart's racing, pulling anyway.
+Way over us, {0}, if we live, I'm going quiet for a week.
+That's deep purple, {0}, this is crazy, here it comes.
+Way over our level, {0}, okay, I'm a little excited.
+Deep purple, {0}, stay close, all of you.
+That thing's way over us, {0}, pulling before I think too hard.
+
+~ reply grindgrey
+All grey now, {0}, I'm done here.
+Nothing left that cons, {0}, I'm moving on.
+Everything's grey, {0}, I'm going.
+Grey camp, {0}, nothing left for us here.
+All grey, {0}, I'll find somewhere quieter.
+Nothing cons now, {0}, time to leave.
+It's all grey, {0}, we're wasting daylight.
+Grey all round, {0}, I'm moving on.
+These are grey, {0}, not worth my time.
+Nothing here worth a pull, {0}, let's go.
+Grey now, {0}, this place is done.
+
 ~ reply groan
 Hm.
 ...no.

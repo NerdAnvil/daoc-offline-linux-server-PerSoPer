@@ -72,6 +72,11 @@ public class UT_Orders
     [TestCase("pull this", eBotOrder.Pull)]
     [TestCase("pull that one please", eBotOrder.Pull)]
     [TestCase("pull", eBotOrder.Pull)]
+    [TestCase("let's grind", eBotOrder.Grind)]
+    [TestCase("ok guys, lets grind!", eBotOrder.Grind)]
+    [TestCase("time to grind", eBotOrder.Grind)]
+    [TestCase("stop grinding", eBotOrder.GrindStop)]
+    [TestCase("ok stop the grind", eBotOrder.GrindStop)]
     public void Orders_AreRead(string line, eBotOrder expected)
     {
         Assert.That(AutonomousChatIntentModel.ReadOrder(line), Is.EqualTo(expected), line);
@@ -91,6 +96,29 @@ public class UT_Orders
     public void TheBotsName_IsTakenOffFirst(string line, eBotOrder expected)
     {
         Assert.That(AutonomousChatIntentModel.ReadOrder(line, ["Shempenstein", "Shemp", "Persoper"]), Is.EqualTo(expected), line);
+    }
+
+    // Every phrase in the shipped intents.dlg grind sections is a trigger, so a phrase added there works without code.
+    [TestCase("ordergrind", eBotOrder.Grind)]
+    [TestCase("ordergrindstop", eBotOrder.GrindStop)]
+    public void EveryGrindPhraseInTheFile_IsATrigger(string section, eBotOrder expected)
+    {
+        string[] phrases = DialogueLibrary.For("intents").Block("intents")
+            .Where(found => found.Name == "intent" && found.Argument == section)
+            .SelectMany(found => found.Lines.SelectMany(line => line.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)))
+            .ToArray();
+        Assert.That(phrases, Is.Not.Empty, section);
+        foreach (string phrase in phrases)
+            Assert.That(AutonomousChatIntentModel.ReadOrder(phrase), Is.EqualTo(expected), phrase);
+    }
+
+    // Grind talk that isn't a start or stop: small talk, or another order.
+    [TestCase("where is a good spot to grind", eBotOrder.None)]
+    [TestCase("this grind is slow", eBotOrder.None)]
+    [TestCase("stop", eBotOrder.Stay)]
+    public void OtherGrindTalk_IsNoGrindTrigger(string line, eBotOrder expected)
+    {
+        Assert.That(AutonomousChatIntentModel.ReadOrder(line), Is.EqualTo(expected), line);
     }
 
     [TestCase("shnacki, stay here", "shnacki")]

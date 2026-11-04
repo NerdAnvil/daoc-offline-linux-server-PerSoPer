@@ -64,7 +64,7 @@ and `/raid` drive it. It's removed when disbanded or when the owner quits.
 | `/classes` | Player | Your realm's Classic + SI classes and their party roles |
 | `/aggressive`, `/defensive` | Player | Companions assist you (default), or wait for enemies to approach |
 | `/pull` | Player | Party bots and their pets engage your target |
-| `/grind`, `/grind stop` | Player | Stationary automatic pulls with your companions |
+| `/grind`, `/grind stop` | Player | Stationary automatic pulls with the bots in a party you lead ("let's grind" / "stop grinding" in chat) |
 | `/raid 40`, `/raid 80` | Player | A level-50 companion raid (total includes you) |
 | `/tele <bot name>`, `/tele mob <monster>` | Player | Teleport to an autonomous bot or a monster camp (useful for watching bots) |
 | `/mobs [level] [page]` | Player | Accessible monsters at a level |

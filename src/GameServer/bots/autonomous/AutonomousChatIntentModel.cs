@@ -92,6 +92,15 @@ public enum eAutonomousChatIntent
     OrderPullWhat,
     // "pull this" on a mob grey to the bot: too weak to bother with (bots never fight grey mobs).
     OrderPullEasy,
+    // "let's grind" / "stop grinding" from the group leader start and stop /grind (PlayerCompanionGrind.FromChat).
+    OrderGrind,
+    OrderGrindStop,
+    // A bot's line in /grind before a red, purple or deep purple pull, and when only grey mobs are left
+    // (PlayerCompanionGrind.ConOf). Bot lines only, no player phrases.
+    GrindRed,
+    GrindPurple,
+    GrindDeep,
+    GrindGrey,
 }
 
 /// <summary>An order a player gives bots in chat (intent Part B6, B6b); None when the line isn't one.</summary>
@@ -105,6 +114,8 @@ public enum eBotOrder
     Assist,
     Rest,
     Pull,
+    Grind,
+    GrindStop,
 }
 
 /// <summary>
@@ -337,9 +348,10 @@ public static partial class AutonomousChatIntentModel
         ["pull"] = eBotOrder.Pull,
     };
 
-    /// <summary>The intents.dlg sections that hold order phrases (orderfollow ... orderrest, orderpull), each read as Command.</summary>
+    /// <summary>The intents.dlg sections that hold order phrases (orderfollow ... orderrest, orderpull, ordergrind, ordergrindstop), each read as Command.</summary>
     public static bool IsOrderPhrase(eAutonomousChatIntent intent) =>
-        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderRest or eAutonomousChatIntent.OrderPull;
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderRest or eAutonomousChatIntent.OrderPull or
+            eAutonomousChatIntent.OrderGrind or eAutonomousChatIntent.OrderGrindStop;
 
     /// <summary>
     /// The order in a chat line ("follow me", "shemp, stay here", "come here", "leave the group", "assist me", "rest up", "eagle, pull this",
@@ -365,6 +377,8 @@ public static partial class AutonomousChatIntentModel
             eAutonomousChatIntent.OrderAssist => eBotOrder.Assist,
             eAutonomousChatIntent.OrderRest => eBotOrder.Rest,
             eAutonomousChatIntent.OrderPull => eBotOrder.Pull,
+            eAutonomousChatIntent.OrderGrind => eBotOrder.Grind,
+            eAutonomousChatIntent.OrderGrindStop => eBotOrder.GrindStop,
             _ => eBotOrder.None,
         };
     }
@@ -391,7 +405,8 @@ public static partial class AutonomousChatIntentModel
         bool Stranger(string word) => word != null && !named.Contains(word) && !OrderFiller.Contains(word) &&
             !LoneOrders.ContainsKey(word) && !IntentPhrases.Shared.IsWordOf(word, eAutonomousChatIntent.OrderFollow,
                 eAutonomousChatIntent.OrderStay, eAutonomousChatIntent.OrderCome, eAutonomousChatIntent.OrderLeave,
-                eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest, eAutonomousChatIntent.OrderPull);
+                eAutonomousChatIntent.OrderAssist, eAutonomousChatIntent.OrderRest, eAutonomousChatIntent.OrderPull,
+                eAutonomousChatIntent.OrderGrind, eAutonomousChatIntent.OrderGrindStop);
         string first = Tokens(text).FirstOrDefault();
         if (Stranger(first))
             return first;
@@ -400,9 +415,9 @@ public static partial class AutonomousChatIntentModel
         return last.Length == 1 && Stranger(last[0]) ? last[0] : null;
     }
 
-    /// <summary>The order sections and answers (OrderFollow ... OrderNot, OrderPull ... OrderPullEasy): sections in .dlg files, never small talk.</summary>
+    /// <summary>The order sections and answers (OrderFollow ... OrderNot, OrderPull ... GrindGrey): sections in .dlg files, never small talk.</summary>
     public static bool IsOrderKind(eAutonomousChatIntent intent) =>
-        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.OrderPullEasy;
+        intent is >= eAutonomousChatIntent.OrderFollow and <= eAutonomousChatIntent.GrindGrey;
 
     /// <summary>The small-talk intents: game words beat them, and a bot without lines for one answers with Banter.</summary>
     public static bool IsSmallTalk(eAutonomousChatIntent intent) =>

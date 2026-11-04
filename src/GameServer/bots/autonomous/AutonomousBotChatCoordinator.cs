@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DOL.GS.Commands;
 using DOL.GS.PacketHandler;
 using DOL.Logging;
 
@@ -321,6 +322,22 @@ public static class AutonomousBotChatCoordinator
                 afterSaid?.Invoke(reply);
         }, named: true);
         return true;
+    }
+
+    /// <summary>
+    /// A bot's /grind line in group chat (grindred, grindpurple, grinddeep, grindgrey; PlayerCompanionGrind): one of
+    /// its own lines, {0} the player. False when it has none or isn't in the player's group.
+    /// </summary>
+    public static bool SayGrindLine(GameBot bot, GamePlayer player, eAutonomousChatIntent kind)
+    {
+        if (bot == null || player == null || BotPersonalities.For(bot) is not { } personality)
+            return false;
+        string line = PersonalityStateAnswers.Pick(personality, kind, PersonalityStateAnswers.SlotsFor(bot),
+            DialogueFactSource.For(bot, player), player.Name, Random.Shared);
+        bool said = Deliver(bot, player, ePrivateChannel.Group, line);
+        if (said)
+            Log.Info($"GRIND_LINE bot=\"{bot.Name}\" player=\"{player.Name}\" kind={kind}");
+        return said;
     }
 
     /// <summary>Sends a bot's line to a player on a private channel: a tell, a whisper or group chat. False when not sent.</summary>
@@ -896,6 +913,15 @@ public static class AutonomousBotChatCoordinator
         eBotOrder order = AutonomousChatIntentModel.ReadOrder(message, heard.SelectMany(NamesOf));
         if (order == eBotOrder.None)
             return false;
+        // "let's grind" / "stop grinding" is for the grind mode, not for any one bot: no bot answers it.
+        if (order is eBotOrder.Grind or eBotOrder.GrindStop)
+        {
+            string result = PlayerCompanionGrind.FromChat(player, order == eBotOrder.Grind);
+            if (result != null)
+                player.Out.SendMessage(result, eChatType.CT_System, eChatLoc.CL_SystemWindow);
+            Log.Info($"PERSONALITY_ORDER grind player=\"{player.Name}\" order={order} result=\"{result}\"");
+            return true;
+        }
         bool isNamed = named.Length > 0;
         // "leave the group" to nobody in particular is no order to the whole group.
         if (!isNamed && PersonalityOrders.NamedOnly(order))

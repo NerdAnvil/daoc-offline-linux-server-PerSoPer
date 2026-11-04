@@ -2,6 +2,22 @@
 
 What each update added, newest first. How to use it all: [docs/PLAYING.md](docs/PLAYING.md).
 
+## /grind with the PerSoPers (November 2026)
+
+- **`/grind` with any bots:** it works in a party you lead with bots of any kind (named bots,
+  world bots, Persoper, your `/spawn` companions) and no other players. Every kind of bot rests
+  between pulls; the tank still pulls first, then any bot that isn't a healer or buffer.
+- **Chat triggers:** the group leader says "let's grind" or "stop grinding". The phrases are in
+  `intents.dlg` (`ordergrind`, `ordergrindstop`), so more can be added there.
+- **Con lines:** before a red, purple or deep purple pull a bot says a line in its own voice
+  (`grindred`, `grindpurple`, `grinddeep`); when every mob left near camp is grey, grind stops
+  with a `grindgrey` line.
+- **Check script:** `tools/check-grind-ingame.sh`.
+
+Checked in game: grinding with Persoper, Eaglefang and Shempenstein (pulls, rests, deep purple
+lines, the chat stop). Not yet checked in game: the red and purple lines and the grey stop
+(unit tests only).
+
 ## Dialogue pass 1 (November 2026)
 
 It builds and its tests pass; most of it is checked in game, and the parts that aren't are

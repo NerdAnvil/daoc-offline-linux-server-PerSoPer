@@ -7,7 +7,8 @@
 # farewell, ignoreoutofworld, thank, groupcall, and the small talk ones: joke, grumble, smalltalk,
 # question, compliment, agree, quote, jokeask, laugh, sorry, disagree, away, back, activity,
 # howgoing, mood, flirt, outofworldchat. Then command and combatcall, which beat game words, and the
-# orders orderfollow, orderstay, ordercome, orderleave, orderassist, orderrest and orderpull (read as command).
+# orders orderfollow, orderstay, ordercome, orderleave, orderassist, orderrest, orderpull,
+# ordergrind and ordergrindstop (read as command).
 # The bot-state questions (where, level, groupstatus, and activity) are answered from the bot's
 # real zone, level, class, group and task: "~ reply where" and so on, see PersonalityStateAnswers.cs.
 # Bots answer in their "~ reply <intent>" section; a bot without one for a small-talk intent
@@ -212,6 +213,15 @@ regen up, rest here
 ~ intent orderpull
 pull this, pull that, pull it, pull him, pull her, pull them, pull this one, pull that one, pull the mob
 pull for us, pull please
+
+# Grind: the group leader starts or stops /grind from chat. To add a trigger, add a phrase here.
+~ intent ordergrind
+let's grind, lets grind, let us grind, start grinding, start the grind, start grind mode, grind mode on
+time to grind
+
+~ intent ordergrindstop
+stop grinding, stop the grind, stop grind mode, grind mode off, end the grind, done grinding
+enough grinding
 
 ~ intent combatcall
 heal me, heals please, need heals, need a heal, adds, incoming, run, train

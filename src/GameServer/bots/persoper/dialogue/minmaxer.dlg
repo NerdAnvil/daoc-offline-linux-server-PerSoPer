@@ -131,6 +131,58 @@ No target, {0}, zero value.
 Grey con, {0}. Zero xp, zero value.
 Not worth the time, {0}, it's grey.
 
+~ reply grindred
+Red, {0}, good xp per minute, pulling.
+Red con, {0}, worth it if nobody wastes cooldowns.
+Red, {0}, solid xp, burn it fast.
+Red con, {0}, efficient pull, go.
+That's red, {0}, good xp, low risk if you play right.
+Red one, {0}, optimal target, pulling.
+Red, {0}, keep your DPS up and downtime low.
+Red con, {0}, pulling, no wasted mana.
+That's red, {0}, best xp ratio here.
+Red, {0}, focus fire, maximum efficiency.
+Red one, {0}, pulling, keep the rotation clean.
+
+~ reply grindpurple
+Purple, {0}, high xp but downtime risk, pulling.
+That's purple, {0}, pop your buffs first.
+Purple, {0}, risky, but the xp math checks out.
+That's purple, {0}, use every buff, no excuses.
+Purple con, {0}, big xp, bigger downtime if we wipe.
+Purple one, {0}, pulling, perfect rotation or nothing.
+That's purple, {0}, expected value says yes.
+Purple, {0}, I've calculated the risk, mostly.
+Purple con, {0}, potions now, not later.
+That's purple, {0}, xp per minute just went up.
+Purple, {0}, pulling, track your cooldowns.
+
+~ reply grinddeep
+Deep purple, {0}! The xp on this is insane if we survive.
+That's way over us, {0}, terrible odds, amazing reward, pulling.
+Deep purple, {0}! The xp from this is off the charts!
+Way over us, {0}, the odds are awful, the reward is incredible!
+That's deep purple, {0}, every cooldown, every potion, now!
+Way over our level, {0}, if this works, it's a record!
+Deep purple, {0}, my spreadsheet says no, my heart says yes!
+That thing's way over us, {0}, huge xp, pulling!
+Deep purple, {0}, all-in on damage, go!
+Way over us, {0}, the math is terrifying and beautiful!
+Deep purple, {0}, maximum risk, maximum xp, pulling!
+
+~ reply grindgrey
+Everything here is grey, {0}, zero xp, we're wasting time.
+Camp's grey, {0}, xp per hour is zero now, moving on.
+Grey camp, {0}, xp per hour just hit zero.
+Everything's grey, {0}, inefficient, we move.
+All grey now, {0}, every minute here is wasted.
+Nothing cons, {0}, we've outleveled this spot.
+Grey all round, {0}, find a better xp spot.
+It's all grey, {0}, the numbers say leave.
+Zero xp left here, {0}, moving on.
+Grey mobs, {0}, terrible return on time.
+This camp's done, {0}, it's all grey.
+
 ~ reply groan
 That's a suboptimal joke.
 Low damage, that one.
