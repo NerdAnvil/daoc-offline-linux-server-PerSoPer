@@ -85,6 +85,16 @@ tools, build scripts, docs) are not listed.
    - Commit: the 2026-11-01 effect leak fix. Made by: PerSoPer fork. Seen in: v0.37c.
    - Status: open upstream.
 
+8. **Bots stay tied to a group whose player logged out.** When the last real player left a group
+   with two or more bots, the group lived on with only bots, each still following the player who
+   left. Inviting one later was refused ("already following another player-led group") until a
+   server restart. Now the group is disbanded when its last player leaves and a bot still follows
+   a player; bot-only groups that never had a player are kept.
+   - Files: `gameutils/Group.cs` (`RemoveMember`), a new test, `tools/check-regroup-ingame.sh`.
+   - Commit: the 2026-11-04 regroup fix. Made by: PerSoPer fork. Seen in: our fork point `3e3ffd0`
+     (upstream not checked).
+   - Status: open upstream.
+
 ## World data and navmeshes (from the v0.37 release)
 
 - Upstream ships its world DB and navmeshes only in release assets, never in git. From 0.37 on there is

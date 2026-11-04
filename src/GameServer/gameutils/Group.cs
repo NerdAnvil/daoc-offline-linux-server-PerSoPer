@@ -321,11 +321,18 @@ namespace DOL.GS
 
             GameLiving soleMemberToRemove = null;
             string newLeaderName = null;
+            bool disbandBotsLeftBehind = false;
             lock (_groupMembersLock)
             {
                 int memberCount = _groupMembers.Count;
 
-                if (memberCount == 1 && !retainSingleRemainingMember)
+                // The last real player left: bots still following that player's
+                // group would stay tied to them (and refuse later invites).
+                if (ShouldDisbandBotsLeftBehind(living is GamePlayer,
+                        _groupMembers.Any(member => member is GamePlayer),
+                        _groupMembers.Any(member => member is GameBot { IsPlayerLedGroup: true })))
+                    disbandBotsLeftBehind = true;
+                else if (memberCount == 1 && !retainSingleRemainingMember)
                 {
                     // Remove outside this lock. RemoveMember notifies the
                     // autonomous coordinator, whose lock order is coordinator
@@ -352,7 +359,9 @@ namespace DOL.GS
                 }
             }
 
-            if (soleMemberToRemove != null)
+            if (disbandBotsLeftBehind)
+                DisbandGroup();
+            else if (soleMemberToRemove != null)
                 _ = RemoveMember(soleMemberToRemove);
             else if (newLeaderName != null)
                 SendMessageToGroupMembers($"{newLeaderName} is the new group leader.", eChatType.CT_System, eChatLoc.CL_SystemWindow);
@@ -383,6 +392,10 @@ namespace DOL.GS
 
             player.Out.SendObjectGuildID(controlledBody, playerGuild ?? Guild.DummyGuild);
         }
+
+        /// <summary>True when a real player left, no real player remains and a bot still follows a player's lead.</summary>
+        public static bool ShouldDisbandBotsLeftBehind(bool leaverIsPlayer, bool playerRemains, bool botFollowsPlayer) =>
+            leaverIsPlayer && !playerRemains && botFollowsPlayer;
 
         public void DisbandGroup()
         {
