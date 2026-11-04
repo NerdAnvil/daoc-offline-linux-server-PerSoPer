@@ -63,6 +63,7 @@ namespace DOL.GS
             // the old "party is resting" refusal could block /pull forever).
             foreach (GameBot bot in helpers.Where(bot => bot.IsTemporaryCompanionRestLocked))
                 bot.WakeTemporaryCompanionRest();
+            PullConLines.BeforePull(player, target);
             GameBot tank = helpers.Where(BotPartyRoles.IsTank)
                 .Where(bot => !bot.IsCrowdControlled)
                 .OrderBy(bot => bot.GetDistanceTo(target)).ThenBy(bot => bot.ObjectID).FirstOrDefault();
@@ -111,6 +112,7 @@ namespace DOL.GS
             if (puller.IsRecoveryResting) puller.WakeRecoveryRest();
             if (!pullerBrain.OrderNamedPull(target))
                 return false;
+            PullConLines.BeforePull(player, target);
             CompanionEngagementMode.RememberPull(player, target);
             foreach (GameBot bot in helpers.Where(bot => bot != puller && bot.PlayerGroupLeader == player))
             {

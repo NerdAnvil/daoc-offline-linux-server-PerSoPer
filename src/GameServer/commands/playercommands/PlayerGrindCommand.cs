@@ -43,7 +43,6 @@ namespace DOL.GS.Commands
             public long NextSearch;
             public long NextStatus;
             public long NextClientSessionRefresh;
-            public long NextConLine;
             public string Detail = "Waiting for the party";
             public readonly HashSet<GameLiving> SeatedByMode = new();
             public readonly Dictionary<GameNPC, long> FailedTargets = new();
@@ -117,11 +116,10 @@ namespace DOL.GS.Commands
             monsterLevel > 0 && conLevel > -3;
 
         // How a mob cons to the player, for the bots' lines: red and purple get a hesitant line before the pull, more
-        // than DeepPurpleLevels over the player a nervous or excited one (still pulled); grey ends grind when it is all
-        // that is left near camp.
+        // than DeepPurpleLevels over the player a nervous or excited one (still pulled; PullConLines, also for /pull and
+        // pull orders); grey ends grind when it is all that is left near camp.
         public enum eGrindCon { Plain, Red, Purple, Deep, Grey }
         public const int DeepPurpleLevels = 5;
-        public const int ConLineCooldown = 60_000;
         public const int GreyCheckLimit = 64;
 
         public static eGrindCon ConOf(int conLevel, int levelsOver) =>
@@ -309,7 +307,7 @@ namespace DOL.GS.Commands
                     if (OnlyGrey(player.GetNPCsInRadius(PullRadius).Where(npc => PlayerMobNavigator.IsExperienceMonster(npc) &&
                             npc.IsAlive && npc.ObjectState == GameObject.eObjectState.Active).Select(npc => player.GetConLevel(npc))))
                     {
-                        SayConLine(members, puller, player, eAutonomousChatIntent.GrindGrey);
+                        PullConLines.Say(player, eAutonomousChatIntent.GrindGrey);
                         Stop(player, "everything left nearby is grey to you");
                         return;
                     }
@@ -317,9 +315,6 @@ namespace DOL.GS.Commands
                 }
                 eGrindCon con = ConOf(player.GetConLevel(target), target.Level - player.Level);
                 Log.Info($"GRIND pull player=\"{player.Name}\" puller=\"{puller.Name}\" target=\"{target.Name}\" level={target.Level} con={con}");
-                if (LineFor(con) is { } conLine && now >= session.NextConLine &&
-                    SayConLine(members, puller, player, conLine))
-                    session.NextConLine = now + ConLineCooldown;
                 StandModeSeats(session);
                 foreach (GameBot helper in members.OfType<GameBot>().Where(bot => bot.IsRecoveryResting)) helper.WakeRecoveryRest();
                 session.Target = target; session.ContactDeadline = now + ContactTimeout; session.ReadySince = 0;
@@ -337,12 +332,6 @@ namespace DOL.GS.Commands
                 Volatile.Write(ref session.Queued, 0);
             }
         }
-
-        // The puller says it if it has a line for it, else another bot in the party that has one.
-        private static bool SayConLine(GameLiving[] members, GameBot puller, GamePlayer player, eAutonomousChatIntent kind) =>
-            new[] { puller }.Concat(members.OfType<GameBot>().Where(bot => bot != puller).OrderBy(_ => Random.Shared.Next()))
-                .Where(bot => bot is { IsAlive: true }).Take(8)
-                .Any(bot => AutonomousBotChatCoordinator.SayGrindLine(bot, player, kind));
 
         private static GameNPC FindTarget(Session session, GameBot puller, int count, long now)
         {

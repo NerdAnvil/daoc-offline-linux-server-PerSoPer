@@ -31,7 +31,8 @@ it at one bot.
   role, and the rest of the group attacks at once. A grey mob gets "too easy" instead.
 - **Grind:** "let's grind" or "stop grinding" (group leader only) starts or stops `/grind`, which
   works with any bots in a party you lead. The bots pull, fight and rest on their own, say a line
-  before a red or purple pull, and stop when everything left nearby is grey.
+  before a red or purple pull (also on `/pull`, at most every 3 minutes), and stop when everything
+  left nearby is grey.
 - **Group calls:** "who wants to group?", "anyone up for a dungeon?" or "lfg" gets a few
   answers from personality bots nearby, from what they're really doing.
 - **Questions:** "where are you?", "what level are you?", "are you in a group?", "are you

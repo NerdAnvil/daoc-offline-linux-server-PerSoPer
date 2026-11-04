@@ -230,6 +230,17 @@ namespace DOL.UnitTests
             }
         }
 
+        // A con line goes to a random bot, the last speaker only when nobody else has a line; at most one per 3 minutes.
+        [Test] public void ConLineSpeakerRotates()
+        {
+            var random = new Random(7);
+            for (int i = 0; i < 20; i++)
+                Assert.That(PullConLines.SpeakerOrder(new[] { 1, 2, 3 }, id => id, 2, random).Last(), Is.EqualTo(2));
+            var first = Enumerable.Range(0, 40).Select(_ => PullConLines.SpeakerOrder(new[] { 1, 2, 3 }, id => id, 2, random).First()).ToHashSet();
+            Assert.That(first, Is.EquivalentTo(new[] { 1, 3 }));
+            Assert.That(PullConLines.CooldownMs, Is.GreaterThanOrEqualTo(180_000));
+        }
+
         [Test] public void PartyWithWorldOrNamedBotsIsAccepted()
         {
             var (player, _, _) = Party(); var persistent = Helper(player, new ClassWizard(), true); Add(player.Group, persistent);

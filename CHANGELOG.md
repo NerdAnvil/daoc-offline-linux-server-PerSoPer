@@ -9,9 +9,10 @@ What each update added, newest first. How to use it all: [docs/PLAYING.md](docs/
   between pulls; the tank still pulls first, then any bot that isn't a healer or buffer.
 - **Chat triggers:** the group leader says "let's grind" or "stop grinding". The phrases are in
   `intents.dlg` (`ordergrind`, `ordergrindstop`), so more can be added there.
-- **Con lines:** before a red, purple or deep purple pull a bot says a line in its own voice
-  (`grindred`, `grindpurple`, `grinddeep`); when every mob left near camp is grey, grind stops
-  with a `grindgrey` line.
+- **Con lines:** before a red, purple or deep purple pull (grind, `/pull` or a pull order in chat)
+  a random bot of the group says a line in its own voice (`grindred`, `grindpurple`, `grinddeep`),
+  at most once every 3 minutes; when every mob left near camp is grey, grind stops with a
+  `grindgrey` line.
 - **Check script:** `tools/check-grind-ingame.sh`.
 
 Checked in game: grinding with Persoper, Eaglefang and Shempenstein (pulls, rests, deep purple
